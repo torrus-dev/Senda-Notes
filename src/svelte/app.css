@@ -1,0 +1,83 @@
+@font-face {
+  font-family: 'Source Serif 4';
+  src: url('/fonts/SourceSerif4.ttf') format('truetype');
+  font-weight: 1 999; /* Rango de pesos */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Source Serif 4';
+  src: url('/fonts/SourceSerif4-Italic.ttf') format('truetype');
+  font-weight: 1 999; /* Rango de pesos */
+  font-style: italic;
+}
+
+body {
+  font-family: 'Source Serif 4', sans-serif;
+}
+
+main {
+  width: 100%;
+  --metadata-label-width: 6em;
+}
+.note-view {
+  min-width: 40em;
+  max-width: 50em;
+  margin: 0 auto;
+}
+
+.properties-box {
+  padding: 1em;
+  border: 1px solid #ccc;
+  margin-bottom: 2em;
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 1em;
+  }
+
+  .property-item {
+    display: flex;
+    gap: 1em;
+    margin-bottom: .25em;
+    .label {
+      width: var(--metadata-label-width);
+      font-weight: bold;
+    }
+    p {
+      margin: 0;
+      padding: 0;
+    }
+  }
+}
+
+.block {
+  width: fit-content; 
+  position: relative;
+  padding: .25em;
+  margin: 0;
+  margin-left: -.25em;
+  p {
+    margin: 0;
+  }
+  .drag-handle {
+    position: absolute;
+    left: -2em;
+    top: 0;
+    background-color: aliceblue;
+    padding: .25em .5em;
+    font-weight: bold;
+    user-select: none;
+    opacity: 0;
+  }
+}
+
+
+.block:hover .drag-handle {
+  opacity: 1;
+  cursor: grab;
+}
+
+.block:active .drag-handle {
+  cursor: grabbing;
+}

@@ -1,0 +1,41 @@
+const note = $state({
+    title: "Nota de prueba",
+    properties: {
+      created: "2021-09-01",
+      updated: "2021-09-01",
+      publish: true,
+      tags: ["dummy", "data"],
+      theme: "Web Development",
+    },
+    // Array de bloques que contiene el contenido de la nota
+    // Cada bloque tiene un ID único, tipo, propiedades y puede tener bloques hijos
+    blocks: [
+      {
+        id: "e98f7n",
+        type: "text",
+        properties: {
+          block_content: "A block",
+        },
+        children: [],
+        parent: null,
+      },
+      {
+        id: "r5789n",
+        type: "text",
+        properties: {
+          block_content: "B block",
+        },
+        children: [],
+        parent: null,
+      },
+      {
+        id: "23n8fn",
+        type: "text",
+        properties: {
+          block_content: "C block",
+        },
+        children: [],
+        parent: null,
+      },
+    ],
+  });
