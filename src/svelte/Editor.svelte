@@ -3,11 +3,16 @@
   import EditorJS from "@editorjs/editorjs";
   import DragDrop from "editorjs-drag-drop";
   import { editorConfig } from "./editorConfig";
+  import { currentNote, notes, updateNote } from "./noteController";
 
   let editor;
+  let currentNoteId = null;
 
-  const initEditor = () => {
-    let data = JSON.parse(localStorage.getItem("articleData"));
+  const initEditor = (noteContent = null) => {
+    if (editor && typeof editor.destroy === "function") {
+      editor.destroy();
+    }
+
     editor = new EditorJS({
       holder: "editorjs",
       tools: editorConfig,
@@ -19,27 +24,54 @@
       },
       defaultBlock: "paragraph",
       enableMovingByArrowKeys: true,
-      data: data || { blocks: [] },
-      onChange: (api, event) => {
-        editor
-          .save()
-          .then((outputData) => {
-            localStorage.setItem("articleData", JSON.stringify(outputData));
-          })
-          .catch((error) => {
-            console.log("Saving failed: ", error);
-          });
+      data: noteContent ? JSON.parse(noteContent) : { blocks: [] },
+      onChange: async () => {
+        try {
+          const outputData = await editor.save();
+          if (currentNoteId) {
+            updateNote(currentNoteId, {
+              content: JSON.stringify(outputData),
+            });
+          }
+        } catch (error) {
+          console.log("Saving failed: ", error);
+        }
       },
     });
   };
 
-  onMount(initEditor);
-  onDestroy(() => editor?.destroy());
+  currentNote.subscribe((note) => {
+    if (note) {
+      currentNoteId = note.id;
+      if (note.content !== editor?.save()) {
+        initEditor(note.content || null);
+      }
+    } else {
+      currentNoteId = null;
+      initEditor(null);
+    }
+  });
+
+  onMount(() => {
+    const note = $currentNote;
+    initEditor(note?.content || null);
+  });
+
+  onDestroy(() => {
+    if (editor && typeof editor.destroy === "function") {
+      editor.destroy();
+    }
+  });
 </script>
 
-<div id="editorjs"></div>
+<div id="editorjs" class:disabled={!$currentNote}></div>
 
 <style>
+  .disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
   :global(.codex-editor),
   :global(.ce-block),
   :global(.ce-toolbar__content) {

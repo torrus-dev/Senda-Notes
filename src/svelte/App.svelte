@@ -1,5 +1,4 @@
 <script>
-  import Editor from "./Editor.svelte";
   import Title from "./Title.svelte";
   import {
     notes,
@@ -9,6 +8,7 @@
     selectNote,
     deleteNote,
   } from "./noteController";
+  import Editor from "./Editor.svelte";
 
   loadNotes();
 
@@ -54,11 +54,11 @@
           ID: {selectedNote.id}
         </li>
       </ul>
+      <Editor></Editor>
     {:else}
       <h1>Create or select a new note</h1>
       <p>A powerful block-styled editor</p>
     {/if}
-    <Editor></Editor>
   </header>
 </main>
 

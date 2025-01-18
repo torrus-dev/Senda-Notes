@@ -49,6 +49,7 @@ export function selectNote(id: string) {
   const currentNotes = get(notes);
   const note = currentNotes.find(n => n.id === id);
   currentNote.set(note || null);
+  console.log(get(currentNote))
 }
 
 export function deleteNote(id: string) {
