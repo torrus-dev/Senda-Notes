@@ -14,6 +14,14 @@
       editor.destroy();
     }
 
+    let initialData;
+    try {
+      initialData = noteContent ? JSON.parse(noteContent) : { blocks: [] };
+    } catch (error) {
+      console.error("Error parsing content:", error);
+      initialData = { blocks: [] };
+    }
+
     editor = new EditorJS({
       holder: "editorjs",
       tools: editorConfig,
@@ -25,16 +33,17 @@
       },
       defaultBlock: "paragraph",
       enableMovingByArrowKeys: true,
-      data: noteContent ? JSON.parse(noteContent) : { blocks: [] },
-      onChange: async () => {
-        try {
-          console.log("data");
-          const outputData = await editor.save();
-          console.log(outputData);
-          // onContentChange(JSON.stringify(outputData));
-        } catch (error) {
-          console.log("Saving failed: ", error);
-        }
+      data: initialData,
+      onChange: () => {
+        // Usamos .then() en lugar de async/await
+        editor
+          .save()
+          .then((outputData) => {
+            onContentChange(JSON.stringify(outputData));
+          })
+          .catch((error) => {
+            console.error("Saving failed: ", error);
+          });
       },
     });
   };
