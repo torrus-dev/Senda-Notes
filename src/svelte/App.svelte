@@ -34,7 +34,9 @@
 <div class="layout">
   <aside class="sidebar">
     <h2>Notes:</h2>
-    <button onclick={noteController.createNote}>New Note</button>
+    <button class="new-note" onclick={noteController.createNote}
+      >New Note</button
+    >
     <ul>
       {#each noteController.notes as note}
         <li>
@@ -47,48 +49,59 @@
     </ul>
   </aside>
   <main class="container">
-    <header>
-      {#if activeNote}
-        <Title title={activeNote.title} {onTitleChange} />
-        <ul>
-          <li>
-            ID: {activeNote.id}
-          </li>
-          {#each activeNote.properties as property}
-            <li>{property.name} - {property.value}</li>
-          {/each}
-        </ul>
-        <Editor
-          content={activeNote.content}
-          noteId={activeNote.id}
-          onContentChange={handleContentChange}
-        />
-      {:else}
-        <h1>Create or select a new note</h1>
-        <p>A powerful block-styled editor</p>
-      {/if}
-    </header>
+    <article class="note">
+      <header>
+        {#if activeNote}
+          <Title title={activeNote.title} {onTitleChange} />
+          <ul>
+            <li>
+              ID: {activeNote.id}
+            </li>
+            {#each activeNote.properties as property}
+              <li>{property.name} - {property.value}</li>
+            {/each}
+          </ul>
+          <Editor
+            content={activeNote.content}
+            noteId={activeNote.id}
+            onContentChange={handleContentChange}
+          />
+        {:else}
+          <h1>Create or select a new note</h1>
+          <p>A powerful block-styled editor</p>
+        {/if}
+      </header>
+    </article>
   </main>
 </div>
 
 <style>
   .layout {
+    --accent-color: rgb(0, 217, 255);
     display: flex;
+    height: 100vh;
   }
   .container {
     max-width: 50%;
     min-width: 45em;
     margin: 0 auto;
-    margin-left: 20em;
-    padding: 1rem;
+  }
+  .note {
+    padding: 2em;
+    border-radius: 4px;
+    background-color: white;
+    box-shadow: 4px 4px 4px 4px #00000066;
   }
   .sidebar {
-    position: absolute;
-    left: 0;
-    top: 0;
     min-width: 15em;
-    height: 100%;
+    align-self: stretch;
     background-color: aliceblue;
     padding: 1em;
+  }
+  .new-note {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 0.5em 1em;
+    border-radius: 8px;
   }
 </style>
