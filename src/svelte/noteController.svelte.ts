@@ -1,8 +1,16 @@
+interface Property {
+  name: string,
+  value: string | number | boolean | Date,
+  type: string
+}
+
 interface Note {
+  id: string;
   title: string;
   content: string;
-  id: string;
+  properties: Property[];
 }
+
 
 export class NoteController {
   notes = $state(<Note[]>[])
@@ -34,6 +42,11 @@ export class NoteController {
     const newNote = {
       title: this.newNoteTitle(),
       content: "",
+      properties: [
+        { name: "created", value: new Date().toISOString(), type: "date" },
+        { name: "updated", value: new Date().toISOString(), type: "date" },
+        { name: "tags", value: "null", type: "list" },
+      ],
       id: crypto.randomUUID(),
     };
     this.notes = [...this.notes, newNote];

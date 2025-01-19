@@ -9,17 +9,13 @@
   let editor;
   let currentNoteId = $state(null);
 
+  const sanitizerConfig = {
+    p: true, // leave <p> as is
+  };
+
   const initEditor = (noteContent = null) => {
     if (editor && typeof editor.destroy === "function") {
       editor.destroy();
-    }
-
-    let initialData;
-    try {
-      initialData = noteContent ? JSON.parse(noteContent) : { blocks: [] };
-    } catch (error) {
-      console.error("Error parsing content:", error);
-      initialData = { blocks: [] };
     }
 
     editor = new EditorJS({
@@ -33,17 +29,14 @@
       },
       defaultBlock: "paragraph",
       enableMovingByArrowKeys: true,
-      data: initialData,
-      onChange: () => {
-        // Usamos .then() en lugar de async/await
-        editor
-          .save()
-          .then((outputData) => {
-            onContentChange(JSON.stringify(outputData));
-          })
-          .catch((error) => {
-            console.error("Saving failed: ", error);
-          });
+      data: noteContent ? JSON.parse(noteContent) : { blocks: [] },
+      onChange: async () => {
+        try {
+          const outputData = await editor.save();
+          onContentChange(JSON.stringify(outputData));
+        } catch (error) {
+          console.log("Saving failed: ", error);
+        }
       },
     });
   };

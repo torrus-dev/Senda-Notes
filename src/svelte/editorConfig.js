@@ -9,6 +9,11 @@ import InlineCode from "@editorjs/inline-code";
 import Embed from "@editorjs/embed";
 
 export const editorConfig = {
+  paragraph: {
+    config: {
+      preserveBlank: true,
+    },
+  },
   header: {
     class: Header,
     config: {
@@ -19,9 +24,10 @@ export const editorConfig = {
   },
   list: {
     class: List,
-    inlineToolbar: true,
+    inlineToolbar: ["link", "bold", "italic"], // Herramientas útiles dentro de listas
     config: {
       defaultStyle: "unordered",
+      shortcut: "CMD+SHIFT+L", // Atajo rápido para listas
     },
   },
   code: {

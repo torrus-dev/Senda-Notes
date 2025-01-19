@@ -31,42 +31,50 @@
   });
 </script>
 
-<aside class="sidebar">
-  <h2>Notes:</h2>
-  <button onclick={noteController.createNote}>New Note</button>
-  <ul>
-    {#each noteController.notes as note}
-      <li>
-        <button id={note.id} onclick={handleSelectNote}>
-          {note.title}
-        </button>
-        <button id={note.id} onclick={handleDeleteNote}>🗑️</button>
-      </li>
-    {/each}
-  </ul>
-</aside>
-<main class="container">
-  <header>
-    {#if activeNote}
-      <Title title={activeNote.title} {onTitleChange} />
-      <ul>
+<div class="layout">
+  <aside class="sidebar">
+    <h2>Notes:</h2>
+    <button onclick={noteController.createNote}>New Note</button>
+    <ul>
+      {#each noteController.notes as note}
         <li>
-          ID: {activeNote.id}
+          <button id={note.id} onclick={handleSelectNote}>
+            {note.title}
+          </button>
+          <button id={note.id} onclick={handleDeleteNote}>🗑️</button>
         </li>
-      </ul>
-      <Editor
-        content={activeNote.content}
-        noteId={activeNote.id}
-        onContentChange={handleContentChange}
-      />
-    {:else}
-      <h1>Create or select a new note</h1>
-      <p>A powerful block-styled editor</p>
-    {/if}
-  </header>
-</main>
+      {/each}
+    </ul>
+  </aside>
+  <main class="container">
+    <header>
+      {#if activeNote}
+        <Title title={activeNote.title} {onTitleChange} />
+        <ul>
+          <li>
+            ID: {activeNote.id}
+          </li>
+          {#each activeNote.properties as property}
+            <li>{property.name} - {property.value}</li>
+          {/each}
+        </ul>
+        <Editor
+          content={activeNote.content}
+          noteId={activeNote.id}
+          onContentChange={handleContentChange}
+        />
+      {:else}
+        <h1>Create or select a new note</h1>
+        <p>A powerful block-styled editor</p>
+      {/if}
+    </header>
+  </main>
+</div>
 
 <style>
+  .layout {
+    display: flex;
+  }
   .container {
     max-width: 50%;
     min-width: 45em;
