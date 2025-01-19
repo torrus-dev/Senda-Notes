@@ -3,10 +3,11 @@
   import EditorJS from "@editorjs/editorjs";
   import DragDrop from "editorjs-drag-drop";
   import { editorConfig } from "./editorConfig";
-  import { currentNote, notes, updateNote } from "./noteController";
+
+  const { content, noteId, onContentChange } = $props();
 
   let editor;
-  let currentNoteId = null;
+  let currentNoteId = $state(null);
 
   const initEditor = (noteContent = null) => {
     if (editor && typeof editor.destroy === "function") {
@@ -27,12 +28,10 @@
       data: noteContent ? JSON.parse(noteContent) : { blocks: [] },
       onChange: async () => {
         try {
+          console.log("data");
           const outputData = await editor.save();
-          if (currentNoteId) {
-            updateNote(currentNoteId, {
-              content: JSON.stringify(outputData),
-            });
-          }
+          console.log(outputData);
+          // onContentChange(JSON.stringify(outputData));
         } catch (error) {
           console.log("Saving failed: ", error);
         }
@@ -40,21 +39,12 @@
     });
   };
 
-  currentNote.subscribe((note) => {
-    if (note) {
-      currentNoteId = note.id;
-      if (note.content !== editor?.save()) {
-        initEditor(note.content || null);
-      }
-    } else {
-      currentNoteId = null;
-      initEditor(null);
+  // Reinicializamos el editor cuando cambia la nota
+  $effect(() => {
+    if (noteId !== currentNoteId) {
+      currentNoteId = noteId;
+      initEditor(content);
     }
-  });
-
-  onMount(() => {
-    const note = $currentNote;
-    initEditor(note?.content || null);
   });
 
   onDestroy(() => {
@@ -64,14 +54,9 @@
   });
 </script>
 
-<div id="editorjs" class:disabled={!$currentNote}></div>
+<div id="editorjs"></div>
 
 <style>
-  .disabled {
-    opacity: 0.5;
-    pointer-events: none;
-  }
-
   :global(.codex-editor),
   :global(.ce-block),
   :global(.ce-toolbar__content) {

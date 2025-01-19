@@ -4,6 +4,7 @@
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
+    "useDefineForClassFields": true,
     "outDir": "./output",
     "rootDir": "./src",
     "skipLibCheck": true

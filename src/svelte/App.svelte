@@ -1,41 +1,41 @@
 <script>
   import Title from "./Title.svelte";
-  import {
-    notes,
-    currentNote,
-    loadNotes,
-    createNote,
-    selectNote,
-    deleteNote,
-  } from "./noteController";
+  import { noteController } from "./noteController.svelte";
   import Editor from "./Editor.svelte";
 
-  loadNotes();
-
-  $: notesList = $notes;
-  $: selectedNote = $currentNote;
+  let activeNote = $state(null);
 
   function handleSelectNote(event) {
-    selectNote(event.target.id);
+    noteController.setActiveNote(event.target.id);
+    activeNote = noteController.getActiveNote();
   }
 
   function handleDeleteNote(event) {
-    deleteNote(event.target.id);
+    noteController.deleteNote(event.target.id);
   }
 
-  function updateTitle(newTitle) {
-    if (selectedNote) {
-      selectedNote.title = newTitle;
-      currentNote.set(selectedNote);
-    }
+  function onTitleChange(newTitle) {
+    noteController.updateNote(activeNote.id, {
+      title: noteController.sanitizeTitle(newTitle),
+    });
   }
+
+  function handleContentChange(newContent) {
+    noteController.updateNote(activeNote.id, {
+      content: newContent,
+    });
+  }
+
+  $effect(() => {
+    activeNote = noteController.getActiveNote();
+  });
 </script>
 
 <aside class="sidebar">
   <h2>Notes:</h2>
-  <button onclick={createNote}>New Note</button>
+  <button onclick={noteController.createNote}>New Note</button>
   <ul>
-    {#each notesList as note}
+    {#each noteController.notes as note}
       <li>
         <button id={note.id} onclick={handleSelectNote}>
           {note.title}
@@ -47,14 +47,18 @@
 </aside>
 <main class="container">
   <header>
-    {#if selectedNote}
-      <Title title={selectedNote.title} onTitleChange={updateTitle} />
+    {#if activeNote}
+      <Title title={activeNote.title} {onTitleChange} />
       <ul>
         <li>
-          ID: {selectedNote.id}
+          ID: {activeNote.id}
         </li>
       </ul>
-      <Editor></Editor>
+      <Editor
+        content={activeNote.content}
+        noteId={activeNote.id}
+        onContentChange={handleContentChange}
+      />
     {:else}
       <h1>Create or select a new note</h1>
       <p>A powerful block-styled editor</p>
