@@ -1,0 +1,157 @@
+<script>
+  export let property;
+  export let onUpdateProperty;
+
+  function formatDateTime(fecha) {
+    return fecha.slice(0, 16);
+  }
+
+  function removeItem(index) {
+    if (property.type === "list") {
+      const newValue = [...property.value];
+      newValue.splice(index, 1);
+      onUpdateProperty(property.name, newValue);
+    }
+  }
+
+  function handleInput(event) {
+    if (event.key === "Enter" || event.type === "blur") {
+      const inputValue = inputElement.value.trim();
+      if (inputValue) {
+        const newValue = [...property.value, inputValue];
+        onUpdateProperty(property.name, newValue);
+        inputElement.value = "";
+      }
+    }
+  }
+
+  let inputElement;
+</script>
+
+<li>
+  <div class="property-label">{property.name}</div>
+  {#if property.type === "text"}
+    <input
+      name={property.name}
+      type="text"
+      value={property.value}
+      onchange={(e) => onUpdateProperty(property.name, e.target.value)}
+    />
+  {:else if property.type === "list"}
+    <div class="list-input-container">
+      <div class="pills-container">
+        {#each property.value as item, index}
+          <div class="pill">
+            <span class="pill-text">{item}</span>
+            <button
+              class="remove-button"
+              onclick={() => removeItem(index)}
+              type="button"
+              aria-label="Remove item"
+            >
+              ×
+            </button>
+          </div>
+        {/each}
+      </div>
+      <input
+        name={property.name}
+        type="text"
+        class="list-input"
+        placeholder={property.value.length === 0 ? "Type to add items..." : ""}
+        onkeydown={handleInput}
+        onblur={handleInput}
+        bind:this={inputElement}
+      />
+    </div>
+  {:else if property.type === "number"}
+    <input
+      name={property.name}
+      type="number"
+      value={property.value}
+      onchange={(e) => onUpdateProperty(property.name, Number(e.target.value))}
+    />
+  {:else if property.type === "check"}
+    <input
+      name={property.name}
+      type="checkbox"
+      checked={property.value}
+      onchange={(e) => onUpdateProperty(property.name, e.target.checked)}
+    />
+  {:else if property.type === "date" || property.type === "datetime"}
+    <input
+      name={property.name}
+      type={property.type === "date" ? "date" : "datetime-local"}
+      value={property.type === "datetime"
+        ? formatDateTime(property.value)
+        : property.value}
+      onchange={(e) => onUpdateProperty(property.name, e.target.value)}
+    />
+  {/if}
+</li>
+
+<style>
+  .list-input-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    min-height: 32px;
+    padding: 4px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+  .pills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    background-color: #e9ecef;
+    border-radius: 16px;
+    padding: 4px 12px;
+    font-size: 14px;
+  }
+
+  .pill-text {
+    margin-right: 4px;
+  }
+
+  .remove-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border: none;
+    background: none;
+    color: #666;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 50%;
+    line-height: 1;
+  }
+
+  .remove-button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #333;
+  }
+
+  .list-input {
+    flex: 1;
+    min-width: 50px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    padding: 4px;
+  }
+
+  .list-input::placeholder {
+    color: #999;
+  }
+</style>

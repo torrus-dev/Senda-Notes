@@ -1,7 +1,8 @@
 <script>
-  import Title from "./Title.svelte";
+  import Title from "./components/Title.svelte";
+  import Editor from "./components/Editor.svelte";
+  import Property from "./components/Property.svelte";
   import { noteController } from "./noteController.svelte";
-  import Editor from "./Editor.svelte";
 
   let activeNote = $state(null);
 
@@ -18,6 +19,24 @@
     noteController.updateNote(activeNote.id, {
       title: noteController.sanitizeTitle(newTitle),
     });
+  }
+  function onUpdateProperty(propertyName, newValue) {
+    console.log("Updating property:", propertyName, "with value:", newValue);
+
+    const updatedProperties = activeNote.properties.map((property) => {
+      if (property.name === propertyName) {
+        return { ...property, value: newValue };
+      }
+      return property;
+    });
+
+    console.log("New properties array:", updatedProperties);
+
+    noteController.updateNote(activeNote.id, {
+      properties: updatedProperties,
+    });
+
+    console.log("Properties después de update:", activeNote.properties);
   }
 
   function handleContentChange(newContent) {
@@ -52,13 +71,11 @@
     <article class="note">
       <header>
         {#if activeNote}
+          <p class="note-id">ID: {activeNote.id}</p>
           <Title title={activeNote.title} {onTitleChange} />
-          <ul>
-            <li>
-              ID: {activeNote.id}
-            </li>
+          <ul class="property-box">
             {#each activeNote.properties as property}
-              <li>{property.name} - {property.value}</li>
+              <Property {property} {onUpdateProperty}></Property>
             {/each}
           </ul>
           <Editor
@@ -87,11 +104,17 @@
     margin: 0 auto;
   }
   .note {
-    padding: 2em;
+    padding: 1em 4.5em;
     border-radius: 4px;
     background-color: white;
     box-shadow: 4px 4px 4px 4px #00000066;
   }
+  .property-box {
+    margin: 2em 0;
+    padding: 0;
+    list-style: none;
+  }
+
   .sidebar {
     min-width: 15em;
     align-self: stretch;
