@@ -17,25 +17,25 @@
   function handleInput(event) {
     if (event.key === "Enter" || event.type === "blur") {
       const inputValue = inputElement.value.trim();
-      if (inputValue) {
-        const newValue = [...property.value, inputValue];
-        onUpdateProperty(property.name, newValue);
-        inputElement.value = "";
-      }
+      if (!inputValue) return;
+
+      const newValue = [...property.value, inputValue];
+      onUpdateProperty(property.name, newValue);
+      inputElement.value = "";
     }
   }
 
   let inputElement;
 </script>
 
-<li>
+<li class="property-item">
   <div class="property-label">{property.name}</div>
   {#if property.type === "text"}
     <input
       name={property.name}
       type="text"
       value={property.value}
-      onchange={(e) => onUpdateProperty(property.name, e.target.value)}
+      onchange={(event) => onUpdateProperty(property.name, event.target.value)}
     />
   {:else if property.type === "list"}
     <div class="list-input-container">
@@ -69,7 +69,12 @@
       name={property.name}
       type="number"
       value={property.value}
-      onchange={(e) => onUpdateProperty(property.name, Number(e.target.value))}
+      onchange={(event) => {
+        const value = Number(event.target.value);
+        if (!isNaN(value)) {
+          onUpdateProperty(property.name, value);
+        }
+      }}
     />
   {:else if property.type === "check"}
     <input
@@ -78,14 +83,25 @@
       checked={property.value}
       onchange={(e) => onUpdateProperty(property.name, e.target.checked)}
     />
-  {:else if property.type === "date" || property.type === "datetime"}
+  {:else if property.type === "date"}
     <input
       name={property.name}
-      type={property.type === "date" ? "date" : "datetime-local"}
-      value={property.type === "datetime"
-        ? formatDateTime(property.value)
+      type="date"
+      value={property.value instanceof Date
+        ? property.value.toISOString().split("T")[0]
         : property.value}
-      onchange={(e) => onUpdateProperty(property.name, e.target.value)}
+      onchange={(e) =>
+        onUpdateProperty(property.name, new Date(e.target.value))}
+    />
+  {:else if property.type === "datetime"}
+    <input
+      name={property.name}
+      type="datetime-local"
+      value={property.value instanceof Date
+        ? formatDateTime(property.value.toISOString())
+        : formatDateTime(property.value)}
+      onchange={(e) =>
+        onUpdateProperty(property.name, new Date(e.target.value))}
     />
   {/if}
 </li>

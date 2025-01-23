@@ -3,6 +3,7 @@
   import Editor from "./components/Editor.svelte";
   import Property from "./components/Property.svelte";
   import { noteController } from "./noteController.svelte";
+  import PropertyEditor from "./components/PropertyEditor.svelte";
 
   let activeNote = $state(null);
 
@@ -76,6 +77,7 @@
           <ul class="property-box">
             {#each activeNote.properties as property}
               <Property {property} {onUpdateProperty}></Property>
+              <PropertyEditor {property}></PropertyEditor>
             {/each}
           </ul>
           <Editor
