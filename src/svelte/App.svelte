@@ -1,9 +1,8 @@
 <script>
   import Title from "./components/Title.svelte";
   import Editor from "./components/Editor.svelte";
-  import Property from "./components/Property.svelte";
   import { noteController } from "./noteController.svelte";
-  import PropertyEditor from "./components/PropertyEditor.svelte";
+  import Properties from "./components/Properties.svelte";
 
   let activeNote = $state(null);
 
@@ -20,24 +19,6 @@
     noteController.updateNote(activeNote.id, {
       title: noteController.sanitizeTitle(newTitle),
     });
-  }
-  function onUpdateProperty(propertyName, newValue) {
-    console.log("Updating property:", propertyName, "with value:", newValue);
-
-    const updatedProperties = activeNote.properties.map((property) => {
-      if (property.name === propertyName) {
-        return { ...property, value: newValue };
-      }
-      return property;
-    });
-
-    console.log("New properties array:", updatedProperties);
-
-    noteController.updateNote(activeNote.id, {
-      properties: updatedProperties,
-    });
-
-    console.log("Properties después de update:", activeNote.properties);
   }
 
   function handleContentChange(newContent) {
@@ -74,12 +55,7 @@
         {#if activeNote}
           <p class="note-id">ID: {activeNote.id}</p>
           <Title title={activeNote.title} {onTitleChange} />
-          <ul class="property-box">
-            {#each activeNote.properties as property}
-              <Property {property} {onUpdateProperty}></Property>
-              <PropertyEditor {property}></PropertyEditor>
-            {/each}
-          </ul>
+          <Properties noteId={activeNote.id}></Properties>
           <Editor
             content={activeNote.content}
             noteId={activeNote.id}
@@ -110,11 +86,6 @@
     border-radius: 4px;
     background-color: white;
     box-shadow: 4px 4px 4px 4px #00000066;
-  }
-  .property-box {
-    margin: 2em 0;
-    padding: 0;
-    list-style: none;
   }
 
   .sidebar {

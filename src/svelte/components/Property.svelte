@@ -1,7 +1,11 @@
 <script>
-  export let property;
-  export let onUpdateProperty;
-
+  let {
+    property,
+    onUpdatePropertyValue,
+    toggleEditPropertyDialog = null,
+    readonly = false,
+    isEditable = true,
+  } = $props();
   function formatDateTime(fecha) {
     return fecha.slice(0, 16);
   }
@@ -10,7 +14,7 @@
     if (property.type === "list") {
       const newValue = [...property.value];
       newValue.splice(index, 1);
-      onUpdateProperty(property.name, newValue);
+      onUpdatePropertyValue(property.name, newValue);
     }
   }
 
@@ -20,22 +24,31 @@
       if (!inputValue) return;
 
       const newValue = [...property.value, inputValue];
-      onUpdateProperty(property.name, newValue);
+      onUpdatePropertyValue(property.name, newValue);
       inputElement.value = "";
     }
   }
 
-  let inputElement;
+  let inputElement = $state(null);
 </script>
 
 <li class="property-item">
-  <div class="property-label">{property.name}</div>
+  <div
+    class="property-label interactive"
+    class:interactive={isEditable}
+    role="button"
+    tabindex="auto"
+    onclick={isEditable ? () => toggleEditPropertyDialog(property) : null}
+  >
+    {property.name}
+  </div>
   {#if property.type === "text"}
     <input
       name={property.name}
       type="text"
       value={property.value}
-      onchange={(event) => onUpdateProperty(property.name, event.target.value)}
+      onchange={(event) =>
+        onUpdatePropertyValue(property.name, event.target.value)}
     />
   {:else if property.type === "list"}
     <div class="list-input-container">
@@ -43,26 +56,32 @@
         {#each property.value as item, index}
           <div class="pill">
             <span class="pill-text">{item}</span>
-            <button
-              class="remove-button"
-              onclick={() => removeItem(index)}
-              type="button"
-              aria-label="Remove item"
-            >
-              ×
-            </button>
+            {#if !readonly}
+              <button
+                class="remove-button"
+                onclick={() => removeItem(index)}
+                type="button"
+                aria-label="Remove item"
+              >
+                ×
+              </button>
+            {/if}
           </div>
         {/each}
       </div>
-      <input
-        name={property.name}
-        type="text"
-        class="list-input"
-        placeholder={property.value.length === 0 ? "Type to add items..." : ""}
-        onkeydown={handleInput}
-        onblur={handleInput}
-        bind:this={inputElement}
-      />
+      {#if !readonly}
+        <input
+          name={property.name}
+          type="text"
+          class="list-input"
+          placeholder={property.value.length === 0
+            ? "Type to add items..."
+            : ""}
+          onkeydown={handleInput}
+          onblur={handleInput}
+          bind:this={inputElement}
+        />
+      {/if}
     </div>
   {:else if property.type === "number"}
     <input
@@ -72,16 +91,18 @@
       onchange={(event) => {
         const value = Number(event.target.value);
         if (!isNaN(value)) {
-          onUpdateProperty(property.name, value);
+          onUpdatePropertyValue(property.name, value);
         }
       }}
+      disabled={readonly}
     />
   {:else if property.type === "check"}
     <input
       name={property.name}
       type="checkbox"
       checked={property.value}
-      onchange={(e) => onUpdateProperty(property.name, e.target.checked)}
+      onchange={(e) => onUpdatePropertyValue(property.name, e.target.checked)}
+      disabled={readonly}
     />
   {:else if property.type === "date"}
     <input
@@ -91,7 +112,8 @@
         ? property.value.toISOString().split("T")[0]
         : property.value}
       onchange={(e) =>
-        onUpdateProperty(property.name, new Date(e.target.value))}
+        onUpdatePropertyValue(property.name, new Date(e.target.value))}
+      disabled={readonly}
     />
   {:else if property.type === "datetime"}
     <input
@@ -101,12 +123,23 @@
         ? formatDateTime(property.value.toISOString())
         : formatDateTime(property.value)}
       onchange={(e) =>
-        onUpdateProperty(property.name, new Date(e.target.value))}
+        onUpdatePropertyValue(property.name, new Date(e.target.value))}
+      disabled={readonly}
     />
   {/if}
 </li>
 
 <style>
+  .property-item {
+    display: flex;
+  }
+  .property-label.interactive {
+    width: 6rem;
+    &.interactive:hover {
+      cursor: pointer;
+      background-color: aliceblue;
+    }
+  }
   .list-input-container {
     display: flex;
     flex-wrap: wrap;

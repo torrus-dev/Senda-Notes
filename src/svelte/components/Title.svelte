@@ -1,6 +1,5 @@
 <script>
-  export let title;
-  export let onTitleChange;
+  let { title, onTitleChange } = $props();
 
   let editableElement;
 </script>

@@ -11,8 +11,7 @@ interface Note {
   properties: Property[];
 }
 
-
-export class NoteController {
+class NoteController {
   notes = $state(<Note[]>[])
   activeNoteId = $state<string | null>(null);
 
@@ -21,6 +20,14 @@ export class NoteController {
     if (noteList) {
       this.notes = JSON.parse(noteList);
     }
+    $effect.root(() => {
+      $effect(() => {
+        // console.log("Guardando en local: ", this.notes)
+        if (this.notes) {
+          this.saveToLocalStorage()
+        }
+      })
+    })
   }
 
   getNoteById = (id: string) => {
@@ -40,18 +47,22 @@ export class NoteController {
 
   createNote = () => {
     const newNote: Note = {
+      id: crypto.randomUUID(),
       title: this.newNoteTitle(),
       content: "",
-      properties: [
-        { name: "created", value: new Date().toISOString(), type: "datetime" },
-        { name: "updated", value: new Date().toISOString(), type: "datetime" },
-        { name: "tags", value: ["caballo", "gato", "perro"], type: "list" },
-      ],
-      id: crypto.randomUUID(),
+      properties: this.fillNonUserProperties(),
     };
     this.notes = [...this.notes, newNote];
     this.saveToLocalStorage();
     this.activeNoteId = newNote.id;
+  }
+
+  fillNonUserProperties = (): Property[] => {
+    return [
+      { name: "created", value: new Date().toISOString(), type: "datetime" },
+      { name: "updated", value: new Date().toISOString(), type: "datetime" },
+      { name: "tags", value: ["caballo", "gato", "perro"], type: "list" },
+    ];
   }
 
   updateNote(id: string, updates: Partial<Note>) {
@@ -69,8 +80,6 @@ export class NoteController {
       }
       return note;
     });
-    this.saveToLocalStorage();
-    console.log("Updated Note:", id, ", new content", updates);
   }
 
   getActiveNote = () => {
@@ -88,7 +97,6 @@ export class NoteController {
   deleteNote = (id: string) => {
     // nos quedamos solo con las notas que tengan id distinto a la que se elimina
     this.notes = this.notes.filter(note => note.id !== id);
-    this.saveToLocalStorage();
     if (this.activeNoteId === id) {
       this.activeNoteId = null;
     }
