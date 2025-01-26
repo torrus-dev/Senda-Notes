@@ -8,6 +8,7 @@ interface Note {
   id: string;
   title: string;
   content: string;
+  metadata: Property[]
   properties: Property[];
 }
 
@@ -22,7 +23,6 @@ class NoteController {
     }
     $effect.root(() => {
       $effect(() => {
-        // console.log("Guardando en local: ", this.notes)
         if (this.notes) {
           this.saveToLocalStorage()
         }
@@ -50,7 +50,8 @@ class NoteController {
       id: crypto.randomUUID(),
       title: this.newNoteTitle(),
       content: "",
-      properties: this.fillNonUserProperties(),
+      metadata: this.fillNonUserProperties(),
+      properties: [],
     };
     this.notes = [...this.notes, newNote];
     this.saveToLocalStorage();
@@ -59,24 +60,52 @@ class NoteController {
 
   fillNonUserProperties = (): Property[] => {
     return [
-      { name: "created", value: new Date().toISOString(), type: "datetime" },
-      { name: "updated", value: new Date().toISOString(), type: "datetime" },
+      { name: "created", value: this.currentDate(), type: "datetime" },
+      { name: "modified", value: this.currentDate(), type: "datetime" },
       { name: "tags", value: ["caballo", "gato", "perro"], type: "list" },
     ];
   }
 
+  currentDate = (): string => {
+    return new Date().toISOString();
+  }
+
+  // updateNote(id: string, updates: Partial<Note>) {
+  //   this.notes = this.notes.map(note => {
+  //     if (note.id === id) {
+  //       // Hacemos una copia profunda de las properties si existen en updates
+  //       if (updates.properties) {
+  //         return {
+  //           ...note,
+  //           ...updates,
+  //           properties: [...updates.properties] // Aseguramos una nueva instancia del array
+  //         };
+  //       }
+  //       return { ...note, ...updates };
+  //     }
+  //     return note;
+  //   });
+  // }
+
   updateNote(id: string, updates: Partial<Note>) {
     this.notes = this.notes.map(note => {
       if (note.id === id) {
-        // Hacemos una copia profunda de las properties si existen en updates
-        if (updates.properties) {
-          return {
-            ...note,
-            ...updates,
-            properties: [...updates.properties] // Aseguramos una nueva instancia del array
-          };
-        }
-        return { ...note, ...updates };
+        // Actualizar la fecha de modificación en metadata
+        const updatedMetadata = note.metadata.map(prop =>
+          prop.name === "modified"
+            ? { ...prop, value: new Date().toISOString() }
+            : prop
+        );
+
+        return {
+          ...note,
+          ...updates,
+          metadata: updatedMetadata,
+          // Si hay updates de properties, asegurar nueva instancia
+          ...(updates.properties && {
+            properties: [...updates.properties]
+          })
+        };
       }
       return note;
     });

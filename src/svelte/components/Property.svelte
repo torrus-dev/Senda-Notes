@@ -2,7 +2,7 @@
   let {
     property,
     onUpdatePropertyValue,
-    toggleEditPropertyDialog = null,
+    handlePropertySelection = null,
     readonly = false,
     isEditable = true,
   } = $props();
@@ -38,7 +38,7 @@
     class:interactive={isEditable}
     role="button"
     tabindex="auto"
-    onclick={isEditable ? () => toggleEditPropertyDialog(property) : null}
+    onclick={isEditable ? () => handlePropertySelection(property) : null}
   >
     {property.name}
   </div>

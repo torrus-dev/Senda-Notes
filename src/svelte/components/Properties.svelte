@@ -1,14 +1,11 @@
 <script>
   import { noteController } from "../noteController.svelte";
-  import { workspaceState } from "../workspaceState.svelte";
+  import { workspace } from "../workspaceController.svelte";
+  import PropertyEditor from "./PropertyEditor.svelte";
   import Property from "./Property.svelte";
 
   let { noteId = null } = $props();
   let note = $derived(noteController.getNoteById(noteId));
-
-  let { isVisible, targetNoteId, editingProperty } = $derived(
-    workspaceState.propertyEditor,
-  );
 
   function onUpdatePropertyValue(propertyName, newValue) {
     const updatedProperties = note.properties.map((property) => {
@@ -22,82 +19,37 @@
       properties: updatedProperties,
     });
   }
-  function toggleEditPropertyDialog(property) {
-    if (workspaceState && !workspaceState.propertyEditor.isVisible) {
-      workspaceState.propertyEditor.editingProperty = property;
-      workspaceState.propertyEditor.targetNoteId = noteId;
-      workspaceState.propertyEditor.isVisible = true;
+  function handlePropertySelection(property) {
+    // TODO: implementar editar y guardar
+    if (workspace.propertyEditor.editingProperty === property) {
+      workspace.closePropertyEditor();
     } else {
-      workspaceState.propertyEditor.editingProperty = null;
-      workspaceState.propertyEditor.targetNoteId = null;
-      workspaceState.propertyEditor.isVisible = false;
+      workspace.openPropertyEditor(noteId, property);
     }
   }
 </script>
 
 {#if noteId}
   <ul class="property-box">
+    {#each note.metadata as metatadata (metatadata.name)}
+      <li>
+        <p>{metatadata.name}: {metatadata.value}</p>
+      </li>
+    {/each}
+  </ul>
+
+  <ul class="property-box">
     {#each note.properties as property (property.name)}
-      <Property {property} {toggleEditPropertyDialog} {onUpdatePropertyValue}
+      <Property {property} {handlePropertySelection} {onUpdatePropertyValue}
       ></Property>
     {/each}
   </ul>
-  {#if workspaceState.propertyEditor.isVisible}
-    <div class="property-dialog">
-      <button>Close</button>
-      <label for="property-type">Tipo de propiedad</label>
-      <div>
-        <select required>
-          <option
-            value="text"
-            selected={workspaceState.propertyEditor.editingProperty.type ===
-              "text"}>Text</option
-          >
-          <option
-            value="list"
-            selected={workspaceState.propertyEditor.editingProperty.type ===
-              "list"}>List</option
-          >
-          <option
-            value="number"
-            selected={workspaceState.propertyEditor.editingProperty.type ===
-              "number"}>Number</option
-          >
-          <option
-            value="check"
-            selected={workspaceState.propertyEditor.editingProperty.type ===
-              "check"}>Check</option
-          >
-          <option
-            value="date"
-            selected={workspaceState.propertyEditor.editingProperty.type ===
-              "date"}>Date</option
-          >
-          <option
-            value="datetime"
-            selected={workspaceState.propertyEditor.editingProperty.type ===
-              "datetime"}>Datetime</option
-          >
-        </select>
-      </div>
-      <div>
-        <label for="property-type">Nombre</label>
-        <input
-          type="text"
-          bind:value={workspaceState.propertyEditor.editingProperty.name}
-        />
-      </div>
-      <div>
-        <p>Resultado</p>
-        <Property
-          property={workspaceState.propertyEditor.editingProperty}
-          readonly={true}
-          isEditable={false}
-        ></Property>
-      </div>
-      <button>Guardar</button>
-      <button>Eliminar</button>
-    </div>
+  {#if workspace.propertyEditor.isVisible}
+    <PropertyEditor></PropertyEditor>
+  {:else}
+    <button onclick={() => workspace.openPropertyEditor(noteId)}
+      >+ Añadir propiedad</button
+    >
   {/if}
 {/if}
 
@@ -106,9 +58,5 @@
     margin: 2em 0;
     padding: 0;
     list-style: none;
-  }
-  .property-dialog {
-    padding: 1em 0.5em;
-    border: 1px solid black;
   }
 </style>
