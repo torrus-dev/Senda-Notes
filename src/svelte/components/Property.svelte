@@ -6,6 +6,7 @@
     readonly = false,
     isEditable = true,
   } = $props();
+
   function formatDateTime(fecha) {
     return fecha.slice(0, 16);
   }
