@@ -15,6 +15,7 @@
   let newPropertyName = "";
   let newPropertyType = "text";
 
+  // Esta función pasarla a noteController para que quede mas ordenado
   function getDefaultValue(type) {
     switch (type) {
       case "text":
@@ -115,15 +116,18 @@
   <button class="close-btn" on:click={workspace.closePropertyEditor}>×</button>
 
   <div class="form-group">
-    <label>Property Type</label>
+    <label for="type">Property Type</label>
     {#if workspace.propertyEditor.editingProperty}
-      <select bind:value={workspace.propertyEditor.editingProperty.type}>
+      <select
+        name="type"
+        bind:value={workspace.propertyEditor.editingProperty.type}
+      >
         {#each options as { value, label }}
           <option {value}>{label}</option>
         {/each}
       </select>
     {:else}
-      <select bind:value={newPropertyType}>
+      <select name="type" bind:value={newPropertyType}>
         {#each options as { value, label }}
           <option {value}>{label}</option>
         {/each}
@@ -132,15 +136,17 @@
   </div>
 
   <div class="form-group">
-    <label>Property Name</label>
+    <label for="name">Property Name</label>
     {#if workspace.propertyEditor.editingProperty}
       <input
+        name="name"
         type="text"
         bind:value={workspace.propertyEditor.editingProperty.name}
         placeholder="Enter property name"
       />
     {:else}
       <input
+        name="name"
         type="text"
         bind:value={newPropertyName}
         placeholder="Enter property name"

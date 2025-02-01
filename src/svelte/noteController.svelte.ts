@@ -49,8 +49,7 @@ class NoteController {
   fillNonUserProperties = (): Property[] => {
     return [
       { name: "created", value: this.currentDate(), type: "datetime" },
-      { name: "modified", value: this.currentDate(), type: "datetime" },
-      { name: "tags", value: ["caballo", "gato", "perro"], type: "list" },
+      { name: "modified", value: this.currentDate(), type: "datetime" }
     ];
   };
 
