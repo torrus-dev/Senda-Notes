@@ -1,57 +1,58 @@
 <script>
-  import { onMount, onDestroy } from "svelte";
+  import { onDestroy } from "svelte";
   import EditorJS from "@editorjs/editorjs";
   import DragDrop from "editorjs-drag-drop";
   import { editorConfig } from "./editorConfig";
 
-  const { content, noteId, onContentChange } = $props();
+  const { noteId, content, onContentChange } = $props();
 
-  let editor;
+  let editorInstance = $state(null);
+  let isInitialized = $state(false);
   let currentNoteId = $state(null);
 
-  const sanitizerConfig = {
-    p: true, // leave <p> as is
-  };
-
-  const initEditor = (noteContent = null) => {
-    if (editor && typeof editor.destroy === "function") {
-      editor.destroy();
+  // Inicialización del editor
+  function initializeEditor(initialContent = null) {
+    if (currentNoteId !== noteId) {
+      currentNoteId = noteId;
     }
-
-    editor = new EditorJS({
+    editorInstance = new EditorJS({
       holder: "editorjs",
       tools: editorConfig,
       autofocus: true,
       inlineToolbar: ["bold", "italic", "link", "marker", "inlineCode"],
       dragDrop: true,
       onReady: () => {
-        new DragDrop(editor);
+        new DragDrop(editorInstance);
+        isInitialized = true;
       },
-      defaultBlock: "paragraph",
-      enableMovingByArrowKeys: true,
-      data: noteContent ? JSON.parse(noteContent) : { blocks: [] },
+      data: initialContent ? JSON.parse(initialContent) : { blocks: [] },
       onChange: async () => {
+        if (!isInitialized) return;
+
         try {
-          const outputData = await editor.save();
-          onContentChange(JSON.stringify(outputData));
+          const savedData = await editorInstance.save();
+          onContentChange(JSON.stringify(savedData));
         } catch (error) {
-          console.log("Saving failed: ", error);
+          console.error("Error saving editor content:", error);
         }
       },
     });
-  };
+  }
 
-  // Reinicializamos el editor cuando cambia la nota
+  initializeEditor(content);
+  // Efecto para actualizar el editor cuando cambia el noteId
   $effect(() => {
     if (noteId !== currentNoteId) {
       currentNoteId = noteId;
-      initEditor(content);
+      initializeEditor(content);
     }
   });
 
+  // Limpieza al destruir el componente
   onDestroy(() => {
-    if (editor && typeof editor.destroy === "function") {
-      editor.destroy();
+    if (editorInstance && typeof editorInstance.destroy === "function") {
+      editorInstance.destroy();
+      editorInstance = null; // Limpiamos la instancia
     }
   });
 </script>

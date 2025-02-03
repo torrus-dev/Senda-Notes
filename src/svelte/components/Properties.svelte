@@ -1,14 +1,14 @@
 <script>
-  import { noteController } from "../noteController.svelte";
-  import { workspace } from "../workspaceController.svelte";
   import Property from "./Property.svelte";
   import PropertyEditor from "./PropertyEditor.svelte";
+  import { workspace } from "../workspaceController.svelte";
+  import { noteController } from "../noteController.svelte";
+  import { formatDateTime } from "../utils.svelte";
 
-  let { noteId = null } = $props();
-  let note = $derived(noteController.getNoteById(noteId || ""));
+  let { note } = $props();
 
-  function onUpdatePropertyValue(propertyName, newValue) {
-    if (!noteId || !note) return;
+  function handlePropertyUpdate(propertyName, newValue) {
+    if (!note) return;
 
     const updatedProperties = note.properties.map((property) =>
       property.name === propertyName
@@ -16,61 +16,55 @@
         : property,
     );
 
-    noteController.updateNote(noteId, { properties: updatedProperties });
+    noteController.updateNote(note.id, { properties: updatedProperties });
   }
 
-  function handlePropertySelection(property) {
-    if (!noteId) return;
-
-    workspace.propertyEditor.isVisible
-      ? workspace.closePropertyEditor()
-      : workspace.openPropertyEditor(noteId, property);
+  function openPropertyEditor(property = null) {
+    workspace.openPropertyEditor(note.id, property);
   }
 </script>
 
-{#if noteId && note}
+{#if note}
   <div class="properties-container">
-    <div class="properties-container">
-      <div class="metadata-section">
-        <h3>Metadata</h3>
-        <ul class="property-box">
-          {#each note.metadata as metadata (metadata.name)}
-            <li>
-              <p>{metadata.name}: {metadata.value}</p>
-            </li>
-          {/each}
-        </ul>
-      </div>
+    <ul class="property-box">
+      <li>
+        <p>ID: {note.id}</p>
+      </li>
+      {#each note.metadata as metadata (metadata.name)}
+        <li>
+          <p>{metadata.name}: {formatDateTime(metadata.value)}</p>
+        </li>
+      {/each}
+    </ul>
 
-      <div class="custom-properties">
-        <h3>Custom Properties</h3>
-        <ul class="property-box">
-          {#each note.properties as property (property.name)}
+    <div class="custom-properties">
+      <h3>Properties</h3>
+      <ul class="property-box">
+        {#each note.properties as property}
+          <li>
             <Property
               {property}
-              {handlePropertySelection}
-              {onUpdatePropertyValue}
+              onUpdate={handlePropertyUpdate}
+              onEdit={() => openPropertyEditor(property)}
             />
-          {/each}
-        </ul>
+          </li>
+        {/each}
+      </ul>
 
-        {#if workspace.propertyEditor.isVisible && workspace.propertyEditor.targetNoteId === noteId}
-          <PropertyEditor />
-        {:else}
-          <button onclick={() => workspace.openPropertyEditor(noteId)}>
-            + Add Property
-          </button>
-        {/if}
-      </div>
+      {#if workspace.propertyEditor.isVisible && workspace.propertyEditor.targetNoteId === note.id}
+        <PropertyEditor />
+      {:else}
+        <button onclick={() => workspace.openPropertyEditor(note.id)}>
+          + Add Property
+        </button>
+      {/if}
     </div>
   </div>
 {/if}
 
 <style>
   .properties-container {
-    padding: 1rem;
     border: 1px solid #eee;
-    margin: 1rem 0;
   }
 
   .property-box {
@@ -79,7 +73,6 @@
     margin: 0.5rem 0;
   }
 
-  .metadata-section,
   .custom-properties {
     margin-bottom: 1.5rem;
   }
@@ -101,10 +94,5 @@
 
   button:hover {
     background-color: #45a049;
-  }
-  .property-box {
-    margin: 2em 0;
-    padding: 0;
-    list-style: none;
   }
 </style>

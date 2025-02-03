@@ -1,21 +1,21 @@
 <script>
-  let {
-    property,
-    onUpdatePropertyValue,
-    handlePropertySelection = null,
-    readonly = false,
-    isEditable = true,
-  } = $props();
+  import { formatDateTimeForInput } from "../utils.svelte";
 
-  function formatDateTime(fecha) {
-    return fecha.slice(0, 16);
-  }
+  // Importar los iconos
+  import TextIcon from "../icons/TextIcon.svelte";
+  import ListIcon from "../icons/ListIcon.svelte";
+  import NumberIcon from "../icons/NumberIcon.svelte";
+  import CheckIcon from "../icons/CheckIcon.svelte";
+  import DateIcon from "../icons/DateIcon.svelte";
+  import DatetimeIcon from "../icons/DatetimeIcon.svelte";
+
+  let { property, onUpdate, onEdit = null, readonly = false } = $props();
 
   function removeItem(index) {
     if (property.type === "list") {
       const newValue = [...property.value];
       newValue.splice(index, 1);
-      onUpdatePropertyValue(property.name, newValue);
+      onUpdate(property.name, newValue);
     }
   }
 
@@ -25,31 +25,54 @@
       if (!inputValue) return;
 
       const newValue = [...property.value, inputValue];
-      onUpdatePropertyValue(property.name, newValue);
+      onUpdate(property.name, newValue);
       inputElement.value = "";
     }
   }
+
+  // Obtener el componente de icono según el tipo de propiedad
+  function getIconComponent(type) {
+    switch (type) {
+      case "text":
+        return TextIcon;
+      case "list":
+        return ListIcon;
+      case "number":
+        return NumberIcon;
+      case "check":
+        return CheckIcon;
+      case "date":
+        return DateIcon;
+      case "datetime":
+        return DatetimeIcon;
+      default:
+        return null;
+    }
+  }
+
+  // Obtener el componente de icono actual
+  const IconComponent = $derived(getIconComponent(property.type));
 
   let inputElement = $state(null);
 </script>
 
 <li class="property-item">
-  <div
-    class="property-label interactive"
-    class:interactive={isEditable}
-    role="button"
+  <button
+    class="property-label"
     tabindex="auto"
-    onclick={isEditable ? () => handlePropertySelection(property) : null}
+    onclick={() => onEdit(property)}
   >
+    {#if IconComponent}
+      <span class="property-icon"> <IconComponent /> </span>
+    {/if}
     {property.name}
-  </div>
+  </button>
   {#if property.type === "text"}
     <input
       name={property.name}
       type="text"
       value={property.value}
-      onchange={(event) =>
-        onUpdatePropertyValue(property.name, event.target.value)}
+      onchange={(event) => onUpdate(property.name, event.target.value)}
     />
   {:else if property.type === "list"}
     <div class="list-input-container">
@@ -92,7 +115,7 @@
       onchange={(event) => {
         const value = Number(event.target.value);
         if (!isNaN(value)) {
-          onUpdatePropertyValue(property.name, value);
+          onUpdate(property.name, value);
         }
       }}
       disabled={readonly}
@@ -102,7 +125,7 @@
       name={property.name}
       type="checkbox"
       checked={property.value}
-      onchange={(e) => onUpdatePropertyValue(property.name, e.target.checked)}
+      onchange={(e) => onUpdate(property.name, e.target.checked)}
       disabled={readonly}
     />
   {:else if property.type === "date"}
@@ -112,8 +135,7 @@
       value={property.value instanceof Date
         ? property.value.toISOString().split("T")[0]
         : property.value}
-      onchange={(e) =>
-        onUpdatePropertyValue(property.name, new Date(e.target.value))}
+      onchange={(e) => onUpdate(property.name, new Date(e.target.value))}
       disabled={readonly}
     />
   {:else if property.type === "datetime"}
@@ -121,10 +143,9 @@
       name={property.name}
       type="datetime-local"
       value={property.value instanceof Date
-        ? formatDateTime(property.value.toISOString())
-        : formatDateTime(property.value)}
-      onchange={(e) =>
-        onUpdatePropertyValue(property.name, new Date(e.target.value))}
+        ? formatDateTimeForInput(property.value.toISOString())
+        : formatDateTimeForInput(property.value)}
+      onchange={(e) => onUpdate(property.name, new Date(e.target.value))}
       disabled={readonly}
     />
   {/if}
@@ -134,11 +155,11 @@
   .property-item {
     display: flex;
   }
-  .property-label.interactive {
-    width: 6rem;
-    &.interactive:hover {
+  .property-label {
+    width: 8rem;
+    text-align: left;
+    &:hover {
       cursor: pointer;
-      background-color: aliceblue;
     }
   }
   .list-input-container {

@@ -1,9 +1,9 @@
 <script>
   import { workspace } from "../workspaceController.svelte";
   import { noteController } from "../noteController.svelte";
-  import Property from "./Property.svelte";
 
-  const options = [
+  // Opciones de tipos de propiedades
+  const propertyTypes = [
     { value: "text", label: "Text" },
     { value: "list", label: "List" },
     { value: "number", label: "Number" },
@@ -12,166 +12,150 @@
     { value: "datetime", label: "Datetime" },
   ];
 
-  let newPropertyName = "";
-  let newPropertyType = "text";
+  // Estado local para nueva propiedad
+  let newPropertyName = $state("");
+  let newPropertyType = $state("text");
 
-  // Esta función pasarla a noteController para que quede mas ordenado
-  function getDefaultValue(type) {
-    switch (type) {
-      case "text":
-        return "";
-      case "list":
-        return [];
-      case "number":
-        return 0;
-      case "check":
-        return false;
-      case "date":
-        return new Date().toISOString().split("T")[0];
-      case "datetime":
-        return new Date().toISOString();
-      default:
-        return "";
+  // Propiedad en edición (si existe)
+  const editingProperty = $derived(workspace.propertyEditor.editingProperty);
+  const isEditing = $derived(!!editingProperty);
+
+  // Reiniciar valores cuando cambia el modo
+  $effect(() => {
+    if (isEditing) {
+      newPropertyName = editingProperty.name;
+      newPropertyType = editingProperty.type;
+    } else {
+      newPropertyName = "";
+      newPropertyType = "text";
     }
-  }
+  });
 
-  function handleAdd() {
+  // Manejo de la creación de una nueva propiedad
+  function handleAddProperty() {
     const noteId = workspace.propertyEditor.targetNoteId;
-    if (!noteId) return;
-
-    const note = noteController.getNoteById(noteId);
-    if (!note) return;
-
-    if (!newPropertyName.trim()) {
+    if (!noteId || !newPropertyName.trim()) {
       alert("Property name is required");
       return;
     }
 
+    const note = noteController.getNoteById(noteId);
+    if (!note) return;
+
+    // Validar nombre único
     if (note.properties.some((p) => p.name === newPropertyName.trim())) {
       alert("Property name must be unique");
       return;
     }
 
+    // Crear nueva propiedad
     const newProperty = {
       name: newPropertyName.trim(),
       type: newPropertyType,
-      value: getDefaultValue(newPropertyType),
+      value: noteController.getDefaultValue(newPropertyType),
     };
 
+    // Actualizar la nota
     noteController.updateNote(noteId, {
       properties: [...note.properties, newProperty],
     });
 
+    // Limpiar el estado
+    newPropertyName = "";
+    newPropertyType = "text";
+
+    // Cerrar el editor
     workspace.closePropertyEditor();
   }
 
-  function handleSave() {
+  // Manejo de la actualización de una propiedad existente
+  function handleUpdateProperty() {
     const noteId = workspace.propertyEditor.targetNoteId;
-    if (!noteId) return;
-
-    const editedProp = workspace.propertyEditor.editingProperty;
-    const originalName = workspace.propertyEditor.originalName;
-    if (!editedProp || !originalName) return;
+    if (!noteId || !editingProperty) return;
 
     const note = noteController.getNoteById(noteId);
     if (!note) return;
 
-    if (!editedProp.name.trim()) {
-      alert("Property name is required");
-      return;
-    }
-
+    // Validar nombre único
     if (
-      editedProp.name !== originalName &&
-      note.properties.some((p) => p.name === editedProp.name)
+      newPropertyName.trim() !== workspace.propertyEditor.originalName &&
+      note.properties.some((p) => p.name === newPropertyName.trim())
     ) {
       alert("Property name must be unique");
       return;
     }
 
-    const updatedProps = note.properties.map((p) =>
-      p.name === originalName ? { ...editedProp } : p,
+    // Actualizar la propiedad
+    const updatedProperty = {
+      ...editingProperty,
+      name: newPropertyName.trim(),
+      type: newPropertyType,
+    };
+
+    const updatedProperties = note.properties.map((p) =>
+      p.name === workspace.propertyEditor.originalName ? updatedProperty : p,
     );
 
-    noteController.updateNote(noteId, { properties: updatedProps });
+    noteController.updateNote(noteId, { properties: updatedProperties });
     workspace.closePropertyEditor();
   }
 
-  function handleDelete() {
+  // Manejo de la eliminación de una propiedad
+  function handleDeleteProperty() {
     const noteId = workspace.propertyEditor.targetNoteId;
-    const originalName = workspace.propertyEditor.originalName;
-    if (!noteId || !originalName) return;
+    if (!noteId || !editingProperty) return;
 
     const note = noteController.getNoteById(noteId);
     if (!note) return;
 
+    // Filtrar la propiedad eliminada
     noteController.updateNote(noteId, {
-      properties: note.properties.filter((p) => p.name !== originalName),
+      properties: note.properties.filter(
+        (p) => p.name !== workspace.propertyEditor.originalName,
+      ),
     });
+
+    // Cerrar el editor
     workspace.closePropertyEditor();
   }
 </script>
 
 <div class="property-editor">
-  <button class="close-btn" on:click={workspace.closePropertyEditor}>×</button>
+  <button class="close-btn" onclick={workspace.closePropertyEditor}>×</button>
 
   <div class="form-group">
     <label for="type">Property Type</label>
-    {#if workspace.propertyEditor.editingProperty}
-      <select
-        name="type"
-        bind:value={workspace.propertyEditor.editingProperty.type}
-      >
-        {#each options as { value, label }}
-          <option {value}>{label}</option>
-        {/each}
-      </select>
-    {:else}
-      <select name="type" bind:value={newPropertyType}>
-        {#each options as { value, label }}
-          <option {value}>{label}</option>
-        {/each}
-      </select>
-    {/if}
+    <select name="type" bind:value={newPropertyType}>
+      {#each propertyTypes as { value, label }}
+        <option {value}>{label}</option>
+      {/each}
+    </select>
   </div>
 
   <div class="form-group">
     <label for="name">Property Name</label>
-    {#if workspace.propertyEditor.editingProperty}
-      <input
-        name="name"
-        type="text"
-        bind:value={workspace.propertyEditor.editingProperty.name}
-        placeholder="Enter property name"
-      />
-    {:else}
-      <input
-        name="name"
-        type="text"
-        bind:value={newPropertyName}
-        placeholder="Enter property name"
-      />
-    {/if}
+    <input
+      name="name"
+      type="text"
+      bind:value={newPropertyName}
+      placeholder="Enter property name"
+    />
   </div>
 
-  {#if workspace.propertyEditor.editingProperty}
-    <div class="preview">
-      <h4>Preview</h4>
-      <Property property={workspace.propertyEditor.editingProperty} readonly />
-    </div>
-  {/if}
-
   <div class="actions">
-    {#if workspace.propertyEditor.editingProperty}
-      <button class="save-btn" on:click={handleSave}>Save Changes</button>
-      <button class="delete-btn" on:click={handleDelete}>Delete Property</button
-      >
+    {#if isEditing}
+      <button class="save-btn" onclick={handleUpdateProperty}
+        >Save Changes
+      </button>
+      <button class="delete-btn" onclick={handleDeleteProperty}
+        >Delete Property
+      </button>
     {:else}
-      <button class="add-btn" on:click={handleAdd}>Add Property</button>
+      <button class="add-btn" onclick={handleAddProperty}>Add Property</button>
     {/if}
-    <button class="cancel-btn" on:click={workspace.closePropertyEditor}
-      >Cancel</button
-    >
+    <button class="cancel-btn" onclick={workspace.closePropertyEditor}
+      >Cancel
+    </button>
   </div>
 </div>
 
@@ -214,13 +198,6 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1rem;
-  }
-
-  .preview {
-    margin: 1rem 0;
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 4px;
   }
 
   .actions {

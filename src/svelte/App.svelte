@@ -1,35 +1,39 @@
 <script>
   import Title from "./components/Title.svelte";
   import Editor from "./components/Editor.svelte";
-  import { noteController } from "./noteController.svelte";
   import Properties from "./components/Properties.svelte";
+  import { noteController } from "./noteController.svelte";
 
-  let activeNote = $state(null);
+  // Estado reactivo
+  let activeNoteId = $state(noteController.activeNoteId);
+  let notes = $derived(noteController.notes);
 
-  function handleSelectNote(event) {
-    noteController.setActiveNote(event.target.id);
-    activeNote = noteController.getActiveNote();
+  // Nota activa derivada
+  const activeNote = $derived(noteController.getActiveNote());
+
+  function handleNoteAction(action, noteId) {
+    if (action === "delete") {
+      noteController.deleteNote(noteId);
+    } else {
+      noteController.setActiveNote(noteId);
+    }
   }
 
-  function handleDeleteNote(event) {
-    noteController.deleteNote(event.target.id);
-  }
-
-  function onTitleChange(newTitle) {
-    noteController.updateNote(activeNote.id, {
-      title: noteController.sanitizeTitle(newTitle),
-    });
+  function handleTitleChange(newTitle) {
+    if (activeNote) {
+      noteController.updateNote(activeNote.id, {
+        title: noteController.sanitizeTitle(newTitle),
+      });
+    }
   }
 
   function handleContentChange(newContent) {
-    noteController.updateNote(activeNote.id, {
-      content: newContent,
-    });
+    if (activeNote) {
+      noteController.updateNote(activeNote.id, {
+        content: newContent,
+      });
+    }
   }
-
-  $effect(() => {
-    activeNote = noteController.getActiveNote();
-  });
 </script>
 
 <div class="layout">
@@ -39,34 +43,40 @@
       >New Note</button
     >
     <ul>
-      {#each noteController.notes as note}
+      {#each notes as note}
         <li>
-          <button id={note.id} onclick={handleSelectNote}>
+          <button
+            class:active={note.id === activeNoteId}
+            onclick={() => handleNoteAction("select", note.id)}
+          >
             {note.title}
           </button>
-          <button id={note.id} onclick={handleDeleteNote}>🗑️</button>
+          <button onclick={() => handleNoteAction("delete", note.id)}>🗑️</button
+          >
         </li>
       {/each}
     </ul>
   </aside>
+
   <main class="container">
-    <article class="note">
-      <header>
-        {#if activeNote}
-          <p class="note-id">ID: {activeNote.id}</p>
-          <Title title={activeNote.title} {onTitleChange} />
-          <Properties noteId={activeNote.id}></Properties>
+    {#if activeNote}
+      <article class="note">
+        <header>
+          <Title title={activeNote.title} onTitleChange={handleTitleChange} />
+          <Properties note={activeNote} />
           <Editor
-            content={activeNote.content}
             noteId={activeNote.id}
+            content={activeNote.content}
             onContentChange={handleContentChange}
           />
-        {:else}
-          <h1>Create or select a new note</h1>
-          <p>A powerful block-styled editor</p>
-        {/if}
-      </header>
-    </article>
+        </header>
+      </article>
+    {:else}
+      <div class="empty-state">
+        <h1>Create or select a new note</h1>
+        <p>A powerful block-styled editor</p>
+      </div>
+    {/if}
   </main>
 </div>
 
