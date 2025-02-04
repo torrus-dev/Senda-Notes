@@ -3,6 +3,7 @@
   import Editor from "./components/Editor.svelte";
   import Properties from "./components/Properties.svelte";
   import { noteController } from "./noteController.svelte";
+  import "./app.css";
 
   // Estado reactivo
   let activeNoteId = $state(noteController.activeNoteId);
@@ -36,31 +37,37 @@
   }
 </script>
 
-<div class="layout">
-  <aside class="sidebar">
-    <h2>Notes:</h2>
-    <button class="new-note" onclick={noteController.createNote}
-      >New Note</button
-    >
+<div class="h-screen grid grid-flow-col grid-cols-[12.5rem_1fr]">
+  <aside class="bg-(--color-bg-secondary)">
+    <header class="px-3 py-3 mb-2">
+      <h2 class="text-2xl font-bold mb-2">Notes:</h2>
+      <button
+        class="p-2 rounded-md shadow bg-lime-400 hover:bg-lime-500 dark:bg-lime-600 dark:hover:bg-lime-700 hover:cursor-pointer"
+        onclick={noteController.createNote}>New Note</button
+      >
+    </header>
     <ul>
       {#each notes as note}
-        <li>
+        <li class="flex group px-3 hover:bg-(--color-interactive-hover)">
           <button
+            class="text-left grow-1 py-1 hover:cursor-pointer"
             class:active={note.id === activeNoteId}
             onclick={() => handleNoteAction("select", note.id)}
           >
             {note.title}
           </button>
-          <button onclick={() => handleNoteAction("delete", note.id)}>🗑️</button
+          <button
+            class="grow-0 py-1 hover:cursor-pointer opacity-0 group-hover:opacity-100"
+            onclick={() => handleNoteAction("delete", note.id)}>🗑️</button
           >
         </li>
       {/each}
     </ul>
   </aside>
 
-  <main class="container">
+  <main>
     {#if activeNote}
-      <article class="note">
+      <article class="p-3">
         <header>
           <Title title={activeNote.title} onTitleChange={handleTitleChange} />
           <Properties note={activeNote} />
@@ -81,33 +88,4 @@
 </div>
 
 <style>
-  .layout {
-    --accent-color: rgb(0, 217, 255);
-    display: flex;
-    height: 100vh;
-  }
-  .container {
-    max-width: 50%;
-    min-width: 45em;
-    margin: 0 auto;
-  }
-  .note {
-    padding: 1em 4.5em;
-    border-radius: 4px;
-    background-color: white;
-    box-shadow: 4px 4px 4px 4px #00000066;
-  }
-
-  .sidebar {
-    min-width: 15em;
-    align-self: stretch;
-    background-color: aliceblue;
-    padding: 1em;
-  }
-  .new-note {
-    background-color: var(--accent-color);
-    color: white;
-    padding: 0.5em 1em;
-    border-radius: 8px;
-  }
 </style>

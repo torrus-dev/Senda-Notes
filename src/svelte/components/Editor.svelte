@@ -15,6 +15,9 @@
     if (currentNoteId !== noteId) {
       currentNoteId = noteId;
     }
+    if (editorInstance !== null) {
+      editorInstance = null;
+    }
     editorInstance = new EditorJS({
       holder: "editorjs",
       tools: editorConfig,

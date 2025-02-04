@@ -154,12 +154,22 @@
 <style>
   .property-item {
     display: flex;
+    width: 100%;
+    flex-grow: 2;
+  }
+  .property-icon {
+    width: 12rem;
+    height: 12rem;
   }
   .property-label {
-    width: 8rem;
+    background: none;
+    color: inherit;
+    border: none;
+    width: var(--width-metadata-label);
     text-align: left;
     &:hover {
       cursor: pointer;
+      background-color: var(--color-bg-secondary);
     }
   }
   .list-input-container {

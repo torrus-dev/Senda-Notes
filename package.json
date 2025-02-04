@@ -46,6 +46,8 @@
     "@editorjs/marker": "^1.4.0",
     "@editorjs/quote": "^2.7.6",
     "@editorjs/table": "^2.4.3",
-    "editorjs-drag-drop": "^1.1.16"
+    "@tailwindcss/vite": "^4.0.3",
+    "editorjs-drag-drop": "^1.1.16",
+    "tailwindcss": "^4.0.3"
   }
 }
