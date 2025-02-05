@@ -1,6 +1,9 @@
 <script>
   import { workspace } from "../workspaceController.svelte";
   import { noteController } from "../noteController.svelte";
+  import CloseIcon from "../icons/CloseIcon.svelte";
+  import TrashIcon from "../icons/TrashIcon.svelte";
+  import Button from "./Button.svelte";
 
   // Opciones de tipos de propiedades
   const propertyTypes = [
@@ -120,12 +123,18 @@
   }
 </script>
 
-<div class="property-editor">
-  <button class="close-btn" onclick={workspace.closePropertyEditor}>×</button>
+<div class="property-editor relative p-6 shadow-lg bg-(--color-bg-secondary)">
+  <h3 class="text-xl font-bold mb-3">Property Editor</h3>
+  <button
+    class="absolute top-0 right-0 p-2 clickable-element"
+    onclick={workspace.closePropertyEditor}
+  >
+    <CloseIcon />
+  </button>
 
-  <div class="form-group">
-    <label for="type">Property Type</label>
-    <select name="type" bind:value={newPropertyType}>
+  <div class="py-2">
+    <label for="type" class="w-[5rem] inline-block">Type</label>
+    <select class="p-1" name="type" bind:value={newPropertyType}>
       {#each propertyTypes as { value, label }}
         <option {value}>{label}</option>
       {/each}
@@ -133,104 +142,30 @@
   </div>
 
   <div class="form-group">
-    <label for="name">Property Name</label>
+    <label class="w-[5rem] inline-block" for="name">Name</label>
     <input
       name="name"
       type="text"
+      class="p-1"
       bind:value={newPropertyName}
       placeholder="Enter property name"
     />
   </div>
 
-  <div class="actions">
+  <div class="mt-6 py-2 flex gap-3">
     {#if isEditing}
-      <button class="save-btn" onclick={handleUpdateProperty}
-        >Save Changes
-      </button>
-      <button class="delete-btn" onclick={handleDeleteProperty}
-        >Delete Property
-      </button>
+      <Button variant="lime" onclick={handleUpdateProperty}>Save</Button>
+      <Button variant="rose" onclick={handleDeleteProperty}
+        ><TrashIcon size="18" />Delete</Button
+      >
     {:else}
-      <button class="add-btn" onclick={handleAddProperty}>Add Property</button>
+      <Button variant="lime" onclick={handleAddProperty}>Add Property</Button>
     {/if}
-    <button class="cancel-btn" onclick={workspace.closePropertyEditor}
-      >Cancel
-    </button>
+    <Button variant="neutral" onclick={workspace.closePropertyEditor}
+      >Cancel</Button
+    >
   </div>
 </div>
 
 <style>
-  .property-editor {
-    position: relative;
-    padding: 1.5rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    margin-top: 1rem;
-  }
-
-  .close-btn {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    color: #666;
-  }
-
-  .form-group {
-    margin-bottom: 1rem;
-  }
-
-  label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-  }
-
-  select,
-  input {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-  }
-
-  .actions {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
-  }
-
-  button {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
-
-  button:hover {
-    opacity: 0.9;
-  }
-
-  .add-btn,
-  .save-btn {
-    background-color: #4caf50;
-    color: white;
-  }
-
-  .delete-btn {
-    background-color: #f44336;
-    color: white;
-  }
-
-  .cancel-btn {
-    background-color: #666;
-    color: white;
-  }
 </style>

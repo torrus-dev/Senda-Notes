@@ -25,7 +25,7 @@
 </script>
 
 {#if note}
-  <div class="properties-container">
+  <div class="properties-container mb-8">
     <ul class="property-box">
       <li>
         <p>
@@ -45,7 +45,7 @@
     </ul>
 
     <div class="custom-properties">
-      <h3 class="text-xl font-bold mt-3">Properties</h3>
+      <h3 class="text-xl font-bold py-4">Properties</h3>
       <ul class="property-box">
         {#each note.properties as property}
           <li>
@@ -62,7 +62,7 @@
         <PropertyEditor />
       {:else}
         <button
-          class="p-2 hover:cursor-pointer rounded-md hover:bg-(--color-interactive-hover)"
+          class="p-2 clickable-element"
           onclick={() => workspace.openPropertyEditor(note.id)}
         >
           + Add Property

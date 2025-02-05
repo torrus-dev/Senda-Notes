@@ -1,9 +1,12 @@
 <script>
   import Title from "./components/Title.svelte";
+  import Button from "./components/Button.svelte";
   import Editor from "./components/Editor.svelte";
   import Properties from "./components/Properties.svelte";
   import { noteController } from "./noteController.svelte";
   import "./app.css";
+  import TrashIcon from "./icons/TrashIcon.svelte";
+  import NoteIcon from "./icons/NoteIcon.svelte";
 
   // Estado reactivo
   let activeNoteId = $state(noteController.activeNoteId);
@@ -37,13 +40,15 @@
   }
 </script>
 
-<div class="h-screen grid grid-flow-col grid-cols-[12.5rem_1fr]">
+<div
+  class="h-screen grid grid-flow-col grid-cols-[12.5rem_1fr] overflow-hidden"
+>
   <aside class="bg-(--color-bg-secondary)">
     <header class="px-3 py-3 mb-2">
       <h2 class="text-2xl font-bold mb-2">Notes:</h2>
-      <button
-        class="p-2 rounded-md shadow bg-lime-400 hover:bg-lime-500 dark:bg-lime-600 dark:hover:bg-lime-700 hover:cursor-pointer"
-        onclick={noteController.createNote}>New Note</button
+
+      <Button variant="lime" onclick={noteController.createNote}
+        ><NoteIcon size="18" /> New Note</Button
       >
     </header>
     <ul>
@@ -58,14 +63,15 @@
           </button>
           <button
             class="grow-0 py-1 hover:cursor-pointer opacity-0 group-hover:opacity-100"
-            onclick={() => handleNoteAction("delete", note.id)}>🗑️</button
+            onclick={() => handleNoteAction("delete", note.id)}
+            ><TrashIcon size="18" /></button
           >
         </li>
       {/each}
     </ul>
   </aside>
 
-  <main>
+  <main class="overflow-auto">
     {#if activeNote}
       <article class="p-3">
         <header>
@@ -79,10 +85,12 @@
         </header>
       </article>
     {:else}
-      <div class="empty-state">
-        <h1>Create or select a new note</h1>
-        <p>A powerful block-styled editor</p>
-      </div>
+      <article class="p-3">
+        <header>
+          <h1>Create or select a new note</h1>
+          <p>A powerful block-styled editor</p>
+        </header>
+      </article>
     {/if}
   </main>
 </div>

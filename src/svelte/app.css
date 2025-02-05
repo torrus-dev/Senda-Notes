@@ -63,6 +63,14 @@ body {
   color: var(--color-font-normal);
 }
 
+select {
+  background-color: var(--color-bg-primary);
+  color: var(--color-font-normal);
+}
+
+:root {
+  --property-label-width: 9rem;
+}
 
 .theme-light {
   --color-bg-primary: #ffffff;
@@ -82,4 +90,12 @@ body {
   --color-font-faint: #aaaaaa;
   --color-border-normal: #e5e5e5;
   --color-interactive-hover: #ffffff10;
+}
+
+.clickable-element {
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--color-interactive-hover);
+  }
 }

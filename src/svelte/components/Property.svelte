@@ -56,17 +56,20 @@
   let inputElement = $state(null);
 </script>
 
-<li class="property-item">
+<li class="property-item flex">
   <button
-    class="property-label"
-    tabindex="auto"
+    class="property-label clickable-element flex gap-2 w-(--property-label-width)"
     onclick={() => onEdit(property)}
   >
     {#if IconComponent}
       <span class="property-icon"> <IconComponent /> </span>
     {/if}
-    {property.name}
+    <p class="w-(--property-label-width)">
+      {property.name}
+    </p>
   </button>
+
+  <!-- condicional para tipos -->
   {#if property.type === "text"}
     <input
       name={property.name}
@@ -157,20 +160,12 @@
     width: 100%;
     flex-grow: 2;
   }
-  .property-icon {
-    width: 12rem;
-    height: 12rem;
-  }
   .property-label {
     background: none;
     color: inherit;
     border: none;
     width: var(--width-metadata-label);
     text-align: left;
-    &:hover {
-      cursor: pointer;
-      background-color: var(--color-bg-secondary);
-    }
   }
   .list-input-container {
     display: flex;
@@ -192,7 +187,7 @@
   .pill {
     display: inline-flex;
     align-items: center;
-    background-color: #e9ecef;
+    background-color: var(--color-bg-secondary);
     border-radius: 16px;
     padding: 4px 12px;
     font-size: 14px;
