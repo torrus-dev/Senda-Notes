@@ -70,6 +70,10 @@ select {
 
 :root {
   --property-label-width: 9rem;
+  --icon-s: 16px;
+  --icon-m: 18px;
+  --icon-l: 18px;
+  --icon-xl: 32px;
 }
 
 .theme-light {
@@ -86,8 +90,8 @@ select {
   --color-bg-primary: #1a1a1a;
   --color-bg-secondary: #121212;
   --color-font-normal: #ffffff;
-  --color-font-muted: #dddddd;
-  --color-font-faint: #aaaaaa;
+  --color-font-muted: #cccccc;
+  --color-font-faint: #888888;
   --color-border-normal: #e5e5e5;
   --color-interactive-hover: #ffffff10;
 }
@@ -98,4 +102,24 @@ select {
   &:hover {
     background-color: var(--color-interactive-hover);
   }
+}
+
+.icon-small {
+  width: var(--icon-s);
+  height: var(--icon-s);
+}
+
+.icon-medium {
+  width: var(--icon-m);
+  height: var(--icon-m);
+}
+
+.icon-large {
+  width: var(--icon-l);
+  height: var(--icon-l);
+}
+
+.icon-xl {
+  width: var(--icon-xl);
+  height: var(--icon-xl);
 }

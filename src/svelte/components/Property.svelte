@@ -8,6 +8,7 @@
   import CheckIcon from "../icons/CheckIcon.svelte";
   import DateIcon from "../icons/DateIcon.svelte";
   import DatetimeIcon from "../icons/DatetimeIcon.svelte";
+  import CloseIcon from "../icons/CloseIcon.svelte";
 
   let { property, onUpdate, onEdit = null, readonly = false } = $props();
 
@@ -85,12 +86,12 @@
             <span class="pill-text">{item}</span>
             {#if !readonly}
               <button
-                class="remove-button"
+                class="remove-button text-(--color-font-faint)"
                 onclick={() => removeItem(index)}
                 type="button"
                 aria-label="Remove item"
               >
-                ×
+                <CloseIcon size="18" />
               </button>
             {/if}
           </div>
@@ -205,7 +206,6 @@
     height: 16px;
     border: none;
     background: none;
-    color: #666;
     font-size: 18px;
     cursor: pointer;
     padding: 0;

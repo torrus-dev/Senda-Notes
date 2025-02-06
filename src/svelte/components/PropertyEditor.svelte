@@ -156,7 +156,7 @@
     {#if isEditing}
       <Button variant="lime" onclick={handleUpdateProperty}>Save</Button>
       <Button variant="rose" onclick={handleDeleteProperty}
-        ><TrashIcon size="18" />Delete</Button
+        ><TrashIcon size="medium" />Delete</Button
       >
     {:else}
       <Button variant="lime" onclick={handleAddProperty}>Add Property</Button>
