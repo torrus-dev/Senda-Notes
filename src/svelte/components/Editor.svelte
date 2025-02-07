@@ -4,57 +4,64 @@
   import DragDrop from "editorjs-drag-drop";
   import { editorConfig } from "./editorConfig";
 
-  const { noteId, content, onContentChange } = $props();
+  let { noteId, content, onContentChange } = $props();
 
-  let editorInstance = $state(null);
-  let isInitialized = $state(false);
-  let currentNoteId = $state(null);
+  let editorInstance = null;
+  let dragDropInstance = null;
+  let isInitialized = false;
+  let currentNoteId = null;
 
-  // Inicialización del editor
   function initializeEditor(initialContent = null) {
-    // Solo inicializar el editor si es necesario
-    if (editorInstance) {
-      editorInstance.destroy(); // Destruimos la instancia previa antes de crear una nueva
+    destroyEditor(); // Limpiar instancias previas antes de crear una nueva
+
+    try {
+      editorInstance = new EditorJS({
+        holder: "editorjs",
+        tools: editorConfig,
+        autofocus: true,
+        inlineToolbar: ["bold", "italic", "link", "marker", "inlineCode"],
+        data: initialContent ? JSON.parse(initialContent) : { blocks: [] },
+        onReady: () => {
+          dragDropInstance = new DragDrop(editorInstance);
+          isInitialized = true;
+        },
+        onChange: async () => {
+          if (!isInitialized) return;
+          try {
+            const savedData = await editorInstance.save();
+            onContentChange(JSON.stringify(savedData));
+          } catch (error) {
+            console.error("Error al guardar el contenido del editor:", error);
+          }
+        },
+      });
+    } catch (error) {
+      console.error("Error al inicializar EditorJS:", error);
     }
-
-    editorInstance = new EditorJS({
-      holder: "editorjs",
-      tools: editorConfig,
-      autofocus: true,
-      inlineToolbar: ["bold", "italic", "link", "marker", "inlineCode"],
-      dragDrop: true,
-      onReady: () => {
-        new DragDrop(editorInstance);
-        isInitialized = true;
-      },
-      data: initialContent ? JSON.parse(initialContent) : { blocks: [] },
-      onChange: async () => {
-        if (!isInitialized) return;
-
-        try {
-          const savedData = await editorInstance.save();
-          onContentChange(JSON.stringify(savedData));
-        } catch (error) {
-          console.error("Error saving editor content:", error);
-        }
-      },
-    });
   }
 
-  // Solo inicializar el editor si el contenido o el noteId cambia
+  function destroyEditor() {
+    if (dragDropInstance && typeof dragDropInstance.destroy === "function") {
+      dragDropInstance.destroy();
+      dragDropInstance = null;
+    }
+    if (editorInstance && typeof editorInstance.destroy === "function") {
+      editorInstance.destroy();
+      editorInstance = null;
+    }
+    isInitialized = false;
+  }
+
+  // Reactividad: solo reinicializa si cambia el noteId
   $effect(() => {
     if (noteId !== currentNoteId) {
       currentNoteId = noteId;
-      initializeEditor(content); // Actualizar el editor solo cuando sea necesario
+      initializeEditor(content);
     }
   });
 
-  // Limpieza al destruir el componente
   onDestroy(() => {
-    if (editorInstance && typeof editorInstance.destroy === "function") {
-      editorInstance.destroy();
-      editorInstance = null; // Limpiamos la instancia
-    }
+    destroyEditor();
   });
 </script>
 

@@ -16,11 +16,12 @@ export const editorConfig = {
   },
   header: {
     class: Header,
+    inlineToolbar: true,
+    inlineToolbar: ["link", "marker", "inlineCode"],
     config: {
       levels: [1, 2, 3, 4, 5, 6],
       defaultLevel: 1,
     },
-    inlineToolbar: ["link", "marker", "inlineCode"],
   },
   list: {
     class: List,
