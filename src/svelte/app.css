@@ -68,13 +68,6 @@ select {
   color: var(--color-font-normal);
 }
 
-:root {
-  --property-label-width: 9rem;
-  --icon-s: 16px;
-  --icon-m: 18px;
-  --icon-l: 18px;
-  --icon-xl: 32px;
-}
 
 .theme-light {
   --color-bg-primary: #ffffff;
@@ -94,6 +87,14 @@ select {
   --color-font-faint: #888888;
   --color-border-normal: #e5e5e5;
   --color-interactive-hover: #ffffff10;
+}
+
+:root {
+  --property-label-width: 9rem;
+  --icon-s: 16px;
+  --icon-m: 18px;
+  --icon-l: 18px;
+  --icon-xl: 32px;
 }
 
 .clickable-element {

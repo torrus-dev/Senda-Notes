@@ -12,7 +12,7 @@
 
   let { property, onUpdate, onEdit = null, readonly = false } = $props();
 
-  function removeItem(index) {
+  function removeListItem(index) {
     if (property.type === "list") {
       const newValue = [...property.value];
       newValue.splice(index, 1);
@@ -20,7 +20,8 @@
     }
   }
 
-  function handleInput(event) {
+  function handleListInput(event) {
+    console.log(event.key);
     if (event.key === "Enter" || event.type === "blur") {
       const inputValue = inputElement.value.trim();
       if (!inputValue) return;
@@ -28,6 +29,10 @@
       const newValue = [...property.value, inputValue];
       onUpdate(property.name, newValue);
       inputElement.value = "";
+    }
+    if (event.key === "Backspace" || event.key === "Delete") {
+      let lastListItem = property.value.length - 1;
+      removeListItem(lastListItem);
     }
   }
 
@@ -59,7 +64,7 @@
 
 <li class="property-item flex">
   <button
-    class="property-label clickable-element flex gap-2 w-(--property-label-width)"
+    class="property-label clickable-element flex gap-2 py-1.5 w-(--property-label-width)"
     onclick={() => onEdit(property)}
   >
     {#if IconComponent}
@@ -79,34 +84,35 @@
       onchange={(event) => onUpdate(property.name, event.target.value)}
     />
   {:else if property.type === "list"}
-    <div class="list-input-container">
-      <div class="pills-container">
-        {#each property.value as item, index}
-          <div class="pill">
-            <span class="pill-text">{item}</span>
-            {#if !readonly}
-              <button
-                class="remove-button text-(--color-font-faint)"
-                onclick={() => removeItem(index)}
-                type="button"
-                aria-label="Remove item"
-              >
-                <CloseIcon size="18" />
-              </button>
-            {/if}
-          </div>
-        {/each}
-      </div>
+    <div class="inline-flex gap-1 flex-wrap border-amber-50 border-2">
+      {#each property.value as item, index}
+        <div
+          class="flex rounded-sm py-1 px-2 items-center bg-(--color-bg-secondary) gap-0.5"
+        >
+          <span>{item}</span>
+
+          {#if !readonly}
+            <button
+              class="clickable-element mr-[-0.25rem] text-(--color-font-faint)"
+              onclick={() => removeListItem(index)}
+              aria-label="Remove item"
+            >
+              <CloseIcon size="small" />
+            </button>
+          {/if}
+        </div>
+      {/each}
+
       {#if !readonly}
         <input
           name={property.name}
           type="text"
-          class="list-input"
+          class="flex"
           placeholder={property.value.length === 0
             ? "Type to add items..."
             : ""}
-          onkeydown={handleInput}
-          onblur={handleInput}
+          onkeydown={handleListInput}
+          onblur={handleListInput}
           bind:this={inputElement}
         />
       {/if}
@@ -177,57 +183,5 @@
     padding: 4px;
     border: 1px solid #ddd;
     border-radius: 4px;
-  }
-
-  .pills-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-  }
-
-  .pill {
-    display: inline-flex;
-    align-items: center;
-    background-color: var(--color-bg-secondary);
-    border-radius: 16px;
-    padding: 4px 12px;
-    font-size: 14px;
-  }
-
-  .pill-text {
-    margin-right: 4px;
-  }
-
-  .remove-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    border: none;
-    background: none;
-    font-size: 18px;
-    cursor: pointer;
-    padding: 0;
-    border-radius: 50%;
-    line-height: 1;
-  }
-
-  .remove-button:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-    color: #333;
-  }
-
-  .list-input {
-    flex: 1;
-    min-width: 50px;
-    border: none;
-    outline: none;
-    font-size: 14px;
-    padding: 4px;
-  }
-
-  .list-input::placeholder {
-    color: #999;
   }
 </style>

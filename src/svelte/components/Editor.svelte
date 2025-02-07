@@ -12,12 +12,11 @@
 
   // Inicialización del editor
   function initializeEditor(initialContent = null) {
-    if (currentNoteId !== noteId) {
-      currentNoteId = noteId;
+    // Solo inicializar el editor si es necesario
+    if (editorInstance) {
+      editorInstance.destroy(); // Destruimos la instancia previa antes de crear una nueva
     }
-    if (editorInstance !== null) {
-      editorInstance = null;
-    }
+
     editorInstance = new EditorJS({
       holder: "editorjs",
       tools: editorConfig,
@@ -42,12 +41,11 @@
     });
   }
 
-  initializeEditor(content);
-  // Efecto para actualizar el editor cuando cambia el noteId
+  // Solo inicializar el editor si el contenido o el noteId cambia
   $effect(() => {
     if (noteId !== currentNoteId) {
       currentNoteId = noteId;
-      initializeEditor(content);
+      initializeEditor(content); // Actualizar el editor solo cuando sea necesario
     }
   });
 

@@ -1,14 +1,10 @@
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 24 24"
-  fill="none"
-  stroke="currentColor"
-  stroke-linecap="round"
-  stroke-linejoin="round"
-  width="24"
-  height="24"
-  stroke-width="2"
->
+<script>
+  import BaseIcon from "../components/BaseIcon.svelte";
+
+  let { size, color, stroke } = $props();
+</script>
+
+<BaseIcon {size} {color} {stroke}>
   <path
     d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4"
   ></path>
@@ -17,4 +13,4 @@
   <path d="M7 3v4"></path>
   <path d="M3 11h16"></path>
   <path d="M18 16.496v1.504l1 1"></path>
-</svg>
+</BaseIcon>

@@ -48,7 +48,7 @@
       <h2 class="text-2xl font-bold mb-2">Notes:</h2>
 
       <Button variant="lime" onclick={noteController.createNote}
-        ><NoteIcon size="18" /> New Note</Button
+        ><NoteIcon size="medium" /> New Note</Button
       >
     </header>
     <ul>
