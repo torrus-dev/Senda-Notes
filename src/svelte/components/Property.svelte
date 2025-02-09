@@ -62,9 +62,9 @@
   let inputElement = $state(null);
 </script>
 
-<li class="property-item flex">
+<li class="property-item flex ml-[-0.5rem]">
   <button
-    class="property-label clickable-element flex gap-2 py-1.5 w-(--property-label-width)"
+    class="property-label clickable-element flex items-center gap-2 p-2 w-(--property-label-width)"
     onclick={() => onEdit(property)}
   >
     {#if IconComponent}
@@ -82,9 +82,11 @@
       type="text"
       value={property.value}
       onchange={(event) => onUpdate(property.name, event.target.value)}
+      placeholder="No value"
+      class="grow-1"
     />
   {:else if property.type === "list"}
-    <div class="inline-flex gap-1 flex-wrap border-amber-50 border-2">
+    <div class="inline-flex gap-1 grow-1 flex-wrap border-amber-50 border-2">
       {#each property.value as item, index}
         <div
           class="flex rounded-sm py-1 px-2 items-center bg-(--color-bg-secondary) gap-0.5"
@@ -166,6 +168,18 @@
     display: flex;
     width: 100%;
     flex-grow: 2;
+    outline-style: solid;
+    outline-width: 1px;
+    outline-offset: 0;
+    outline-color: transparent;
+    border-radius: calc(var(--spacing) * 2);
+    &:hover {
+      outline-color: var(--color-border-muted);
+    }
+    &:focus-within {
+      outline-width: 3px;
+      outline-color: var(--color-border-normal);
+    }
   }
   .property-label {
     background: none;
@@ -173,15 +187,5 @@
     border: none;
     width: var(--width-metadata-label);
     text-align: left;
-  }
-  .list-input-container {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    min-height: 32px;
-    padding: 4px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
   }
 </style>

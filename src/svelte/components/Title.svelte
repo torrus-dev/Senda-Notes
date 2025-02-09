@@ -1,16 +1,26 @@
 <script>
-  let { title, onTitleChange } = $props();
+  import { noteController } from "../noteController.svelte";
 
+  let { id } = $props();
+  let title = $derived(noteController.getNoteById(id).title);
+
+  function handleTitleChange(newTitle) {
+    if (title) {
+      noteController.updateNote(id, {
+        title: noteController.sanitizeTitle(newTitle),
+      });
+    }
+  }
   let editableElement;
 </script>
 
 <h1
-  class="text-4xl font-bold mb-3"
+  bind:this={editableElement}
+  class="text-4xl font-bold my-6"
   contenteditable="true"
   onblur={() => {
-    onTitleChange(editableElement.innerText);
+    handleTitleChange(editableElement.innerText);
   }}
-  bind:this={editableElement}
 >
   {title}
 </h1>

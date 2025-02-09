@@ -3,13 +3,23 @@
   import EditorJS from "@editorjs/editorjs";
   import DragDrop from "editorjs-drag-drop";
   import { editorConfig } from "./editorConfig";
+  import { noteController } from "../noteController.svelte";
 
-  let { noteId, content, onContentChange } = $props();
+  let { noteId = null } = $props();
+  let content = $derived(noteController.getNoteById(noteId).content);
 
   let editorInstance = null;
   let dragDropInstance = null;
   let isInitialized = false;
   let currentNoteId = null;
+
+  function onContentChange(newContent) {
+    if (noteId) {
+      noteController.updateNote(noteId, {
+        content: newContent,
+      });
+    }
+  }
 
   function initializeEditor(initialContent = null) {
     destroyEditor(); // Limpiar instancias previas antes de crear una nueva
@@ -65,7 +75,7 @@
   });
 </script>
 
-<div id="editorjs"></div>
+<div id="editorjs" class="font-stretch-75%"></div>
 
 <style>
   :global(.codex-editor),

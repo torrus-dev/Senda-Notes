@@ -76,7 +76,10 @@ select {
   --color-font-muted: #5b5b5b;
   --color-font-faint: #8b8b8b;
   --color-border-normal: #e5e5e5;
+  --color-border-muted: #b5b5b5;
+  --color-border-muted: red;
   --color-interactive-hover: #00000010;
+  --color-interactive-active: #00000016;
 }
 
 .theme-dark {
@@ -85,15 +88,17 @@ select {
   --color-font-normal: #ffffff;
   --color-font-muted: #cccccc;
   --color-font-faint: #888888;
-  --color-border-normal: #e5e5e5;
+  --color-border-normal: #555555;
+  --color-border-muted: #333333;
   --color-interactive-hover: #ffffff10;
+  --color-interactive-active: #ffffff16;
 }
 
 :root {
   --property-label-width: 9rem;
   --icon-s: 16px;
-  --icon-m: 18px;
-  --icon-l: 18px;
+  --icon-m: 19px;
+  --icon-l: 22px;
   --icon-xl: 32px;
 }
 

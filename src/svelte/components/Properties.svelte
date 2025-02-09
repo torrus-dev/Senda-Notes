@@ -4,6 +4,7 @@
   import { workspace } from "../workspaceController.svelte";
   import { noteController } from "../noteController.svelte";
   import { formatDateTime } from "../utils.svelte";
+  import PlusIcon from "../icons/PlusIcon.svelte";
 
   let { note } = $props();
 
@@ -25,27 +26,31 @@
 </script>
 
 {#if note}
-  <div class="properties-container mb-8">
-    <ul class="property-box">
-      <li>
-        <p>
-          <span class="text-blue-400">ID:</span>
-          <span class="text-amber-200">{note.id}</span>
-        </p>
-      </li>
-
-      {#each note.metadata as metadata (metadata.name)}
+  <div class="properties-container">
+    <div class="my-6">
+      <ul>
         <li>
           <p>
-            <span class="text-blue-400">{metadata.name}: </span>
-            <span class="text-amber-200">{formatDateTime(metadata.value)}</span>
+            <span class="text-blue-400">ID:</span>
+            <span class="text-amber-200">{note.id}</span>
           </p>
         </li>
-      {/each}
-    </ul>
 
-    <div class="custom-properties">
-      <h3 class="text-xl font-bold py-4">Properties</h3>
+        {#each note.metadata as metadata (metadata.name)}
+          <li>
+            <p>
+              <span class="text-blue-400">{metadata.name}: </span>
+              <span class="text-amber-200"
+                >{formatDateTime(metadata.value)}</span
+              >
+            </p>
+          </li>
+        {/each}
+      </ul>
+    </div>
+
+    <div class="custom-properties my-6">
+      <h3 class="text-xl font-bold py-1">Properties</h3>
       <ul class="property-box">
         {#each note.properties as property}
           <li>
@@ -62,10 +67,10 @@
         <PropertyEditor />
       {:else}
         <button
-          class="p-2 clickable-element"
+          class="p-2 ml-[-0.5rem] clickable-element inline-flex items-center gap-2"
           onclick={() => workspace.openPropertyEditor(note.id)}
         >
-          + Add Property
+          <PlusIcon /> Add Property
         </button>
       {/if}
     </div>
