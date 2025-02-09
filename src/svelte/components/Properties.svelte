@@ -19,10 +19,6 @@
 
     noteController.updateNote(note.id, { properties: updatedProperties });
   }
-
-  function openPropertyEditor(property = null) {
-    workspace.openPropertyEditor(note.id, property);
-  }
 </script>
 
 {#if note}
@@ -55,15 +51,15 @@
         {#each note.properties as property}
           <li>
             <Property
+              noteId={note.id}
               {property}
               onUpdate={handlePropertyUpdate}
-              onEdit={() => openPropertyEditor(property)}
             />
           </li>
         {/each}
       </ul>
 
-      {#if workspace.propertyEditor.isVisible && workspace.propertyEditor.targetNoteId === note.id}
+      {#if workspace.state.propertyEditor.isVisible && workspace.state.propertyEditor.targetNoteId === note.id}
         <PropertyEditor />
       {:else}
         <button

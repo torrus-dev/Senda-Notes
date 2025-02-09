@@ -1,7 +1,9 @@
 <script>
   import { formatDateTimeForInput } from "../utils.svelte";
+  import { workspace } from "../workspaceController.svelte";
+  import { noteController } from "../noteController.svelte";
 
-  // Importar los iconos
+  // Importar iconos
   import TextIcon from "../icons/TextIcon.svelte";
   import ListIcon from "../icons/ListIcon.svelte";
   import NumberIcon from "../icons/NumberIcon.svelte";
@@ -9,9 +11,17 @@
   import DateIcon from "../icons/DateIcon.svelte";
   import DatetimeIcon from "../icons/DatetimeIcon.svelte";
   import CloseIcon from "../icons/CloseIcon.svelte";
+  import AdjustIcon from "../icons/AdjustIcon.svelte";
+  import TrashIcon from "../icons/TrashIcon.svelte";
 
-  let { property, onUpdate, onEdit = null, readonly = false } = $props();
+  // Props en runes mode
+  let { noteId = null, property = null, onUpdate, readonly = false } = $props();
+  let showOptions = $state(false);
 
+  // Estado de referencia para el input (en caso de list)
+  let inputElement = $state(null);
+
+  // Función para eliminar un elemento de la lista
   function removeListItem(index) {
     if (property.type === "list") {
       const newValue = [...property.value];
@@ -20,12 +30,11 @@
     }
   }
 
+  // Manejo de entrada en lista
   function handleListInput(event) {
-    console.log(event.key);
     if (event.key === "Enter" || event.type === "blur") {
       const inputValue = inputElement.value.trim();
       if (!inputValue) return;
-
       const newValue = [...property.value, inputValue];
       onUpdate(property.name, newValue);
       inputElement.value = "";
@@ -36,7 +45,7 @@
     }
   }
 
-  // Obtener el componente de icono según el tipo de propiedad
+  // Seleccionar el icono según el tipo de propiedad
   function getIconComponent(type) {
     switch (type) {
       case "text":
@@ -56,26 +65,88 @@
     }
   }
 
-  // Obtener el componente de icono actual
+  // Obtener el componente de icono actual (derivado)
   const IconComponent = $derived(getIconComponent(property.type));
 
-  let inputElement = $state(null);
+  // Action para detectar clicks fuera del nodo
+  function clickOutside(node) {
+    const handleClick = (event) => {
+      if (!node.contains(event.target)) {
+        node.dispatchEvent(new CustomEvent("outclick"));
+      }
+    };
+    document.addEventListener("click", handleClick, true);
+    return {
+      destroy() {
+        document.removeEventListener("click", handleClick, true);
+      },
+    };
+  }
+
+  // Función para alternar la visualización del menú de opciones
+  function toggleOptions() {
+    showOptions = !showOptions;
+  }
+
+  // Handler que cierra el menú al hacer click fuera
+  function handleOutClick() {
+    showOptions = false;
+  }
 </script>
 
-<li class="property-item flex ml-[-0.5rem]">
-  <button
-    class="property-label clickable-element flex items-center gap-2 p-2 w-(--property-label-width)"
-    onclick={() => onEdit(property)}
-  >
-    {#if IconComponent}
-      <span class="property-icon"> <IconComponent /> </span>
-    {/if}
-    <p class="w-(--property-label-width)">
-      {property.name}
-    </p>
-  </button>
+<li class="property-item flex gap-2 ml-[-0.5rem] relative">
+  <!-- Contenedor para el label y el menú -->
+  <div class="relative inline-block">
+    <button
+      class="clickable-element rounded text-left flex items-center gap-2 p-2 w-(--property-label-width)"
+      onclick={toggleOptions}
+    >
+      {#if IconComponent}
+        <span class="property-icon"><IconComponent /></span>
+      {/if}
+      <p class="w-(--property-label-width)">
+        {property.name}
+      </p>
+    </button>
 
-  <!-- condicional para tipos -->
+    {#if showOptions}
+      <!-- Menú flotante con acción clickOutside para cerrarse -->
+      <div
+        class="absolute z-10 mt-1 p-2 bg-(--color-bg-secondary) rounded shadow border-1 border-(--color-border-normal)"
+        use:clickOutside
+        onoutclick={handleOutClick}
+      >
+        <ul>
+          <li>
+            <button
+              class="clickable-element flex items-center whitespace-nowrap gap-1 p-2 w-full text-left rounded"
+              onclick={() => {
+                workspace.openPropertyEditor(noteId, property);
+                showOptions = false;
+              }}
+            >
+              <AdjustIcon class="w-4 h-4" />
+              <p class="whitespace-nowrap">Edit Property</p>
+            </button>
+          </li>
+          <li>
+            <button
+              class="clickable-element flex items-center gap-1 p-2 w-full text-left rounded text-rose-400"
+              onclick={() => {
+                noteController.deleteProperty(noteId, property.id);
+                showOptions = false;
+              }}
+            >
+              <TrashIcon class="w-4 h-4" />
+              <p class="whitespace-nowrap">Delete Property</p>
+            </button>
+          </li>
+        </ul>
+      </div>
+    {/if}
+  </div>
+
+  <!-- Renderizado condicional de la propiedad según su tipo -->
   {#if property.type === "text"}
     <input
       name={property.name}
@@ -86,13 +157,12 @@
       class="grow-1"
     />
   {:else if property.type === "list"}
-    <div class="inline-flex gap-1 grow-1 flex-wrap border-amber-50 border-2">
+    <div class="inline-flex gap-1 grow-1 flex-wrap border-2 border-amber-50">
       {#each property.value as item, index}
         <div
           class="flex rounded-sm py-1 px-2 items-center bg-(--color-bg-secondary) gap-0.5"
         >
           <span>{item}</span>
-
           {#if !readonly}
             <button
               class="clickable-element mr-[-0.25rem] text-(--color-font-faint)"
@@ -104,7 +174,6 @@
           {/if}
         </div>
       {/each}
-
       {#if !readonly}
         <input
           name={property.name}
@@ -168,24 +237,6 @@
     display: flex;
     width: 100%;
     flex-grow: 2;
-    outline-style: solid;
-    outline-width: 1px;
-    outline-offset: 0;
-    outline-color: transparent;
     border-radius: calc(var(--spacing) * 2);
-    &:hover {
-      outline-color: var(--color-border-muted);
-    }
-    &:focus-within {
-      outline-width: 3px;
-      outline-color: var(--color-border-normal);
-    }
-  }
-  .property-label {
-    background: none;
-    color: inherit;
-    border: none;
-    width: var(--width-metadata-label);
-    text-align: left;
   }
 </style>

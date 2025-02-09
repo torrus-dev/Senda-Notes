@@ -18,9 +18,12 @@
   // Estado local para nueva propiedad
   let newPropertyName = $state("");
   let newPropertyType = $state("text");
+  let noteId = $derived(workspace.state.propertyEditor.targetNoteId);
 
   // Propiedad en edición (si existe)
-  const editingProperty = $derived(workspace.propertyEditor.editingProperty);
+  const editingProperty = $derived(
+    workspace.state.propertyEditor.editingProperty,
+  );
   const isEditing = $derived(!!editingProperty);
 
   // Reiniciar valores cuando cambia el modo
@@ -36,7 +39,6 @@
 
   // Manejo de la creación de una nueva propiedad
   function handleAddProperty() {
-    const noteId = workspace.propertyEditor.targetNoteId;
     if (!noteId || !newPropertyName.trim()) {
       alert("Property name is required");
       return;
@@ -51,16 +53,11 @@
       return;
     }
 
-    // Crear nueva propiedad
-    const newProperty = {
+    // Usar el método createProperty para crear la propiedad
+    noteController.createProperty(noteId, {
       name: newPropertyName.trim(),
       type: newPropertyType,
-      value: noteController.getDefaultValue(newPropertyType),
-    };
-
-    // Actualizar la nota
-    noteController.updateNote(noteId, {
-      properties: [...note.properties, newProperty],
+      value: undefined, // se asigna por defecto según el tipo
     });
 
     // Limpiar el estado
@@ -73,52 +70,34 @@
 
   // Manejo de la actualización de una propiedad existente
   function handleUpdateProperty() {
-    const noteId = workspace.propertyEditor.targetNoteId;
+    const noteId = workspace.state.propertyEditor.targetNoteId;
     if (!noteId || !editingProperty) return;
 
     const note = noteController.getNoteById(noteId);
     if (!note) return;
 
-    // Validar nombre único
+    // Validar nombre único (excepto si no se ha modificado)
     if (
-      newPropertyName.trim() !== workspace.propertyEditor.originalName &&
+      newPropertyName.trim() !== workspace.state.propertyEditor.originalName &&
       note.properties.some((p) => p.name === newPropertyName.trim())
     ) {
       alert("Property name must be unique");
       return;
     }
 
-    // Actualizar la propiedad
-    const updatedProperty = {
-      ...editingProperty,
+    // Usar updateProperty para actualizar la propiedad
+    noteController.updateProperty(noteId, editingProperty.id, {
       name: newPropertyName.trim(),
       type: newPropertyType,
-    };
+    });
 
-    const updatedProperties = note.properties.map((p) =>
-      p.name === workspace.propertyEditor.originalName ? updatedProperty : p,
-    );
-
-    noteController.updateNote(noteId, { properties: updatedProperties });
     workspace.closePropertyEditor();
   }
 
-  // Manejo de la eliminación de una propiedad
+  // Manejo de la eliminación de la propiedad
   function handleDeleteProperty() {
-    const noteId = workspace.propertyEditor.targetNoteId;
     if (!noteId || !editingProperty) return;
-
-    const note = noteController.getNoteById(noteId);
-    if (!note) return;
-
-    // Filtrar la propiedad eliminada
-    noteController.updateNote(noteId, {
-      properties: note.properties.filter(
-        (p) => p.name !== workspace.propertyEditor.originalName,
-      ),
-    });
-
-    // Cerrar el editor
+    noteController.deleteProperty(noteId, editingProperty.id);
     workspace.closePropertyEditor();
   }
 </script>
@@ -155,17 +134,18 @@
   <div class="mt-6 py-2 flex gap-3">
     {#if isEditing}
       <Button variant="lime" onclick={handleUpdateProperty}>Save</Button>
-      <Button variant="rose" onclick={handleDeleteProperty}
-        ><TrashIcon size="medium" />Delete</Button
-      >
+      <Button variant="rose" onclick={handleDeleteProperty}>
+        <TrashIcon size="medium" />Delete
+      </Button>
     {:else}
       <Button variant="lime" onclick={handleAddProperty}>Add Property</Button>
     {/if}
-    <Button variant="neutral" onclick={workspace.closePropertyEditor}
-      >Cancel</Button
-    >
+    <Button variant="neutral" onclick={workspace.closePropertyEditor}>
+      Cancel
+    </Button>
   </div>
 </div>
 
 <style>
+  /* Aquí puedes colocar estilos específicos para este componente */
 </style>
