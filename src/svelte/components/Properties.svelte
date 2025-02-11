@@ -63,7 +63,7 @@
         <PropertyEditor />
       {:else}
         <button
-          class="p-2 ml-[-0.5rem] clickable-element inline-flex items-center gap-2"
+          class="btn btn-ghost"
           onclick={() => workspace.openPropertyEditor(note.id)}
         >
           <PlusIcon /> Add Property

@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@config "../../tailwind.config.js";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @font-face {
   font-family: 'Roboto Flex';
   src: url('/fonts/RobotoFlex.ttf') format('truetype');
@@ -96,10 +102,7 @@ select {
 
 :root {
   --property-label-width: 9rem;
-  --icon-s: 16px;
-  --icon-m: 19px;
-  --icon-l: 22px;
-  --icon-xl: 32px;
+
 }
 
 .clickable-element {
@@ -108,24 +111,4 @@ select {
   &:hover {
     background-color: var(--color-interactive-hover);
   }
-}
-
-.icon-small {
-  width: var(--icon-s);
-  height: var(--icon-s);
-}
-
-.icon-medium {
-  width: var(--icon-m);
-  height: var(--icon-m);
-}
-
-.icon-large {
-  width: var(--icon-l);
-  height: var(--icon-l);
-}
-
-.icon-xl {
-  width: var(--icon-xl);
-  height: var(--icon-xl);
 }

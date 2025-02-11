@@ -24,3 +24,13 @@
 >
   {title}
 </h1>
+<h1
+  bind:this={editableElement}
+  class="h1 btn"
+  contenteditable="true"
+  onblur={() => {
+    handleTitleChange(editableElement.innerText);
+  }}
+>
+  {title}
+</h1>
