@@ -1,8 +1,7 @@
 <script>
   import { noteController } from "../noteController.svelte";
   import Button from "./Button.svelte";
-  import TrashIcon from "../icons/TrashIcon.svelte";
-  import NoteIcon from "../icons/NoteIcon.svelte";
+  import { SquarePlus, Trash2 } from "lucide-svelte";
 
   function handleNoteAction(action, noteId) {
     if (action === "delete") {
@@ -21,7 +20,7 @@
     <h2 class="text-2xl font-bold mb-4">Notes:</h2>
 
     <Button variant="lime" onclick={noteController.createNote}
-      ><NoteIcon size="medium" /> New Note</Button
+      ><SquarePlus size="18" /> New Note</Button
     >
   </header>
   <ul>
@@ -40,7 +39,7 @@
           class="grow-0 py-1 hover:cursor-pointer opacity-0 group-hover:opacity-100"
           onclick={() => handleNoteAction("delete", note.id)}
         >
-          <TrashIcon size="medium" />
+          <Trash2 size="18" />
         </button>
       </li>
     {/each}

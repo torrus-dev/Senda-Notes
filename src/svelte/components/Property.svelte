@@ -3,16 +3,17 @@
   import { workspace } from "../workspaceController.svelte";
   import { noteController } from "../noteController.svelte";
 
-  // Importar iconos
-  import TextIcon from "../icons/TextIcon.svelte";
-  import ListIcon from "../icons/ListIcon.svelte";
-  import NumberIcon from "../icons/NumberIcon.svelte";
-  import CheckIcon from "../icons/CheckIcon.svelte";
-  import DateIcon from "../icons/DateIcon.svelte";
-  import DatetimeIcon from "../icons/DatetimeIcon.svelte";
-  import CloseIcon from "../icons/CloseIcon.svelte";
-  import AdjustIcon from "../icons/AdjustIcon.svelte";
-  import TrashIcon from "../icons/TrashIcon.svelte";
+  import {
+    TextIcon,
+    ListIcon,
+    HashIcon,
+    CheckSquareIcon,
+    CalendarIcon,
+    CalendarClockIcon,
+    XIcon,
+    SlidersHorizontalIcon,
+    Trash2Icon,
+  } from "lucide-svelte";
 
   // Props en runes mode
   let { noteId = null, property = null, onUpdate, readonly = false } = $props();
@@ -53,13 +54,13 @@
       case "list":
         return ListIcon;
       case "number":
-        return NumberIcon;
+        return HashIcon;
       case "check":
-        return CheckIcon;
+        return CheckSquareIcon;
       case "date":
-        return DateIcon;
+        return CalendarIcon;
       case "datetime":
-        return DatetimeIcon;
+        return CalendarClockIcon;
       default:
         return null;
     }
@@ -102,7 +103,7 @@
       onclick={toggleOptions}
     >
       {#if IconComponent}
-        <span class="property-icon"><IconComponent /></span>
+        <span class="property-icon"><IconComponent size="18" /></span>
       {/if}
       <p class="w-(--property-label-width)">
         {property.name}
@@ -125,7 +126,7 @@
                 showOptions = false;
               }}
             >
-              <AdjustIcon class="w-4 h-4" />
+              <SlidersHorizontalIcon size="18" />
               <p class="whitespace-nowrap">Edit Property</p>
             </button>
           </li>
@@ -137,7 +138,7 @@
                 showOptions = false;
               }}
             >
-              <TrashIcon class="w-4 h-4" />
+              <Trash2Icon size="18" />
               <p class="whitespace-nowrap">Delete Property</p>
             </button>
           </li>
@@ -169,7 +170,7 @@
               onclick={() => removeListItem(index)}
               aria-label="Remove item"
             >
-              <CloseIcon size="small" />
+              <XIcon size="18" />
             </button>
           {/if}
         </div>

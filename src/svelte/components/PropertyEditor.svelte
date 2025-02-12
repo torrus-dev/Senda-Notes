@@ -1,8 +1,7 @@
 <script>
   import { workspace } from "../workspaceController.svelte";
   import { noteController } from "../noteController.svelte";
-  import CloseIcon from "../icons/CloseIcon.svelte";
-  import TrashIcon from "../icons/TrashIcon.svelte";
+  import { XIcon, Trash2Icon } from "lucide-svelte";
   import Button from "./Button.svelte";
 
   // Opciones de tipos de propiedades
@@ -108,7 +107,7 @@
     class="absolute top-0 right-0 p-3 clickable-element"
     onclick={workspace.closePropertyEditor}
   >
-    <CloseIcon size="large" />
+    <XIcon />
   </button>
 
   <div class="py-2">
@@ -135,7 +134,7 @@
     {#if isEditing}
       <Button variant="lime" onclick={handleUpdateProperty}>Save</Button>
       <Button variant="rose" onclick={handleDeleteProperty}>
-        <TrashIcon size="medium" />Delete
+        <Trash2Icon size="18" />Delete
       </Button>
     {:else}
       <Button variant="lime" onclick={handleAddProperty}>Add Property</Button>
@@ -147,5 +146,4 @@
 </div>
 
 <style>
-  /* Aquí puedes colocar estilos específicos para este componente */
 </style>

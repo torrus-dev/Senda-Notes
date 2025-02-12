@@ -4,7 +4,7 @@
   import { workspace } from "../workspaceController.svelte";
   import { noteController } from "../noteController.svelte";
   import { formatDateTime } from "../utils.svelte";
-  import PlusIcon from "../icons/PlusIcon.svelte";
+  import { PlusIcon } from "lucide-svelte";
 
   let { note } = $props();
 
@@ -66,7 +66,7 @@
           class="btn btn-ghost"
           onclick={() => workspace.openPropertyEditor(note.id)}
         >
-          <PlusIcon /> Add Property
+          <PlusIcon size="18" /> Add Property
         </button>
       {/if}
     </div>

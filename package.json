@@ -30,6 +30,7 @@
     "@types/electron": "^1.6.12",
     "@types/node": "^22.10.5",
     "concurrently": "^9.1.2",
+    "daisyui": "^5.0.0-beta.7",
     "electron": "^33.2.1",
     "electron-builder": "^25.1.8",
     "svelte": "^5.16.0",
