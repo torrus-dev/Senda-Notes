@@ -132,16 +132,20 @@
 
   <div class="mt-6 py-2 flex gap-3">
     {#if isEditing}
-      <Button variant="lime" onclick={handleUpdateProperty}>Save</Button>
-      <Button variant="rose" onclick={handleDeleteProperty}>
-        <Trash2Icon size="18" />Delete
-      </Button>
+      <button class="btn btn-success" onclick={handleUpdateProperty}
+        >Save</button
+      >
+      <button class="btn btn-delete" onclick={handleDeleteProperty}
+        ><Trash2Icon size="18" />Delete</button
+      >
     {:else}
-      <Button variant="lime" onclick={handleAddProperty}>Add Property</Button>
+      <button class="btn btn-success" onclick={handleAddProperty}>
+        Add Property
+      </button>
     {/if}
-    <Button variant="neutral" onclick={workspace.closePropertyEditor}>
-      Cancel
-    </Button>
+    <button class="btn btn-neutral" onclick={workspace.closePropertyEditor}
+      >Cancel</button
+    >
   </div>
 </div>
 

@@ -63,7 +63,7 @@
         <PropertyEditor />
       {:else}
         <button
-          class="btn btn-ghost"
+          class="btn btn-neutral"
           onclick={() => workspace.openPropertyEditor(note.id)}
         >
           <PlusIcon size="18" /> Add Property
