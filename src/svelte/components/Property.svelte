@@ -83,24 +83,13 @@
       },
     };
   }
-
-  // Función para alternar la visualización del menú de opciones
-  function toggleOptions() {
-    showOptions = !showOptions;
-  }
-
-  // Handler que cierra el menú al hacer click fuera
-  function handleOutClick() {
-    showOptions = false;
-  }
 </script>
 
 <li class="property-item flex gap-2 ml-[-0.5rem] relative">
   <!-- Contenedor para el label y el menú -->
-  <div class="relative inline-block">
-    <button
+  <details class="dropdown relative inline-block">
+    <summary
       class="clickable-element rounded text-left flex items-center gap-2 p-2 w-(--property-label-width)"
-      onclick={toggleOptions}
     >
       {#if IconComponent}
         <span class="property-icon"><IconComponent size="18" /></span>
@@ -108,44 +97,39 @@
       <p class="w-(--property-label-width)">
         {property.name}
       </p>
-    </button>
+    </summary>
 
-    {#if showOptions}
-      <!-- Menú flotante con acción clickOutside para cerrarse -->
-      <div
-        class="absolute z-10 mt-1 p-2 bg-(--color-bg-secondary) rounded shadow border-1 border-(--color-border-normal)"
-        use:clickOutside
-        onoutclick={handleOutClick}
-      >
-        <ul>
-          <li>
-            <button
-              class="clickable-element flex items-center whitespace-nowrap gap-1 p-2 w-full text-left rounded"
-              onclick={() => {
-                workspace.openPropertyEditor(noteId, property);
-                showOptions = false;
-              }}
-            >
-              <SlidersHorizontalIcon size="18" />
-              <p class="whitespace-nowrap">Edit Property</p>
-            </button>
-          </li>
-          <li>
-            <button
-              class="clickable-element flex items-center gap-1 p-2 w-full text-left rounded text-rose-400"
-              onclick={() => {
-                noteController.deleteProperty(noteId, property.id);
-                showOptions = false;
-              }}
-            >
-              <Trash2Icon size="18" />
-              <p class="whitespace-nowrap">Delete Property</p>
-            </button>
-          </li>
-        </ul>
-      </div>
-    {/if}
-  </div>
+    <!-- Menú flotante con acción clickOutside para cerrarse -->
+
+    <ul
+      class="menu dropdown-content bg-base-200 rounded-box z-1 w-52 p-2 shadow-sm"
+    >
+      <li>
+        <button
+          class="clickable-element flex items-center whitespace-nowrap gap-1 p-2 w-full text-left rounded"
+          onclick={() => {
+            workspace.openPropertyEditor(noteId, property);
+            showOptions = false;
+          }}
+        >
+          <SlidersHorizontalIcon size="18" />
+          <p class="whitespace-nowrap">Edit Property</p>
+        </button>
+      </li>
+      <li>
+        <button
+          class="clickable-element flex items-center gap-1 p-2 w-full text-left rounded text-rose-400"
+          onclick={() => {
+            noteController.deleteProperty(noteId, property.id);
+            showOptions = false;
+          }}
+        >
+          <Trash2Icon size="18" />
+          <p class="whitespace-nowrap">Delete Property</p>
+        </button>
+      </li>
+    </ul>
+  </details>
 
   <!-- Renderizado condicional de la propiedad según su tipo -->
   {#if property.type === "text"}
