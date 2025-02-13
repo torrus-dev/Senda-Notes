@@ -25,7 +25,7 @@
   --color-warning-content: oklch(0% 0 0);
   --color-error: oklch(57.86% 0.2242 26.62);
   --color-error-content: oklch(100% 0 0);
-  --radius-selector: 1rem;
+  --radius-selector: 0.66rem;
   --radius-field: 0.5rem;
   --radius-box: 1rem;
   --size-selector: 0.28125rem;
@@ -39,33 +39,36 @@
   @apply btn-error;
 }
 
+.text-delete {
+  @apply text-error;
+}
+
 @plugin "daisyui" {
   themes: light --default, cosmical --prefersdark;
 }
 
-@font-face {
+/* @font-face {
   font-family: 'Roboto Flex';
   src: url('/fonts/RobotoFlex.ttf') format('truetype');
   font-weight: 1 999;
-  /* Rango de pesos */
   font-style: normal italic;
-}
+} */
 
-/* 
+
 @font-face {
-  font-family: 'Source Serif 4';
-  src: url('/fonts/SourceSerif4.ttf') format('truetype');
+  font-family: 'Source Sans 3';
+  src: url('/fonts/SourceSans3.ttf') format('truetype');
   font-weight: 1 999;
-font-style: normal;
+  font-style: normal;
 }
 
 @font-face {
-  font-family: 'Source Serif 4';
-  src: url('/fonts/SourceSerif4-Italic.ttf') format('truetype');
+  font-family: 'Source Sans 3';
+  src: url('/fonts/SourceSans3-Italic.ttf') format('truetype');
   font-weight: 1 999;
   font-style: italic;
 }
-*/
+
 
 html {
   box-sizing: border-box;
@@ -82,8 +85,6 @@ body,
 p,
 ol,
 ul {
-  margin: 0;
-  padding: 0;
   font-weight: normal;
 }
 
@@ -99,7 +100,7 @@ img {
 
 
 body {
-  font-family: 'Roboto Flex', sans-serif;
+  font-family: 'Source Sans 3', sans-serif;
   padding: 0;
   margin: 0;
   background-color: var(--color-bg-primary);

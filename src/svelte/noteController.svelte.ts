@@ -27,6 +27,7 @@ class NoteController {
   }
 
   createNote = () => {
+    console.log("nueva nota")
     const newNote: Note = {
       id: crypto.randomUUID(),
       title: this.generateUniqueTitle(),

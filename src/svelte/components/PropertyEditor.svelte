@@ -2,7 +2,6 @@
   import { workspace } from "../workspaceController.svelte";
   import { noteController } from "../noteController.svelte";
   import { XIcon, Trash2Icon } from "lucide-svelte";
-  import Button from "./Button.svelte";
 
   // Opciones de tipos de propiedades
   const propertyTypes = [

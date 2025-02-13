@@ -144,9 +144,7 @@
   {:else if property.type === "list"}
     <div class="inline-flex gap-1 grow-1 flex-wrap border-2 border-amber-50">
       {#each property.value as item, index}
-        <div
-          class="flex rounded-sm py-1 px-2 items-center bg-(--color-bg-secondary) gap-0.5"
-        >
+        <div class="badge badge-neutral">
           <span>{item}</span>
           {#if !readonly}
             <button
