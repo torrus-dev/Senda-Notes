@@ -19,10 +19,10 @@
         </ul>
       </div>
 
-      {#snippet dropdownLabel()}
-        <MoreVerticalIcon size="20" />
-      {/snippet}
-      <Dropdown {dropdownLabel}>
+      <Dropdown position="end">
+        {#snippet label()}
+          <MoreVerticalIcon size="20" />
+        {/snippet}
         <li>
           <button
             onclick={() => {

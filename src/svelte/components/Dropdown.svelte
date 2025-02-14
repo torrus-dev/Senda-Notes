@@ -1,11 +1,6 @@
 <!-- Dropdown.svelte -->
 <script>
-  let {
-    dropdownLabel,
-    position = "start",
-    bordered = false,
-    children,
-  } = $props();
+  let { label, position = "start", bordered = false, children } = $props();
   let { isOpen } = $state(false);
   let menuElement;
   let buttonElement;
@@ -55,7 +50,11 @@
   });
 </script>
 
-<div class="dropdown dropdown-end" class:dropdown-{positon}={posi}>
+<div
+  class="dropdown"
+  class:dropdown-center={position === "center"}
+  class:dropdown-end={position === "end"}
+>
   <button
     class="btn"
     aria-haspopup="true"
@@ -63,8 +62,7 @@
     onclick={toggle}
     bind:this={buttonElement}
   >
-    <!-- Snippet dropdownLabel -->
-    {@render dropdownLabel()}
+    {@render label()}
   </button>
 
   <ul
