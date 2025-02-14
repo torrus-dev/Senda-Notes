@@ -26,8 +26,7 @@ class NoteController {
     localStorage.setItem("NoteList", JSON.stringify(this.notes));
   }
 
-  createNote = () => {
-    console.log("nueva nota")
+  createNote = (parentId?: string) => {
     const newNote: Note = {
       id: crypto.randomUUID(),
       title: this.generateUniqueTitle(),
@@ -38,7 +37,22 @@ class NoteController {
     };
 
     this.notes = [...this.notes, newNote];
+
+    if (parentId) {
+      this.addChildToParent(parentId, newNote.id);
+    }
+
     this.activeNoteId = newNote.id;
+  };
+
+
+  private addChildToParent = (parentId: string, childId: string) => {
+    this.notes = this.notes.map(note => {
+      if (note.id === parentId && !note.children.includes(childId)) {
+        return { ...note, children: [...note.children, childId] };
+      }
+      return note;
+    });
   };
 
   private generateUniqueTitle = () => {
@@ -92,8 +106,53 @@ class NoteController {
   };
 
   deleteNote = (id: string) => {
-    this.notes = this.notes.filter(note => note.id !== id);
-    if (this.activeNoteId === id) this.activeNoteId = null;
+    const idsToDelete = this.getDescendantIds(id);
+    idsToDelete.push(id);
+
+    // Eliminar notas
+    this.notes = this.notes.filter(note => !idsToDelete.includes(note.id));
+
+    // Limpiar referencias en children de otras notas
+    this.notes = this.notes.map(note => ({
+      ...note,
+      children: note.children.filter(childId => !idsToDelete.includes(childId))
+    }));
+
+    // Limpiar activeNote si corresponde
+    if (this.activeNoteId && idsToDelete.includes(this.activeNoteId)) {
+      this.activeNoteId = null;
+    }
+  };
+
+  private getDescendantIds = (parentId: string): string[] => {
+    const parent = this.getNoteById(parentId);
+    if (!parent) return [];
+
+    return parent.children.reduce((acc: string[], childId) => {
+      return [...acc, childId, ...this.getDescendantIds(childId)];
+    }, []);
+  };
+
+  moveNote = (noteId: string, newParentId: string | null) => {
+    // Eliminar de todos los padres actuales
+    this.notes = this.notes.map(note => ({
+      ...note,
+      children: note.children.filter(id => id !== noteId)
+    }));
+
+    // Agregar al nuevo padre (si no es root)
+    if (newParentId) {
+      this.addChildToParent(newParentId, noteId);
+    }
+  };
+
+  reorderChildren = (parentId: string, newChildrenOrder: string[]) => {
+    this.notes = this.notes.map(note => {
+      if (note.id === parentId) {
+        return { ...note, children: newChildrenOrder };
+      }
+      return note;
+    });
   };
 
   createProperty = (noteId: string, property: Omit<Property, "id">) => {
