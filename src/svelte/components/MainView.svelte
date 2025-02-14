@@ -2,23 +2,11 @@
   import Title from "../components/Title.svelte";
   import Editor from "../components/Editor.svelte";
   import Properties from "../components/Properties.svelte";
+  import Dropdown from "./Dropdown.svelte";
   import { noteController } from "../noteController.svelte";
   import { MoreVerticalIcon, Trash2Icon } from "lucide-svelte";
 
   const activeNote = $derived(noteController.getActiveNote());
-
-  let isOpen = false;
-  let menuElement;
-
-  function handleKeydown(e) {
-    if (e.key === "Escape") {
-      isOpen = false;
-    }
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      isOpen = !isOpen;
-    }
-  }
 </script>
 
 <main class="overflow-auto">
@@ -31,24 +19,19 @@
         </ul>
       </div>
 
-      <details class="dropdown dropdown-end">
-        <summary class="btn btn-neutral btn-square"
-          ><MoreVerticalIcon size="20" /></summary
-        >
-        <ul
-          class="menu dropdown-content bg-base-200 rounded-box z-1 w-44 p-2 shadow-sm border-neutral border-1 mt-2"
-        >
-          <li>
-            <button
-              class="text-delete"
-              onclick={() => {
-                noteController.deleteNote(activeNote.id);
-              }}
-              ><Trash2Icon size="18" />Delete Note
-            </button>
-          </li>
-        </ul>
-      </details>
+      {#snippet dropdownLabel()}
+        <MoreVerticalIcon size="20" />
+      {/snippet}
+      <Dropdown {dropdownLabel}>
+        <li>
+          <button
+            onclick={() => {
+              noteController.deleteNote(activeNote.id);
+            }}
+            ><Trash2Icon size="18" />Delete Note
+          </button>
+        </li>
+      </Dropdown>
     </div>
 
     <article class="p-3 w-3xl mx-auto">

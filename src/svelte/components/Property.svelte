@@ -87,7 +87,7 @@
 
 <li class="property-item flex gap-2 ml-[-0.5rem] relative">
   <!-- Contenedor para el label y el menú -->
-  <details class="dropdown relative inline-block">
+  <details class="dropdown dropdown-center inline-block">
     <summary
       class="clickable-element rounded text-left flex items-center gap-2 p-2 w-(--property-label-width)"
     >
@@ -98,8 +98,6 @@
         {property.name}
       </p>
     </summary>
-
-    <!-- Menú flotante con acción clickOutside para cerrarse -->
 
     <ul
       class="menu dropdown-content bg-base-200 rounded-box z-1 w-52 p-2 shadow-sm"
