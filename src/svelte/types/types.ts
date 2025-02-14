@@ -9,6 +9,7 @@ export interface Note {
   id: string;
   title: string;
   content: string;
+  children: string[];
   metadata: Property[];
   properties: Property[];
 }
@@ -34,9 +35,22 @@ export interface Window {
   activeTabId: string | null;
 }
 
+export enum FocusTarget {
+  EDITOR = 'editor',
+  TITLE = 'title',
+  PROPERTY_EDITOR = 'property-editor'
+}
+
+// Estado del sistema de foco
+export interface FocusState {
+  targetId: FocusTarget | null;
+  timestamp: number;
+}
+
 // Estado global del workspace
 export interface WorkspaceState {
   propertyEditor: PropertyEditorState;
   windows: Window[];
   activeWindowId: string | null;
+  focus: FocusState;
 }

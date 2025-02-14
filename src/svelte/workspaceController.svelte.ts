@@ -1,4 +1,5 @@
 import type { Property, WorkspaceState, Tab, Window } from "./types/types";
+import { FocusTarget } from "./types/types";
 
 class WorkspaceController {
   // Estado global del workspace (incluye propertyEditor, ventanas y pestañas)
@@ -11,6 +12,10 @@ class WorkspaceController {
     },
     windows: [],
     activeWindowId: null,
+    focus: {
+      targetId: null,
+      timestamp: 0
+    }
   });
 
   // ========= Métodos para Property Editor =========
@@ -108,6 +113,22 @@ class WorkspaceController {
     if (this.state.activeWindowId === windowId) {
       this.state.activeWindowId = this.state.windows.length > 0 ? this.state.windows[0].id : null;
     }
+  };
+
+  // ========= Métodos para focus =========
+
+  requestFocus = (targetId: FocusTarget) => {
+    this.state.focus = {
+      targetId,
+      timestamp: Date.now()
+    };
+  };
+
+  clearFocus = () => {
+    this.state.focus = {
+      targetId: null,
+      timestamp: 0
+    };
   };
 }
 

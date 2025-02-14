@@ -1,6 +1,12 @@
 <!-- Dropdown.svelte -->
 <script>
-  let { label, position = "start", bordered = false, children } = $props();
+  let {
+    label,
+    menuList,
+    labelClass = "inline-flex gap-1 p-2 items-center clickable rounded-field",
+    position = "start",
+    minMenuWidth = 24,
+  } = $props();
   let { isOpen } = $state(false);
   let menuElement;
   let buttonElement;
@@ -52,11 +58,12 @@
 
 <div
   class="dropdown"
+  class:dropdown-start={position === "start"}
   class:dropdown-center={position === "center"}
   class:dropdown-end={position === "end"}
 >
   <button
-    class="btn"
+    class={labelClass}
     aria-haspopup="true"
     aria-expanded={isOpen}
     onclick={toggle}
@@ -66,18 +73,19 @@
   </button>
 
   <ul
-    class="dropdown-content menu bg-base-200 w-42"
+    class="dropdown-content menu interactive-list bg-base-200 mt-1 b-1 b-neutral shadow min-w-{minMenuWidth}"
     role="menu"
-    class:b-1={bordered}
-    class:b-neutral={bordered}
     class:invisible={!isOpen}
     bind:this={menuElement}
     tabindex="-1"
   >
-    {#if children}
-      {@render children()}
+    {#if menuList}
+      {@render menuList()}
     {:else}
       <p>no content</p>
     {/if}
   </ul>
 </div>
+
+<style>
+</style>

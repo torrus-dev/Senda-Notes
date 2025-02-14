@@ -43,6 +43,10 @@
   @apply text-error;
 }
 
+.btn-transparent {
+  @apply bg-transparent shadow-none border-none hover:bg-(--color-neutral) hover:text-(--color-neutral-content) focus:bg-(--color-neutral) focus:text-(--color-neutral-content) cursor-pointer whitespace-nowrap;
+}
+
 @plugin "daisyui" {
   themes: light --default, cosmical --prefersdark;
 }
@@ -103,13 +107,8 @@ body {
   font-family: 'Source Sans 3', sans-serif;
   padding: 0;
   margin: 0;
-  background-color: var(--color-bg-primary);
-  color: var(--color-font-normal);
-}
-
-select {
-  background-color: var(--color-bg-primary);
-  color: var(--color-font-normal);
+  /* background-color: var(--color-bg-primary);
+  color: var(--color-font-normal); */
 }
 
 
@@ -143,10 +142,13 @@ select {
 
 }
 
-.clickable-element {
-  cursor: pointer;
+.interactive-list {
 
-  &:hover {
-    background-color: var(--color-interactive-hover);
+  button {
+    @apply hover:bg-(--color-neutral) hover:text-(--color-neutral-content) focus:bg-(--color-neutral) focus:text-(--color-neutral-content) cursor-pointer whitespace-nowrap;
   }
+}
+
+.clickable {
+  @apply bg-transparent shadow-none border-none hover:bg-(--color-neutral) hover:text-(--color-neutral-content) focus:bg-(--color-neutral) focus:text-(--color-neutral-content) cursor-pointer whitespace-nowrap;
 }

@@ -49,13 +49,11 @@
       <h3 class="text-xl font-bold py-1">Properties</h3>
       <ul class="property-box">
         {#each note.properties as property}
-          <li>
-            <Property
-              noteId={note.id}
-              {property}
-              onUpdate={handlePropertyUpdate}
-            />
-          </li>
+          <Property
+            noteId={note.id}
+            {property}
+            onUpdate={handlePropertyUpdate}
+          />
         {/each}
       </ul>
 
@@ -63,11 +61,11 @@
         <PropertyEditor />
       {:else}
         <button
-          class="btn btn-neutral"
+          class="inline-flex gap-1 p-2 items-center clickable rounded-field ml-[-.5rem]"
           onclick={() => workspace.openPropertyEditor(note.id)}
         >
-          <PlusIcon size="18" /> Add Property
-        </button>
+          <PlusIcon size="18" />Add Property</button
+        >
       {/if}
     </div>
   </div>

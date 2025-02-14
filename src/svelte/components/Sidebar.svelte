@@ -14,12 +14,14 @@
   let activeNoteId = $derived(noteController.activeNoteId);
 </script>
 
-<aside class="bg-(--color-bg-secondary) p-4 flex-col gap-2">
-  <button class="btn btn-success" onclick={noteController.createNote}>
-    <SquarePlus size="18" /> New Note
-  </button>
-  <ul class="menu bg-base-100 rounded-box w-full p-2">
+<aside class="bg-base-200 flex-col gap-2">
+  <ul class="menu rounded-box w-full p-2">
     <li class="menu-title">Notes</li>
+    <li>
+      <button class="btn mb-4 btn-success" onclick={noteController.createNote}>
+        <SquarePlus size="18" /> New Note
+      </button>
+    </li>
     {#each notes as note (note.id)}
       <li>
         <a

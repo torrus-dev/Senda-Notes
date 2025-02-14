@@ -31,6 +31,7 @@ class NoteController {
     const newNote: Note = {
       id: crypto.randomUUID(),
       title: this.generateUniqueTitle(),
+      children: [],
       content: "",
       metadata: this.createDefaultMetadata(),
       properties: [],

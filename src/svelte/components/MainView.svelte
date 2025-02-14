@@ -2,7 +2,7 @@
   import Title from "../components/Title.svelte";
   import Editor from "../components/Editor.svelte";
   import Properties from "../components/Properties.svelte";
-  import Dropdown from "./Dropdown.svelte";
+  import DropdownList from "./DropdownList.svelte";
   import { noteController } from "../noteController.svelte";
   import { MoreVerticalIcon, Trash2Icon } from "lucide-svelte";
 
@@ -15,23 +15,26 @@
       <div class="breadcrumbs text-sm flex-1">
         <ul class="text-lg">
           <li><a>Home</a></li>
-          <li>Titulo de la nota (temporal)</li>
+          <li>{activeNote.title}</li>
         </ul>
       </div>
 
-      <Dropdown position="end">
+      <DropdownList position="end">
         {#snippet label()}
           <MoreVerticalIcon size="20" />
         {/snippet}
-        <li>
-          <button
-            onclick={() => {
-              noteController.deleteNote(activeNote.id);
-            }}
-            ><Trash2Icon size="18" />Delete Note
-          </button>
-        </li>
-      </Dropdown>
+        {#snippet menuList()}
+          <li>
+            <button
+              class="text-rose-500"
+              onclick={() => {
+                noteController.deleteNote(activeNote.id);
+              }}
+              ><Trash2Icon size="18" />Delete Note
+            </button>
+          </li>
+        {/snippet}
+      </DropdownList>
     </div>
 
     <article class="p-3 w-3xl mx-auto">

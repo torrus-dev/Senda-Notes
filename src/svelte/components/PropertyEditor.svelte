@@ -103,7 +103,7 @@
 <div class="property-editor relative p-6 shadow-lg bg-(--color-bg-secondary)">
   <h3 class="text-xl font-bold mb-3">Property Editor</h3>
   <button
-    class="absolute top-0 right-0 p-3 clickable-element"
+    class="absolute top-0 right-0 p-3 clickable"
     onclick={workspace.closePropertyEditor}
   >
     <XIcon />

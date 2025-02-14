@@ -2,6 +2,7 @@
   import { formatDateTimeForInput } from "../utils.svelte";
   import { workspace } from "../workspaceController.svelte";
   import { noteController } from "../noteController.svelte";
+  import DropdownList from "./DropdownList.svelte";
 
   import {
     TextIcon,
@@ -15,7 +16,6 @@
     Trash2Icon,
   } from "lucide-svelte";
 
-  // Props en runes mode
   let { noteId = null, property = null, onUpdate, readonly = false } = $props();
   let showOptions = $state(false);
 
@@ -68,66 +68,42 @@
 
   // Obtener el componente de icono actual (derivado)
   const IconComponent = $derived(getIconComponent(property.type));
-
-  // Action para detectar clicks fuera del nodo
-  function clickOutside(node) {
-    const handleClick = (event) => {
-      if (!node.contains(event.target)) {
-        node.dispatchEvent(new CustomEvent("outclick"));
-      }
-    };
-    document.addEventListener("click", handleClick, true);
-    return {
-      destroy() {
-        document.removeEventListener("click", handleClick, true);
-      },
-    };
-  }
 </script>
 
 <li class="property-item flex gap-2 ml-[-0.5rem] relative">
-  <!-- Contenedor para el label y el menú -->
-  <details class="dropdown dropdown-center inline-block">
-    <summary
-      class="clickable-element rounded text-left flex items-center gap-2 p-2 w-(--property-label-width)"
-    >
+  <DropdownList position="center">
+    {#snippet label()}
       {#if IconComponent}
         <span class="property-icon"><IconComponent size="18" /></span>
       {/if}
-      <p class="w-(--property-label-width)">
+      <p class="text-left w-(--property-label-width)">
         {property.name}
       </p>
-    </summary>
-
-    <ul
-      class="menu dropdown-content bg-base-200 rounded-box z-1 w-52 p-2 shadow-sm"
-    >
+    {/snippet}
+    {#snippet menuList()}
       <li>
         <button
-          class="clickable-element flex items-center whitespace-nowrap gap-1 p-2 w-full text-left rounded"
           onclick={() => {
             workspace.openPropertyEditor(noteId, property);
             showOptions = false;
           }}
         >
-          <SlidersHorizontalIcon size="18" />
-          <p class="whitespace-nowrap">Edit Property</p>
+          <SlidersHorizontalIcon size="18" />Edit Property
         </button>
       </li>
       <li>
         <button
-          class="clickable-element flex items-center gap-1 p-2 w-full text-left rounded text-rose-400"
+          class="text-rose-500"
           onclick={() => {
             noteController.deleteProperty(noteId, property.id);
             showOptions = false;
           }}
         >
-          <Trash2Icon size="18" />
-          <p class="whitespace-nowrap">Delete Property</p>
+          <Trash2Icon size="18" />Delete Property
         </button>
       </li>
-    </ul>
-  </details>
+    {/snippet}
+  </DropdownList>
 
   <!-- Renderizado condicional de la propiedad según su tipo -->
   {#if property.type === "text"}
@@ -146,7 +122,7 @@
           <span>{item}</span>
           {#if !readonly}
             <button
-              class="clickable-element mr-[-0.25rem] text-(--color-font-faint)"
+              class="clickable mr-[-0.25rem] text-(--color-font-faint)"
               onclick={() => removeListItem(index)}
               aria-label="Remove item"
             >
@@ -218,6 +194,5 @@
     display: flex;
     width: 100%;
     flex-grow: 2;
-    border-radius: calc(var(--spacing) * 2);
   }
 </style>
