@@ -10,6 +10,7 @@ export interface Note {
   title: string;
   content: string;
   children: string[];
+  parentId?: string;
   metadata: Property[];
   properties: Property[];
 }
