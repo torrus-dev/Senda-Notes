@@ -61,5 +61,5 @@ export interface WorkspaceState {
   windows: Window[];
   activeWindowId: string | null;
   focus: FocusState;
-  dnd: DragAndDropState | null;
+  dragAndDrop: DragAndDropState | null;
 }

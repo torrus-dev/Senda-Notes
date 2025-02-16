@@ -10,7 +10,7 @@ class WorkspaceController {
       editingProperty: null,
       originalName: null,
     },
-    dnd: null,
+    dragAndDrop: null,
     windows: [],
     activeWindowId: null,
     focus: {
@@ -19,8 +19,8 @@ class WorkspaceController {
     }
   });
 
-  clearDranAndDrop = () => {
-    this.state.dnd = null;
+  clearDragAndDrop = () => {
+    this.state.dragAndDrop = null;
   };
 
   // ========= Métodos para Property Editor =========
