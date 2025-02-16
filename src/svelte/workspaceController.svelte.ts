@@ -10,6 +10,7 @@ class WorkspaceController {
       editingProperty: null,
       originalName: null,
     },
+    dnd: null,
     windows: [],
     activeWindowId: null,
     focus: {
@@ -17,6 +18,10 @@ class WorkspaceController {
       timestamp: 0
     }
   });
+
+  clearDranAndDrop = () => {
+    this.state.dnd = null;
+  };
 
   // ========= Métodos para Property Editor =========
 

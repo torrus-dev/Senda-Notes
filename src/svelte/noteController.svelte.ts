@@ -251,6 +251,115 @@ class NoteController {
     this.updateNoteById(parentId, note => this.markModified({ ...note, children: newOrder }));
   };
 
+  createProperty = (noteId: string, property: Omit<Property, "id">) => {
+    if (!this.getNoteById(noteId)) {
+      throw new Error(`Note ${noteId} not found`);
+    }
+
+    this.notes = this.notes.map(note => {
+      if (note.id === noteId) {
+        const newProperty: Property = {
+          ...property,
+          id: crypto.randomUUID(),
+          value: property.value ?? this.getDefaultTypeValue(property.type)
+        };
+        return {
+          ...note,
+          properties: [...note.properties, newProperty],
+          metadata: note.metadata.map(prop =>
+            prop.name === "modified"
+              ? { ...prop, value: this.currentDate() }
+              : prop
+          )
+        };
+      }
+      return note;
+    });
+  };
+
+  updateProperty = (
+    noteId: string,
+    propertyId: string,
+    updates: Partial<Omit<Property, "id">>
+  ) => {
+    if (!this.getNoteById(noteId)) {
+      throw new Error(`Note ${noteId} not found`);
+    }
+
+    this.notes = this.notes.map(note => {
+      if (note.id === noteId) {
+        const updatedProperties = note.properties.map(property => {
+          if (property.id === propertyId) {
+            const newType = updates.type ?? property.type;
+            return {
+              ...property,
+              ...updates,
+              value: updates.type !== undefined
+                ? this.getDefaultTypeValue(newType)
+                : updates.value ?? property.value,
+              type: newType
+            };
+          }
+          return property;
+        });
+        return {
+          ...note,
+          properties: updatedProperties,
+          metadata: note.metadata.map(prop =>
+            prop.name === "modified"
+              ? { ...prop, value: this.currentDate() }
+              : prop
+          )
+        };
+      }
+      return note;
+    });
+  };
+
+
+  deleteProperty = (noteId: string, propertyId: string) => {
+    const note = this.getNoteById(noteId);
+    if (!note) throw new Error(`Note ${noteId} not found`);
+
+    if (!note.properties.some(p => p.id === propertyId)) {
+      throw new Error(`Property ${propertyId} not found in note ${noteId}`);
+    }
+
+    this.notes = this.notes.map(note => {
+      if (note.id === noteId) {
+        return {
+          ...note,
+          properties: note.properties.filter(p => p.id !== propertyId),
+          metadata: note.metadata.map(prop =>
+            prop.name === "modified"
+              ? { ...prop, value: this.currentDate() }
+              : prop
+          )
+        };
+      }
+      return note;
+    });
+  };
+
+  getDefaultTypeValue(type: Property["type"]) {
+    switch (type) {
+      case "text":
+        return "";
+      case "list":
+        return [];
+      case "number":
+        return 0;
+      case "check":
+        return false;
+      case "date":
+        return new Date().toISOString().split("T")[0];
+      case "datetime":
+        return new Date().toISOString();
+      default:
+        return ""; // Valor seguro por defecto
+    }
+  }
+
   // -------------------
   // Getters y setters
   // -------------------
