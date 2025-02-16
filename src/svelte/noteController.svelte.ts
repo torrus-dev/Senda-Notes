@@ -176,8 +176,11 @@ class NoteController {
   // -------------------
   // Funciones principales
   // -------------------
-  createNote = (parentId?: string): void => {
-    if (parentId) this.requireNote(parentId, "Parent note");
+  createNote = (parentId?: string | null): void => {
+    if (typeof parentId === 'string') {
+      console.log("probando")
+      this.requireNote(parentId, "Parent note");
+    }
 
     const note: Note = {
       id: crypto.randomUUID(),
@@ -186,12 +189,12 @@ class NoteController {
       content: "",
       metadata: this.createDefaultMetadata(),
       properties: [],
-      parentId,
+      parentId: typeof parentId === 'string' ? parentId : undefined,
     };
 
     this.notes = [...this.notes, note];
 
-    if (parentId) {
+    if (typeof parentId === 'string') {
       this.addChild(parentId, note.id);
     }
 

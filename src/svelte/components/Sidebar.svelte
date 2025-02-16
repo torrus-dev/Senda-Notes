@@ -18,7 +18,12 @@
   <ul class="menu rounded-box w-full p-2">
     <li class="menu-title">Notes</li>
     <li>
-      <button class="btn mb-4 btn-success" onclick={noteController.createNote}>
+      <button
+        class="btn mb-4 btn-success"
+        onclick={() => {
+          noteController.createNote();
+        }}
+      >
         <SquarePlus size="18" /> New Note
       </button>
     </li>
