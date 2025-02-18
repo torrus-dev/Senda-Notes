@@ -2,12 +2,7 @@
   import { noteController } from "../noteController.svelte";
   import NoteTreeNode from "./NoteTreeNode.svelte";
 
-  let notes = $derived(noteController.notes);
-  const rootNotes = $derived.by(() =>
-    notes
-      .filter((n) => !n.parentId)
-      .sort((a, b) => a.title.localeCompare(b.title)),
-  );
+  let rootNotes = $derived(noteController.getRootNotes());
 </script>
 
 <ul class="menu rounded-box w-full p-2">

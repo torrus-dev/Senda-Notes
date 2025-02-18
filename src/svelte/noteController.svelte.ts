@@ -62,9 +62,6 @@ class NoteController {
   // -------------------
   // Validaciones y utilidades
   // -------------------
-  private getNoteById = (id: string): Note | undefined =>
-    this.notes.find(note => note.id === id);
-
   private requireNote = (id: string, context: string = "Note"): Note => {
     const note = this.getNoteById(id);
     if (!note) throw new Error(`${context} ${id} not found`);
@@ -363,6 +360,11 @@ class NoteController {
   // -------------------
   // Getters y setters
   // -------------------
+
+  getNoteById = (id: string): Note | undefined =>
+    this.notes.find(note => note.id === id);
+
+
   getActiveNote = (): Note | null => {
     if (!this.activeNoteId) return null;
     const note = this.getNoteById(this.activeNoteId);
@@ -373,6 +375,8 @@ class NoteController {
     }
     return note;
   };
+
+  getRootNotes = (): Note[] => this.notes.filter((note) => !note.parentId);
 
   setActiveNote = (id: string): void => {
     this.requireNote(id);
