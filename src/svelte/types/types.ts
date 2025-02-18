@@ -52,7 +52,7 @@ export interface FocusState {
 export interface DragAndDropState {
   draggedNoteId: string | null;
   dropTargetId: string | null;
-  position: 'above' | 'below' | 'inside' | null;
+  position: 'top' | 'center' | 'bottom' | null;
 };
 
 // Estado global del workspace

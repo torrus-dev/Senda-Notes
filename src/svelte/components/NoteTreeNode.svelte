@@ -1,28 +1,39 @@
 <script>
   import NoteTreeNode from "./NoteTreeNode.svelte";
   import { noteController } from "../noteController.svelte";
+  import { workspace } from "../workspaceController.svelte";
   import { ChevronDownIcon, ChevronRightIcon } from "lucide-svelte";
 
   let { note, depth = 0 } = $props();
 
-  // Estado de expansión local
+  // Estado local para expansión
   let isExpanded = $state(true);
 
-  // Estados para drag & drop
-  let isDragging = $state(false);
-  let dropZone = $state(null); // "top", "center", "bottom" o null
+  // Estado derivado: indica si este nodo es el que se está arrastrando
+  let isDragged = $derived.by(() => {
+    workspace.state.dragAndDrop?.draggedNoteId === note.id;
+  });
 
-  // Determinar si la nota está activa
-  const isActive = $derived(note.id === noteController.activeNoteId);
+  // Estado derivado: indica si este nodo es el drop target y en qué posición
+  let dropZone = $derived.by(() => {
+    if (
+      workspace.state.dragAndDrop &&
+      workspace.state.dragAndDrop.dropTargetId === note.id
+    ) {
+      return workspace.state.dragAndDrop.position;
+    }
+    return null;
+  });
 
-  // Alternar expansión (evita que se propague el evento)
+  // Estado derivado: si la nota es la activa
+  let isActive = $derived(note.id === noteController.activeNoteId);
+
   const toggleExpansion = (event) => {
     event.stopPropagation();
     isExpanded = !isExpanded;
   };
 
-  // Manejar clic en el título (también para teclado)
-  const handleTitlePress = (event) => {
+  const handleTitleClick = (event) => {
     if (event.key === "Enter" || event.type === "click") {
       noteController.setActiveNote(note.id);
       if (note.children.length > 0 && !isExpanded) {
@@ -31,72 +42,89 @@
     }
   };
 
-  /* ----------------- HANDLERS DRAG & DROP ----------------- */
+  /* -------------------- HANDLERS DRAG & DROP -------------------- */
 
   const handleDragStart = (event) => {
     event.dataTransfer.setData("text/plain", note.id);
     event.dataTransfer.effectAllowed = "move";
-    isDragging = true;
-    console.log("dragging element: ", { note });
-    event.stopPropagation();
+    workspace.state.dragAndDrop = {
+      draggedNoteId: note.id,
+      dropTargetId: null,
+      position: null,
+    };
   };
 
-  const handleDragEnd = () => {
-    isDragging = false;
-    dropZone = null;
-    console.log("droping element: ", { note });
-    event.stopPropagation();
+  const handleDragEnd = (event) => {
+    workspace.clearDragAndDrop();
   };
 
   const handleDragOver = (event) => {
-    event.preventDefault(); // Permite el drop
+    event.preventDefault();
     event.dataTransfer.dropEffect = "move";
     const rect = event.currentTarget.getBoundingClientRect();
     const offsetY = event.clientY - rect.top;
-    // Determinar zona de drop según la posición vertical del cursor
-    if (offsetY < rect.height * 0.25) {
-      dropZone = "top";
-    } else if (offsetY > rect.height * 0.75) {
-      dropZone = "bottom";
+    let position = null;
+    // Ajustar thresholds
+    if (offsetY < rect.height * 0.3) {
+      position = "top";
+    } else if (offsetY > rect.height * 0.7) {
+      position = "bottom";
     } else {
-      dropZone = "center";
+      position = "center";
+    }
+    if (workspace.state.dragAndDrop) {
+      workspace.state.dragAndDrop.dropTargetId = note.id;
+      workspace.state.dragAndDrop.position = position;
     }
   };
 
-  const handleDragLeave = () => {
-    dropZone = null;
+  const handleDragLeave = (event) => {
+    if (
+      workspace.state.dragAndDrop &&
+      workspace.state.dragAndDrop.dropTargetId === note.id
+    ) {
+      workspace.state.dragAndDrop.dropTargetId = null;
+      workspace.state.dragAndDrop.position = null;
+    }
   };
 
   const handleDrop = (event) => {
     event.preventDefault();
     event.stopPropagation();
-    const zone = dropZone;
-    dropZone = null;
-    const draggedNoteId = event.dataTransfer.getData("text/plain");
+    const dndState = workspace.state.dragAndDrop;
+    workspace.clearDragAndDrop();
+    if (!dndState) return;
+    const { draggedNoteId, position } = dndState;
     if (!draggedNoteId || draggedNoteId === note.id) return;
 
-    if (zone === "center") {
-      // Insertar la nota arrastrada DENTRO de la nota destino
+    if (position === "center") {
+      // Insertar DENTRO del nodo destino
       noteController.moveNote(draggedNoteId, note.id);
-    } else if (zone === "top" || zone === "bottom") {
-      // Insertar la nota arrastrada COMO hermano del nodo destino
+    } else if (position === "top" || position === "bottom") {
+      // Insertar como hermano del nodo destino
       const parentId = note.parentId || null;
+
+      // 1. Mover la nota al nuevo padre (actualiza parentId y maneja padres anteriores)
+      noteController.moveNote(draggedNoteId, parentId);
+
+      // 2. Obtener lista actualizada de hermanos
       let siblings = [];
       if (parentId) {
         const parentNote = noteController.getNoteById(parentId);
         siblings = [...parentNote.children];
       } else {
-        // Para notas raíz, asumimos que noteController.getRootNotes() devuelve un array de notas
         siblings = noteController.getRootNotes().map((n) => n.id);
       }
-      // Eliminamos el id de la nota arrastrada si ya está en la lista
+
+      // 3. Filtrar la nota arrastrada para evitar duplicados antes de insertar
       siblings = siblings.filter((id) => id !== draggedNoteId);
-      // Encontramos el índice del nodo destino
       const index = siblings.indexOf(note.id);
       let insertIndex = index;
-      if (zone === "bottom") {
+      if (position === "bottom") {
         insertIndex = index + 1;
       }
+
+      // 4. Insertar en la posición correcta y reordenar
       siblings.splice(insertIndex, 0, draggedNoteId);
       noteController.reorderChildren(parentId, siblings);
     }
@@ -105,10 +133,10 @@
 
 <li
   class="group/node list-none cursor-pointer
-         {isDragging ? 'opacity-50' : ''} 
+         {isDragged ? 'opacity-50' : ''} 
          {dropZone === 'top' ? 'drop-top' : ''} 
          {dropZone === 'bottom' ? 'drop-bottom' : ''} 
-         {dropZone === 'center' ? 'bg-accent' : ''}"
+         {dropZone === 'center' ? 'drop-center' : ''}"
   draggable="true"
   ondragstart={handleDragStart}
   ondragend={handleDragEnd}
@@ -123,8 +151,8 @@
     role="button"
     tabindex="0"
     style={`margin-left: ${depth * 0.25}rem`}
-    onclick={handleTitlePress}
-    onkeydown={handleTitlePress}
+    onclick={handleTitleClick}
+    onkeydown={handleTitleClick}
   >
     {#if note.children.length > 0}
       <button
