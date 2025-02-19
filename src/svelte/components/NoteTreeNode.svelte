@@ -45,6 +45,7 @@
   /* -------------------- HANDLERS DRAG & DROP -------------------- */
 
   const handleDragStart = (event) => {
+    event.stopPropagation(); // Añadido para evitar burbujeo
     event.dataTransfer.setData("text/plain", note.id);
     event.dataTransfer.effectAllowed = "move";
     workspace.state.dragAndDrop = {
@@ -141,23 +142,21 @@
   };
 </script>
 
-<li
-  class="group/node list-none cursor-pointer {isDragged ? 'opacity-50' : ''}"
-  draggable="true"
-  ondragstart={handleDragStart}
-  ondragend={handleDragEnd}
->
+<li class="group/node list-none cursor-pointer {isDragged ? 'opacity-50' : ''}">
   <div
     class="flex ml-1.5 py-1 rounded-field select-none transition-colors hover:bg-(--color-neutral)
-       {isActive ? 'bg-(--color-neutral)' : ''}
-       {dropZone === 'top' ? 'drop-top' : ''} 
-       {dropZone === 'bottom' ? 'drop-bottom' : ''} 
-       {dropZone === 'center' ? 'drop-center' : ''}"
+           {isActive ? 'bg-(--color-neutral)' : ''}
+           {dropZone === 'top' ? 'drop-top' : ''} 
+           {dropZone === 'bottom' ? 'drop-bottom' : ''} 
+           {dropZone === 'center' ? 'drop-center' : ''}"
     role="button"
     tabindex="0"
     style={`margin-left: ${depth * 0.25}rem`}
+    draggable="true"
     onclick={handleTitleClick}
     onkeydown={handleTitleClick}
+    ondragstart={handleDragStart}
+    ondragend={handleDragEnd}
     ondragover={handleDragOver}
     ondragleave={handleDragLeave}
     ondrop={handleDrop}
@@ -176,7 +175,7 @@
         {/if}
       </button>
     {/if}
-    <span class="truncate">{note.title}</span>
+    <span class="truncate cursor-move">{note.title}</span>
   </div>
 
   {#if isExpanded && note.children.length > 0}

@@ -6,10 +6,10 @@
 </script>
 
 <ul class="menu rounded-box w-full p-2">
-  <li class="menu-title flex flex-row">
+  <li class="menu-title flex flex-row justify-between">
     <p>Notes</p>
     <button
-      class="btn btn-sm mb-4 btn-success inline-flex w-auto"
+      class="btn btn-xs mb-4 btn-success inline-flex w-auto"
       onclick={() => noteController.createNote()}
     >
       New Note
