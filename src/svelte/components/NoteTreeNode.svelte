@@ -3,6 +3,7 @@
   import { noteController } from "../noteController.svelte";
   import { workspace } from "../workspaceController.svelte";
   import { ChevronDownIcon, ChevronRightIcon } from "lucide-svelte";
+  // hacer una clase css con transform rotate y dejar solo un icono
 
   let { note, depth = 0 } = $props();
 
@@ -136,7 +137,8 @@
          {isDragged ? 'opacity-50' : ''} 
          {dropZone === 'top' ? 'drop-top' : ''} 
          {dropZone === 'bottom' ? 'drop-bottom' : ''} 
-         {dropZone === 'center' ? 'drop-center' : ''}"
+         {dropZone === 'center' ? 'drop-center' : ''}
+        "
   draggable="true"
   ondragstart={handleDragStart}
   ondragend={handleDragEnd}
