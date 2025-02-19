@@ -2,8 +2,7 @@
   import NoteTreeNode from "./NoteTreeNode.svelte";
   import { noteController } from "../noteController.svelte";
   import { workspace } from "../workspaceController.svelte";
-  import { ChevronDownIcon, ChevronRightIcon } from "lucide-svelte";
-  // hacer una clase css con transform rotate y dejar solo un icono
+  import { ChevronDownIcon, ChevronRightIcon } from "lucide-svelte"; // hacer una clase css con transform rotate y dejar solo un icono
 
   let { note, depth = 0 } = $props();
 
@@ -62,17 +61,21 @@
   const handleDragOver = (event) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
+
+    // Usar el alto del div del título para el cálculo
     const rect = event.currentTarget.getBoundingClientRect();
-    const offsetY = event.clientY - rect.top;
-    let position = null;
-    // Ajustar thresholds
-    if (offsetY < rect.height * 0.3) {
+    const relativeY = event.clientY - rect.top;
+    const threshold = rect.height / 3;
+
+    let position;
+    if (relativeY < threshold) {
       position = "top";
-    } else if (offsetY > rect.height * 0.7) {
+    } else if (relativeY > rect.height - threshold) {
       position = "bottom";
     } else {
       position = "center";
     }
+
     if (workspace.state.dragAndDrop) {
       workspace.state.dragAndDrop.dropTargetId = note.id;
       workspace.state.dragAndDrop.position = position;
@@ -80,12 +83,18 @@
   };
 
   const handleDragLeave = (event) => {
+    // Verificar que el cursor salga completamente del elemento
+    const rect = event.currentTarget.getBoundingClientRect();
     if (
-      workspace.state.dragAndDrop &&
-      workspace.state.dragAndDrop.dropTargetId === note.id
+      event.clientX < rect.left ||
+      event.clientX > rect.right ||
+      event.clientY < rect.top ||
+      event.clientY > rect.bottom
     ) {
-      workspace.state.dragAndDrop.dropTargetId = null;
-      workspace.state.dragAndDrop.position = null;
+      if (workspace.state.dragAndDrop?.dropTargetId === note.id) {
+        workspace.state.dragAndDrop.dropTargetId = null;
+        workspace.state.dragAndDrop.position = null;
+      }
     }
   };
 
@@ -133,28 +142,25 @@
 </script>
 
 <li
-  class="group/node list-none cursor-pointer
-         {isDragged ? 'opacity-50' : ''} 
-         {dropZone === 'top' ? 'drop-top' : ''} 
-         {dropZone === 'bottom' ? 'drop-bottom' : ''} 
-         {dropZone === 'center' ? 'drop-center' : ''}
-        "
+  class="group/node list-none cursor-pointer {isDragged ? 'opacity-50' : ''}"
   draggable="true"
   ondragstart={handleDragStart}
   ondragend={handleDragEnd}
-  ondragover={handleDragOver}
-  ondragleave={handleDragLeave}
-  ondrop={handleDrop}
 >
   <div
-    class="flex ml-1.5 py-1 rounded-field select-none transition-colors hover:bg-(--color-neutral) {isActive
-      ? 'bg-(--color-neutral)'
-      : ''}"
+    class="flex ml-1.5 py-1 rounded-field select-none transition-colors hover:bg-(--color-neutral)
+       {isActive ? 'bg-(--color-neutral)' : ''}
+       {dropZone === 'top' ? 'drop-top' : ''} 
+       {dropZone === 'bottom' ? 'drop-bottom' : ''} 
+       {dropZone === 'center' ? 'drop-center' : ''}"
     role="button"
     tabindex="0"
     style={`margin-left: ${depth * 0.25}rem`}
     onclick={handleTitleClick}
     onkeydown={handleTitleClick}
+    ondragover={handleDragOver}
+    ondragleave={handleDragLeave}
+    ondrop={handleDrop}
   >
     {#if note.children.length > 0}
       <button
@@ -184,3 +190,15 @@
     </ul>
   {/if}
 </li>
+
+<style>
+  .drop-top {
+    border-top: inset 2px var(--color-accent);
+  }
+  .drop-bottom {
+    border-bottom: inset 2px var(--color-accent);
+  }
+  .drop-center {
+    background-color: var(--color-accent);
+  }
+</style>
