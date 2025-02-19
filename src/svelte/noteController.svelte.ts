@@ -85,15 +85,27 @@ class NoteController {
     }
   };
 
-  private validateChildrenOrder = (parent: Note, newOrder: string[]): boolean => {
-    const uniqueIds = new Set(newOrder);
-    return (
-      newOrder.length === parent.children.length &&
-      newOrder.every(id => {
-        const child = this.getNoteById(id);
-        return child && child.parentId === parent.id && parent.children.includes(id);
-      }) &&
-      uniqueIds.size === newOrder.length
+  private validateNoteOrder(newOrder: string[], expectedIds: string[], contextCheck?: (id: string) => boolean): boolean {
+    const validations = {
+      sameLength: newOrder.length === expectedIds.length,
+      allIdsValid: newOrder.every(id => expectedIds.includes(id)),
+      allUnique: new Set(newOrder).size === newOrder.length,
+      contextValid: contextCheck ? newOrder.every(contextCheck) : true
+    };
+
+    return Object.values(validations).every(Boolean);
+  }
+
+  private validateRootOrder = (newOrder: string[]): boolean => {
+    const rootIds = this.getRootNotes().map(n => n.id);
+    return this.validateNoteOrder(newOrder, rootIds);
+  };
+
+  private validateSiblingOrder = (parent: Note, newOrder: string[]): boolean => {
+    return this.validateNoteOrder(
+      newOrder,
+      parent.children,
+      (id) => this.getNoteById(id)?.parentId === parent.id
     );
   };
 
@@ -230,19 +242,50 @@ class NoteController {
   };
 
   moveNote = (noteId: string, newParentId: string | null): void => {
-    this.requireNote(noteId);
-    if (newParentId) {
-      this.requireNote(newParentId, "New parent note");
-      if (newParentId === noteId) throw new Error("Cannot move note to itself");
-      if (this.wouldCreateCycle(newParentId, noteId)) throw new Error("Cannot move note to its own descendant");
+    const note = this.requireNote(noteId);
+
+    // Si el nuevo padre es el mismo que el actual, no hacer nada
+    if (newParentId === note.parentId) return;
+
+    // Validar movimiento a raíz
+    if (newParentId === null) {
+      if (note.parentId) {
+        this.removeFromParent(noteId);
+        this.updateNote(noteId, { parentId: undefined });
+      }
+      return;
+    }
+
+    // Validar movimiento a otro padre
+    this.requireNote(newParentId, "New parent note");
+    if (newParentId === noteId) throw new Error("Cannot move note to itself");
+    if (this.wouldCreateCycle(newParentId, noteId)) {
+      throw new Error("Cannot move note to its own descendant");
     }
     this.handleParentChange(noteId, newParentId);
-    this.updateNote(noteId, {});
   };
 
-  reorderChildren = (parentId: string, newOrder: string[]): void => {
+  reorderNotes = (parentId: string | null, newOrder: string[]): void => {
+    // Caso para notas raíz
+    if (parentId === null) {
+      const currentRootIds = this.getRootNotes().map(n => n.id);
+
+      // Validar que el nuevo orden contiene exactamente las mismas notas raíz
+      if (!this.validateRootOrder(newOrder)) {
+        throw new Error("Invalid root notes order");
+      }
+
+      // Reordenar manteniendo la referencia completa de las notas
+      this.notes = [
+        ...newOrder.map(id => this.requireNote(id)),
+        ...this.notes.filter(n => n.parentId !== undefined)
+      ];
+      return;
+    }
+
+    // Caso para notas con padre
     const parent = this.requireNote(parentId, "Parent note");
-    if (!this.validateChildrenOrder(parent, newOrder)) {
+    if (!this.validateSiblingOrder(parent, newOrder)) {
       throw new Error("Invalid children order");
     }
     this.updateNoteById(parentId, note => this.markModified({ ...note, children: newOrder }));
@@ -377,6 +420,24 @@ class NoteController {
   };
 
   getRootNotes = (): Note[] => this.notes.filter((note) => !note.parentId);
+
+  getBreadcrumbPath(noteId: string): Array<{ id: string; title: string }> {
+    const path = [];
+    let currentNote = this.getNoteById(noteId);
+
+    while (currentNote) {
+      path.unshift({ // Usamos unshift para mantener el orden padre -> abuelo -> etc.
+        id: currentNote.id,
+        title: currentNote.title
+      });
+
+      currentNote = currentNote.parentId
+        ? this.getNoteById(currentNote.parentId)
+        : undefined;
+    }
+
+    return path;
+  }
 
   setActiveNote = (id: string): void => {
     this.requireNote(id);

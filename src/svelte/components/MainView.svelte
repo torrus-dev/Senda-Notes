@@ -5,6 +5,7 @@
   import DropdownList from "./DropdownList.svelte";
   import { noteController } from "../noteController.svelte";
   import { MoreVerticalIcon, Trash2Icon } from "lucide-svelte";
+  import Breadcrumbs from "./Breadcrumbs.svelte";
 
   const activeNote = $derived(noteController.getActiveNote());
 </script>
@@ -12,11 +13,8 @@
 <main class="overflow-auto">
   {#if activeNote}
     <div class="navbar shadow-sm py-2 px-8 border-neutral border-b-1">
-      <div class="breadcrumbs text-sm flex-1">
-        <ul class="text-lg">
-          <li><a>Home</a></li>
-          <li>{activeNote.title}</li>
-        </ul>
+      <div class="flex-1">
+        <Breadcrumbs note={activeNote}></Breadcrumbs>
       </div>
 
       <DropdownList position="end">

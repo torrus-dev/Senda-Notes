@@ -61,17 +61,20 @@
 
   const handleDragOver = (event) => {
     event.preventDefault();
+    const draggedNoteId = workspace.state.dragAndDrop?.draggedNoteId;
+
+    // Prevenir interacción consigo mismo
+    if (draggedNoteId === note.id) return;
+
     event.dataTransfer.dropEffect = "move";
-
-    // Usar el alto del div del título para el cálculo
     const rect = event.currentTarget.getBoundingClientRect();
-    const relativeY = event.clientY - rect.top;
-    const threshold = rect.height / 3;
+    const offsetY = event.clientY - rect.top;
 
-    let position;
-    if (relativeY < threshold) {
+    // Ajustar thresholds
+    let position = null;
+    if (offsetY < rect.height * 0.3) {
       position = "top";
-    } else if (relativeY > rect.height - threshold) {
+    } else if (offsetY > rect.height * 0.7) {
       position = "bottom";
     } else {
       position = "center";
@@ -104,8 +107,10 @@
     event.stopPropagation();
     const dndState = workspace.state.dragAndDrop;
     workspace.clearDragAndDrop();
+
     if (!dndState) return;
     const { draggedNoteId, position } = dndState;
+
     if (!draggedNoteId || draggedNoteId === note.id) return;
 
     if (position === "center") {
@@ -113,31 +118,26 @@
       noteController.moveNote(draggedNoteId, note.id);
     } else if (position === "top" || position === "bottom") {
       // Insertar como hermano del nodo destino
-      const parentId = note.parentId || null;
+      const parentId = note.parentId || null; // Usar null explícito para raíz
 
-      // 1. Mover la nota al nuevo padre (actualiza parentId y maneja padres anteriores)
+      // 1. Mover la nota al nuevo padre
       noteController.moveNote(draggedNoteId, parentId);
 
-      // 2. Obtener lista actualizada de hermanos
-      let siblings = [];
-      if (parentId) {
-        const parentNote = noteController.getNoteById(parentId);
-        siblings = [...parentNote.children];
-      } else {
-        siblings = noteController.getRootNotes().map((n) => n.id);
-      }
+      // 2. Obtener hermanos actualizados
+      let siblings = parentId
+        ? noteController.getNoteById(parentId)?.children || []
+        : noteController.getRootNotes().map((n) => n.id);
 
-      // 3. Filtrar la nota arrastrada para evitar duplicados antes de insertar
+      // 3. Filtrar y ordenar
       siblings = siblings.filter((id) => id !== draggedNoteId);
       const index = siblings.indexOf(note.id);
-      let insertIndex = index;
-      if (position === "bottom") {
-        insertIndex = index + 1;
-      }
+      const insertIndex = position === "bottom" ? index + 1 : index;
 
-      // 4. Insertar en la posición correcta y reordenar
+      // 4. Insertar y reordenar
       siblings.splice(insertIndex, 0, draggedNoteId);
-      noteController.reorderChildren(parentId, siblings);
+
+      // Llamada corregida con parentId potencialmente null
+      noteController.reorderNotes(parentId, siblings);
     }
   };
 </script>
