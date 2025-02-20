@@ -51,13 +51,6 @@
   themes: light --default, cosmical --prefersdark;
 }
 
-/* @font-face {
-  font-family: 'Roboto Flex';
-  src: url('/fonts/RobotoFlex.ttf') format('truetype');
-  font-weight: 1 999;
-  font-style: normal italic;
-} */
-
 
 @font-face {
   font-family: 'Source Sans 3';
@@ -120,7 +113,6 @@ body {
   --color-font-faint: #8b8b8b;
   --color-border-normal: #e5e5e5;
   --color-border-muted: #b5b5b5;
-  --color-border-muted: red;
   --color-interactive-hover: #00000010;
   --color-interactive-active: #00000016;
 }
