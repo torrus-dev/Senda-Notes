@@ -161,7 +161,7 @@
     ondragleave={handleDragLeave}
     ondrop={handleDrop}
   >
-    {#if note.children.length > 0}
+    {#if note.children && note.children.length > 0}
       <button
         class="p-1 hover:bg-(--color-neutral) rounded-field transition-colors"
         onclick={toggleExpansion}
