@@ -1,10 +1,10 @@
 <script>
   import NoteTreeRenderer from "./NoteTreeRenderer.svelte";
 
-  let sidebarWidth = $state(42.5);
+  let sidebarWidth = $state(12.5);
 </script>
 
-<aside class="bg-base-200 w-[{sidebarWidth}rem] overflow-hidden">
+<aside class="bg-base-200 overflow-hidden" style="width: {sidebarWidth}rem;">
   <NoteTreeRenderer></NoteTreeRenderer>
 </aside>
 
