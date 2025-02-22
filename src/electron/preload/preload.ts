@@ -2,7 +2,7 @@
 // import { contextBridge } from 'electron'
 
 // const dummyNote = {
-//   title: 'Dummy Data', 
+//   title: 'Dummy Data',
 //   properties: {
 //     created: '2021-09-01',
 //     updated: '2021-09-01',

@@ -1,91 +1,99 @@
-<!-- Dropdown.svelte -->
+<style>
+</style>
+
 <script>
-  let {
-    label,
-    menuList,
-    labelClass = "inline-flex gap-1 p-2 items-center clickable rounded-field",
-    position = "start",
-    minMenuWidth = 24,
-  } = $props();
-  let { isOpen } = $state(false);
-  let menuElement;
-  let buttonElement;
+let {
+  label,
+  labelClass = "",
+  menuItems = [],
+  position = "start",
+  maxMenuWidth = 44,
+} = $props();
 
-  const close = () => {
-    isOpen = false;
-  };
+console.log("menuItems", menuItems);
+let { isOpen } = $state(false);
+let menuElement;
+let buttonElement;
 
-  const toggle = () => {
-    isOpen = !isOpen;
-    console.log("toggle", isOpen);
-  };
+const close = () => (isOpen = false);
+const toggle = () => (isOpen = !isOpen);
 
-  const handleKeydown = (e) => {
-    if (e.key === "Escape") {
+const handleKeydown = (e) => {
+  if (e.key === "Escape") {
+    close();
+  }
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault();
+    toggle();
+  }
+};
+
+const positionClass =
+  position === "start"
+    ? "dropdown-start"
+    : position === "center"
+      ? "dropdown-center"
+      : position === "end"
+        ? "dropdown-end"
+        : "";
+
+$effect(() => {
+  if (!isOpen) return;
+
+  const handleOutsideClick = (e) => {
+    if (
+      !menuElement?.contains(e.target) &&
+      !buttonElement?.contains(e.target)
+    ) {
       close();
     }
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      toggle();
-    }
   };
 
-  $effect(() => {
-    if (!isOpen) return;
+  // Usamos setTimeout para asegurarnos de que no se cierre inmediatamente al abrir
+  setTimeout(() => {
+    document.addEventListener("click", handleOutsideClick);
+  }, 0);
 
-    const handleOutsideClick = (e) => {
-      if (
-        !menuElement?.contains(e.target) &&
-        !buttonElement?.contains(e.target)
-      ) {
-        console.log("Cerrando por click fuera");
-        close();
-      }
-    };
+  document.addEventListener("keydown", handleKeydown);
 
-    setTimeout(() => {
-      document.addEventListener("click", handleOutsideClick);
-    }, 0);
-
-    document.addEventListener("keydown", handleKeydown);
-
-    return () => {
-      document.removeEventListener("click", handleOutsideClick);
-      document.removeEventListener("keydown", handleKeydown);
-    };
-  });
+  return () => {
+    document.removeEventListener("click", handleOutsideClick);
+    document.removeEventListener("keydown", handleKeydown);
+  };
+});
 </script>
 
-<div
-  class="dropdown"
-  class:dropdown-start={position === "start"}
-  class:dropdown-center={position === "center"}
-  class:dropdown-end={position === "end"}
->
+<div class={`dropdown ${positionClass}`}>
   <button
-    class={labelClass}
+    class="rounded-field inline-flex cursor-pointer items-center gap-1 p-2 hover:bg-(--color-bg-hover) focus:bg-(--color-bg-hover) {labelClass}"
     aria-haspopup="true"
     aria-expanded={isOpen}
     onclick={toggle}
-    bind:this={buttonElement}
-  >
+    bind:this={buttonElement}>
     {@render label()}
   </button>
 
   <ul
-    class="dropdown-content menu interactive-list bg-base-200 mt-1 b-1 b-neutral shadow min-w-{minMenuWidth}"
+    class="dropdown-content menu rounded-box mt-1 border-1 border-(--color-bg-300) bg-(--color-bg-200) p-2 shadow"
+    style="max-width: {maxMenuWidth}rem;"
     role="menu"
     class:invisible={!isOpen}
     bind:this={menuElement}
-    tabindex="-1"
-  >
-    {#if menuList}
-      {@render menuList()}
+    tabindex="-1">
+    {#each menuItems as item}
+      <li>
+        <button
+          class="p-2 whitespace-nowrap hover:bg-(--color-bg-300) {item.class}"
+          onclick={item.onClick}
+          role="menuitem">
+          {#if item.icon}
+            <item.icon size="18"></item.icon>
+          {/if}
+          {item.label}
+        </button>
+      </li>
     {:else}
-      <p>no content</p>
-    {/if}
+      <li>Empty list</li>
+    {/each}
   </ul>
 </div>
-
-<style>
-</style>

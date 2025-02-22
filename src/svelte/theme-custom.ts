@@ -1,8 +1,8 @@
-import type { Theme } from '@skeletonlabs/skeleton/themes';
+import type { Theme } from "@skeletonlabs/skeleton/themes";
 
 const theme = {
-  "name": "theme",
-  "properties": {
+  name: "theme",
+  properties: {
     "--type-scale-factor": "1.125",
     "--type-scale-1": "calc(0.75rem * var(--type-scale-factor))",
     "--type-scale-2": "calc(0.875rem * var(--type-scale-factor))",
@@ -19,7 +19,8 @@ const theme = {
     "--type-scale-13": "calc(8rem * var(--type-scale-factor))",
     "--base-font-color": "var(--color-surface-950)",
     "--base-font-color-dark": "var(--color-surface-50)",
-    "--base-font-family": "Seravek, Gill Sans Nova, Ubuntu, Calibri, DejaVu Sans, source-sans-pro, sans-serif",
+    "--base-font-family":
+      "Seravek, Gill Sans Nova, Ubuntu, Calibri, DejaVu Sans, source-sans-pro, sans-serif",
     "--base-font-size": "inherit",
     "--base-line-height": "inherit",
     "--base-font-weight": "normal",
@@ -219,11 +220,11 @@ const theme = {
     "--color-surface-contrast-700": "var(--color-surface-contrast-light)",
     "--color-surface-contrast-800": "var(--color-surface-contrast-light)",
     "--color-surface-contrast-900": "var(--color-surface-contrast-light)",
-    "--color-surface-contrast-950": "var(--color-surface-contrast-light)"
+    "--color-surface-contrast-950": "var(--color-surface-contrast-light)",
   },
-  "metadata": {
-    "version": "3.0.0"
-  }
+  metadata: {
+    version: "3.0.0",
+  },
 } satisfies Theme;
 
 export default theme;

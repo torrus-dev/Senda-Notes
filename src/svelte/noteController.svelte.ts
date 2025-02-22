@@ -47,14 +47,19 @@ class NoteController {
   // -------------------
   // Helpers de actualización
   // -------------------
-  private updateNoteById = (id: string, updater: (note: Note) => Note): void => {
-    this.notes = this.notes.map(note => (note.id === id ? updater(note) : note));
+  private updateNoteById = (
+    id: string,
+    updater: (note: Note) => Note,
+  ): void => {
+    this.notes = this.notes.map((note) =>
+      note.id === id ? updater(note) : note,
+    );
   };
 
   // Marca la nota como modificada actualizando la metadata "modified"
   private markModified = (note: Note): Note => {
-    const updatedMetadata = note.metadata.map(prop =>
-      prop.name === "modified" ? { ...prop, value: this.currentDate() } : prop
+    const updatedMetadata = note.metadata.map((prop) =>
+      prop.name === "modified" ? { ...prop, value: this.currentDate() } : prop,
     );
     return { ...note, metadata: updatedMetadata };
   };
@@ -85,27 +90,34 @@ class NoteController {
     }
   };
 
-  private validateNoteOrder(newOrder: string[], expectedIds: string[], contextCheck?: (id: string) => boolean): boolean {
+  private validateNoteOrder(
+    newOrder: string[],
+    expectedIds: string[],
+    contextCheck?: (id: string) => boolean,
+  ): boolean {
     const validations = {
       sameLength: newOrder.length === expectedIds.length,
-      allIdsValid: newOrder.every(id => expectedIds.includes(id)),
+      allIdsValid: newOrder.every((id) => expectedIds.includes(id)),
       allUnique: new Set(newOrder).size === newOrder.length,
-      contextValid: contextCheck ? newOrder.every(contextCheck) : true
+      contextValid: contextCheck ? newOrder.every(contextCheck) : true,
     };
 
     return Object.values(validations).every(Boolean);
   }
 
   private validateRootOrder = (newOrder: string[]): boolean => {
-    const rootIds = this.getRootNotes().map(n => n.id);
+    const rootIds = this.getRootNotes().map((n) => n.id);
     return this.validateNoteOrder(newOrder, rootIds);
   };
 
-  private validateSiblingOrder = (parent: Note, newOrder: string[]): boolean => {
+  private validateSiblingOrder = (
+    parent: Note,
+    newOrder: string[],
+  ): boolean => {
     return this.validateNoteOrder(
       newOrder,
       parent.children,
-      (id) => this.getNoteById(id)?.parentId === parent.id
+      (id) => this.getNoteById(id)?.parentId === parent.id,
     );
   };
 
@@ -113,11 +125,11 @@ class NoteController {
   // Gestión de relaciones
   // -------------------
   private removeFromParent = (childId: string): void => {
-    this.notes = this.notes.map(note => {
+    this.notes = this.notes.map((note) => {
       if (note.children.includes(childId)) {
         return this.markModified({
           ...note,
-          children: note.children.filter(id => id !== childId),
+          children: note.children.filter((id) => id !== childId),
         });
       }
       return note;
@@ -132,23 +144,31 @@ class NoteController {
       // Si el child tenía otro padre, lo removemos de su padre anterior
       this.removeFromParent(childId);
     }
-    this.updateNoteById(parentId, note => {
+    this.updateNoteById(parentId, (note) => {
       if (!note.children.includes(childId)) {
-        return this.markModified({ ...note, children: [...note.children, childId] });
+        return this.markModified({
+          ...note,
+          children: [...note.children, childId],
+        });
       }
       return note;
     });
-    this.updateNoteById(childId, note => ({ ...note, parentId }));
+    this.updateNoteById(childId, (note) => ({ ...note, parentId }));
   };
 
-  private handleParentChange = (noteId: string, newParentId: string | null): void => {
+  private handleParentChange = (
+    noteId: string,
+    newParentId: string | null,
+  ): void => {
     const note = this.requireNote(noteId);
     if (newParentId === note.parentId) return;
     if (newParentId) {
       this.addChild(newParentId, noteId);
     } else if (note.parentId) {
       this.removeFromParent(noteId);
-      this.updateNoteById(noteId, n => this.markModified({ ...n, parentId: undefined }));
+      this.updateNoteById(noteId, (n) =>
+        this.markModified({ ...n, parentId: undefined }),
+      );
     }
   };
 
@@ -157,7 +177,7 @@ class NoteController {
   // -------------------
   private generateUniqueTitle = (): string => {
     const base = "Nota Nueva";
-    const titles = new Set(this.notes.map(n => n.title));
+    const titles = new Set(this.notes.map((n) => n.title));
     if (!titles.has(base)) return base;
     let index = 1;
     while (titles.has(`${base} ${index}`)) index++;
@@ -165,14 +185,27 @@ class NoteController {
   };
 
   private createDefaultMetadata = (): Property[] => [
-    { id: crypto.randomUUID(), name: "created", value: this.currentDate(), type: "datetime" },
-    { id: crypto.randomUUID(), name: "modified", value: this.currentDate(), type: "datetime" },
+    {
+      id: crypto.randomUUID(),
+      name: "created",
+      value: this.currentDate(),
+      type: "datetime",
+    },
+    {
+      id: crypto.randomUUID(),
+      name: "modified",
+      value: this.currentDate(),
+      type: "datetime",
+    },
   ];
 
   currentDate = (): string => new Date().toISOString();
 
   sanitizeTitle = (title: string): string =>
-    title.replace(/[\n\r]+/g, " ").trim().slice(0, 100);
+    title
+      .replace(/[\n\r]+/g, " ")
+      .trim()
+      .slice(0, 100);
 
   private getDescendants = (parentId: string): string[] => {
     const parent = this.getNoteById(parentId);
@@ -186,8 +219,8 @@ class NoteController {
   // Funciones principales
   // -------------------
   createNote = (parentId?: string | null): void => {
-    if (typeof parentId === 'string') {
-      console.log("probando")
+    if (typeof parentId === "string") {
+      console.log("probando");
       this.requireNote(parentId, "Parent note");
     }
 
@@ -198,12 +231,12 @@ class NoteController {
       content: "",
       metadata: this.createDefaultMetadata(),
       properties: [],
-      parentId: typeof parentId === 'string' ? parentId : undefined,
+      parentId: typeof parentId === "string" ? parentId : undefined,
     };
 
     this.notes = [...this.notes, note];
 
-    if (typeof parentId === 'string') {
+    if (typeof parentId === "string") {
       this.addChild(parentId, note.id);
     }
 
@@ -215,7 +248,7 @@ class NoteController {
     if ("parentId" in updates) {
       this.handleParentChange(id, updates.parentId ?? null);
     }
-    this.updateNoteById(id, note => {
+    this.updateNoteById(id, (note) => {
       const merged = {
         ...note,
         ...updates,
@@ -230,11 +263,16 @@ class NoteController {
     this.requireNote(id);
     const idsToDelete = new Set([id, ...this.getDescendants(id)]);
     this.notes = this.notes
-      .filter(note => !idsToDelete.has(note.id))
-      .map(note =>
-        note.children.some(child => idsToDelete.has(child))
-          ? this.markModified({ ...note, children: note.children.filter(child => !idsToDelete.has(child)) })
-          : note
+      .filter((note) => !idsToDelete.has(note.id))
+      .map((note) =>
+        note.children.some((child) => idsToDelete.has(child))
+          ? this.markModified({
+              ...note,
+              children: note.children.filter(
+                (child) => !idsToDelete.has(child),
+              ),
+            })
+          : note,
       );
     if (this.activeNoteId && idsToDelete.has(this.activeNoteId)) {
       this.activeNoteId = null;
@@ -268,7 +306,7 @@ class NoteController {
   reorderNotes = (parentId: string | null, newOrder: string[]): void => {
     // Caso para notas raíz
     if (parentId === null) {
-      const currentRootIds = this.getRootNotes().map(n => n.id);
+      const currentRootIds = this.getRootNotes().map((n) => n.id);
 
       // Validar que el nuevo orden contiene exactamente las mismas notas raíz
       if (!this.validateRootOrder(newOrder)) {
@@ -277,8 +315,8 @@ class NoteController {
 
       // Reordenar manteniendo la referencia completa de las notas
       this.notes = [
-        ...newOrder.map(id => this.requireNote(id)),
-        ...this.notes.filter(n => n.parentId !== undefined)
+        ...newOrder.map((id) => this.requireNote(id)),
+        ...this.notes.filter((n) => n.parentId !== undefined),
       ];
       return;
     }
@@ -288,7 +326,9 @@ class NoteController {
     if (!this.validateSiblingOrder(parent, newOrder)) {
       throw new Error("Invalid children order");
     }
-    this.updateNoteById(parentId, note => this.markModified({ ...note, children: newOrder }));
+    this.updateNoteById(parentId, (note) =>
+      this.markModified({ ...note, children: newOrder }),
+    );
   };
 
   createProperty = (noteId: string, property: Omit<Property, "id">) => {
@@ -296,21 +336,21 @@ class NoteController {
       throw new Error(`Note ${noteId} not found`);
     }
 
-    this.notes = this.notes.map(note => {
+    this.notes = this.notes.map((note) => {
       if (note.id === noteId) {
         const newProperty: Property = {
           ...property,
           id: crypto.randomUUID(),
-          value: property.value ?? this.getDefaultTypeValue(property.type)
+          value: property.value ?? this.getDefaultTypeValue(property.type),
         };
         return {
           ...note,
           properties: [...note.properties, newProperty],
-          metadata: note.metadata.map(prop =>
+          metadata: note.metadata.map((prop) =>
             prop.name === "modified"
               ? { ...prop, value: this.currentDate() }
-              : prop
-          )
+              : prop,
+          ),
         };
       }
       return note;
@@ -320,24 +360,25 @@ class NoteController {
   updateProperty = (
     noteId: string,
     propertyId: string,
-    updates: Partial<Omit<Property, "id">>
+    updates: Partial<Omit<Property, "id">>,
   ) => {
     if (!this.getNoteById(noteId)) {
       throw new Error(`Note ${noteId} not found`);
     }
 
-    this.notes = this.notes.map(note => {
+    this.notes = this.notes.map((note) => {
       if (note.id === noteId) {
-        const updatedProperties = note.properties.map(property => {
+        const updatedProperties = note.properties.map((property) => {
           if (property.id === propertyId) {
             const newType = updates.type ?? property.type;
             return {
               ...property,
               ...updates,
-              value: updates.type !== undefined
-                ? this.getDefaultTypeValue(newType)
-                : updates.value ?? property.value,
-              type: newType
+              value:
+                updates.type !== undefined
+                  ? this.getDefaultTypeValue(newType)
+                  : (updates.value ?? property.value),
+              type: newType,
             };
           }
           return property;
@@ -345,36 +386,35 @@ class NoteController {
         return {
           ...note,
           properties: updatedProperties,
-          metadata: note.metadata.map(prop =>
+          metadata: note.metadata.map((prop) =>
             prop.name === "modified"
               ? { ...prop, value: this.currentDate() }
-              : prop
-          )
+              : prop,
+          ),
         };
       }
       return note;
     });
   };
 
-
   deleteProperty = (noteId: string, propertyId: string) => {
     const note = this.getNoteById(noteId);
     if (!note) throw new Error(`Note ${noteId} not found`);
 
-    if (!note.properties.some(p => p.id === propertyId)) {
+    if (!note.properties.some((p) => p.id === propertyId)) {
       throw new Error(`Property ${propertyId} not found in note ${noteId}`);
     }
 
-    this.notes = this.notes.map(note => {
+    this.notes = this.notes.map((note) => {
       if (note.id === noteId) {
         return {
           ...note,
-          properties: note.properties.filter(p => p.id !== propertyId),
-          metadata: note.metadata.map(prop =>
+          properties: note.properties.filter((p) => p.id !== propertyId),
+          metadata: note.metadata.map((prop) =>
             prop.name === "modified"
               ? { ...prop, value: this.currentDate() }
-              : prop
-          )
+              : prop,
+          ),
         };
       }
       return note;
@@ -405,8 +445,7 @@ class NoteController {
   // -------------------
 
   getNoteById = (id: string): Note | undefined =>
-    this.notes.find(note => note.id === id);
-
+    this.notes.find((note) => note.id === id);
 
   getActiveNote = (): Note | null => {
     if (!this.activeNoteId) return null;
@@ -426,9 +465,10 @@ class NoteController {
     let currentNote = this.getNoteById(noteId);
 
     while (currentNote) {
-      path.unshift({ // Usamos unshift para mantener el orden padre -> abuelo -> etc.
+      path.unshift({
+        // Usamos unshift para mantener el orden padre -> abuelo -> etc.
         id: currentNote.id,
-        title: currentNote.title
+        title: currentNote.title,
       });
 
       currentNote = currentNote.parentId

@@ -1,3 +1,46 @@
+.theme-light {
+  --color-bg-100: oklch(100% 0 0);
+  --color-bg-200: oklch(95% 0 0);
+  --color-bg-300: oklch(90% 0 0);
+  --color-bg-400: oklch(85% 0 0);
+  --color-bg-500: oklch(80% 0 0);
+
+  --base-content: oklch(0% 0 0);
+
+  --color-border-normal: #e5e5e5;
+  --color-border-muted: #b5b5b5;
+  --color-bg-hover: #00000010;
+  --color-bg-active: #00000016;
+}
+
+.theme-dark {
+  --color-bg-100: oklch(21.33% 0 0);
+  --color-bg-200: oklch(25% 0 0);
+  --color-bg-300: oklch(28.66% 0 0);
+  --color-bg-400: oklch(31.33% 0 0);
+  --color-bg-500: oklch(33.66% 0 0);
+
+  --base-content: oklch(100% 0 0);
+
+  --color-border-normal: oklch(40% 0 0);
+  --color-border-muted: oklch(30% 0 0);
+
+  --color-bg-hover: #ffffff10;
+  --color-bg-active: #ffffff16;
+}
+
+@import "tailwindcss";
+@import "tailwindcss/preflight.css" layer(base);
+
+/* @theme {
+  --base-spacing: 4px;
+  --spacing-xl: calc(var(--base-spacing) * 14);
+  --spacing-lg: calc(var(--base-spacing) * 12);
+  --spacing-md: calc(var(--base-spacing) * 10);
+  --spacing-sm: calc(var(--base-spacing) * 8);
+  --spacing-xs: calc(var(--base-spacing) * 6);
+} */
+
 @import "tailwindcss";
 
 @plugin "daisyui/theme" {
@@ -5,7 +48,7 @@
   default: false;
   prefersdark: true;
   color-scheme: "dark";
-  --color-base-100: oklch(21.34% 0 0);
+  --color-base-100: oklch(21.33% 0 0);
   --color-base-200: oklch(25% 0 0);
   --color-base-300: oklch(28.66% 0 0);
   --color-base-content: oklch(100% 0 0);
@@ -30,117 +73,66 @@
   --radius-box: 1rem;
   --size-selector: 0.28125rem;
   --size-field: 0.28125rem;
-  --border: 1px;
-  --depth: 1;
+  --border: 1.5px;
+  --depth: 0;
   --noise: 0;
 }
 
-.btn-delete {
-  @apply btn-error;
-}
-
-.text-delete {
-  @apply text-error;
-}
-
-.btn-transparent {
-  @apply bg-transparent shadow-none border-none hover:bg-(--color-neutral) hover:text-(--color-neutral-content) focus:bg-(--color-neutral) focus:text-(--color-neutral-content) cursor-pointer whitespace-nowrap;
+@plugin "daisyui/theme" {
+  name: "light";
+  default: false;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: oklch(100% 0 0);
+  --color-base-200: oklch(98% 0 0);
+  --color-base-300: oklch(95% 0 0);
+  --color-base-content: oklch(21% 0.006 285.885);
+  --color-primary: oklch(45% 0.24 277.023);
+  --color-primary-content: oklch(93% 0.034 272.788);
+  --color-secondary: oklch(65% 0.241 354.308);
+  --color-secondary-content: oklch(94% 0.028 342.258);
+  --color-accent: oklch(77% 0.152 181.912);
+  --color-accent-content: oklch(38% 0.063 188.416);
+  --color-neutral: oklch(14% 0.005 285.823);
+  --color-neutral-content: oklch(92% 0.004 286.32);
+  --color-info: oklch(74% 0.16 232.661);
+  --color-info-content: oklch(29% 0.066 243.157);
+  --color-success: oklch(76% 0.177 163.223);
+  --color-success-content: oklch(37% 0.077 168.94);
+  --color-warning: oklch(82% 0.189 84.429);
+  --color-warning-content: oklch(41% 0.112 45.904);
+  --color-error: oklch(71% 0.194 13.428);
+  --color-error-content: oklch(27% 0.105 12.094);
+  --radius-selector: 0.66rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.28125rem;
+  --size-field: 0.28125rem;
+  --border: 1.5px;
+  --depth: 0;
+  --noise: 0;
 }
 
 @plugin "daisyui" {
-  themes: light --default, cosmical --prefersdark;
+  themes:
+    light --default,
+    cosmical --prefersdark;
 }
 
-
 @font-face {
-  font-family: 'Source Sans 3';
-  src: url('/fonts/SourceSans3.ttf') format('truetype');
+  font-family: "Source Sans 3";
+  src: url("/fonts/SourceSans3.ttf") format("truetype");
   font-weight: 1 999;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Source Sans 3';
-  src: url('/fonts/SourceSans3-Italic.ttf') format('truetype');
+  font-family: "Source Sans 3";
+  src: url("/fonts/SourceSans3-Italic.ttf") format("truetype");
   font-weight: 1 999;
   font-style: italic;
 }
 
-
-html {
-  box-sizing: border-box;
-  font-size: 16px;
-}
-
-*,
-*:before,
-*:after {
-  box-sizing: inherit;
-}
-
-body,
-p,
-ol,
-ul {
-  font-weight: normal;
-}
-
-ol,
-ul {
-  list-style: none;
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-
 body {
-  font-family: 'Source Sans 3', sans-serif;
-  padding: 0;
-  margin: 0;
-  /* background-color: var(--color-bg-primary);
-  color: var(--color-font-normal); */
-}
-
-
-.theme-light {
-  --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f8f8f8;
-  --color-font-normal: #3b3b3b;
-  --color-font-muted: #5b5b5b;
-  --color-font-faint: #8b8b8b;
-  --color-border-normal: #e5e5e5;
-  --color-border-muted: #b5b5b5;
-  --color-interactive-hover: #00000010;
-  --color-interactive-active: #00000016;
-}
-
-.theme-dark {
-  --color-bg-primary: #1a1a1a;
-  --color-bg-secondary: #121212;
-  --color-font-normal: #ffffff;
-  --color-font-muted: #cccccc;
-  --color-font-faint: #888888;
-  --color-border-normal: #555555;
-  --color-border-muted: #333333;
-  --color-interactive-hover: #ffffff10;
-  --color-interactive-active: #ffffff16;
-}
-
-:root {
-  --property-label-width: 9rem;
-
-}
-
-.interactive-list {
-
-  button {
-    @apply hover:bg-(--color-neutral) hover:text-(--color-neutral-content) focus:bg-(--color-neutral) focus:text-(--color-neutral-content) cursor-pointer whitespace-nowrap;
-  }
-}
-
-.clickable {
-  @apply bg-transparent shadow-none border-none hover:bg-(--color-neutral) hover:text-(--color-neutral-content) focus:bg-(--color-neutral) focus:text-(--color-neutral-content) cursor-pointer whitespace-nowrap;
+  font-family: "Source Sans 3", sans-serif;
 }

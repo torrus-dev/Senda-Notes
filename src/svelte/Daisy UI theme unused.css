@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@plugin "daisyui/theme" {
+  name: "cosmical";
+  default: false;
+  prefersdark: true;
+  color-scheme: "dark";
+  --color-base-100: oklch(21.33% 0 0);
+  --color-base-200: oklch(25% 0 0);
+  --color-base-300: oklch(28.66% 0 0);
+  --color-base-content: oklch(100% 0 0);
+  --color-primary: oklch(43% 0.2045 268.95);
+  --color-primary-content: oklch(100% 0 0);
+  --color-secondary: oklch(79.28% 0.145 100.23);
+  --color-secondary-content: oklch(14% 0 0);
+  --color-accent: oklch(60% 0.25 292.717);
+  --color-accent-content: oklch(0% 0 0);
+  --color-neutral: oklch(28.66% 0 0);
+  --color-neutral-content: oklch(100% 0 0);
+  --color-info: oklch(78% 0.154 211.53);
+  --color-info-content: oklch(0% 0 0);
+  --color-success: oklch(63.24% 0.1363 157.86);
+  --color-success-content: oklch(100% 0 0);
+  --color-warning: oklch(86.163% 0.142 94.818);
+  --color-warning-content: oklch(0% 0 0);
+  --color-error: oklch(57.86% 0.2242 26.62);
+  --color-error-content: oklch(100% 0 0);
+  --radius-selector: 0.66rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.28125rem;
+  --size-field: 0.28125rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@plugin "daisyui" {
+  themes:
+    light --default,
+    cosmical --prefersdark;
+}

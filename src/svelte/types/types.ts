@@ -37,9 +37,9 @@ export interface Window {
 }
 
 export enum FocusTarget {
-  EDITOR = 'editor',
-  TITLE = 'title',
-  PROPERTY_EDITOR = 'property-editor'
+  EDITOR = "editor",
+  TITLE = "title",
+  PROPERTY_EDITOR = "property-editor",
 }
 
 // Estado del sistema de foco
@@ -52,8 +52,8 @@ export interface FocusState {
 export interface DragAndDropState {
   draggedNoteId: string | null;
   dropTargetId: string | null;
-  position: 'top' | 'center' | 'bottom' | null;
-};
+  position: "top" | "center" | "bottom" | null;
+}
 
 // Estado global del workspace
 export interface WorkspaceState {
