@@ -1,0 +1,44 @@
+:root {
+  --font-sans: "Source Sans 3";
+  --border-width: 2px;
+  --radius-selector: 0.66rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --spacing: 0.25rem; /* 4px */
+}
+
+.theme-light {
+  --color-base-100: oklch(100% 0 0);
+  --color-base-200: oklch(96% 0 0);
+  --color-base-300: oklch(92% 0 0);
+  --color-base-400: oklch(88% 0 0);
+
+  --color-base-content: oklch(0% 0 0);
+
+  --color-error-bg: var(--color-rose-400);
+  --color-error: var(--color-rose-800);
+
+  --color-border-normal: var(--color-base-300);
+  --color-border-muted: var(--color-base-200);
+
+  --color-bg-hover: #00000010;
+  --color-bg-active: #00000016;
+}
+
+.theme-dark {
+  --color-base-100: oklch(22% 0 0);
+  --color-base-200: oklch(26% 0 0);
+  --color-base-300: oklch(30% 0 0);
+  --color-base-400: oklch(34% 0 0);
+
+  --color-base-content: oklch(100% 0 0);
+
+  --color-error-bg: var(--color-rose-800);
+  --color-error: var(--color-rose-400);
+
+  --color-border-normal: var(--color-base-300);
+  --color-border-muted: var(--color-base-200);
+
+  --color-bg-hover: #ffffff10;
+  --color-bg-active: #ffffff16;
+}

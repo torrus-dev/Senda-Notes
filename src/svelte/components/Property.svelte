@@ -1,8 +1,4 @@
 <style>
-input {
-  border-color: var(--color-neutral);
-  background-color: var(--color-base-100);
-}
 </style>
 
 <script>
@@ -120,14 +116,14 @@ const IconComponent = $derived(getIconComponent(property.type));
       placeholder="No value" />
   {:else if property.type === "list"}
     <div
-      class="rounded-field inline-flex flex-wrap items-center gap-1 px-1 outline-2 outline-(--color-neutral)">
+      class="rounded-field bordered inline-flex flex-wrap items-center gap-1 px-1">
       {#each property.value as item, index}
         <div
           class="rounded-selector inline-flex items-center bg-(--color-base-200) p-1 text-sm hover:bg-(--color-bg-hover)">
           <span>{item}</span>
           {#if !readonly}
             <Button
-              cssClass="mr-[-0.25rem] text-(--base-content)/50"
+              cssClass="mr-[-0.25rem] text-base-content/50"
               onclick={() => removeListItem(index)}
               aria-label="Remove item"
               size="small"

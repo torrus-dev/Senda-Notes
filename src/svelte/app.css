@@ -1,122 +1,59 @@
-.theme-light {
-  --color-bg-100: oklch(100% 0 0);
-  --color-bg-200: oklch(95% 0 0);
-  --color-bg-300: oklch(90% 0 0);
-  --color-bg-400: oklch(85% 0 0);
-  --color-bg-500: oklch(80% 0 0);
-
-  --base-content: oklch(0% 0 0);
-
-  --color-border-normal: #e5e5e5;
-  --color-border-muted: #b5b5b5;
-  --color-bg-hover: #00000010;
-  --color-bg-active: #00000016;
-}
-
-.theme-dark {
-  --color-bg-100: oklch(21.33% 0 0);
-  --color-bg-200: oklch(25% 0 0);
-  --color-bg-300: oklch(28.66% 0 0);
-  --color-bg-400: oklch(31.33% 0 0);
-  --color-bg-500: oklch(33.66% 0 0);
-
-  --base-content: oklch(100% 0 0);
-
-  --color-border-normal: oklch(40% 0 0);
-  --color-border-muted: oklch(30% 0 0);
-
-  --color-bg-hover: #ffffff10;
-  --color-bg-active: #ffffff16;
-}
+@import "./css/theme.css";
 
 @import "tailwindcss";
 @import "tailwindcss/preflight.css" layer(base);
-
-@import "tailwindcss";
-
-@plugin "daisyui/theme" {
-  name: "cosmical";
-  default: false;
-  prefersdark: true;
-  color-scheme: "dark";
-  --color-base-100: oklch(21.33% 0 0);
-  --color-base-200: oklch(25% 0 0);
-  --color-base-300: oklch(28.66% 0 0);
-  --color-base-content: oklch(100% 0 0);
-  --color-primary: oklch(43% 0.2045 268.95);
-  --color-primary-content: oklch(100% 0 0);
-  --color-secondary: oklch(79.28% 0.145 100.23);
-  --color-secondary-content: oklch(14% 0 0);
-  --color-accent: oklch(60% 0.25 292.717);
-  --color-accent-content: oklch(0% 0 0);
-  --color-neutral: oklch(28.66% 0 0);
-  --color-neutral-content: oklch(100% 0 0);
-  --color-info: oklch(78% 0.154 211.53);
-  --color-info-content: oklch(0% 0 0);
-  --color-success: oklch(63.24% 0.1363 157.86);
-  --color-success-content: oklch(100% 0 0);
-  --color-warning: oklch(86.163% 0.142 94.818);
-  --color-warning-content: oklch(0% 0 0);
-  --color-error: oklch(57.86% 0.2242 26.62);
-  --color-error-content: oklch(100% 0 0);
-  --radius-selector: 0.66rem;
-  --radius-field: 0.5rem;
-  --radius-box: 1rem;
-  --size-selector: 0.28125rem;
-  --size-field: 0.28125rem;
-  --border: 2px;
-  --depth: 0;
-  --noise: 0;
-}
-
-@plugin "daisyui/theme" {
-  name: "light";
-  default: false;
-  prefersdark: false;
-  color-scheme: "light";
-  --color-base-100: oklch(100% 0 0);
-  --color-base-200: oklch(98% 0 0);
-  --color-base-300: oklch(95% 0 0);
-  --color-base-content: oklch(21% 0.006 285.885);
-  --color-primary: oklch(45% 0.24 277.023);
-  --color-primary-content: oklch(93% 0.034 272.788);
-  --color-secondary: oklch(65% 0.241 354.308);
-  --color-secondary-content: oklch(94% 0.028 342.258);
-  --color-accent: oklch(77% 0.152 181.912);
-  --color-accent-content: oklch(38% 0.063 188.416);
-  --color-neutral: oklch(96% 0.001 286.375);
-  --color-neutral-content: oklch(0% 0 0);
-  --color-info: oklch(74% 0.16 232.661);
-  --color-info-content: oklch(29% 0.066 243.157);
-  --color-success: oklch(76% 0.177 163.223);
-  --color-success-content: oklch(37% 0.077 168.94);
-  --color-warning: oklch(82% 0.189 84.429);
-  --color-warning-content: oklch(41% 0.112 45.904);
-  --color-error: oklch(71% 0.194 13.428);
-  --color-error-content: oklch(27% 0.105 12.094);
-  --radius-selector: 0.66rem;
-  --radius-field: 0.5rem;
-  --radius-box: 1rem;
-  --size-selector: 0.28125rem;
-  --size-field: 0.28125rem;
-  --border: 2px;
-  --depth: 0;
-  --noise: 0;
-}
 
 @utility bg-interactive {
   @apply hover:bg-(--color-bg-hover) focus:bg-(--color-bg-hover);
 }
 
-input,
-select {
-  @apply rounded-field text-base-content bg-base-200 p-1.5;
+@theme inline {
+  --color-base-100: var(--color-base-100);
+  --color-base-200: var(--color-base-200);
+  --color-base-300: var(--color-base-300);
+  --color-base-400: var(--color-base-400);
+
+  --color-base-content: var(--color-base-content);
+
+  --color-border-normal: var(--color-border-normal);
+  --color-border-muted: var(--color-border-muted);
+
+  --radius-selector: var(--radius-selector);
+  --radius-field: var(--radius-field);
+  --radius-box: var(--radius-box);
+
+  --color-error-bg: var(--color-error-bg);
+  --color-error: var(--color-error);
+
+  /* --color-error-50: var(--color-rose-50);
+  --color-error-100: var(--color-rose-100);
+  --color-error-200: var(--color-rose-200);
+  --color-error-300: var(--color-rose-300);
+  --color-error-400: var(--color-rose-400);
+  --color-error-500: var(--color-rose-500);
+  --color-error-600: var(--color-rose-600);
+  --color-error-700: var(--color-rose-700);
+  --color-error-800: var(--color-rose-800);
+  --color-error-900: var(--color-rose-900);
+  --color-error-950: var(--color-rose-950); */
 }
 
-@plugin "daisyui" {
-  themes:
-    light --default,
-    cosmical --prefersdark;
+@layer components {
+  .outlined {
+    outline-style: solid;
+    outline-width: var(--border-width);
+    outline-color: var(--color-border-normal);
+  }
+  .bordered {
+    border-style: var(--tw-border-style);
+    border-width: var(--border-width);
+    border-color: var(--color-border-normal);
+  }
+}
+
+input,
+select {
+  @apply rounded-field text-base-content bg-base-100 p-1.5;
 }
 
 @font-face {

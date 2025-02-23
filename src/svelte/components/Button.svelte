@@ -36,10 +36,10 @@ const colorStyle = {
   green:
     "bg-green-300 hover:bg-green-400 dark:bg-green-800 dark:hover:bg-green-900",
   lime: "bg-lime-300 hover:bg-lime-400 dark:bg-lime-800 dark:hover:bg-lime-900",
-  bordered: "outline-2 outline-(--color-base-300)",
+  bordered: "bordered",
 };
 
-let style = `whitespace-nowrap rounded-field bg-interactive inline-flex cursor-pointer items-center hover:text-(--color-base-content)/70 focus:text-(--color-base-content)/70 gap-2 ${sizeStyle[size]} ${colorStyle[variant]} ${cssClass}`;
+let style = `whitespace-nowrap rounded-field bg-interactive inline-flex cursor-pointer items-center hover:text-base-content/70 focus:text-base-content/70 gap-2 ${sizeStyle[size]} ${colorStyle[variant]} ${cssClass}`;
 </script>
 
 <button

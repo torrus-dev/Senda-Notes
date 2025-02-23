@@ -73,7 +73,7 @@ $effect(() => {
   </Button>
 
   <ul
-    class="rounded-box border-base-300 absolute z-[999] mt-1 border-2 bg-(--color-base-200) p-2 shadow {positionClass} {!isOpen
+    class="rounded-box bordered absolute z-[999] mt-1 bg-(--color-base-200) p-2 shadow {positionClass} {!isOpen
       ? 'invisible'
       : ''}"
     style="max-width: {maxMenuWidth}rem;"

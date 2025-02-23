@@ -10,8 +10,7 @@ import MainView from "./components/MainView.svelte";
 
 <div
   id="layout"
-  class="grid h-screen grid-flow-col grid-cols-[min-content_1fr] overflow-hidden bg-(--color-base-100) text-(--base-content)">
-  <!-- Antes: grid-cols-[12.5rem_1fr]  -->
+  class="text-base-content grid h-screen grid-flow-col grid-cols-[min-content_1fr] overflow-hidden bg-(--color-base-100)">
   <Sidebar></Sidebar>
   <MainView></MainView>
 </div>
