@@ -2,6 +2,8 @@
 </style>
 
 <script>
+import Button from "./Button.svelte";
+
 let {
   label,
   labelClass = "",
@@ -27,27 +29,23 @@ const handleKeydown = (e) => {
     toggle();
   }
 };
+const handleOutsideClick = (e) => {
+  if (!menuElement?.contains(e.target) && !buttonElement?.contains(e.target)) {
+    close();
+  }
+};
 
 const positionClass =
   position === "start"
-    ? "dropdown-start"
+    ? "left-0"
     : position === "center"
       ? "dropdown-center"
       : position === "end"
-        ? "dropdown-end"
+        ? "right-0"
         : "";
 
 $effect(() => {
   if (!isOpen) return;
-
-  const handleOutsideClick = (e) => {
-    if (
-      !menuElement?.contains(e.target) &&
-      !buttonElement?.contains(e.target)
-    ) {
-      close();
-    }
-  };
 
   // Usamos setTimeout para asegurarnos de que no se cierre inmediatamente al abrir
   setTimeout(() => {
@@ -63,34 +61,36 @@ $effect(() => {
 });
 </script>
 
-<div class={`dropdown ${positionClass}`}>
-  <button
-    class="rounded-field inline-flex cursor-pointer items-center gap-1 p-2 hover:bg-(--color-bg-hover) focus:bg-(--color-bg-hover) {labelClass}"
+<div class="relative">
+  <Button
+    onclick={toggle}
+    cssClass={labelClass}
     aria-haspopup="true"
     aria-expanded={isOpen}
-    onclick={toggle}
-    bind:this={buttonElement}>
+    shape="square"
+    bind:buttonElement={buttonElement}>
     {@render label()}
-  </button>
+  </Button>
 
   <ul
-    class="dropdown-content menu rounded-box mt-1 border-1 border-(--color-bg-300) bg-(--color-bg-200) p-2 shadow"
+    class="rounded-box border-base-300 absolute z-[999] mt-1 border-2 bg-(--color-base-200) p-2 shadow {positionClass} {!isOpen
+      ? 'invisible'
+      : ''}"
     style="max-width: {maxMenuWidth}rem;"
     role="menu"
-    class:invisible={!isOpen}
     bind:this={menuElement}
     tabindex="-1">
     {#each menuItems as item}
       <li>
-        <button
-          class="p-2 whitespace-nowrap hover:bg-(--color-bg-300) {item.class}"
+        <Button
           onclick={item.onClick}
-          role="menuitem">
+          role="menuitem"
+          cssClass="w-full {item.class}">
           {#if item.icon}
             <item.icon size="18"></item.icon>
           {/if}
           {item.label}
-        </button>
+        </Button>
       </li>
     {:else}
       <li>Empty list</li>

@@ -1,8 +1,7 @@
 <style>
-.property-item {
-  display: flex;
-  width: 100%;
-  flex-grow: 2;
+input {
+  border-color: var(--color-neutral);
+  background-color: var(--color-base-100);
 }
 </style>
 
@@ -23,6 +22,7 @@ import {
   SlidersHorizontalIcon,
   Trash2Icon,
 } from "lucide-svelte";
+import Button from "./Button.svelte";
 
 let { noteId = null, property = null, onUpdate, readonly = false } = $props();
 let showOptions = $state(false);
@@ -78,7 +78,7 @@ function getIconComponent(type) {
 const IconComponent = $derived(getIconComponent(property.type));
 </script>
 
-<li class="property-item relative ml-[-0.5rem] flex gap-2">
+<li class="relative ml-[-0.5rem] grid grid-cols-[12rem_auto] gap-2">
   <DropdownList
     position="start"
     menuItems={[
@@ -104,7 +104,7 @@ const IconComponent = $derived(getIconComponent(property.type));
       {#if IconComponent}
         <span class="property-icon"><IconComponent size="18" /></span>
       {/if}
-      <p class="w-(9rem) text-left">
+      <p class="w-[9rem] overflow-clip text-left">
         {property.name}
       </p>
     {/snippet}
@@ -117,20 +117,23 @@ const IconComponent = $derived(getIconComponent(property.type));
       type="text"
       value={property.value}
       onchange={(event) => onUpdate(property.name, event.target.value)}
-      placeholder="No value"
-      class="grow-1" />
+      placeholder="No value" />
   {:else if property.type === "list"}
-    <div class="inline-flex grow-1 flex-wrap gap-1 border-2 border-amber-50">
+    <div
+      class="rounded-field inline-flex flex-wrap items-center gap-1 px-1 outline-2 outline-(--color-neutral)">
       {#each property.value as item, index}
-        <div class="badge badge-neutral">
+        <div
+          class="rounded-selector inline-flex items-center bg-(--color-base-200) p-1 text-sm hover:bg-(--color-bg-hover)">
           <span>{item}</span>
           {#if !readonly}
-            <button
-              class="clickable mr-[-0.25rem] text-(--color-font-faint)"
+            <Button
+              cssClass="mr-[-0.25rem] text-(--base-content)/50"
               onclick={() => removeListItem(index)}
-              aria-label="Remove item">
-              <XIcon size="18" />
-            </button>
+              aria-label="Remove item"
+              size="small"
+              shape="square">
+              <XIcon size="14" />
+            </Button>
           {/if}
         </div>
       {/each}

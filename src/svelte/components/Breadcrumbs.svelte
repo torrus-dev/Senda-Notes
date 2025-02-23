@@ -1,8 +1,9 @@
 <script>
-  import { noteController } from "../noteController.svelte";
+import { noteController } from "../noteController.svelte";
+import Button from "./Button.svelte";
 
-  let { note = true } = $props();
-  let path = $derived(noteController.getBreadcrumbPath(note.id));
+let { note = true } = $props();
+let path = $derived(noteController.getBreadcrumbPath(note.id));
 </script>
 
 <div class="breadcrumbs">
@@ -12,9 +13,11 @@
         {#if index == path.length - 1}
           {crumb.title}
         {:else}
-          <button onclick={() => noteController.setActiveNote(crumb.id)}>
+          <Button
+            size="small"
+            onclick={() => noteController.setActiveNote(crumb.id)}>
             {crumb.title}
-          </button>
+          </Button>
         {/if}
       </li>
     {/each}

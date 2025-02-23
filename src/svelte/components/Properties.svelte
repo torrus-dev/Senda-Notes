@@ -1,24 +1,28 @@
+<style>
+</style>
+
 <script>
-  import Property from "./Property.svelte";
-  import PropertyEditor from "./PropertyEditor.svelte";
-  import { workspace } from "../workspaceController.svelte";
-  import { noteController } from "../noteController.svelte";
-  import { formatDateTime } from "../utils.svelte";
-  import { PlusIcon } from "lucide-svelte";
+import Property from "./Property.svelte";
+import PropertyEditor from "./PropertyEditor.svelte";
+import { workspace } from "../workspaceController.svelte";
+import { noteController } from "../noteController.svelte";
+import { formatDateTime } from "../utils.svelte";
+import { PlusIcon } from "lucide-svelte";
+import Button from "./Button.svelte";
 
-  let { note } = $props();
+let { note } = $props();
 
-  function handlePropertyUpdate(propertyName, newValue) {
-    if (!note) return;
+function handlePropertyUpdate(propertyName, newValue) {
+  if (!note) return;
 
-    const updatedProperties = note.properties.map((property) =>
-      property.name === propertyName
-        ? { ...property, value: newValue }
-        : property,
-    );
+  const updatedProperties = note.properties.map((property) =>
+    property.name === propertyName
+      ? { ...property, value: newValue }
+      : property,
+  );
 
-    noteController.updateNote(note.id, { properties: updatedProperties });
-  }
+  noteController.updateNote(note.id, { properties: updatedProperties });
+}
 </script>
 
 {#if note}
@@ -37,8 +41,7 @@
             <p>
               <span class="text-blue-400">{metadata.name}: </span>
               <span class="text-amber-200"
-                >{formatDateTime(metadata.value)}</span
-              >
+                >{formatDateTime(metadata.value)}</span>
             </p>
           </li>
         {/each}
@@ -46,30 +49,25 @@
     </div>
 
     <div class="custom-properties my-6">
-      <h3 class="text-xl font-bold py-1">Properties</h3>
+      <h3 class="py-1 text-xl font-bold">Properties</h3>
       <ul class="property-box">
         {#each note.properties as property}
           <Property
             noteId={note.id}
-            {property}
-            onUpdate={handlePropertyUpdate}
-          />
+            property={property}
+            onUpdate={handlePropertyUpdate} />
         {/each}
       </ul>
 
       {#if workspace.state.propertyEditor.isVisible && workspace.state.propertyEditor.targetNoteId === note.id}
         <PropertyEditor />
       {:else}
-        <button
-          class="inline-flex gap-1 p-2 items-center clickable rounded-field ml-[-.5rem]"
-          onclick={() => workspace.openPropertyEditor(note.id)}
-        >
-          <PlusIcon size="18" />Add Property</button
-        >
+        <Button
+          cssClass="ml-[-.5rem]"
+          onclick={() => workspace.openPropertyEditor(note.id)}>
+          <PlusIcon size="18" />Add Property
+        </Button>
       {/if}
     </div>
   </div>
 {/if}
-
-<style>
-</style>

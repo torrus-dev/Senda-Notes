@@ -1,4 +1,7 @@
 <style>
+.isExpanded span {
+  transform: rotate(90deg);
+}
 .drop-top {
   border-top: inset 2px var(--color-accent);
 }
@@ -156,7 +159,7 @@ const handleDrop = (event) => {
 
 <li class="group/node cursor-pointer list-none {isDragged ? 'opacity-50' : ''}">
   <div
-    class="rounded-field ml-1.5 flex py-1 transition-colors select-none hover:bg-(--color-bg-hover)
+    class="rounded-field ml-1.5 flex gap-2 py-1.5 transition-colors select-none hover:bg-(--color-bg-hover)
            {isActive ? 'bg-(--color-bg-active)' : ''}
            {dropZone === 'top' ? 'drop-top' : ''} 
            {dropZone === 'bottom' ? 'drop-bottom' : ''} 
@@ -174,18 +177,18 @@ const handleDrop = (event) => {
     ondrop={handleDrop}>
     {#if note.children && note.children.length > 0}
       <button
-        class="rounded-field p-1 transition-colors hover:bg-(--color-bg-hover)"
+        class="transition-color rounded-selector ml-[-0.25rem] inline-flex cursor-pointer items-center p-0.5 whitespace-nowrap duration-200 ease-in-out hover:bg-(--color-bg-hover) {isExpanded
+          ? 'isExpanded'
+          : ''}"
         onclick={toggleExpansion}
         aria-expanded={isExpanded ? "true" : "false"}
         aria-label={isExpanded ? "Colapsar" : "Expandir"}>
-        {#if isExpanded}
-          <ChevronDownIcon size="18" aria-hidden="true" />
-        {:else}
-          <ChevronRightIcon size="18" aria-hidden="true" />
-        {/if}
+        <span class="transition duration-200">
+          <ChevronRightIcon size="16" aria-hidden="true" />
+        </span>
       </button>
     {/if}
-    <span class="cursor-move truncate">{note.title}</span>
+    <span class="truncate">{note.title}</span>
   </div>
 
   {#if isExpanded && note.children.length > 0}

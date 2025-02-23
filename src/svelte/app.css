@@ -32,15 +32,6 @@
 @import "tailwindcss";
 @import "tailwindcss/preflight.css" layer(base);
 
-/* @theme {
-  --base-spacing: 4px;
-  --spacing-xl: calc(var(--base-spacing) * 14);
-  --spacing-lg: calc(var(--base-spacing) * 12);
-  --spacing-md: calc(var(--base-spacing) * 10);
-  --spacing-sm: calc(var(--base-spacing) * 8);
-  --spacing-xs: calc(var(--base-spacing) * 6);
-} */
-
 @import "tailwindcss";
 
 @plugin "daisyui/theme" {
@@ -73,7 +64,7 @@
   --radius-box: 1rem;
   --size-selector: 0.28125rem;
   --size-field: 0.28125rem;
-  --border: 1.5px;
+  --border: 2px;
   --depth: 0;
   --noise: 0;
 }
@@ -93,8 +84,8 @@
   --color-secondary-content: oklch(94% 0.028 342.258);
   --color-accent: oklch(77% 0.152 181.912);
   --color-accent-content: oklch(38% 0.063 188.416);
-  --color-neutral: oklch(14% 0.005 285.823);
-  --color-neutral-content: oklch(92% 0.004 286.32);
+  --color-neutral: oklch(96% 0.001 286.375);
+  --color-neutral-content: oklch(0% 0 0);
   --color-info: oklch(74% 0.16 232.661);
   --color-info-content: oklch(29% 0.066 243.157);
   --color-success: oklch(76% 0.177 163.223);
@@ -108,9 +99,18 @@
   --radius-box: 1rem;
   --size-selector: 0.28125rem;
   --size-field: 0.28125rem;
-  --border: 1.5px;
+  --border: 2px;
   --depth: 0;
   --noise: 0;
+}
+
+@utility bg-interactive {
+  @apply hover:bg-(--color-bg-hover) focus:bg-(--color-bg-hover);
+}
+
+input,
+select {
+  @apply rounded-field text-base-content bg-base-200 p-1.5;
 }
 
 @plugin "daisyui" {

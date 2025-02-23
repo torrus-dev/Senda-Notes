@@ -47,15 +47,15 @@ onDestroy(() => {
 </script>
 
 <aside
-  class="relative bg-(--color-bg-200) p-1"
+  class="relative bg-(--color-base-200) p-1"
   style="width: {sidebarWidth}rem;">
   <div
-    class="group absolute top-0 right-[-0.125rem] bottom-0 z-10 w-[0.75rem] cursor-col-resize overflow-visible"
+    class="group absolute top-0 right-[-0.25rem] bottom-0 z-10 w-[0.75rem] cursor-col-resize overflow-visible"
     role="button"
     tabindex="-1"
     onmousedown={startDragging}>
     <div
-      class="absolute top-0 right-[0.25rem] bottom-0 w-0.5 bg-(--color-bg-300) group-hover:w-1 group-hover:bg-(--color-bg-500) group-active:bg-(--color-bg-500)">
+      class="absolute top-0 right-[0.25rem] bottom-0 w-0.5 bg-(--color-base-300) group-hover:w-1 group-hover:bg-(--color-bg-hover) group-active:bg-(--color-bg-hover)">
     </div>
   </div>
   <div class="overflow-hidden">
