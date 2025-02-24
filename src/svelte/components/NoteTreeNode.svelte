@@ -1,16 +1,23 @@
 <style>
+/* Wrapper que aumenta el área de drop sin modificar el aspecto visual de la línea */
+.drop-zone-wrapper {
+  height: 20px; /* Área ampliada para facilitar el drop */
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.drop-indicator {
+  width: 100%;
+  height: 2px;
+  background-color: transparent;
+  transition: background-color 0.2s;
+}
+.note-content {
+  border-radius: var(--border-radius);
+  /* Aquí puedes conservar o adaptar tus estilos existentes */
+}
 .isExpanded div {
   transform: rotate(90deg);
-}
-.drop-top {
-  border-top: inset 2px var(--color-amber-500);
-}
-.drop-bottom {
-  border-bottom: inset 2px var(--color-amber-500);
-  box-sizing: border-box;
-}
-.drop-center {
-  background-color: var(--color-bg-active);
 }
 </style>
 
@@ -18,30 +25,14 @@
 import NoteTreeNode from "./NoteTreeNode.svelte";
 import { noteController } from "../noteController.svelte";
 import { workspace } from "../workspaceController.svelte";
-import { ChevronDownIcon, ChevronRightIcon } from "lucide-svelte"; // hacer una clase css con transform rotate y dejar solo un icono
+import { ChevronRightIcon } from "lucide-svelte";
 
-let { note, depth = 0 } = $props();
+const { note, depth = 0, isFirst = false } = $props();
 
-// Estado local para expansión
 let isExpanded = $state(true);
-
-// Estado derivado: indica si este nodo es el que se está arrastrando
-let isDragged = $derived.by(() => {
-  workspace.state.dragAndDrop?.draggedNoteId === note.id;
-});
-
-// Estado derivado: indica si este nodo es el drop target y en qué posición
-let dropZone = $derived.by(() => {
-  if (
-    workspace.state.dragAndDrop &&
-    workspace.state.dragAndDrop.dropTargetId === note.id
-  ) {
-    return workspace.state.dragAndDrop.position;
-  }
-  return null;
-});
-
-// Estado derivado: si la nota es la activa
+let isDragged = $derived.by(
+  () => workspace.state.dragAndDrop?.draggedNoteId === note.id,
+);
 let isActive = $derived(note.id === noteController.activeNoteId);
 
 const toggleExpansion = (event) => {
@@ -58,10 +49,9 @@ const handleTitleClick = (event) => {
   }
 };
 
-/* -------------------- HANDLERS DRAG & DROP -------------------- */
-
+/* ---------- HANDLERS PARA DRAG & DROP SOBRE EL CONTENIDO (child insertion) ---------- */
 const handleDragStart = (event) => {
-  event.stopPropagation(); // Añadido para evitar burbujeo
+  event.stopPropagation();
   event.dataTransfer.setData("text/plain", note.id);
   event.dataTransfer.effectAllowed = "move";
   workspace.state.dragAndDrop = {
@@ -75,100 +65,81 @@ const handleDragEnd = (event) => {
   workspace.clearDragAndDrop();
 };
 
-const handleDragOver = (event) => {
+const handleNoteDragOver = (event) => {
   event.preventDefault();
-  const draggedNoteId = workspace.state.dragAndDrop?.draggedNoteId;
-
-  // Prevenir interacción consigo mismo
-  if (draggedNoteId === note.id) return;
-
   event.dataTransfer.dropEffect = "move";
-  const rect = event.currentTarget.getBoundingClientRect();
-  const offsetY = event.clientY - rect.top;
-
-  // Ajustar thresholds
-  let position = null;
-  if (offsetY < rect.height * 0.3) {
-    position = "top";
-  } else if (offsetY > rect.height * 0.7) {
-    position = "bottom";
-  } else {
-    position = "center";
-  }
-
   if (workspace.state.dragAndDrop) {
     workspace.state.dragAndDrop.dropTargetId = note.id;
-    workspace.state.dragAndDrop.position = position;
+    workspace.state.dragAndDrop.position = "child";
   }
 };
 
-const handleDragLeave = (event) => {
-  // Verificar que el cursor salga completamente del elemento
-  const rect = event.currentTarget.getBoundingClientRect();
-  if (
-    event.clientX < rect.left ||
-    event.clientX > rect.right ||
-    event.clientY < rect.top ||
-    event.clientY > rect.bottom
-  ) {
-    if (workspace.state.dragAndDrop?.dropTargetId === note.id) {
-      workspace.state.dragAndDrop.dropTargetId = null;
-      workspace.state.dragAndDrop.position = null;
-    }
-  }
-};
-
-const handleDrop = (event) => {
+const handleNoteDrop = (event) => {
   event.preventDefault();
   event.stopPropagation();
   const dndState = workspace.state.dragAndDrop;
   workspace.clearDragAndDrop();
-
   if (!dndState) return;
-  const { draggedNoteId, position } = dndState;
-
+  const { draggedNoteId } = dndState;
   if (!draggedNoteId || draggedNoteId === note.id) return;
+  // Insertar como hijo
+  noteController.moveNote(draggedNoteId, note.id);
+};
 
-  if (position === "center") {
-    // Insertar DENTRO del nodo destino
-    noteController.moveNote(draggedNoteId, note.id);
-  } else if (position === "top" || position === "bottom") {
-    // Insertar como hermano del nodo destino
-    const parentId = note.parentId || null; // Usar null explícito para raíz
+/* ---------- HANDLERS PARA LA DROP ZONE (inserción de hermanos) ---------- */
+const handleDropZoneDragOver = (event) => {
+  event.preventDefault();
+  event.dataTransfer.dropEffect = "move";
+  event.currentTarget.querySelector(".drop-indicator").style.backgroundColor =
+    "var(--color-amber-500)";
+};
 
-    // 1. Mover la nota al nuevo padre
-    noteController.moveNote(draggedNoteId, parentId);
+const handleDropZoneDragLeave = (event) => {
+  event.currentTarget.querySelector(".drop-indicator").style.backgroundColor =
+    "transparent";
+};
 
-    // 2. Obtener hermanos actualizados
-    let siblings = parentId
-      ? noteController.getNoteById(parentId)?.children || []
-      : noteController.getRootNotes().map((n) => n.id);
-
-    // 3. Filtrar y ordenar
-    siblings = siblings.filter((id) => id !== draggedNoteId);
-    const index = siblings.indexOf(note.id);
-    const insertIndex = position === "bottom" ? index + 1 : index;
-
-    // 4. Insertar y reordenar
-    siblings.splice(insertIndex, 0, draggedNoteId);
-
-    // Llamada corregida con parentId potencialmente null
-    noteController.reorderNotes(parentId, siblings);
-  }
+const handleDropZoneDrop = (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  event.currentTarget.querySelector(".drop-indicator").style.backgroundColor =
+    "transparent";
+  const dndState = workspace.state.dragAndDrop;
+  workspace.clearDragAndDrop();
+  if (!dndState) return;
+  const { draggedNoteId } = dndState;
+  if (!draggedNoteId || draggedNoteId === note.id) return;
+  // Insertar la nota arrastrada como hermano ANTES del nodo actual
+  const parentId = note.parentId || null;
+  noteController.moveNote(draggedNoteId, parentId);
+  let siblings = parentId
+    ? noteController.getNoteById(parentId)?.children || []
+    : noteController.getRootNotes().map((n) => n.id);
+  siblings = siblings.filter((id) => id !== draggedNoteId);
+  const index = siblings.indexOf(note.id);
+  siblings.splice(index, 0, draggedNoteId);
+  noteController.reorderNotes(parentId, siblings);
 };
 </script>
 
-<li
-  class="
-    group/node cursor-pointer list-none
-    {isDragged ? 'opacity-50' : ''}
-  ">
+<li class="group/node cursor-pointer list-none {isDragged ? 'opacity-50' : ''}">
+  {#if !isFirst}
+    <!-- Drop zone para inserción de hermano, posicionada encima del nodo -->
+    <div
+      class="drop-zone-wrapper"
+      role="region"
+      ondragover={handleDropZoneDragOver}
+      ondragleave={handleDropZoneDragLeave}
+      ondrop={handleDropZoneDrop}>
+      <div class="drop-indicator"></div>
+    </div>
+  {/if}
+
+  <!-- Contenido de la nota: al soltar sobre él se insertará como hijo -->
   <div
-    class="rounded-field ml-1.5 flex gap-1 px-2 py-1.5 pl-1 whitespace-nowrap transition-colors select-none hover:bg-(--color-bg-hover)
-           {isActive ? 'bg-(--color-bg-active)' : ''}
-           {dropZone === 'top' ? 'drop-top' : ''} 
-           {dropZone === 'bottom' ? 'drop-bottom' : ''} 
-           {dropZone === 'center' ? 'drop-center' : ''}"
+    class="note-content rounded-field ml-1.5 flex gap-1 px-2 py-1.5 pl-1 whitespace-nowrap transition-colors select-none hover:bg-(--color-bg-hover) {isActive
+      ? 'bg-(--color-bg-active)'
+      : ''}"
     role="button"
     tabindex="0"
     style={`margin-left: calc(var(--spacing) * ${depth})`}
@@ -177,10 +148,8 @@ const handleDrop = (event) => {
     onkeydown={handleTitleClick}
     ondragstart={handleDragStart}
     ondragend={handleDragEnd}
-    ondragover={handleDragOver}
-    ondragleave={handleDragLeave}
-    ondrop={handleDrop}>
-    <!-- Dropdown Icon -->
+    ondragover={handleNoteDragOver}
+    ondrop={handleNoteDrop}>
     {#if note.children && note.children.length > 0}
       <button
         class="transition-color rounded-selector cursor-pointer items-center whitespace-nowrap duration-200 ease-in-out hover:bg-(--color-bg-hover) {isExpanded
@@ -196,17 +165,27 @@ const handleDrop = (event) => {
     {:else}
       <span class="w-4"></span>
     {/if}
-    <!-- Label -->
     <span class="truncate">{note.title}</span>
   </div>
 
   {#if isExpanded && note.children.length > 0}
     <ul class="ml-3">
-      {#each note.children as noteId}
+      {#each note.children as noteId, index}
+        <!-- Se pasa isFirst para que solo el primero no renderice drop zone superior -->
         <NoteTreeNode
           note={noteController.getNoteById(noteId)}
-          depth={depth + 1} />
+          depth={depth + 1}
+          isFirst={index === 0} />
       {/each}
+      <!-- Drop zone al final para permitir insertar después del último hijo -->
+      <div
+        class="drop-zone-wrapper"
+        role="region"
+        ondragover={handleDropZoneDragOver}
+        ondragleave={handleDropZoneDragLeave}
+        ondrop={handleDropZoneDrop}>
+        <div class="drop-indicator"></div>
+      </div>
     </ul>
   {/if}
 </li>
