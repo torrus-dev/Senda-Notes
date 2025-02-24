@@ -12,10 +12,9 @@ let {
   maxMenuWidth = 44,
 } = $props();
 
-console.log("menuItems", menuItems);
 let { isOpen } = $state(false);
 let menuElement;
-let buttonElement;
+let buttonElement = $state();
 
 const close = () => (isOpen = false);
 const toggle = () => (isOpen = !isOpen);

@@ -7,9 +7,9 @@ import { PlusIcon } from "lucide-svelte";
 let rootNotes = $derived(noteController.getRootNotes());
 </script>
 
-<ul class="menu rounded-box w-full p-2">
-  <li class="group menu-title flex flex-row justify-between">
-    <p>Notes</p>
+<ul class="rounded-box w-full p-2">
+  <li class="group flex flex-row justify-between gap-2">
+    <p class="text-muted-content">Notes</p>
 
     <Button
       onclick={() => noteController.createNote()}

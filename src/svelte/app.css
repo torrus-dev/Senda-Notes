@@ -14,6 +14,8 @@
   --color-base-400: var(--color-base-400);
 
   --color-base-content: var(--color-base-content);
+  --color-muted-content: var(--color-muted-content);
+  --color-faint-content: var(--color-faint-content);
 
   --color-border-normal: var(--color-border-normal);
   --color-border-muted: var(--color-border-muted);
@@ -24,18 +26,6 @@
 
   --color-error-bg: var(--color-error-bg);
   --color-error: var(--color-error);
-
-  /* --color-error-50: var(--color-rose-50);
-  --color-error-100: var(--color-rose-100);
-  --color-error-200: var(--color-rose-200);
-  --color-error-300: var(--color-rose-300);
-  --color-error-400: var(--color-rose-400);
-  --color-error-500: var(--color-rose-500);
-  --color-error-600: var(--color-rose-600);
-  --color-error-700: var(--color-rose-700);
-  --color-error-800: var(--color-rose-800);
-  --color-error-900: var(--color-rose-900);
-  --color-error-950: var(--color-rose-950); */
 }
 
 @layer components {

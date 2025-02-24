@@ -46,9 +46,7 @@ onDestroy(() => {
 });
 </script>
 
-<aside
-  class="relative bg-(--color-base-200) p-1"
-  style="width: {sidebarWidth}rem;">
+<aside class="relative bg-(--color-base-200)" style="width: {sidebarWidth}rem;">
   <div
     class="group absolute top-0 right-[-0.25rem] bottom-0 z-10 w-[0.75rem] cursor-col-resize overflow-visible"
     role="button"

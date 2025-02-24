@@ -1,25 +1,46 @@
+<style>
+ul {
+  display: inline-flex;
+  align-items: center;
+  li:not(:last-child) {
+    &:after {
+      color: var(--color-text-faint);
+      content: "/";
+      margin-left: var(--spacing);
+      margin-right: var(--spacing);
+    }
+  }
+}
+</style>
+
 <script>
 import { noteController } from "../noteController.svelte";
 import Button from "./Button.svelte";
 
-let { note = true } = $props();
+let { note } = $props();
 let path = $derived(noteController.getBreadcrumbPath(note.id));
 </script>
 
-<div class="breadcrumbs">
-  <ul>
-    {#each path as crumb, index (crumb.id)}
-      <li>
+<nav aria-label="breadcrumb">
+  {#if path}
+    <ul>
+      {#each path as crumb, index (crumb.id)}
         {#if index == path.length - 1}
-          {crumb.title}
-        {:else}
-          <Button
-            size="small"
-            onclick={() => noteController.setActiveNote(crumb.id)}>
+          <li class="p-1 select-text">
             {crumb.title}
-          </Button>
+          </li>
+        {:else}
+          <li>
+            <Button
+              size="small"
+              onclick={() => noteController.setActiveNote(crumb.id)}>
+              {crumb.title}
+            </Button>
+          </li>
         {/if}
-      </li>
-    {/each}
-  </ul>
-</div>
+      {/each}
+    </ul>
+  {:else}
+    Path not found!
+  {/if}
+</nav>

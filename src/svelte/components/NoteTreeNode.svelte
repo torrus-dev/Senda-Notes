@@ -1,15 +1,16 @@
 <style>
-.isExpanded span {
+.isExpanded div {
   transform: rotate(90deg);
 }
 .drop-top {
-  border-top: inset 2px var(--color-accent);
+  border-top: inset 2px var(--color-amber-500);
 }
 .drop-bottom {
-  border-bottom: inset 2px var(--color-accent);
+  border-bottom: inset 2px var(--color-amber-500);
+  box-sizing: border-box;
 }
 .drop-center {
-  background-color: var(--color-accent);
+  background-color: var(--color-bg-active);
 }
 </style>
 
@@ -157,16 +158,20 @@ const handleDrop = (event) => {
 };
 </script>
 
-<li class="group/node cursor-pointer list-none {isDragged ? 'opacity-50' : ''}">
+<li
+  class="
+    group/node cursor-pointer list-none
+    {isDragged ? 'opacity-50' : ''}
+  ">
   <div
-    class="rounded-field ml-1.5 flex gap-2 py-1.5 transition-colors select-none hover:bg-(--color-bg-hover)
+    class="rounded-field ml-1.5 flex gap-1 px-2 py-1.5 pl-1 whitespace-nowrap transition-colors select-none hover:bg-(--color-bg-hover)
            {isActive ? 'bg-(--color-bg-active)' : ''}
            {dropZone === 'top' ? 'drop-top' : ''} 
            {dropZone === 'bottom' ? 'drop-bottom' : ''} 
            {dropZone === 'center' ? 'drop-center' : ''}"
     role="button"
     tabindex="0"
-    style={`margin-left: ${depth * 0.25}rem`}
+    style={`margin-left: calc(var(--spacing) * ${depth})`}
     draggable="true"
     onclick={handleTitleClick}
     onkeydown={handleTitleClick}
@@ -175,24 +180,28 @@ const handleDrop = (event) => {
     ondragover={handleDragOver}
     ondragleave={handleDragLeave}
     ondrop={handleDrop}>
+    <!-- Dropdown Icon -->
     {#if note.children && note.children.length > 0}
       <button
-        class="transition-color rounded-selector ml-[-0.25rem] inline-flex cursor-pointer items-center p-0.5 whitespace-nowrap duration-200 ease-in-out hover:bg-(--color-bg-hover) {isExpanded
+        class="transition-color rounded-selector cursor-pointer items-center whitespace-nowrap duration-200 ease-in-out hover:bg-(--color-bg-hover) {isExpanded
           ? 'isExpanded'
           : ''}"
         onclick={toggleExpansion}
         aria-expanded={isExpanded ? "true" : "false"}
         aria-label={isExpanded ? "Colapsar" : "Expandir"}>
-        <span class="transition duration-200">
+        <div class="transition duration-200">
           <ChevronRightIcon size="16" aria-hidden="true" />
-        </span>
+        </div>
       </button>
+    {:else}
+      <span class="w-4"></span>
     {/if}
+    <!-- Label -->
     <span class="truncate">{note.title}</span>
   </div>
 
   {#if isExpanded && note.children.length > 0}
-    <ul class="space-y-1">
+    <ul class="ml-3">
       {#each note.children as noteId}
         <NoteTreeNode
           note={noteController.getNoteById(noteId)}
