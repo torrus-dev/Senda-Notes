@@ -1,33 +1,19 @@
 <style>
 /* Wrapper que aumenta el área de drop sin modificar el aspecto visual de la línea */
-.drop-zone-wrapper {
-  height: 20px; /* Área ampliada para facilitar el drop */
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-.drop-indicator {
-  width: 100%;
-  height: 2px;
-  background-color: transparent;
-  transition: background-color 0.2s;
-}
-.note-content {
-  border-radius: var(--border-radius);
-  /* Aquí puedes conservar o adaptar tus estilos existentes */
-}
+
 .isExpanded div {
   transform: rotate(90deg);
 }
 </style>
 
 <script>
-import NoteTreeNode from "./NoteTreeNode.svelte";
-import { noteController } from "../noteController.svelte";
-import { workspace } from "../workspaceController.svelte";
+import NoteTreeNode from "../NoteTreeNode.svelte";
+import { noteController } from "../../noteController.svelte";
+import { workspace } from "../../workspaceController.svelte";
 import { ChevronRightIcon } from "lucide-svelte";
+import DropLineIndicator from "./DropLineIndicator.svelte";
 
-const { note, depth = 0, isFirst = false } = $props();
+const { note, depth = 0 } = $props();
 
 let isExpanded = $state(true);
 let isDragged = $derived.by(
@@ -87,53 +73,10 @@ const handleNoteDrop = (event) => {
 };
 
 /* ---------- HANDLERS PARA LA DROP ZONE (inserción de hermanos) ---------- */
-const handleDropZoneDragOver = (event) => {
-  event.preventDefault();
-  event.dataTransfer.dropEffect = "move";
-  event.currentTarget.querySelector(".drop-indicator").style.backgroundColor =
-    "var(--color-amber-500)";
-};
-
-const handleDropZoneDragLeave = (event) => {
-  event.currentTarget.querySelector(".drop-indicator").style.backgroundColor =
-    "transparent";
-};
-
-const handleDropZoneDrop = (event) => {
-  event.preventDefault();
-  event.stopPropagation();
-  event.currentTarget.querySelector(".drop-indicator").style.backgroundColor =
-    "transparent";
-  const dndState = workspace.state.dragAndDrop;
-  workspace.clearDragAndDrop();
-  if (!dndState) return;
-  const { draggedNoteId } = dndState;
-  if (!draggedNoteId || draggedNoteId === note.id) return;
-  // Insertar la nota arrastrada como hermano ANTES del nodo actual
-  const parentId = note.parentId || null;
-  noteController.moveNote(draggedNoteId, parentId);
-  let siblings = parentId
-    ? noteController.getNoteById(parentId)?.children || []
-    : noteController.getRootNotes().map((n) => n.id);
-  siblings = siblings.filter((id) => id !== draggedNoteId);
-  const index = siblings.indexOf(note.id);
-  siblings.splice(index, 0, draggedNoteId);
-  noteController.reorderNotes(parentId, siblings);
-};
 </script>
 
 <li class="group/node cursor-pointer list-none {isDragged ? 'opacity-50' : ''}">
-  {#if !isFirst}
-    <!-- Drop zone para inserción de hermano, posicionada encima del nodo -->
-    <div
-      class="drop-zone-wrapper"
-      role="region"
-      ondragover={handleDropZoneDragOver}
-      ondragleave={handleDropZoneDragLeave}
-      ondrop={handleDropZoneDrop}>
-      <div class="drop-indicator"></div>
-    </div>
-  {/if}
+  <DropLineIndicator />
 
   <!-- Contenido de la nota: al soltar sobre él se insertará como hijo -->
   <div
@@ -177,15 +120,7 @@ const handleDropZoneDrop = (event) => {
           depth={depth + 1}
           isFirst={index === 0} />
       {/each}
-      <!-- Drop zone al final para permitir insertar después del último hijo -->
-      <div
-        class="drop-zone-wrapper"
-        role="region"
-        ondragover={handleDropZoneDragOver}
-        ondragleave={handleDropZoneDragLeave}
-        ondrop={handleDropZoneDrop}>
-        <div class="drop-indicator"></div>
-      </div>
+      <DropLineIndicator />
     </ul>
   {/if}
 </li>
