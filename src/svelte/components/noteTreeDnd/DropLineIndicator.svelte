@@ -5,6 +5,8 @@
 </style>
 
 <script>
+  import { dndController } from "../../controllers/dndController.svelte";
+
 let { 
   index = -1,
   depth = 0, 
@@ -26,23 +28,8 @@ const handleDrop = (event) => {
   event.preventDefault();
   event.stopPropagation();
 
-  const dndState = workspace.state.dragAndDrop;
-  workspace.clearDragAndDrop();
-
-  // comprovaciones de estado en WorkspaceController
-  if (!dndState) return;
-  const { draggedNoteId } = dndState;
-  if (!draggedNoteId || draggedNoteId === note.id) return;
-
-  noteController.moveNote(draggedNoteId, parentId);
-
-  let siblings = parentId
-    ? noteController.getNoteById(parentId)?.children || []
-    : noteController.getRootNotes().map((n) => n.id);
-  siblings = siblings.filter((id) => id !== draggedNoteId);
-  const index = siblings.indexOf(note.id);
-  siblings.splice(index, 0, draggedNoteId);
-  noteController.reorderNotes(parentId, siblings);
+  dndController.dropNoteOnLineIndicator(parentId, index)
+  
 };
 </script>
 

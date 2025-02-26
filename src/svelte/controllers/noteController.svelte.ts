@@ -1,4 +1,4 @@
-import type { Note, Property } from "./types/types";
+import type { Note, Property } from "../types/types";
 
 class NoteController {
   notes = $state<Note[]>([]);
