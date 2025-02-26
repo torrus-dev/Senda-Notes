@@ -2,8 +2,8 @@
 </style>
 
 <script>
-import { workspace } from "../workspaceController.svelte";
-import { noteController } from "../noteController.svelte";
+import { workspace } from "../controllers/workspaceController.svelte";
+import { noteController } from "../controllers/noteController.svelte";
 import { XIcon, Trash2Icon, SaveIcon } from "lucide-svelte";
 import Button from "./Button.svelte";
 

@@ -1,7 +1,7 @@
 <script>
-import { noteController } from "../noteController.svelte";
-import Button from "./Button.svelte";
-import NoteTreeNode from "./noteTreeDnd/NoteTreeNode.svelte";
+import { noteController } from "../../controllers/noteController.svelte";
+import Button from "../Button.svelte";
+import NoteTreeNode from "./NoteTreeNode.svelte";
 import { PlusIcon } from "lucide-svelte";
 
 let rootNotes = $derived(noteController.getRootNotes());

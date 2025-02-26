@@ -7,9 +7,9 @@
 </style>
 
 <script>
-import NoteTreeNode from "../NoteTreeNode.svelte";
-import { noteController } from "../../noteController.svelte";
-import { workspace } from "../../workspaceController.svelte";
+import NoteTreeNode from "./NoteTreeNode.svelte";
+import { noteController } from "../../controllers/noteController.svelte";
+import { workspace } from "../../controllers/workspaceController.svelte";
 import { ChevronRightIcon } from "lucide-svelte";
 import DropLineIndicator from "./DropLineIndicator.svelte";
 

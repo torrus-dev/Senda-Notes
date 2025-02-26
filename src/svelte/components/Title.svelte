@@ -1,6 +1,6 @@
 <script>
-import { noteController } from "../noteController.svelte";
-import { workspace } from "../workspaceController.svelte";
+import { noteController } from "../controllers/noteController.svelte";
+import { workspace } from "../controllers/workspaceController.svelte";
 import { FocusTarget } from "../types/types";
 
 let { id } = $props();

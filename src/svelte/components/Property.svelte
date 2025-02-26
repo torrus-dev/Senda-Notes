@@ -3,8 +3,8 @@
 
 <script>
 import { formatDateTimeForInput } from "../utils.svelte";
-import { workspace } from "../workspaceController.svelte";
-import { noteController } from "../noteController.svelte";
+import { workspace } from "../controllers/workspaceController.svelte";
+import { noteController } from "../controllers/noteController.svelte";
 import DropdownList from "./DropdownList.svelte";
 
 import {

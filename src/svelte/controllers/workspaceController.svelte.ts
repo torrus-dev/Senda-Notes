@@ -1,5 +1,5 @@
-import type { Property, WorkspaceState, Tab, Window } from "./types/types";
-import { FocusTarget } from "./types/types";
+import type { Property, WorkspaceState, Tab, Window } from "../types/types";
+import { FocusTarget } from "../types/types";
 
 class WorkspaceController {
   // Estado global del workspace (incluye propertyEditor, ventanas y pestañas)
@@ -10,7 +10,6 @@ class WorkspaceController {
       editingProperty: null,
       originalName: null,
     },
-    dragAndDrop: null,
     windows: [],
     activeWindowId: null,
     focus: {
@@ -18,11 +17,6 @@ class WorkspaceController {
       timestamp: 0,
     },
   });
-
-  clearDragAndDrop = () => {
-    this.state.dragAndDrop = null;
-  };
-
   // ========= Métodos para Property Editor =========
 
   openPropertyEditor = (noteId: string, property: Property | null = null) => {

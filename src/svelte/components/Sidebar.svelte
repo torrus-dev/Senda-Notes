@@ -2,7 +2,7 @@
 </style>
 
 <script>
-import NoteTreeRenderer from "./NoteTreeRenderer.svelte";
+import NoteTreeRenderer from "./noteTreeDnd/NoteTreeRenderer.svelte";
 import { onDestroy } from "svelte";
 
 let sidebarWidth = $state(12.5);

@@ -48,18 +48,10 @@ export interface FocusState {
   timestamp: number;
 }
 
-// Estado del sistema drag and drop del note tree
-export interface DragAndDropState {
-  draggedNoteId: string | null;
-  dropTargetId: string | null;
-  position: "top" | "center" | "bottom" | null;
-}
-
 // Estado global del workspace
 export interface WorkspaceState {
   propertyEditor: PropertyEditorState;
   windows: Window[];
   activeWindowId: string | null;
   focus: FocusState;
-  dragAndDrop: DragAndDropState | null;
 }
