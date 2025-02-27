@@ -20,7 +20,6 @@ class NoteController {
     });
   }
 
-  // Función de carga de datos con protección ante errores en el parseo de JSON
   private loadFromLocalStorage() {
     const stored = localStorage.getItem("NoteList");
     if (stored) {
@@ -35,7 +34,6 @@ class NoteController {
     }
   }
 
-  // Función de guardado de datos con protección ante posibles errores al escribir en localStorage
   private saveToLocalStorage() {
     try {
       localStorage.setItem("NoteList", JSON.stringify(this.notes));
@@ -56,7 +54,6 @@ class NoteController {
     );
   };
 
-  // Marca la nota como modificada actualizando la metadata "modified"
   private markModified = (note: Note): Note => {
     const updatedMetadata = note.metadata.map((prop) =>
       prop.name === "modified" ? { ...prop, value: this.currentDate() } : prop,
@@ -82,45 +79,6 @@ class NoteController {
     return false;
   };
 
-  private validateParentChild = (parentId: string, childId: string): void => {
-    this.requireNote(parentId, "Parent note");
-    this.requireNote(childId, "Child note");
-    if (this.wouldCreateCycle(parentId, childId)) {
-      throw new Error("This operation would create a circular reference");
-    }
-  };
-
-  private validateNoteOrder(
-    newOrder: string[],
-    expectedIds: string[],
-    contextCheck?: (id: string) => boolean,
-  ): boolean {
-    const validations = {
-      sameLength: newOrder.length === expectedIds.length,
-      allIdsValid: newOrder.every((id) => expectedIds.includes(id)),
-      allUnique: new Set(newOrder).size === newOrder.length,
-      contextValid: contextCheck ? newOrder.every(contextCheck) : true,
-    };
-
-    return Object.values(validations).every(Boolean);
-  }
-
-  private validateRootOrder = (newOrder: string[]): boolean => {
-    const rootIds = this.getRootNotes().map((n) => n.id);
-    return this.validateNoteOrder(newOrder, rootIds);
-  };
-
-  private validateSiblingOrder = (
-    parent: Note,
-    newOrder: string[],
-  ): boolean => {
-    return this.validateNoteOrder(
-      newOrder,
-      parent.children,
-      (id) => this.getNoteById(id)?.parentId === parent.id,
-    );
-  };
-
   // -------------------
   // Gestión de relaciones
   // -------------------
@@ -136,40 +94,35 @@ class NoteController {
     });
   };
 
-  private addChild = (parentId: string, childId: string): void => {
-    // Validar existencia y evitar ciclos
-    this.validateParentChild(parentId, childId);
-    const childNote = this.getNoteById(childId);
-    if (childNote && childNote.parentId && childNote.parentId !== parentId) {
-      // Si el child tenía otro padre, lo removemos de su padre anterior
-      this.removeFromParent(childId);
-    }
-    this.updateNoteById(parentId, (note) => {
-      if (!note.children.includes(childId)) {
-        return this.markModified({
-          ...note,
-          children: [...note.children, childId],
-        });
-      }
-      return note;
-    });
-    this.updateNoteById(childId, (note) => ({ ...note, parentId }));
-  };
-
-  private handleParentChange = (
-    noteId: string,
-    newParentId: string | null,
+  private addToParent = (
+    parentId: string,
+    childId: string,
+    position?: number,
   ): void => {
-    const note = this.requireNote(noteId);
-    if (newParentId === note.parentId) return;
-    if (newParentId) {
-      this.addChild(newParentId, noteId);
-    } else if (note.parentId) {
-      this.removeFromParent(noteId);
-      this.updateNoteById(noteId, (n) =>
-        this.markModified({ ...n, parentId: undefined }),
-      );
-    }
+    this.updateNoteById(parentId, (note) => {
+      let newChildren = [...note.children];
+
+      // Si la nota ya es hija, la eliminamos primero para evitar duplicados
+      if (newChildren.includes(childId)) {
+        newChildren = newChildren.filter((id) => id !== childId);
+      }
+
+      // Insertamos en la posición especificada o al final
+      if (position !== undefined) {
+        const targetPosition = Math.min(
+          Math.max(0, position),
+          newChildren.length,
+        );
+        newChildren.splice(targetPosition, 0, childId);
+      } else {
+        newChildren.push(childId);
+      }
+
+      return this.markModified({
+        ...note,
+        children: newChildren,
+      });
+    });
   };
 
   // -------------------
@@ -218,9 +171,8 @@ class NoteController {
   // -------------------
   // Funciones principales
   // -------------------
-  createNote = (parentId?: string | null): void => {
+  createNote = (parentId?: string | null, position?: number): void => {
     if (typeof parentId === "string") {
-      console.log("probando");
       this.requireNote(parentId, "Parent note");
     }
 
@@ -237,7 +189,7 @@ class NoteController {
     this.notes = [...this.notes, note];
 
     if (typeof parentId === "string") {
-      this.addChild(parentId, note.id);
+      this.addToParent(parentId, note.id, position);
     }
 
     this.activeNoteId = note.id;
@@ -246,17 +198,60 @@ class NoteController {
   updateNote = (id: string, updates: Partial<Note>): void => {
     this.requireNote(id);
     if ("parentId" in updates) {
-      this.handleParentChange(id, updates.parentId ?? null);
+      // Manejar cambio de padre
+      const newParentId = updates.parentId ?? null;
+
+      // Verificar si realmente cambia el padre
+      const currentNote = this.getNoteById(id);
+      if (currentNote && currentNote.parentId !== newParentId) {
+        if (newParentId) {
+          // Validar el nuevo padre
+          this.requireNote(newParentId, "Parent note");
+          if (id === newParentId)
+            throw new Error("Cannot set parent to itself");
+          if (this.wouldCreateCycle(newParentId, id)) {
+            throw new Error("This operation would create a circular reference");
+          }
+
+          // Primero removemos de su padre actual si tiene
+          if (currentNote.parentId) {
+            this.removeFromParent(id);
+          }
+
+          // Actualizamos la referencia al padre en la nota
+          this.updateNoteById(id, (note) => ({
+            ...note,
+            parentId: newParentId,
+          }));
+
+          // Añadimos la nota al nuevo padre
+          this.addToParent(newParentId, id);
+        } else if (currentNote.parentId) {
+          // Remover de su padre actual y convertir en nota raíz
+          this.removeFromParent(id);
+          this.updateNoteById(id, (note) =>
+            this.markModified({ ...note, parentId: undefined }),
+          );
+        }
+      }
+
+      // Eliminamos parentId de updates para evitar procesarlo dos veces
+      const { parentId, ...restUpdates } = updates;
+      updates = restUpdates;
     }
-    this.updateNoteById(id, (note) => {
-      const merged = {
-        ...note,
-        ...updates,
-        title: this.sanitizeTitle(updates.title ?? note.title),
-        properties: updates.properties ?? note.properties,
-      };
-      return this.markModified(merged);
-    });
+
+    // Aplicar el resto de actualizaciones
+    if (Object.keys(updates).length > 0) {
+      this.updateNoteById(id, (note) => {
+        const merged = {
+          ...note,
+          ...updates,
+          title: updates.title ? this.sanitizeTitle(updates.title) : note.title,
+          properties: updates.properties ?? note.properties,
+        };
+        return this.markModified(merged);
+      });
+    }
   };
 
   deleteNote = (id: string): void => {
@@ -289,7 +284,9 @@ class NoteController {
     if (newParentId === null) {
       if (note.parentId) {
         this.removeFromParent(noteId);
-        this.updateNote(noteId, { parentId: undefined });
+        this.updateNoteById(noteId, (note) =>
+          this.markModified({ ...note, parentId: undefined }),
+        );
       }
       return;
     }
@@ -300,150 +297,120 @@ class NoteController {
     if (this.wouldCreateCycle(newParentId, noteId)) {
       throw new Error("Cannot move note to its own descendant");
     }
-    this.handleParentChange(noteId, newParentId);
+
+    // Remover de su padre actual si tiene
+    if (note.parentId) {
+      this.removeFromParent(noteId);
+    }
+
+    // Actualizar la nota
+    this.updateNoteById(noteId, (note) =>
+      this.markModified({ ...note, parentId: newParentId }),
+    );
+
+    // Añadir al nuevo padre
+    this.addToParent(newParentId, noteId);
   };
 
-  reorderNotes = (parentId: string | null, newOrder: string[]): void => {
-    // Caso para notas raíz
-    if (parentId === null) {
-      const currentRootIds = this.getRootNotes().map((n) => n.id);
+  moveNoteToPosition = (
+    noteId: string,
+    newParentId: string | null,
+    position: number,
+  ): void => {
+    const note = this.requireNote(noteId);
 
-      // Validar que el nuevo orden contiene exactamente las mismas notas raíz
-      if (!this.validateRootOrder(newOrder)) {
-        throw new Error("Invalid root notes order");
+    // Manejar reposicionamiento en el mismo padre
+    if (newParentId === note.parentId) {
+      if (newParentId === null) {
+        // Reposicionar en notas raíz
+        const rootNotes = this.getRootNotes();
+        const rootIds = rootNotes.map((n) => n.id);
+        const currentIndex = rootIds.indexOf(noteId);
+
+        if (currentIndex !== -1) {
+          // Remover y reposicionar en el array
+          rootIds.splice(currentIndex, 1);
+          const targetPosition = Math.min(
+            Math.max(0, position),
+            rootIds.length,
+          );
+          rootIds.splice(targetPosition, 0, noteId);
+
+          // Reorganizar las notas raíz según el nuevo orden
+          this.notes = [
+            ...(rootIds
+              .map((id) => this.getNoteById(id))
+              .filter(Boolean) as Note[]),
+            ...this.notes.filter((n) => n.parentId !== undefined),
+          ];
+        }
+      } else {
+        // Reposicionar en las notas hijo
+        this.addToParent(newParentId, noteId, position);
+      }
+      return;
+    }
+
+    // Si es un cambio de padre con posición específica
+
+    // Mover a raíz con posición
+    if (newParentId === null) {
+      // Primero lo movemos a raíz
+      if (note.parentId) {
+        this.removeFromParent(noteId);
+        this.updateNoteById(noteId, (note) =>
+          this.markModified({ ...note, parentId: undefined }),
+        );
       }
 
-      // Reordenar manteniendo la referencia completa de las notas
+      // Luego lo posicionamos entre las notas raíz
+      const rootNotes = this.getRootNotes();
+      const rootIds = rootNotes.map((n) => n.id);
+      const targetPosition = Math.min(Math.max(0, position), rootIds.length);
+
+      // Remover si ya existe
+      const currentIndex = rootIds.indexOf(noteId);
+      if (currentIndex !== -1) {
+        rootIds.splice(currentIndex, 1);
+      }
+
+      // Insertar en la nueva posición
+      rootIds.splice(targetPosition, 0, noteId);
+
+      // Reorganizar las notas raíz
       this.notes = [
-        ...newOrder.map((id) => this.requireNote(id)),
+        ...(rootIds
+          .map((id) => this.getNoteById(id))
+          .filter(Boolean) as Note[]),
         ...this.notes.filter((n) => n.parentId !== undefined),
       ];
       return;
     }
 
-    // Caso para notas con padre
-    const parent = this.requireNote(parentId, "Parent note");
-    if (!this.validateSiblingOrder(parent, newOrder)) {
-      throw new Error("Invalid children order");
+    // Mover a un nuevo padre con posición
+    this.requireNote(newParentId, "New parent note");
+    if (newParentId === noteId) throw new Error("Cannot move note to itself");
+    if (this.wouldCreateCycle(newParentId, noteId)) {
+      throw new Error("Cannot move note to its own descendant");
     }
-    this.updateNoteById(parentId, (note) =>
-      this.markModified({ ...note, children: newOrder }),
+
+    // Remover de su padre actual si tiene
+    if (note.parentId) {
+      this.removeFromParent(noteId);
+    }
+
+    // Actualizar la nota
+    this.updateNoteById(noteId, (note) =>
+      this.markModified({ ...note, parentId: newParentId }),
     );
+
+    // Añadir al nuevo padre en la posición especificada
+    this.addToParent(newParentId, noteId, position);
   };
-
-  createProperty = (noteId: string, property: Omit<Property, "id">) => {
-    if (!this.getNoteById(noteId)) {
-      throw new Error(`Note ${noteId} not found`);
-    }
-
-    this.notes = this.notes.map((note) => {
-      if (note.id === noteId) {
-        const newProperty: Property = {
-          ...property,
-          id: crypto.randomUUID(),
-          value: property.value ?? this.getDefaultTypeValue(property.type),
-        };
-        return {
-          ...note,
-          properties: [...note.properties, newProperty],
-          metadata: note.metadata.map((prop) =>
-            prop.name === "modified"
-              ? { ...prop, value: this.currentDate() }
-              : prop,
-          ),
-        };
-      }
-      return note;
-    });
-  };
-
-  updateProperty = (
-    noteId: string,
-    propertyId: string,
-    updates: Partial<Omit<Property, "id">>,
-  ) => {
-    if (!this.getNoteById(noteId)) {
-      throw new Error(`Note ${noteId} not found`);
-    }
-
-    this.notes = this.notes.map((note) => {
-      if (note.id === noteId) {
-        const updatedProperties = note.properties.map((property) => {
-          if (property.id === propertyId) {
-            const newType = updates.type ?? property.type;
-            return {
-              ...property,
-              ...updates,
-              value:
-                updates.type !== undefined
-                  ? this.getDefaultTypeValue(newType)
-                  : (updates.value ?? property.value),
-              type: newType,
-            };
-          }
-          return property;
-        });
-        return {
-          ...note,
-          properties: updatedProperties,
-          metadata: note.metadata.map((prop) =>
-            prop.name === "modified"
-              ? { ...prop, value: this.currentDate() }
-              : prop,
-          ),
-        };
-      }
-      return note;
-    });
-  };
-
-  deleteProperty = (noteId: string, propertyId: string) => {
-    const note = this.getNoteById(noteId);
-    if (!note) throw new Error(`Note ${noteId} not found`);
-
-    if (!note.properties.some((p) => p.id === propertyId)) {
-      throw new Error(`Property ${propertyId} not found in note ${noteId}`);
-    }
-
-    this.notes = this.notes.map((note) => {
-      if (note.id === noteId) {
-        return {
-          ...note,
-          properties: note.properties.filter((p) => p.id !== propertyId),
-          metadata: note.metadata.map((prop) =>
-            prop.name === "modified"
-              ? { ...prop, value: this.currentDate() }
-              : prop,
-          ),
-        };
-      }
-      return note;
-    });
-  };
-
-  getDefaultTypeValue(type: Property["type"]) {
-    switch (type) {
-      case "text":
-        return "";
-      case "list":
-        return [];
-      case "number":
-        return 0;
-      case "check":
-        return false;
-      case "date":
-        return new Date().toISOString().split("T")[0];
-      case "datetime":
-        return new Date().toISOString();
-      default:
-        return ""; // Valor seguro por defecto
-    }
-  }
 
   // -------------------
   // Getters y setters
   // -------------------
-
   getNoteById = (id: string): Note | undefined =>
     this.notes.find((note) => note.id === id);
 
@@ -459,6 +426,11 @@ class NoteController {
   };
 
   getRootNotes = (): Note[] => this.notes.filter((note) => !note.parentId);
+
+  setActiveNote = (id: string): void => {
+    this.requireNote(id);
+    this.activeNoteId = id;
+  };
 
   getBreadcrumbPath(noteId: string): Array<{ id: string; title: string }> {
     const path = [];
@@ -478,11 +450,6 @@ class NoteController {
 
     return path;
   }
-
-  setActiveNote = (id: string): void => {
-    this.requireNote(id);
-    this.activeNoteId = id;
-  };
 }
 
-export const noteController = $state(new NoteController());
+export let noteController = $state(new NoteController());

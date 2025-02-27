@@ -5,6 +5,7 @@
 import { formatDateTimeForInput } from "../utils.svelte";
 import { workspace } from "../controllers/workspaceController.svelte";
 import { noteController } from "../controllers/noteController.svelte";
+import { propertyController } from "../controllers/propertyController.svelte";
 import DropdownList from "./DropdownList.svelte";
 
 import {
@@ -90,7 +91,7 @@ const IconComponent = $derived(getIconComponent(property.type));
         label: "Delete Property",
         icon: Trash2Icon,
         onClick: () => {
-          noteController.deleteProperty(noteId, property.id);
+          propertyController.deleteProperty(noteId, property.id);
           showOptions = false;
         },
         class: "text-error",

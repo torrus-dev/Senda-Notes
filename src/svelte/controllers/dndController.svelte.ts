@@ -1,3 +1,5 @@
+import { noteController } from "./noteController.svelte";
+
 // Define los tipos específicos para el DnD
 export type DragSource = {
   id: string;
@@ -6,8 +8,8 @@ export type DragSource = {
 };
 
 export type DropTarget = {
-  type: "note" | "note-between" | "folder" | "tab-area" | "other";
-  position?: "before" | "after" | "inside";
+  type: "notetree-note" | "notetree-line" | "tab-area" | "other";
+  data: any;
 };
 
 class DndController {
@@ -30,13 +32,26 @@ class DndController {
     this.dropTarget = dropTarget;
   };
 
-  dropNoteOnLineIndicator = (parentId = null, position = -1) => {
-    // comprovaciones de estado en WorkspaceController
-    if (!dndState) return;
-    const { draggedNoteId } = dndState;
-    if (!draggedNoteId || draggedNoteId === note.id) return;
+  handleDrop = () => {
+    if (this.dragSource && this.dropTarget && this.dragSource.type === "note") {
+      if (this.dropTarget.type === "notetree-note") {
+        this.dropNoteOnNote();
+      } else if (this.dropTarget.type === "notetree-line") {
+        this.dropNoteOnLineIndicator();
+      }
+    }
+  };
 
-    noteController.moveNote(draggedNoteId, parentId);
+  dropNoteOnNote = () => {};
+
+  dropNoteOnLineIndicator = (
+    parentId: string | null = null,
+    draggedNoteId: string | null = null,
+    position: number = -1,
+  ) => {
+    if (!draggedNoteId || position === -1) return;
+
+    noteController.moveNoteToPosition(draggedNoteId, parentId, position)
 
     let siblings = parentId
       ? noteController.getNoteById(parentId)?.children || []

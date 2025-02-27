@@ -5,13 +5,9 @@
 </style>
 
 <script>
-  import { dndController } from "../../controllers/dndController.svelte";
+import { dndController } from "../../controllers/dndController.svelte";
 
-let { 
-  index = -1,
-  depth = 0, 
-  parentId = null 
-} = $props();
+let { position = -1, depth = 0, parentId = null } = $props();
 let isDragedOver = $state(false);
 
 const handleDragOver = (event) => {
@@ -28,8 +24,15 @@ const handleDrop = (event) => {
   event.preventDefault();
   event.stopPropagation();
 
-  dndController.dropNoteOnLineIndicator(parentId, index)
-  
+  dndController.setDropTarget({
+    type: "notetree-line",
+    data: {
+      position: position,
+      depth: depth,
+    },
+  });
+
+  dndController.dropNoteOnLineIndicator(parentId, position);
 };
 </script>
 
@@ -38,7 +41,7 @@ const handleDrop = (event) => {
     ? 'highlight'
     : ''}"
   role="region"
-  data-index={index}
+  data-index={position}
   data-depth={depth}
   ondragover={handleDragOver}
   ondragleave={handleDragLeave}

@@ -4,6 +4,7 @@
 <script>
 import { workspace } from "../controllers/workspaceController.svelte";
 import { noteController } from "../controllers/noteController.svelte";
+import { propertyController } from "../controllers/propertyController.svelte";
 import { XIcon, Trash2Icon, SaveIcon } from "lucide-svelte";
 import Button from "./Button.svelte";
 
@@ -56,7 +57,7 @@ function handleAddProperty() {
   }
 
   // Usar el método createProperty para crear la propiedad
-  noteController.createProperty(noteId, {
+  propertyController.createProperty(noteId, {
     name: newPropertyName.trim(),
     type: newPropertyType,
     value: undefined, // se asigna por defecto según el tipo
@@ -88,7 +89,7 @@ function handleUpdateProperty() {
   }
 
   // Usar updateProperty para actualizar la propiedad
-  noteController.updateProperty(noteId, editingProperty.id, {
+  propertyController.updateProperty(noteId, editingProperty.id, {
     name: newPropertyName.trim(),
     type: newPropertyType,
   });
@@ -99,7 +100,7 @@ function handleUpdateProperty() {
 // Manejo de la eliminación de la propiedad
 function handleDeleteProperty() {
   if (!noteId || !editingProperty) return;
-  noteController.deleteProperty(noteId, editingProperty.id);
+  propertyController.deleteProperty(noteId, editingProperty.id);
   workspace.closePropertyEditor();
 }
 </script>
