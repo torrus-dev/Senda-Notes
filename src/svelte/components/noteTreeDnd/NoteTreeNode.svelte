@@ -11,16 +11,17 @@ import NoteTreeNode from "./NoteTreeNode.svelte";
 import { noteController } from "../../controllers/noteController.svelte";
 import { workspace } from "../../controllers/workspaceController.svelte";
 import { ChevronRightIcon } from "lucide-svelte";
-import DropLineIndicator from "./DropLineIndicator.svelte";
+import NoteTreeLine from "./NoteTreeLine.svelte";
 import { dndController } from "../../controllers/dndController.svelte";
 
-const { note, depth = 0 } = $props();
+const { note, depth = 0, position = -1 } = $props();
 
+let parentId = $derived(note.parentId);
+let isActive = $derived(note.id === noteController.activeNoteId);
 let isExpanded = $state(true);
 let isDragged = $derived.by(
   () => workspace.state.dragAndDrop?.draggedNoteId === note.id,
 );
-let isActive = $derived(note.id === noteController.activeNoteId);
 
 const toggleExpansion = (event) => {
   event.stopPropagation();
@@ -77,7 +78,7 @@ const handleNoteDrop = (event) => {
 </script>
 
 <li class="group/node cursor-pointer list-none {isDragged ? 'opacity-50' : ''}">
-  <DropLineIndicator />
+  <NoteTreeLine position={position} depth={depth} parentId={parentId} />
 
   <!-- Contenido de la nota: al soltar sobre él se insertará como hijo -->
   <div
@@ -115,13 +116,12 @@ const handleNoteDrop = (event) => {
   {#if isExpanded && note.children.length > 0}
     <ul class="ml-3">
       {#each note.children as noteId, index}
-        <!-- Se pasa isFirst para que solo el primero no renderice drop zone superior -->
         <NoteTreeNode
           note={noteController.getNoteById(noteId)}
-          depth={depth + 1}
-          isFirst={index === 0} />
+          position={index}
+          depth={depth + 1} />
       {/each}
-      <DropLineIndicator />
+      <NoteTreeLine position={index} depth={depth + 1} parentId={note.id} />
     </ul>
   {/if}
 </li>

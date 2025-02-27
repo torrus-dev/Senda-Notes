@@ -30,6 +30,7 @@ class DndController {
   };
 
   setDropTarget = (dropTarget: DropTarget) => {
+    console.log("set drop target", dropTarget);
     this.dropTarget = dropTarget;
   };
 
@@ -40,6 +41,7 @@ class DndController {
         // let { parentId, position } = this.dropTarget.data;
         // this.dropNoteOnNote(parentId, draggedNoteId, position);
       } else if (this.dropTarget.type === "notetree-line") {
+        console.log("drop in note tree line");
         let draggedNoteId = this.dragSource.data.id;
         let { parentId, position } = this.dropTarget.data;
         this.dropNoteOnLineIndicator(draggedNoteId, parentId, position);

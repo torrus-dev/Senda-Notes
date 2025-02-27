@@ -31,8 +31,7 @@ const handleDrop = (event) => {
       position: position,
     },
   });
-
-  dndController.dropNoteOnLineIndicator(parentId, position);
+  dndController.handleDrop();
 };
 </script>
 
@@ -41,8 +40,6 @@ const handleDrop = (event) => {
     ? 'highlight'
     : ''}"
   role="region"
-  data-index={position}
-  data-depth={depth}
   ondragover={handleDragOver}
   ondragleave={handleDragLeave}
   ondrop={handleDrop}>

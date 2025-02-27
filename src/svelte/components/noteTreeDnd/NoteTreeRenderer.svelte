@@ -1,6 +1,7 @@
 <script>
 import { noteController } from "../../controllers/noteController.svelte";
 import Button from "../Button.svelte";
+import NoteTreeLine from "./NoteTreeLine.svelte";
 import NoteTreeNode from "./NoteTreeNode.svelte";
 import { PlusIcon } from "lucide-svelte";
 
@@ -19,8 +20,9 @@ let rootNotes = $derived(noteController.getRootNotes());
     </Button>
   </li>
   {#if rootNotes.length > 0}
-    {#each rootNotes as note (note.id)}
-      <NoteTreeNode note={note} depth={0} />
+    {#each rootNotes as note, index (note.id)}
+      <NoteTreeNode note={note} position={index} depth={0} />
+      <NoteTreeLine position={index} depth={0} parentId={note.id} />
     {/each}
   {/if}
 </ul>
