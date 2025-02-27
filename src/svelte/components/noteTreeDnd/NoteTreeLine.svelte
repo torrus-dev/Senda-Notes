@@ -11,7 +11,7 @@ let {
   position = -1,
   depth = 0,
   parentId = null,
-  parentIsDragging = false,
+  parentIsDragging,
 } = $props();
 let isDragedOver = $state(false);
 

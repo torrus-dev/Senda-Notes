@@ -11,7 +11,7 @@ import { dndController } from "../../controllers/dndController.svelte";
 import NoteTreeLine from "./NoteTreeLine.svelte";
 import NoteTreeLabel from "./NoteTreeLabel.svelte";
 
-let { note, depth = 0, position = -1, parentIsDragging = false } = $props();
+let { note, depth = 0, position = -1 } = $props();
 
 let isExpanded = $state(true);
 let isDragedOver = $state(false);
@@ -19,6 +19,9 @@ let isDragged = $derived(
   dndController.dragSource &&
     dndController.dragSource.type === "notetree-note" &&
     dndController.dragSource.id === note.id,
+);
+let parentIsDragging = $derived(
+  noteController.isDescendant(dndController.dragSource.id, note.id),
 );
 
 const toggleExpansion = (event) => {
@@ -29,7 +32,6 @@ const toggleExpansion = (event) => {
 // handles para drag
 const handleDragStart = (event) => {
   event.stopPropagation();
-  parentIsDragging = true;
   dndController.setDragStart({
     id: note.id,
     type: "notetree-note",
@@ -39,24 +41,10 @@ const handleDragStart = (event) => {
 
 const handleDragEnd = (event) => {
   dndController.clearDragAndDrop();
-  parentIsDragging = false;
 };
 
 // Handlers para dragover y drop
 const handleDragOver = (event) => {
-  if (
-    dndController.dragSource &&
-    dndController.dragSource.id &&
-    dndController.dragSource.id !== note.id
-  ) {
-    event.preventDefault();
-    if (!parentIsDragging) {
-      isDragedOver = true;
-    }
-  }
-};
-
-const handleDragLeave = (event) => {
   if (
     !parentIsDragging &&
     dndController.dragSource &&
@@ -64,20 +52,31 @@ const handleDragLeave = (event) => {
     dndController.dragSource.id !== note.id
   ) {
     event.preventDefault();
-    if (!parentIsDragging) {
-      isDragedOver = false;
-    }
+    isDragedOver = true;
+  }
+};
+
+const handleDragLeave = (event) => {
+  if (
+    dndController.dragSource &&
+    dndController.dragSource.id &&
+    dndController.dragSource.id !== note.id
+  ) {
+    event.preventDefault();
+    isDragedOver = false;
   }
 };
 
 const handleNoteDrop = (event) => {
   event.preventDefault();
   event.stopPropagation();
-  if (!parentIsDragging) {
-    isDragedOver = false;
-  }
-  console.log(isDragedOver);
-  console.log("droping on Note");
+  dndController.setDropTarget({
+    type: "notetree-note",
+    data: {
+      parentId: parentId,
+    },
+  });
+  isDragedOver = false;
 };
 </script>
 
@@ -85,7 +84,7 @@ const handleNoteDrop = (event) => {
   position={position}
   depth={depth}
   parentId={note.parentId}
-  bind:parentIsDragging={parentIsDragging} />
+  parentIsDragging={parentIsDragging} />
 
 <li
   class="group/node rounded-field cursor-pointer
@@ -110,14 +109,13 @@ const handleNoteDrop = (event) => {
         <NoteTreeNode
           note={noteController.getNoteById(noteId)}
           position={index}
-          depth={depth + 1}
-          bind:parentIsDragging={parentIsDragging} />
+          depth={depth + 1} />
       {/each}
       <NoteTreeLine
         position={note.children.length}
         depth={depth + 1}
         parentId={note.id}
-        bind:parentIsDragging={parentIsDragging} />
+        parentIsDragging={parentIsDragging} />
     </ul>
   {/if}
 </li>

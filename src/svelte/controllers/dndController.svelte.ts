@@ -26,7 +26,7 @@ class DndController {
   };
 
   setDragStart = (dragSource: DragSource) => {
-    console.log("set drop target", dragSource);
+    console.log("set drag start", dragSource);
     this.dragSource = dragSource;
   };
 
@@ -36,7 +36,11 @@ class DndController {
   };
 
   handleDrop = () => {
-    if (this.dragSource && this.dropTarget && this.dragSource.type === "notetree-note") {
+    if (
+      this.dragSource &&
+      this.dropTarget &&
+      this.dragSource.type === "notetree-note"
+    ) {
       if (this.dropTarget.type === "notetree-note") {
         // let draggedNoteId = this.dragSource.data.id;
         // let { parentId, position } = this.dropTarget.data;
