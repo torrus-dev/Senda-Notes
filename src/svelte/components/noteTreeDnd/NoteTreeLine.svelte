@@ -7,12 +7,19 @@
 <script>
 import { dndController } from "../../controllers/dndController.svelte";
 
-let { position = -1, depth = 0, parentId = null } = $props();
+let {
+  position = -1,
+  depth = 0,
+  parentId = null,
+  parentIsDragging = false,
+} = $props();
 let isDragedOver = $state(false);
 
 const handleDragOver = (event) => {
-  event.preventDefault();
-  isDragedOver = true;
+  if (!parentIsDragging) {
+    event.preventDefault();
+    isDragedOver = true;
+  }
 };
 
 const handleDragLeave = (event) => {
