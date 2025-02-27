@@ -12,6 +12,7 @@ import { noteController } from "../../controllers/noteController.svelte";
 import { workspace } from "../../controllers/workspaceController.svelte";
 import { ChevronRightIcon } from "lucide-svelte";
 import DropLineIndicator from "./DropLineIndicator.svelte";
+import { dndController } from "../../controllers/dndController.svelte";
 
 const { note, depth = 0 } = $props();
 
@@ -48,7 +49,7 @@ const handleDragStart = (event) => {
 };
 
 const handleDragEnd = (event) => {
-  workspace.clearDragAndDrop();
+  dndController.clearDragAndDrop();
 };
 
 const handleNoteDragOver = (event) => {
@@ -64,7 +65,7 @@ const handleNoteDrop = (event) => {
   event.preventDefault();
   event.stopPropagation();
   const dndState = workspace.state.dragAndDrop;
-  workspace.clearDragAndDrop();
+  dndController.clearDragAndDrop();
   if (!dndState) return;
   const { draggedNoteId } = dndState;
   if (!draggedNoteId || draggedNoteId === note.id) return;

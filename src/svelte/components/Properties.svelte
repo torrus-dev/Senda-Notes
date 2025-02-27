@@ -6,7 +6,7 @@ import Property from "./Property.svelte";
 import PropertyEditor from "./PropertyEditor.svelte";
 import { workspace } from "../controllers/workspaceController.svelte";
 import { noteController } from "../controllers/noteController.svelte";
-import { formatDateTime } from "../utils.svelte";
+import { formatDateTime } from "../controllers/utils.svelte";
 import { PlusIcon } from "lucide-svelte";
 import Button from "./Button.svelte";
 

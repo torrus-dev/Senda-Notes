@@ -2,7 +2,7 @@
 </style>
 
 <script>
-import { formatDateTimeForInput } from "../utils.svelte";
+import { formatDateTimeForInput } from "../controllers/utils.svelte";
 import { workspace } from "../controllers/workspaceController.svelte";
 import { noteController } from "../controllers/noteController.svelte";
 import { propertyController } from "../controllers/propertyController.svelte";

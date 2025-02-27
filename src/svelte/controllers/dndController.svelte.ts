@@ -8,6 +8,7 @@ export type DragSource = {
 };
 
 export type DropTarget = {
+  id?: string;
   type: "notetree-note" | "notetree-line" | "tab-area" | "other";
   data: any;
 };
@@ -35,14 +36,26 @@ class DndController {
   handleDrop = () => {
     if (this.dragSource && this.dropTarget && this.dragSource.type === "note") {
       if (this.dropTarget.type === "notetree-note") {
-        this.dropNoteOnNote();
+        // let draggedNoteId = this.dragSource.data.id;
+        // let { parentId, position } = this.dropTarget.data;
+        // this.dropNoteOnNote(parentId, draggedNoteId, position);
       } else if (this.dropTarget.type === "notetree-line") {
-        this.dropNoteOnLineIndicator();
+        let draggedNoteId = this.dragSource.data.id;
+        let { parentId, position } = this.dropTarget.data;
+        this.dropNoteOnLineIndicator(draggedNoteId, parentId, position);
       }
     }
   };
 
-  dropNoteOnNote = () => {};
+  dropNoteOnNote = (
+    parentId: string | null = null,
+    draggedNoteId: string | null = null,
+    position: number = -1,
+  ) => {
+    if (!draggedNoteId || position === -1) return;
+
+    noteController.moveNoteToPosition(draggedNoteId, parentId, position);
+  };
 
   dropNoteOnLineIndicator = (
     parentId: string | null = null,
@@ -51,15 +64,7 @@ class DndController {
   ) => {
     if (!draggedNoteId || position === -1) return;
 
-    noteController.moveNoteToPosition(draggedNoteId, parentId, position)
-
-    let siblings = parentId
-      ? noteController.getNoteById(parentId)?.children || []
-      : noteController.getRootNotes().map((n) => n.id);
-    siblings = siblings.filter((id) => id !== draggedNoteId);
-    const index = siblings.indexOf(note.id);
-    siblings.splice(index, 0, draggedNoteId);
-    noteController.reorderNotes(parentId, siblings);
+    noteController.moveNoteToPosition(draggedNoteId, parentId, position);
   };
 }
 export const dndController = $state(new DndController());

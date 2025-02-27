@@ -27,8 +27,8 @@ const handleDrop = (event) => {
   dndController.setDropTarget({
     type: "notetree-line",
     data: {
+      parentId: parentId,
       position: position,
-      depth: depth,
     },
   });
 

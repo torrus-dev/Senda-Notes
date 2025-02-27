@@ -1,4 +1,5 @@
 import type { Note, Property } from "../types/types";
+import { currentDate } from "./utils.svelte";
 
 class NoteController {
   notes = $state<Note[]>([]);
@@ -56,7 +57,7 @@ class NoteController {
 
   private markModified = (note: Note): Note => {
     const updatedMetadata = note.metadata.map((prop) =>
-      prop.name === "modified" ? { ...prop, value: this.currentDate() } : prop,
+      prop.name === "modified" ? { ...prop, value: currentDate() } : prop,
     );
     return { ...note, metadata: updatedMetadata };
   };
@@ -128,6 +129,7 @@ class NoteController {
   // -------------------
   // Funciones auxiliares
   // -------------------
+
   private generateUniqueTitle = (): string => {
     const base = "Nota Nueva";
     const titles = new Set(this.notes.map((n) => n.title));
@@ -141,24 +143,16 @@ class NoteController {
     {
       id: crypto.randomUUID(),
       name: "created",
-      value: this.currentDate(),
+      value: currentDate(),
       type: "datetime",
     },
     {
       id: crypto.randomUUID(),
       name: "modified",
-      value: this.currentDate(),
+      value: currentDate(),
       type: "datetime",
     },
   ];
-
-  currentDate = (): string => new Date().toISOString();
-
-  sanitizeTitle = (title: string): string =>
-    title
-      .replace(/[\n\r]+/g, " ")
-      .trim()
-      .slice(0, 100);
 
   private getDescendants = (parentId: string): string[] => {
     const parent = this.getNoteById(parentId);
@@ -167,6 +161,12 @@ class NoteController {
       return [...acc, childId, ...this.getDescendants(childId)];
     }, []);
   };
+
+  sanitizeTitle = (title: string): string =>
+    title
+      .replace(/[\n\r]+/g, " ")
+      .trim()
+      .slice(0, 100);
 
   // -------------------
   // Funciones principales

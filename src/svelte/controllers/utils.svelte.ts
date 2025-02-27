@@ -16,3 +16,5 @@ export function formatDateTime(fecha: string): string {
 export function formatDateTimeForInput(fecha: string) {
   return fecha.slice(0, 16);
 }
+
+export let currentDate = (): string => new Date().toISOString();
