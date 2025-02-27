@@ -26,6 +26,7 @@ class DndController {
   };
 
   dragStart = (dragSource: DragSource) => {
+    console.log("set drop target", dragSource);
     this.dragSource = dragSource;
   };
 
