@@ -1,69 +1,88 @@
+<style>
+.highlight {
+  background-color: darkblue;
+}
+
+.isExpanded div {
+  transform: rotate(90deg);
+}
+</style>
+
 <script>
 import { dndController } from "../../controllers/dndController.svelte";
 import { noteController } from "../../controllers/noteController.svelte";
+import { workspace } from "../../controllers/workspaceController.svelte";
 import { ChevronRightIcon } from "lucide-svelte";
 
 let { note, position = -1, depth = 0, toggleExpansion, isExpanded } = $props();
 
+let isDragged = $derived(
+  dndController.dragSource &&
+    dndController.dragSource.type === "notetree-note" &&
+    dndController.dragSource.id === note.id,
+);
 let isActive = $derived(note.id === noteController.activeNoteId);
+let isDragedOver = $state(false);
 
-const handleTitleClick = (event) => {
+const handleSelectTitle = (event) => {
   if (event.key === "Enter" || event.type === "click") {
     noteController.setActiveNote(note.id);
   }
 };
 
-/* ---------- HANDLERS PARA DRAG & DROP SOBRE EL CONTENIDO (child insertion) ---------- */
+// handles para drag
 const handleDragStart = (event) => {
+  console.log("drag start");
   event.stopPropagation();
-  event.dataTransfer.setData("text/plain", note.id);
+  dndController.setDragStart({
+    id: note.id,
+    type: "notetree-note",
+  });
   event.dataTransfer.effectAllowed = "move";
-  workspace.state.dragAndDrop = {
-    draggedNoteId: note.id,
-    dropTargetId: null,
-    position: null,
-  };
 };
 
 const handleDragEnd = (event) => {
   dndController.clearDragAndDrop();
 };
 
-const handleNoteDragOver = (event) => {
-  event.preventDefault();
-  event.dataTransfer.dropEffect = "move";
-  if (workspace.state.dragAndDrop) {
-    workspace.state.dragAndDrop.dropTargetId = note.id;
-    workspace.state.dragAndDrop.position = "child";
+// Handlers para dragover y drop
+const handleDragOver = (event) => {
+  if (
+    dndController.dragSource &&
+    dndController.dragSource.id &&
+    dndController.dragSource.id !== note.id
+  ) {
+    event.preventDefault();
+    isDragedOver = true;
   }
+};
+
+const handleDragLeave = (event) => {
+  event.preventDefault();
+  isDragedOver = false;
 };
 
 const handleNoteDrop = (event) => {
   event.preventDefault();
   event.stopPropagation();
-  const dndState = workspace.state.dragAndDrop;
-  dndController.clearDragAndDrop();
-  if (!dndState) return;
-  const { draggedNoteId } = dndState;
-  if (!draggedNoteId || draggedNoteId === note.id) return;
-  // Insertar como hijo
-  noteController.moveNote(draggedNoteId, note.id);
+  console.log("drop on note");
 };
 </script>
 
 <div
   class="rounded-field ml-1.5 flex gap-1 px-2 py-1.5 pl-1 whitespace-nowrap transition-colors select-none hover:bg-(--color-bg-hover) {isActive
     ? 'bg-(--color-bg-active)'
-    : ''}"
+    : ''} {isDragged ? 'opacity-50' : ''} {isDragedOver ? 'highlight' : ''}"
   role="button"
   tabindex="0"
   style={`margin-left: calc(var(--spacing) * ${depth})`}
   draggable="true"
-  onclick={handleTitleClick}
-  onkeydown={handleTitleClick}
+  onclick={handleSelectTitle}
+  onkeydown={handleSelectTitle}
   ondragstart={handleDragStart}
   ondragend={handleDragEnd}
-  ondragover={handleNoteDragOver}
+  ondragover={handleDragOver}
+  ondragleave={handleDragLeave}
   ondrop={handleNoteDrop}>
   {#if note.children && note.children.length > 0}
     <button

@@ -1,34 +1,28 @@
 <style>
-/* Wrapper que aumenta el área de drop sin modificar el aspecto visual de la línea */
-
-.isExpanded div {
-  transform: rotate(90deg);
-}
 </style>
 
 <script>
 import NoteTreeNode from "./NoteTreeNode.svelte";
 import { noteController } from "../../controllers/noteController.svelte";
-import { workspace } from "../../controllers/workspaceController.svelte";
+import { dndController } from "../../controllers/dndController.svelte";
 import NoteTreeLine from "./NoteTreeLine.svelte";
 import NoteTreeLabel from "./NoteTreeLabel.svelte";
 
 const { note, depth = 0, position = -1 } = $props();
 
 let isExpanded = $state(true);
-let isDragged = $derived.by(
-  () => workspace.state.dragAndDrop?.draggedNoteId === note.id,
-);
 
 const toggleExpansion = (event) => {
   event.stopPropagation();
   isExpanded = !isExpanded;
 };
+
+
 </script>
 
-<li class="group/node cursor-pointer list-none {isDragged ? 'opacity-50' : ''}">
-  <NoteTreeLine position={position} depth={depth} parentId={note.parentId} />
+<NoteTreeLine position={position} depth={depth} parentId={note.parentId} />
 
+<li class="group/node cursor-pointer list-none">
   <NoteTreeLabel
     note={note}
     position={position}

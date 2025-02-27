@@ -3,7 +3,7 @@ import { noteController } from "./noteController.svelte";
 // Define los tipos específicos para el DnD
 export type DragSource = {
   id: string;
-  type: "note" | "tab" | "other";
+  type: "notetree-note" | "tab" | "other";
   data: any;
 };
 
@@ -25,7 +25,7 @@ class DndController {
     this.dropTarget = undefined;
   };
 
-  dragStart = (dragSource: DragSource) => {
+  setDragStart = (dragSource: DragSource) => {
     console.log("set drop target", dragSource);
     this.dragSource = dragSource;
   };
@@ -36,14 +36,14 @@ class DndController {
   };
 
   handleDrop = () => {
-    if (this.dragSource && this.dropTarget && this.dragSource.type === "note") {
+    if (this.dragSource && this.dropTarget && this.dragSource.type === "notetree-note") {
       if (this.dropTarget.type === "notetree-note") {
         // let draggedNoteId = this.dragSource.data.id;
         // let { parentId, position } = this.dropTarget.data;
         // this.dropNoteOnNote(parentId, draggedNoteId, position);
       } else if (this.dropTarget.type === "notetree-line") {
         console.log("drop in note tree line");
-        let draggedNoteId = this.dragSource.data.id;
+        let draggedNoteId = this.dragSource.id;
         let { parentId, position } = this.dropTarget.data;
         this.dropNoteOnLineIndicator(draggedNoteId, parentId, position);
       }
