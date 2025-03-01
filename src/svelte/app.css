@@ -24,6 +24,8 @@
   --radius-field: var(--radius-field);
   --radius-box: var(--radius-box);
 
+  --color-accent-indicator: var(--color-accent-indicator);
+
   --color-error-bg: var(--color-error-bg);
   --color-error: var(--color-error);
 }

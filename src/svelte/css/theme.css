@@ -20,6 +20,8 @@
   --color-error-bg: var(--color-rose-400);
   --color-error: var(--color-rose-800);
 
+  --color-accent-indicator: oklch(69.56% 0.1271 253.81 / 50%);
+
   --color-border-normal: var(--color-base-300);
   --color-border-muted: var(--color-base-200);
 
@@ -39,6 +41,8 @@
 
   --color-error-bg: var(--color-rose-800);
   --color-error: var(--color-rose-400);
+
+  --color-accent-indicator: oklch(55.82% 0.1762 256.43 / 50%);
 
   --color-border-normal: var(--color-base-300);
   --color-border-muted: var(--color-base-200);

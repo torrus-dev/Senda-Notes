@@ -168,7 +168,7 @@ class NoteController {
       .trim()
       .slice(0, 100);
 
-  isDescendant(ancestorId: string, descendantId: string): boolean {
+  isDescendant(descendantId: string, ancestorId: string): boolean {
     let currentNote = this.getNoteById(descendantId);
     while (currentNote) {
       if (currentNote.parentId === ancestorId) return true;

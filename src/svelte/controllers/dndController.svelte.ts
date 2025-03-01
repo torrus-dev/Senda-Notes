@@ -25,7 +25,7 @@ class DndController {
     this.dropTarget = undefined;
   };
 
-  setDragStart = (dragSource: DragSource) => {
+  setDragSource = (dragSource: DragSource) => {
     console.log("set drag start", dragSource);
     this.dragSource = dragSource;
   };
@@ -35,6 +35,10 @@ class DndController {
     this.dropTarget = dropTarget;
   };
 
+  getDragSourceId = (): string | undefined => {
+    return this.dragSource ? this.dragSource.id : undefined;
+  };
+
   handleDrop = () => {
     if (
       this.dragSource &&
@@ -42,35 +46,64 @@ class DndController {
       this.dragSource.type === "notetree-note"
     ) {
       if (this.dropTarget.type === "notetree-note") {
-        // let draggedNoteId = this.dragSource.data.id;
-        // let { parentId, position } = this.dropTarget.data;
-        // this.dropNoteOnNote(parentId, draggedNoteId, position);
+        // Cuando soltamos una nota sobre otra nota, la convertimos en hijo
+        let draggedNoteId = this.dragSource.id;
+        let targetNoteId = this.dropTarget.id;
+
+        // Verificamos que la nota destino no sea ella misma o no sea un descendiente de la nota arrastrada
+        if (
+          targetNoteId &&
+          targetNoteId !== draggedNoteId &&
+          !noteController.isDescendant(targetNoteId, draggedNoteId)
+        ) {
+          // La nota se coloca como último hijo de la nota destino (posición children.length)
+          const targetNote = noteController.getNoteById(targetNoteId);
+          if (targetNote) {
+            this.dropNoteOnNote(
+              targetNoteId,
+              draggedNoteId,
+              targetNote.children.length,
+            );
+          }
+        }
       } else if (this.dropTarget.type === "notetree-line") {
-        console.log("drop in note tree line");
+        console.log("drop in notetree-line");
         let draggedNoteId = this.dragSource.id;
         let { parentId, position } = this.dropTarget.data;
-        this.dropNoteOnLineIndicator(draggedNoteId, parentId, position);
+
+        // permitir soltar a root o cuando no coincidan los IDs y no estemos arrastrando una nota a un elemento descendiente
+        if (
+          !parentId ||
+          (parentId !== draggedNoteId &&
+            !noteController.isDescendant(parentId, draggedNoteId))
+        ) {
+          this.dropNoteOnLineIndicator(parentId, draggedNoteId, position);
+        }
       }
+
+      this.clearDragAndDrop();
     }
   };
 
   dropNoteOnNote = (
-    parentId: string | null = null,
-    draggedNoteId: string | null = null,
+    targetNoteId: string,
+    draggedNoteId: string,
     position: number = -1,
   ) => {
-    if (!draggedNoteId || position === -1) return;
+    if (!draggedNoteId || !targetNoteId) return;
 
-    noteController.moveNoteToPosition(draggedNoteId, parentId, position);
+    // Movemos la nota arrastrada como hijo de la nota destino
+    noteController.moveNoteToPosition(draggedNoteId, targetNoteId, position);
   };
 
   dropNoteOnLineIndicator = (
-    parentId: string | null = null,
-    draggedNoteId: string | null = null,
-    position: number = -1,
+    parentId: string | null,
+    draggedNoteId: string,
+    position: number,
   ) => {
     if (!draggedNoteId || position === -1) return;
 
+    // Movemos la nota arrastrada a la posición específica dentro del padre
     noteController.moveNoteToPosition(draggedNoteId, parentId, position);
   };
 }

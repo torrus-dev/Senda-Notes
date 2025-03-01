@@ -9,20 +9,21 @@ let rootNotes = $derived(noteController.getRootNotes());
 </script>
 
 <ul class="rounded-box w-full p-2">
-  <li class="group flex flex-row justify-between gap-2">
+  <li class="group flex flex-row justify-between gap-2 pt-2 pb-1">
     <p class="text-muted-content">Notes</p>
 
     <Button
       onclick={() => noteController.createNote()}
       cssClass="opacity-0 group-hover:opacity-100 p-1"
-      size="small">
+      size="small"
+      title="Add note">
       <PlusIcon size="18"></PlusIcon>
     </Button>
   </li>
-  {#if rootNotes.length > 0}
+  {#if rootNotes && rootNotes.length > 0}
     {#each rootNotes as note, index (note.id)}
-      <NoteTreeNode note={note} position={index} depth={0} />
-      <NoteTreeLine position={index} depth={0} parentId={note.id} />
+      <NoteTreeNode note={note} position={index} />
     {/each}
+    <NoteTreeLine position={rootNotes.length} />
   {/if}
 </ul>
