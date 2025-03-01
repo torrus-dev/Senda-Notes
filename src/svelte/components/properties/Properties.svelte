@@ -4,7 +4,6 @@
 <script>
 import Property from "./Property.svelte";
 import PropertyEditor from "./PropertyEditor.svelte";
-import PropertyDropLine from "./PropertyDropLine.svelte";
 import { workspace } from "../../controllers/workspaceController.svelte";
 import { noteController } from "../../controllers/noteController.svelte";
 import { formatDateTime } from "../../controllers/utils.svelte";
@@ -53,13 +52,12 @@ function handlePropertyUpdate(propertyName, newValue) {
       <h3 class="py-1 text-xl font-bold">Properties</h3>
       {#if note.properties}
         <ul class="property-box">
-          <PropertyDropLine position={0} />
           {#each note.properties as property, index (property.id)}
             <Property
               noteId={note.id}
               property={property}
-              onUpdate={handlePropertyUpdate} />
-            <PropertyDropLine position={index + 1} />
+              onUpdate={handlePropertyUpdate}
+              position={index} />
           {/each}
         </ul>
       {/if}

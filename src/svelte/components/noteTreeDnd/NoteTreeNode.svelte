@@ -1,7 +1,4 @@
 <style>
-.highlight {
-  background-color: var(--color-accent-indicator);
-}
 </style>
 
 <script>

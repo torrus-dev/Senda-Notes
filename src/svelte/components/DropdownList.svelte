@@ -12,16 +12,16 @@ let {
   maxMenuWidth = 44,
 } = $props();
 
-let { isOpen } = $state(false);
-let menuElement;
+let isOpen = $state(false);
+let menuElement = $state(null);
 let buttonElement = $state();
 
-const close = () => (isOpen = false);
+const closeDropdown = () => (isOpen = false);
 const toggle = () => (isOpen = !isOpen);
 
 const handleKeydown = (e) => {
   if (e.key === "Escape") {
-    close();
+    closeDropdown();
   }
   if (e.key === "Enter" || e.key === " ") {
     e.preventDefault();
@@ -30,7 +30,7 @@ const handleKeydown = (e) => {
 };
 const handleOutsideClick = (e) => {
   if (!menuElement?.contains(e.target) && !buttonElement?.contains(e.target)) {
-    close();
+    closeDropdown();
   }
 };
 
@@ -71,28 +71,26 @@ $effect(() => {
     {@render label()}
   </Button>
 
-  <ul
-    class="rounded-box bordered absolute z-[999] mt-1 bg-(--color-base-200) p-2 shadow {positionClass} {!isOpen
-      ? 'invisible'
-      : ''}"
-    style="max-width: {maxMenuWidth}rem;"
-    role="menu"
-    bind:this={menuElement}
-    tabindex="-1">
-    {#each menuItems as item}
-      <li>
-        <Button
-          onclick={item.onClick}
-          role="menuitem"
-          cssClass="w-full {item.class}">
-          {#if item.icon}
-            <item.icon size="18"></item.icon>
-          {/if}
-          {item.label}
-        </Button>
-      </li>
-    {:else}
-      <li>Empty list</li>
-    {/each}
-  </ul>
+  {#if isOpen}
+    <ul
+      class="rounded-box bordered absolute z-[999] mt-1 bg-(--color-base-200) p-2 shadow {positionClass}"
+      style="max-width: {maxMenuWidth}rem;"
+      role="menu"
+      bind:this={menuElement}
+      tabindex="-1">
+      {#each menuItems as item}
+        <li>
+          <Button
+            onclick={item.onClick}
+            role="menuitem"
+            cssClass="w-full {item.class}">
+            {#if item.icon}
+              <item.icon size="18"></item.icon>
+            {/if}
+            {item.label}
+          </Button>
+        </li>
+      {/each}
+    </ul>
+  {/if}
 </div>

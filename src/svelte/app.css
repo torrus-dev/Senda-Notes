@@ -6,6 +6,9 @@
 @utility bg-interactive {
   @apply hover:bg-(--color-bg-hover) focus:bg-(--color-bg-hover);
 }
+@utility highlight {
+  background-color: var(--color-accent-indicator);
+}
 
 @theme inline {
   --color-base-100: var(--color-base-100);
@@ -45,7 +48,7 @@
 
 input,
 select {
-  @apply rounded-field text-base-content bg-base-100 p-1.5;
+  @apply rounded-field text-base-content bg-transparent p-1.5;
 }
 
 @font-face {

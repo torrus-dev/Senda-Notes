@@ -21,8 +21,16 @@ import {
 } from "lucide-svelte";
 import Button from "../Button.svelte";
 
-let { noteId = null, property = null, onUpdate, readonly = false } = $props();
-let showOptions = $state(false);
+let {
+  noteId = null,
+  position,
+  property = null,
+  onUpdate,
+  readonly = false,
+} = $props();
+let isDragedOver = $state(false);
+// Obtener el componente de icono actual (derivado)
+const IconComponent = $derived(getIconComponent(property.type));
 
 // Estado de referencia para el input (en caso de list)
 let inputElement = $state(null);
@@ -71,6 +79,7 @@ function getIconComponent(type) {
   }
 }
 
+// drag
 const handleDragStart = (event) => {
   event.stopPropagation();
   dndController.setDragSource({
@@ -87,15 +96,43 @@ const handleDragEnd = (event) => {
   dndController.clearDragAndDrop();
 };
 
-// Obtener el componente de icono actual (derivado)
-const IconComponent = $derived(getIconComponent(property.type));
+// drop
+const handleDragOver = (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  isDragedOver = true;
+};
+
+const handleDragLeave = (event) => {
+  event.preventDefault();
+  isDragedOver = false;
+};
+
+const handleDrop = (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  isDragedOver = false;
+
+  dndController.setDropTarget({
+    type: "property-line",
+    data: {
+      position: position,
+    },
+  });
+  dndController.handleDrop();
+};
 </script>
 
 <li
-  class="relative ml-[-0.5rem] grid grid-cols-[12rem_auto] gap-2"
+  class="bg-transaprent rounded-field relative ml-[-0.5rem] grid grid-cols-[12rem_auto] gap-2 transition-colors duration-300 {isDragedOver
+    ? 'highlight'
+    : ''}"
   draggable="true"
   ondragstart={handleDragStart}
-  ondragend={handleDragEnd}>
+  ondragend={handleDragEnd}
+  ondragover={handleDragOver}
+  ondragleave={handleDragLeave}
+  ondrop={handleDrop}>
   <DropdownList
     position="start"
     menuItems={[
@@ -104,7 +141,7 @@ const IconComponent = $derived(getIconComponent(property.type));
         icon: SlidersHorizontalIcon,
         onClick: () => {
           workspace.openPropertyEditor(noteId, property);
-          showOptions = false;
+          // close
         },
       },
       {
@@ -112,7 +149,7 @@ const IconComponent = $derived(getIconComponent(property.type));
         icon: Trash2Icon,
         onClick: () => {
           propertyController.deleteProperty(noteId, property.id);
-          showOptions = false;
+          // close
         },
         class: "text-error",
       },
