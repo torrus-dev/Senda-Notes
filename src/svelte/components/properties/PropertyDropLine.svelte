@@ -7,15 +7,13 @@
 <script>
 import { dndController } from "../../controllers/dndController.svelte";
 
-let { position = -1, parentId = null, parentIsDragging } = $props();
+let { position = -1 } = $props();
 let isDragedOver = $state(false);
 
 const handleDragOver = (event) => {
-  if (!parentIsDragging) {
-    event.preventDefault();
-    event.stopPropagation();
-    isDragedOver = true;
-  }
+  event.preventDefault();
+  event.stopPropagation();
+  isDragedOver = true;
 };
 
 const handleDragLeave = (event) => {
@@ -29,9 +27,8 @@ const handleDrop = (event) => {
   isDragedOver = false;
 
   dndController.setDropTarget({
-    type: "notetree-line",
+    type: "property-line",
     data: {
-      parentId: parentId,
       position: position,
     },
   });

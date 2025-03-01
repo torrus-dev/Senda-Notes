@@ -4,6 +4,7 @@
 <script>
 import Property from "./Property.svelte";
 import PropertyEditor from "./PropertyEditor.svelte";
+import PropertyDropLine from "./PropertyDropLine.svelte";
 import { workspace } from "../../controllers/workspaceController.svelte";
 import { noteController } from "../../controllers/noteController.svelte";
 import { formatDateTime } from "../../controllers/utils.svelte";
@@ -50,14 +51,18 @@ function handlePropertyUpdate(propertyName, newValue) {
 
     <div class="custom-properties my-6">
       <h3 class="py-1 text-xl font-bold">Properties</h3>
-      <ul class="property-box">
-        {#each note.properties as property}
-          <Property
-            noteId={note.id}
-            property={property}
-            onUpdate={handlePropertyUpdate} />
-        {/each}
-      </ul>
+      {#if note.properties}
+        <ul class="property-box">
+          <PropertyDropLine position={0} />
+          {#each note.properties as property, index (property.id)}
+            <Property
+              noteId={note.id}
+              property={property}
+              onUpdate={handlePropertyUpdate} />
+            <PropertyDropLine position={index + 1} />
+          {/each}
+        </ul>
+      {/if}
 
       {#if workspace.state.propertyEditor.isVisible && workspace.state.propertyEditor.targetNoteId === note.id}
         <PropertyEditor />

@@ -4,7 +4,7 @@
 <script>
 import { formatDateTimeForInput } from "../../controllers/utils.svelte";
 import { workspace } from "../../controllers/workspaceController.svelte";
-import { noteController } from "../../controllers/noteController.svelte";
+import { dndController } from "../../controllers/dndController.svelte";
 import { propertyController } from "../../controllers/propertyController.svelte";
 import DropdownList from "../DropdownList.svelte";
 
@@ -71,11 +71,31 @@ function getIconComponent(type) {
   }
 }
 
+const handleDragStart = (event) => {
+  event.stopPropagation();
+  dndController.setDragSource({
+    type: "property",
+    data: {
+      noteId: noteId,
+      propertyId: property.id,
+    },
+  });
+  event.dataTransfer.effectAllowed = "move";
+};
+
+const handleDragEnd = (event) => {
+  dndController.clearDragAndDrop();
+};
+
 // Obtener el componente de icono actual (derivado)
 const IconComponent = $derived(getIconComponent(property.type));
 </script>
 
-<li class="relative ml-[-0.5rem] grid grid-cols-[12rem_auto] gap-2">
+<li
+  class="relative ml-[-0.5rem] grid grid-cols-[12rem_auto] gap-2"
+  draggable="true"
+  ondragstart={handleDragStart}
+  ondragend={handleDragEnd}>
   <DropdownList
     position="start"
     menuItems={[

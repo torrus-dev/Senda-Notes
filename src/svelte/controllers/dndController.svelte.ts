@@ -1,16 +1,22 @@
 import { noteController } from "./noteController.svelte";
+import { propertyController } from "./propertyController.svelte";
 
 // Define los tipos específicos para el DnD
 export type DragSource = {
   id: string;
-  type: "notetree-note" | "tab" | "other";
-  data: any;
+  type: "notetree-note" | "tab" | "property" | "other";
+  data?: any;
 };
 
 export type DropTarget = {
   id?: string;
-  type: "notetree-note" | "notetree-line" | "tab-area" | "other";
-  data: any;
+  type:
+    | "notetree-note"
+    | "notetree-line"
+    | "tab-area"
+    | "property-line"
+    | "other";
+  data?: any;
 };
 
 class DndController {
@@ -40,11 +46,22 @@ class DndController {
   };
 
   handleDrop = () => {
-    if (
-      this.dragSource &&
-      this.dropTarget &&
-      this.dragSource.type === "notetree-note"
-    ) {
+    if (this.dragSource && this.dropTarget) {
+      if (this.dragSource.type === "notetree-note") {
+        this.noteTreeDnd();
+      } else if (
+        this.dragSource.type === "property" &&
+        this.dropTarget.type === "property-line"
+      ) {
+        this.propertyDnd();
+      }
+
+      this.clearDragAndDrop();
+    }
+  };
+
+  noteTreeDnd = () => {
+    if (this.dragSource && this.dropTarget) {
       if (this.dropTarget.type === "notetree-note") {
         // Cuando soltamos una nota sobre otra nota, la convertimos en hijo
         let draggedNoteId = this.dragSource.id;
@@ -67,7 +84,6 @@ class DndController {
           }
         }
       } else if (this.dropTarget.type === "notetree-line") {
-        console.log("drop in notetree-line");
         let draggedNoteId = this.dragSource.id;
         let { parentId, position } = this.dropTarget.data;
 
@@ -80,8 +96,14 @@ class DndController {
           this.dropNoteOnLineIndicator(parentId, draggedNoteId, position);
         }
       }
+    }
+  };
 
-      this.clearDragAndDrop();
+  propertyDnd = () => {
+    if (this.dragSource && this.dropTarget) {
+      let {noteId, propertyId} = this.dragSource.data;
+      let { position } = this.dropTarget.data;
+      propertyController.reorderProperty(noteId, propertyId, position)
     }
   };
 
