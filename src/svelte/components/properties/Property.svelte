@@ -2,11 +2,11 @@
 </style>
 
 <script>
-import { formatDateTimeForInput } from "../controllers/utils.svelte";
-import { workspace } from "../controllers/workspaceController.svelte";
-import { noteController } from "../controllers/noteController.svelte";
-import { propertyController } from "../controllers/propertyController.svelte";
-import DropdownList from "./DropdownList.svelte";
+import { formatDateTimeForInput } from "../../controllers/utils.svelte";
+import { workspace } from "../../controllers/workspaceController.svelte";
+import { noteController } from "../../controllers/noteController.svelte";
+import { propertyController } from "../../controllers/propertyController.svelte";
+import DropdownList from "../DropdownList.svelte";
 
 import {
   TextIcon,
@@ -19,7 +19,7 @@ import {
   SlidersHorizontalIcon,
   Trash2Icon,
 } from "lucide-svelte";
-import Button from "./Button.svelte";
+import Button from "../Button.svelte";
 
 let { noteId = null, property = null, onUpdate, readonly = false } = $props();
 let showOptions = $state(false);

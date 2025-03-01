@@ -1,7 +1,7 @@
 <script>
 import Title from "../components/Title.svelte";
 import Editor from "../components/Editor.svelte";
-import Properties from "../components/Properties.svelte";
+import Properties from "./properties/Properties.svelte";
 import DropdownList from "./DropdownList.svelte";
 import { noteController } from "../controllers/noteController.svelte";
 import { MoreVerticalIcon, Trash2Icon } from "lucide-svelte";

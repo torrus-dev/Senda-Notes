@@ -2,11 +2,11 @@
 </style>
 
 <script>
-import { workspace } from "../controllers/workspaceController.svelte";
-import { noteController } from "../controllers/noteController.svelte";
-import { propertyController } from "../controllers/propertyController.svelte";
+import { workspace } from "../../controllers/workspaceController.svelte";
+import { noteController } from "../../controllers/noteController.svelte";
+import { propertyController } from "../../controllers/propertyController.svelte";
 import { XIcon, Trash2Icon, SaveIcon } from "lucide-svelte";
-import Button from "./Button.svelte";
+import Button from "../Button.svelte";
 
 // Opciones de tipos de propiedades
 const propertyTypes = [

@@ -51,9 +51,9 @@ const handleDragEnd = (event) => {
 const handleDragOver = (event) => {
   let dragSourceId = dndController.getDragSourceId();
   if (!parentIsDragging) {
-    event.preventDefault();
     event.stopPropagation();
     if (dragSourceId && dragSourceId !== note.id) {
+      event.preventDefault();
       isDragedOver = true;
     }
   }
@@ -104,7 +104,7 @@ const handleNoteDrop = (event) => {
     isExpanded={isExpanded} />
 
   {#if isExpanded && note.children && note.children.length > 0}
-    <ul class="border-base-400 ml-2.5 border-l-2">
+    <ul class="border-base-400/50 ml-2.5 border-l-2">
       {#each note.children as noteId, index}
         <NoteTreeNode
           note={noteController.getNoteById(noteId)}
