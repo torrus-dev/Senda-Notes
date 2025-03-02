@@ -46,8 +46,7 @@
   }
 }
 
-input,
-select {
+input {
   @apply rounded-field text-base-content bg-transparent p-1.5;
 }
 

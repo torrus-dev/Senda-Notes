@@ -1,5 +1,6 @@
 <script>
 import Button from "./Button.svelte";
+import { closeOnOutsideOrEsc } from "../../directives/closeOnOutsideOrEsc";
 
 let {
   label,
@@ -8,6 +9,7 @@ let {
   position = "start",
   maxMenuWidth = 44,
   closeOnClick = true, // Nueva prop para control opcional
+  disabled = false,
 } = $props();
 
 let isOpen = $state(false);
@@ -54,24 +56,24 @@ const positionClass =
         ? "right-0"
         : "";
 
-$effect(() => {
-  if (!isOpen) return;
+// $effect(() => {
+//   if (!isOpen) return;
 
-  // Usamos setTimeout para asegurarnos de que no se cierre inmediatamente al abrir
-  setTimeout(() => {
-    document.addEventListener("click", handleOutsideClick);
-  }, 0);
+//   // Usamos setTimeout para asegurarnos de que no se cierre inmediatamente al abrir
+//   setTimeout(() => {
+//     document.addEventListener("click", handleOutsideClick);
+//   }, 0);
 
-  document.addEventListener("keydown", handleKeydown);
+//   document.addEventListener("keydown", handleKeydown);
 
-  return () => {
-    document.removeEventListener("click", handleOutsideClick);
-    document.removeEventListener("keydown", handleKeydown);
-  };
-});
+//   return () => {
+//     document.removeEventListener("click", handleOutsideClick);
+//     document.removeEventListener("keydown", handleKeydown);
+//   };
+// });
 </script>
 
-<div class="relative">
+<div class="relative" use:closeOnOutsideOrEsc={closeDropdown}>
   <Button
     onclick={toggle}
     cssClass={labelClass}
@@ -82,13 +84,19 @@ $effect(() => {
     {@render label()}
   </Button>
 
-  {#if isOpen}
+  {#if isOpen && !disabled}
     <ul
-      class="rounded-box bordered absolute z-[999] mt-1 bg-(--color-base-200) p-2 shadow {positionClass}"
+      class="rounded-box bordered absolute z-20 mt-1 bg-(--color-base-200) p-2 shadow {positionClass}"
       style="max-width: {maxMenuWidth}rem;"
       role="menu"
       bind:this={menuElement}
-      tabindex="-1">
+      tabindex="-1"
+      use:closeOnOutsideOrEsc={{
+        onClose: () => {
+          console.log("close editor");
+          isEditorOpen = false;
+        },
+      }}>
       {#each menuItems as item}
         <li>
           <Button

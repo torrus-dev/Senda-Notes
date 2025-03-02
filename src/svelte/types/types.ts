@@ -17,11 +17,9 @@ export interface Note {
 
 // Estado y tipos para el Property Editor
 export interface PropertyEditorState {
-  isVisible: boolean;
-  targetNoteId: string | null;
-  editingProperty: Property | null;
-  originalName: string | null;
-  positionData: object | null;
+  isOpen: boolean;
+  noteId: string | null;
+  propertyId: string | null;
 }
 
 // Tipos para pestañas (tabs) y ventanas

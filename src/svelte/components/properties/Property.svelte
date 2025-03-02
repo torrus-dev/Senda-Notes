@@ -5,7 +5,6 @@
 import { workspace } from "../../controllers/workspaceController.svelte";
 import { dndController } from "../../controllers/dndController.svelte";
 import { propertyController } from "../../controllers/propertyController.svelte";
-import { noteController } from "../../controllers/noteController.svelte";
 
 import { getIconComponent } from "./propertyUtils";
 import { createDragAndDropHandlers } from "./PropertyDnd";
@@ -15,8 +14,13 @@ import { SlidersHorizontalIcon, Trash2Icon } from "lucide-svelte";
 import DropdownList from "../DropdownList.svelte";
 import PropertyValue from "./propertyTypes/PropertyValue.svelte";
 import Button from "../Button.svelte";
+import PropertyEditor from "./PropertyEditor.svelte";
 
 let { noteId = null, position, property = null, readonly = false } = $props();
+
+let isEditorOpen = $derived(
+  workspace.isOpenPropertyEditor(noteId, property.id),
+);
 
 // setup drag and drop
 let isDragedOver = $state(false);
@@ -37,13 +41,9 @@ const {
 function handlePropertyUpdate(propertyName, newValue) {
   if (!note) return;
 
-  const updatedProperties = note.properties.map((property) =>
-    property.name === propertyName
-      ? { ...property, value: newValue }
-      : property,
-  );
+  const updatedProperty = { ...property, value: newValue };
 
-  noteController.updateNote(note.id, { properties: updatedProperties });
+  propertyController.updateProperty(note.id, property.id, updatedProperty);
 }
 
 // Obtener el componente de icono actual (derivado)
@@ -66,16 +66,8 @@ const IconComponent = $derived(getIconComponent(property.type));
       {
         label: "Edit Property",
         icon: SlidersHorizontalIcon,
-        onClick: (event) => {
-          // Detener la propagación para evitar que el evento llegue al documento
-          event.stopPropagation();
-
-          // Disparar evento para posicionar y abrir el editor
-          const rect = event.currentTarget.getBoundingClientRect();
-          workspace.openPropertyEditor(noteId, property, {
-            rect,
-            propertyIndex: position,
-          });
+        onClick: () => {
+          workspace.openPropertyEditor(noteId, property.id);
         },
       },
       {
@@ -87,7 +79,8 @@ const IconComponent = $derived(getIconComponent(property.type));
         },
         class: "text-error",
       },
-    ]}>
+    ]}
+    disabled={isEditorOpen}>
     {#snippet label()}
       {#if IconComponent}
         <span class="property-icon"><IconComponent size="18" /></span>
@@ -100,4 +93,8 @@ const IconComponent = $derived(getIconComponent(property.type));
 
   <PropertyValue property={property} onUpdate={handlePropertyUpdate}
   ></PropertyValue>
+
+  {#if isEditorOpen}
+    <PropertyEditor noteId={noteId} property={property}></PropertyEditor>
+  {/if}
 </li>

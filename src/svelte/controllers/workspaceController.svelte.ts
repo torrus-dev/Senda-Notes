@@ -1,15 +1,13 @@
-import type { Property, WorkspaceState, Tab, Window } from "../types/types";
+import type { WorkspaceState, Tab, Window } from "../types/types";
 import { FocusTarget } from "../types/types";
 
 class WorkspaceController {
   // Estado global del workspace (incluye propertyEditor, ventanas y pestañas)
   state = $state<WorkspaceState>({
     propertyEditor: {
-      isVisible: false,
-      targetNoteId: null,
-      editingProperty: null,
-      originalName: null,
-      positionData: null,
+      isOpen: false,
+      noteId: null,
+      propertyId: null,
     },
     windows: [],
     activeWindowId: null,
@@ -21,36 +19,33 @@ class WorkspaceController {
   // ========= Métodos para Property Editor =========
 
   openPropertyEditor = (
-    noteId: string,
-    property: Property | null = null,
-    positionData = null,
+    noteId: string | null = null,
+    propertyId: string | null = null,
   ) => {
     this.state.propertyEditor = {
-      isVisible: true,
-      targetNoteId: noteId,
-      editingProperty: property ? { ...property } : null,
-      originalName: property?.name || null,
-      positionData: positionData,
+      isOpen: true,
+      noteId: noteId,
+      propertyId: propertyId,
     };
   };
 
   closePropertyEditor = () => {
     this.state.propertyEditor = {
-      isVisible: false,
-      targetNoteId: null,
-      editingProperty: null,
-      originalName: null,
-      positionData: null,
+      isOpen: false,
+      noteId: null,
+      propertyId: null,
     };
   };
 
-  updateEditingProperty = (updates: Partial<Property>) => {
-    if (this.state.propertyEditor.editingProperty) {
-      this.state.propertyEditor.editingProperty = {
-        ...this.state.propertyEditor.editingProperty,
-        ...updates,
-      };
-    }
+  isOpenPropertyEditor = (
+    noteId: string | null = null,
+    propertyId: string | null = null,
+  ) => {
+    return (
+      workspace.state.propertyEditor.isOpen &&
+      workspace.state.propertyEditor.noteId === noteId &&
+      workspace.state.propertyEditor.propertyId === propertyId
+    );
   };
 
   // ========= Métodos para ventanas y pestañas =========
