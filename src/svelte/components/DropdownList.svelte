@@ -1,6 +1,3 @@
-<style>
-</style>
-
 <script>
 import Button from "./Button.svelte";
 
@@ -10,6 +7,7 @@ let {
   menuItems = [],
   position = "start",
   maxMenuWidth = 44,
+  closeOnClick = true, // Nueva prop para control opcional
 } = $props();
 
 let isOpen = $state(false);
@@ -18,6 +16,18 @@ let buttonElement = $state();
 
 const closeDropdown = () => (isOpen = false);
 const toggle = () => (isOpen = !isOpen);
+
+// Función para manejar el clic en un ítem del menú
+const handleItemClick = (item) => {
+  if (closeOnClick) {
+    // Primero ejecutamos el callback del ítem
+    item.onClick();
+    // Luego cerramos el menú
+    closeDropdown();
+  } else {
+    item.onClick();
+  }
+};
 
 const handleKeydown = (e) => {
   if (e.key === "Escape") {
@@ -28,6 +38,7 @@ const handleKeydown = (e) => {
     toggle();
   }
 };
+
 const handleOutsideClick = (e) => {
   if (!menuElement?.contains(e.target) && !buttonElement?.contains(e.target)) {
     closeDropdown();
@@ -81,9 +92,9 @@ $effect(() => {
       {#each menuItems as item}
         <li>
           <Button
-            onclick={item.onClick}
+            onclick={() => handleItemClick(item)}
             role="menuitem"
-            cssClass="w-full {item.class}">
+            cssClass="w-full {item.class || ''}">
             {#if item.icon}
               <item.icon size="18"></item.icon>
             {/if}
