@@ -3,7 +3,7 @@ import { propertyController } from "./propertyController.svelte";
 
 // Define los tipos específicos para el DnD
 export type DragSource = {
-  id: string;
+  id?: string;
   type: "notetree-note" | "tab" | "property" | "other";
   data?: any;
 };
@@ -70,6 +70,7 @@ class DndController {
         // Verificamos que la nota destino no sea ella misma o no sea un descendiente de la nota arrastrada
         if (
           targetNoteId &&
+          draggedNoteId &&
           targetNoteId !== draggedNoteId &&
           !noteController.isDescendant(targetNoteId, draggedNoteId)
         ) {
@@ -89,9 +90,10 @@ class DndController {
 
         // permitir soltar a root o cuando no coincidan los IDs y no estemos arrastrando una nota a un elemento descendiente
         if (
-          !parentId ||
-          (parentId !== draggedNoteId &&
-            !noteController.isDescendant(parentId, draggedNoteId))
+          draggedNoteId &&
+          (!parentId ||
+            (parentId !== draggedNoteId &&
+              !noteController.isDescendant(parentId, draggedNoteId)))
         ) {
           this.dropNoteOnLineIndicator(parentId, draggedNoteId, position);
         }
@@ -101,9 +103,9 @@ class DndController {
 
   propertyDnd = () => {
     if (this.dragSource && this.dropTarget) {
-      let {noteId, propertyId} = this.dragSource.data;
+      let { noteId, propertyId } = this.dragSource.data;
       let { position } = this.dropTarget.data;
-      propertyController.reorderProperty(noteId, propertyId, position)
+      propertyController.reorderProperty(noteId, propertyId, position);
     }
   };
 

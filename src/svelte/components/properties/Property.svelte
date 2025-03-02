@@ -2,23 +2,15 @@
 </style>
 
 <script>
-import { formatDateTimeForInput } from "../../controllers/utils.svelte";
 import { workspace } from "../../controllers/workspaceController.svelte";
 import { dndController } from "../../controllers/dndController.svelte";
 import { propertyController } from "../../controllers/propertyController.svelte";
-import DropdownList from "../DropdownList.svelte";
 
-import {
-  TextIcon,
-  ListIcon,
-  HashIcon,
-  CheckSquareIcon,
-  CalendarIcon,
-  CalendarClockIcon,
-  XIcon,
-  SlidersHorizontalIcon,
-  Trash2Icon,
-} from "lucide-svelte";
+import { getIconComponent } from "./propertyUtils";
+import { formatDateTimeForInput } from "../../controllers/utils.svelte";
+import { createDragAndDropHandlers } from "./PropertyDnd";
+
+import DropdownList from "../DropdownList.svelte";
 import Button from "../Button.svelte";
 
 let {
@@ -29,6 +21,7 @@ let {
   readonly = false,
 } = $props();
 let isDragedOver = $state(false);
+
 // Obtener el componente de icono actual (derivado)
 const IconComponent = $derived(getIconComponent(property.type));
 
@@ -56,26 +49,6 @@ function handleListInput(event) {
   if (event.key === "Backspace" || event.key === "Delete") {
     let lastListItem = property.value.length - 1;
     removeListItem(lastListItem);
-  }
-}
-
-// Seleccionar el icono según el tipo de propiedad
-function getIconComponent(type) {
-  switch (type) {
-    case "text":
-      return TextIcon;
-    case "list":
-      return ListIcon;
-    case "number":
-      return HashIcon;
-    case "check":
-      return CheckSquareIcon;
-    case "date":
-      return CalendarIcon;
-    case "datetime":
-      return CalendarClockIcon;
-    default:
-      return null;
   }
 }
 
@@ -139,9 +112,16 @@ const handleDrop = (event) => {
       {
         label: "Edit Property",
         icon: SlidersHorizontalIcon,
-        onClick: () => {
-          workspace.openPropertyEditor(noteId, property);
-          // close
+        onClick: (event) => {
+          // Detener la propagación para evitar que el evento llegue al documento
+          event.stopPropagation();
+
+          // Disparar evento para posicionar y abrir el editor
+          const rect = event.currentTarget.getBoundingClientRect();
+          workspace.openPropertyEditor(noteId, property, {
+            rect,
+            propertyIndex: position,
+          });
         },
       },
       {

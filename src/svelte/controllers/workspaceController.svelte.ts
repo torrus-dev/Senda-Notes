@@ -9,6 +9,7 @@ class WorkspaceController {
       targetNoteId: null,
       editingProperty: null,
       originalName: null,
+      positionData: null,
     },
     windows: [],
     activeWindowId: null,
@@ -19,12 +20,17 @@ class WorkspaceController {
   });
   // ========= Métodos para Property Editor =========
 
-  openPropertyEditor = (noteId: string, property: Property | null = null) => {
+  openPropertyEditor = (
+    noteId: string,
+    property: Property | null = null,
+    positionData = null,
+  ) => {
     this.state.propertyEditor = {
       isVisible: true,
       targetNoteId: noteId,
       editingProperty: property ? { ...property } : null,
       originalName: property?.name || null,
+      positionData: positionData,
     };
   };
 
@@ -34,6 +40,7 @@ class WorkspaceController {
       targetNoteId: null,
       editingProperty: null,
       originalName: null,
+      positionData: null,
     };
   };
 

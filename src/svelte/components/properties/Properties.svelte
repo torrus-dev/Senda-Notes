@@ -9,6 +9,7 @@ import { noteController } from "../../controllers/noteController.svelte";
 import { formatDateTime } from "../../controllers/utils.svelte";
 import { PlusIcon } from "lucide-svelte";
 import Button from "../Button.svelte";
+import { propertyController } from "../../controllers/propertyController.svelte";
 
 let { note } = $props();
 
@@ -26,32 +27,11 @@ function handlePropertyUpdate(propertyName, newValue) {
 </script>
 
 {#if note}
-  <div class="properties-container">
-    <div class="my-6">
-      <ul>
-        <li>
-          <p>
-            <span class="text-blue-400">ID:</span>
-            <span class="text-amber-200">{note.id}</span>
-          </p>
-        </li>
-
-        {#each note.metadata as metadata (metadata.name)}
-          <li>
-            <p>
-              <span class="text-blue-400">{metadata.name}: </span>
-              <span class="text-amber-200"
-                >{formatDateTime(metadata.value)}</span>
-            </p>
-          </li>
-        {/each}
-      </ul>
-    </div>
-
-    <div class="custom-properties my-6">
-      <h3 class="py-1 text-xl font-bold">Properties</h3>
-      {#if note.properties}
-        <ul class="property-box">
+  <div class="custom-properties my-6">
+    <h3 class="py-1 text-xl font-bold">Properties</h3>
+    <div class="property-box relative" bind:this={propertiesContainer}>
+      {#if note.properties && note.properties.length > 0}
+        <ul class="mb-2 rounded-lg">
           {#each note.properties as property, index (property.id)}
             <Property
               noteId={note.id}
@@ -62,14 +42,15 @@ function handlePropertyUpdate(propertyName, newValue) {
         </ul>
       {/if}
 
+      <Button cssClass="ml-[-.5rem] mt-2" onclick="">
+        <PlusIcon size="18" />Add Property
+      </Button>
+
       {#if workspace.state.propertyEditor.isVisible && workspace.state.propertyEditor.targetNoteId === note.id}
-        <PropertyEditor />
-      {:else}
-        <Button
-          cssClass="ml-[-.5rem]"
-          onclick={() => workspace.openPropertyEditor(note.id)}>
-          <PlusIcon size="18" />Add Property
-        </Button>
+        <PropertyEditor
+          position={editorPosition}
+          noteId={note.id}
+          property={workspace.state.propertyEditor.editingProperty} />
       {/if}
     </div>
   </div>

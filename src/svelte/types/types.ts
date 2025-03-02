@@ -21,6 +21,7 @@ export interface PropertyEditorState {
   targetNoteId: string | null;
   editingProperty: Property | null;
   originalName: string | null;
+  positionData: object | null;
 }
 
 // Tipos para pestañas (tabs) y ventanas

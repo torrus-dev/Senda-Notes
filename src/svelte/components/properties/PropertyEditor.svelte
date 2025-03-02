@@ -106,7 +106,8 @@ function handleDeleteProperty() {
 </script>
 
 <div
-  class="property-editor rounded-box bordered relative mt-2 bg-(--color-base-200) p-6 shadow">
+  class="property-editor rounded-box bordered relative mt-2 bg-(--color-base-200) p-6 shadow"
+  style="top: {position.top}px; left: {position.left}px; min-width: 240px;">
   <h3 class="inset mb-3 text-xl font-bold">Property Editor</h3>
   <Button
     cssClass="absolute top-1 right-1"
