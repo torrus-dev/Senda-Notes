@@ -5,25 +5,11 @@
 import Property from "./Property.svelte";
 import PropertyEditor from "./PropertyEditor.svelte";
 import { workspace } from "../../controllers/workspaceController.svelte";
-import { noteController } from "../../controllers/noteController.svelte";
-import { formatDateTime } from "../../controllers/utils.svelte";
+
 import { PlusIcon } from "lucide-svelte";
 import Button from "../Button.svelte";
-import { propertyController } from "../../controllers/propertyController.svelte";
 
 let { note } = $props();
-
-function handlePropertyUpdate(propertyName, newValue) {
-  if (!note) return;
-
-  const updatedProperties = note.properties.map((property) =>
-    property.name === propertyName
-      ? { ...property, value: newValue }
-      : property,
-  );
-
-  noteController.updateNote(note.id, { properties: updatedProperties });
-}
 </script>
 
 {#if note}
@@ -33,11 +19,7 @@ function handlePropertyUpdate(propertyName, newValue) {
       {#if note.properties && note.properties.length > 0}
         <ul class="mb-2 rounded-lg">
           {#each note.properties as property, index (property.id)}
-            <Property
-              noteId={note.id}
-              property={property}
-              onUpdate={handlePropertyUpdate}
-              position={index} />
+            <Property noteId={note.id} property={property} position={index} />
           {/each}
         </ul>
       {/if}
