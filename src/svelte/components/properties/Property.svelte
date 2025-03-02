@@ -10,6 +10,8 @@ import { getIconComponent } from "./propertyUtils";
 import { formatDateTimeForInput } from "../../controllers/utils.svelte";
 import { createDragAndDropHandlers } from "./PropertyDnd";
 
+import { SlidersHorizontalIcon, Trash2Icon } from "lucide-svelte";
+
 import DropdownList from "../DropdownList.svelte";
 import Button from "../Button.svelte";
 
@@ -52,48 +54,18 @@ function handleListInput(event) {
   }
 }
 
-// drag
-const handleDragStart = (event) => {
-  event.stopPropagation();
-  dndController.setDragSource({
-    type: "property",
-    data: {
-      noteId: noteId,
-      propertyId: property.id,
-    },
-  });
-  event.dataTransfer.effectAllowed = "move";
-};
-
-const handleDragEnd = (event) => {
-  dndController.clearDragAndDrop();
-};
-
-// drop
-const handleDragOver = (event) => {
-  event.preventDefault();
-  event.stopPropagation();
-  isDragedOver = true;
-};
-
-const handleDragLeave = (event) => {
-  event.preventDefault();
-  isDragedOver = false;
-};
-
-const handleDrop = (event) => {
-  event.preventDefault();
-  event.stopPropagation();
-  isDragedOver = false;
-
-  dndController.setDropTarget({
-    type: "property-line",
-    data: {
-      position: position,
-    },
-  });
-  dndController.handleDrop();
-};
+const {
+  handleDragStart,
+  handleDragEnd,
+  handleDragOver,
+  handleDragLeave,
+  handleDrop,
+} = createDragAndDropHandlers({
+  noteId,
+  property,
+  position,
+  setIsDraggedOver: (val) => (isDragedOver = val),
+});
 </script>
 
 <li
