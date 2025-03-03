@@ -55,6 +55,7 @@ class PropertyController {
     const updatedProperties = note.properties.map((prop) => {
       if (prop.id === propertyId) {
         const newType = updates.type ?? prop.type;
+
         return {
           ...prop,
           ...updates,

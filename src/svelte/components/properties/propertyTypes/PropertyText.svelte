@@ -1,10 +1,11 @@
 <script>
 let { property, onUpdate } = $props();
+let newValue = $state(property.value);
 </script>
 
 <input
   name={property.name}
   type="text"
-  value={property.value}
-  onchange={(event) => onUpdate(property.name, event.target.value)}
+  bind:value={newValue}
+  onchange={() => onUpdate(newValue)}
   placeholder="No value" />

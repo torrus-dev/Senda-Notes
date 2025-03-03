@@ -3,7 +3,6 @@
 
 <script>
 import { workspace } from "../../controllers/workspaceController.svelte";
-import { dndController } from "../../controllers/dndController.svelte";
 import { propertyController } from "../../controllers/propertyController.svelte";
 
 import { getIconComponent } from "./propertyUtils";
@@ -13,10 +12,9 @@ import { SlidersHorizontalIcon, Trash2Icon } from "lucide-svelte";
 
 import DropdownList from "../DropdownList.svelte";
 import PropertyValue from "./propertyTypes/PropertyValue.svelte";
-import Button from "../Button.svelte";
 import PropertyEditor from "./PropertyEditor.svelte";
 
-let { noteId = null, position, property = null, readonly = false } = $props();
+let { noteId = null, position, property = null } = $props();
 
 let isEditorOpen = $derived(
   workspace.isOpenPropertyEditor(noteId, property.id),
@@ -36,15 +34,6 @@ const {
   position,
   setIsDraggedOver: (val) => (isDragedOver = val),
 });
-
-//hacer que solo se gestione con el propertyController.svelte
-function handlePropertyUpdate(propertyName, newValue) {
-  if (!note) return;
-
-  const updatedProperty = { ...property, value: newValue };
-
-  propertyController.updateProperty(note.id, property.id, updatedProperty);
-}
 
 // Obtener el componente de icono actual (derivado)
 const IconComponent = $derived(getIconComponent(property.type));
@@ -90,11 +79,9 @@ const IconComponent = $derived(getIconComponent(property.type));
       </p>
     {/snippet}
   </DropdownList>
-
-  <PropertyValue property={property} onUpdate={handlePropertyUpdate}
-  ></PropertyValue>
+  <PropertyValue noteId={noteId} property={property}></PropertyValue>
 
   {#if isEditorOpen}
-    <PropertyEditor noteId={noteId} property={property}></PropertyEditor>
+    <PropertyEditor noteId={noteId} property={property} />
   {/if}
 </li>

@@ -1,10 +1,11 @@
 <script>
 let { property, onUpdate } = $props();
+let newValue = $state(property.value);
 </script>
 
 <input
   name={property.name}
   type="checkbox"
-  checked={property.value}
-  onchange={(e) => onUpdate(property.name, e.target.checked)}
-  disabled={readonly} />
+  bind:checked={newValue}
+  onchange={() => onUpdate(newValue)}
+  class="w-5" />

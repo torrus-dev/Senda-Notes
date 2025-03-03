@@ -26,16 +26,18 @@ const propertyTypes = [
 ];
 
 function handleSave() {
-  if (newPropertyName !== propertyName || newPropertyType !== propertyType) {
+  if (
+    noteId &&
+    (newPropertyName !== propertyName || newPropertyType !== propertyType)
+  ) {
     const newProperty = {
-      ...property,
       name: newPropertyName,
       type: newPropertyType,
     };
-    if (propertyId && noteId) {
+    if (propertyId) {
       propertyController.updateProperty(noteId, propertyId, newProperty);
     } else {
-      propertyController.createProperty(noteId, propertyId, newProperty);
+      propertyController.createProperty(noteId, newProperty);
     }
   }
 }
@@ -49,6 +51,16 @@ function closeEditor() {
 <div
   class="property-editor rounded-box bordered absolute top-full left-0 z-30 mt-1 bg-(--color-base-200) px-4 py-2 shadow"
   use:closeOnOutsideOrEsc={closeEditor}>
+  <div class="form-group">
+    <label class="inline-block w-[5rem]" for="name">Name</label>
+    <input
+      name="name"
+      autofocus
+      type="text"
+      class="bg-base-100 p-1"
+      bind:value={newPropertyName}
+      placeholder="Enter property name" />
+  </div>
   <div>
     <label for="type" class="inline-block w-[5rem]">Type</label>
     <select
@@ -59,15 +71,5 @@ function closeEditor() {
         <option class="" value={value}>{label}</option>
       {/each}
     </select>
-  </div>
-
-  <div class="form-group">
-    <label class="inline-block w-[5rem]" for="name">Name</label>
-    <input
-      name="name"
-      type="text"
-      class="p-1"
-      bind:value={newPropertyName}
-      placeholder="Enter property name" />
   </div>
 </div>

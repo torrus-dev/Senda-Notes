@@ -1,13 +1,15 @@
 <script>
 import { formatDateTimeForInput } from "../../../controllers/utils.svelte";
 let { property, onUpdate } = $props();
+let newValue = $state(
+  property.value instanceof Date
+    ? formatDateTimeForInput(property.value.toISOString())
+    : formatDateTimeForInput(property.value),
+);
 </script>
 
 <input
   name={property.name}
   type="datetime-local"
-  value={property.value instanceof Date
-    ? formatDateTimeForInput(property.value.toISOString())
-    : formatDateTimeForInput(property.value)}
-  onchange={(e) => onUpdate(property.name, new Date(e.target.value))}
-  disabled={readonly} />
+  bind:value={newValue}
+  onchange={() => onUpdate(newValue)} />

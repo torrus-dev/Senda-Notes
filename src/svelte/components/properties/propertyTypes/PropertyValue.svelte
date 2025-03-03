@@ -1,4 +1,6 @@
 <script>
+import { propertyController } from "../../../controllers/propertyController.svelte";
+
 import PropertyText from "./PropertyText.svelte";
 import PropertyList from "./PropertyList.svelte";
 import PropertyNumber from "./PropertyNumber.svelte";
@@ -15,10 +17,15 @@ const components = {
   datetime: PropertyDatetime,
 };
 
-let { property, onUpdate, readonly = false } = $props();
+let { property, noteId } = $props();
+
+function handlePropertyUpdateValue(newValue) {
+  if (!noteId) return;
+  propertyController.updateProperty(noteId, property.id, { value: newValue });
+}
 
 let PropertyComponent = $derived(components[property.type]);
 </script>
 
-<PropertyComponent property={property} onUpdate={onUpdate} readonly={readonly}
+<PropertyComponent property={property} onUpdate={handlePropertyUpdateValue}
 ></PropertyComponent>

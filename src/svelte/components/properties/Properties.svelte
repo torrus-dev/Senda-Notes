@@ -10,6 +10,8 @@ import { PlusIcon } from "lucide-svelte";
 import Button from "../Button.svelte";
 
 let { note } = $props();
+
+let isAddPropertyOpen = $derived(workspace.isOpenPropertyEditor());
 </script>
 
 {#if note}
@@ -23,17 +25,18 @@ let { note } = $props();
       </ul>
     {/if}
 
-    <Button cssClass="ml-[-.5rem] mt-2" onclick="">
-      <PlusIcon size="18" />Add Property
-    </Button>
-
-    {#if workspace.state.propertyEditor.isVisible && workspace.state.propertyEditor.targetNoteId === note.id}
+    {#if isAddPropertyOpen}
       <div class="relative">
-        <PropertyEditor
-          position={editorPosition}
-          noteId={note.id}
-          property={workspace.state.propertyEditor.editingProperty} />
+        <PropertyEditor noteId={note.id} />
       </div>
+    {:else}
+      <Button
+        cssClass="ml-[-.5rem] mt-2"
+        onclick={() => {
+          workspace.openPropertyEditor();
+        }}>
+        <PlusIcon size="18" />Add Property
+      </Button>
     {/if}
   </div>
 {/if}

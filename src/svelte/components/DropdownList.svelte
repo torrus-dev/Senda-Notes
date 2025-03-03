@@ -16,7 +16,9 @@ let isOpen = $state(false);
 let menuElement = $state(null);
 let buttonElement = $state();
 
-const closeDropdown = () => (isOpen = false);
+const closeDropdown = () => {
+  isOpen = false;
+};
 const toggle = () => (isOpen = !isOpen);
 
 // Función para manejar el clic en un ítem del menú
@@ -31,22 +33,6 @@ const handleItemClick = (item) => {
   }
 };
 
-const handleKeydown = (e) => {
-  if (e.key === "Escape") {
-    closeDropdown();
-  }
-  if (e.key === "Enter" || e.key === " ") {
-    e.preventDefault();
-    toggle();
-  }
-};
-
-const handleOutsideClick = (e) => {
-  if (!menuElement?.contains(e.target) && !buttonElement?.contains(e.target)) {
-    closeDropdown();
-  }
-};
-
 const positionClass =
   position === "start"
     ? "left-0"
@@ -55,22 +41,6 @@ const positionClass =
       : position === "end"
         ? "right-0"
         : "";
-
-// $effect(() => {
-//   if (!isOpen) return;
-
-//   // Usamos setTimeout para asegurarnos de que no se cierre inmediatamente al abrir
-//   setTimeout(() => {
-//     document.addEventListener("click", handleOutsideClick);
-//   }, 0);
-
-//   document.addEventListener("keydown", handleKeydown);
-
-//   return () => {
-//     document.removeEventListener("click", handleOutsideClick);
-//     document.removeEventListener("keydown", handleKeydown);
-//   };
-// });
 </script>
 
 <div class="relative" use:closeOnOutsideOrEsc={closeDropdown}>
@@ -89,14 +59,9 @@ const positionClass =
       class="rounded-box bordered absolute z-20 mt-1 bg-(--color-base-200) p-2 shadow {positionClass}"
       style="max-width: {maxMenuWidth}rem;"
       role="menu"
+      use:closeOnOutsideOrEsc={closeDropdown}
       bind:this={menuElement}
-      tabindex="-1"
-      use:closeOnOutsideOrEsc={{
-        onClose: () => {
-          console.log("close editor");
-          isEditorOpen = false;
-        },
-      }}>
+      tabindex="-1">
       {#each menuItems as item}
         <li>
           <Button

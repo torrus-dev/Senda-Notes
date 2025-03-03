@@ -6,13 +6,14 @@ let { property, onUpdate } = $props();
 
 // Estado de referencia para el input (en caso de list)
 let inputElement = $state(null);
+let isEditing = false;
 
 // Función para eliminar un elemento de la lista
 function removeListItem(index) {
   if (property.type === "list") {
     const newValue = [...property.value];
     newValue.splice(index, 1);
-    onUpdate(property.name, newValue);
+    onUpdate(newValue);
   }
 }
 
@@ -22,7 +23,7 @@ function handleListInput(event) {
     const inputValue = inputElement.value.trim();
     if (!inputValue) return;
     const newValue = [...property.value, inputValue];
-    onUpdate(property.name, newValue);
+    onUpdate(newValue);
     inputElement.value = "";
   }
   if (event.key === "Backspace" || event.key === "Delete") {
@@ -38,7 +39,7 @@ function handleListInput(event) {
     <div
       class="rounded-selector inline-flex items-center bg-(--color-base-200) p-1 text-sm hover:bg-(--color-bg-hover)">
       <span>{item}</span>
-      {#if !readonly}
+      {#if !isEditing}
         <Button
           cssClass="mr-[-0.25rem] text-base-content/50"
           onclick={() => removeListItem(index)}
@@ -50,14 +51,12 @@ function handleListInput(event) {
       {/if}
     </div>
   {/each}
-  {#if !readonly}
-    <input
-      name={property.name}
-      type="text"
-      class="flex"
-      placeholder={property.value.length === 0 ? "Type to add items..." : ""}
-      onkeydown={handleListInput}
-      onblur={handleListInput}
-      bind:this={inputElement} />
-  {/if}
+  <input
+    name={property.name}
+    type="text"
+    class="flex"
+    placeholder={property.value.length === 0 ? "Type to add items..." : ""}
+    onkeydown={handleListInput}
+    onblur={handleListInput}
+    bind:this={inputElement} />
 </div>
