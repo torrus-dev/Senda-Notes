@@ -1,6 +1,6 @@
 <script>
 import Button from "./Button.svelte";
-import { closeOnOutsideOrEsc } from "../../directives/closeOnOutsideOrEsc";
+import { closeOnOutsideOrEsc } from "../../../directives/closeOnOutsideOrEsc";
 
 let {
   label,

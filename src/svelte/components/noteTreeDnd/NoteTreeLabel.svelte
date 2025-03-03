@@ -7,12 +7,13 @@
 <script>
 import { noteController } from "../../controllers/noteController.svelte";
 import { ChevronRightIcon, PlusIcon } from "lucide-svelte";
-import Button from "../Button.svelte";
+import Button from "../utils/Button.svelte";
 
 let { note, toggleExpansion, isExpanded, isDragedOver } = $props();
 
 let isActive = $derived(note.id === noteController.activeNoteId);
 let childrenCount = $derived(noteController.getChildrenCount(note.id));
+let hasChildren = $derived(childrenCount > 0);
 
 const handleSelectTitle = (event) => {
   if (event.key === "Enter" || event.type === "click") {
@@ -35,7 +36,7 @@ const hangleNewChildNote = (event) => {
   onclick={handleSelectTitle}
   onkeydown={handleSelectTitle}>
   <div class="flex gap-1">
-    {#if note.children && note.children.length > 0}
+    {#if hasChildren}
       <button
         class="transition-color rounded-selector cursor-pointer items-center whitespace-nowrap duration-200 ease-in-out hover:bg-(--color-bg-hover)
         {isExpanded ? 'isExpanded' : ''}"

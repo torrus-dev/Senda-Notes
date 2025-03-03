@@ -1,6 +1,6 @@
 <script>
 import { XIcon } from "lucide-svelte";
-import Button from "../../Button.svelte";
+import Button from "../../utils/Button.svelte";
 
 let { property, onUpdate } = $props();
 

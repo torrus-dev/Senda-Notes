@@ -2,8 +2,10 @@
 </style>
 
 <script>
-import NoteTreeRenderer from "./noteTreeDnd/NoteTreeRenderer.svelte";
+import NoteTreeRenderer from "../noteTreeDnd/NoteTreeRenderer.svelte";
 import { onDestroy } from "svelte";
+import Button from "../utils/Button.svelte";
+import { SettingsIcon, InfoIcon } from "lucide-svelte";
 
 let sidebarWidth = $state(12.5);
 
@@ -58,5 +60,20 @@ onDestroy(() => {
   </div>
   <div class="overflow-y-auto">
     <NoteTreeRenderer />
+  </div>
+  <div>
+    <ul
+      class="text-base-content/70 border-border-normal absolute bottom-0 left-0 flex w-full gap-0.5 border-t-2 p-2">
+      <li>
+        <Button>
+          <SettingsIcon></SettingsIcon>
+        </Button>
+      </li>
+      <li>
+        <Button>
+          <InfoIcon></InfoIcon>
+        </Button>
+      </li>
+    </ul>
   </div>
 </aside>

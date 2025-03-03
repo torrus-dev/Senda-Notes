@@ -10,7 +10,7 @@ import { createDragAndDropHandlers } from "./PropertyDnd";
 
 import { SlidersHorizontalIcon, Trash2Icon } from "lucide-svelte";
 
-import DropdownList from "../DropdownList.svelte";
+import DropdownList from "../utils/DropdownList.svelte";
 import PropertyValue from "./propertyTypes/PropertyValue.svelte";
 import PropertyEditor from "./PropertyEditor.svelte";
 

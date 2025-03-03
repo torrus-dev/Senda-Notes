@@ -14,7 +14,7 @@ ul {
 </style>
 
 <script>
-import { noteController } from "../controllers/noteController.svelte";
+import { noteController } from "../../controllers/noteController.svelte";
 import Button from "./Button.svelte";
 
 let { note } = $props();

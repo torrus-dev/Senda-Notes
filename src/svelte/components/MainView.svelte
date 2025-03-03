@@ -1,11 +1,12 @@
 <script>
 import Title from "../components/Title.svelte";
-import Editor from "../components/Editor.svelte";
+import Editor from "./Editor.svelte";
 import Properties from "./properties/Properties.svelte";
-import DropdownList from "./DropdownList.svelte";
+import DropdownList from "./utils/DropdownList.svelte";
 import { noteController } from "../controllers/noteController.svelte";
 import { MoreVerticalIcon, Trash2Icon } from "lucide-svelte";
-import Breadcrumbs from "./Breadcrumbs.svelte";
+import Breadcrumbs from "./utils/Breadcrumbs.svelte";
+import ChildNotes from "./ChildNotes.svelte";
 
 const activeNote = $derived(noteController.getActiveNote());
 </script>
@@ -39,8 +40,9 @@ const activeNote = $derived(noteController.getActiveNote());
       <header>
         <Title id={activeNote.id} />
         <Properties note={activeNote} />
-        <Editor noteId={activeNote.id} />
+        <ChildNotes note={activeNote} />
       </header>
+      <Editor noteId={activeNote.id} />
     </article>
   {:else}
     <article class="mx-auto w-3xl p-3">

@@ -4,7 +4,7 @@
 <script>
 import "./app.css";
 
-import Sidebar from "./components/Sidebar.svelte";
+import Sidebar from "./components/layout/Sidebar.svelte";
 import MainView from "./components/MainView.svelte";
 </script>
 
