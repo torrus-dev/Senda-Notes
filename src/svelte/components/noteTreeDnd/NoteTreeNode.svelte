@@ -101,7 +101,7 @@ const handleNoteDrop = (event) => {
     isExpanded={isExpanded} />
 
   {#if isExpanded && note.children && note.children.length > 0}
-    <ul class="border-base-400/50 ml-2.5 border-l-2">
+    <ul class="border-base-400/60 ml-2.5 border-l-2">
       {#each note.children as noteId, index}
         <NoteTreeNode
           note={noteController.getNoteById(noteId)}

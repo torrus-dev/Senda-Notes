@@ -12,6 +12,7 @@ import Button from "../Button.svelte";
 let { note, toggleExpansion, isExpanded, isDragedOver } = $props();
 
 let isActive = $derived(note.id === noteController.activeNoteId);
+let childrenCount = $derived(noteController.getChildrenCount(note.id));
 
 const handleSelectTitle = (event) => {
   if (event.key === "Enter" || event.type === "click") {
@@ -50,11 +51,16 @@ const hangleNewChildNote = (event) => {
     {/if}
     <span class="truncate">{note.title}</span>
   </div>
-  <Button
-    onclick={hangleNewChildNote}
-    cssClass="text-base-content/70 opacity-0 group-hover:opacity-100 p-1"
-    size="small"
-    title="Add note inside">
-    <PlusIcon size="18"></PlusIcon>
-  </Button>
+  <div class="flex items-center">
+    <Button
+      onclick={hangleNewChildNote}
+      cssClass="text-base-content/70 opacity-0 group-hover:opacity-100 p-1"
+      size="small"
+      title="Add note inside">
+      <PlusIcon size="18"></PlusIcon>
+    </Button>
+    {#if childrenCount > 0}
+      <p class="text-base-content/70 ml-1">{childrenCount}</p>
+    {/if}
+  </div>
 </div>

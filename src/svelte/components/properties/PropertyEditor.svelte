@@ -50,7 +50,14 @@ function closeEditor() {
 
 <div
   class="property-editor rounded-box bordered absolute top-full left-0 z-30 mt-1 bg-(--color-base-200) px-4 py-2 shadow"
-  use:closeOnOutsideOrEsc={closeEditor}>
+  use:closeOnOutsideOrEsc={closeEditor}
+  onkeydown={(event) => {
+    if (event.key === "Enter") {
+      closeEditor();
+    }
+  }}
+  role="menu"
+  tabindex="-1">
   <div class="form-group">
     <label class="inline-block w-[5rem]" for="name">Name</label>
     <input

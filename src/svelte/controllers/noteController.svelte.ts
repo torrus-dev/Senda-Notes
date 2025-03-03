@@ -460,6 +460,22 @@ class NoteController {
 
     return path;
   }
+
+  // Obtiene el número total de notas en el sistema
+  getNoteCount = (): number => {
+    return this.notes.length;
+  };
+
+  // Obtiene el número total de notas hijas directas e indirectas (descendientes)
+  // de una nota específica
+  getChildrenCount = (noteId: string): number => {
+    const note = this.getNoteById(noteId);
+    if (!note) return 0;
+
+    // Obtenemos todos los descendientes y contamos
+    const descendants = this.getDescendants(noteId);
+    return descendants.length;
+  };
 }
 
 export let noteController = $state(new NoteController());
