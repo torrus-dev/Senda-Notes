@@ -7,11 +7,13 @@ import { noteController } from "../controllers/noteController.svelte";
 import { MoreVerticalIcon, Trash2Icon } from "lucide-svelte";
 import Breadcrumbs from "./utils/Breadcrumbs.svelte";
 import ChildNotes from "./ChildNotes.svelte";
+import Modal from "./layout/Modal.svelte";
 
 const activeNote = $derived(noteController.getActiveNote());
 </script>
 
 <main class="overflow-auto">
+  <Modal>asfsadfs</Modal>
   {#if activeNote}
     <div
       class="border-border-normal flex min-h-16 w-full items-center border-b-2 px-8 py-2 shadow-sm">

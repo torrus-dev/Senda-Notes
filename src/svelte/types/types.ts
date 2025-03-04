@@ -53,4 +53,5 @@ export interface WorkspaceState {
   windows: Window[];
   activeWindowId: string | null;
   focus: FocusState;
+  modal: {};
 }

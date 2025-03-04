@@ -15,7 +15,29 @@ class WorkspaceController {
       targetId: null,
       timestamp: 0,
     },
+    modal: {
+      isOpen: false,
+    },
   });
+
+  // Modal
+
+  openModal = () => {
+    this.state.modal = {
+      isOpen: true,
+    };
+  };
+
+  closeModal = () => {
+    this.state.modal = {
+      isOpen: false,
+    };
+  };
+
+  isModalOpen = () => {
+    return this.state.modal.isOpen;
+  };
+
   // ========= Métodos para Property Editor =========
 
   openPropertyEditor = (
