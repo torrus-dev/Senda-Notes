@@ -7,6 +7,8 @@ import { onDestroy } from "svelte";
 import Button from "../utils/Button.svelte";
 import { SettingsIcon, InfoIcon } from "lucide-svelte";
 import { workspace } from "../../controllers/workspaceController.svelte";
+import SettingsModal from "../modals/SettingsModal.svelte";
+import AboutModal from "../modals/AboutModal.svelte";
 
 let sidebarWidth = $state(12.5);
 
@@ -68,7 +70,7 @@ onDestroy(() => {
       <li>
         <Button
           onclick={() => {
-            workspace.openModal();
+            workspace.openModal(SettingsModal);
           }}>
           <SettingsIcon></SettingsIcon>
         </Button>
@@ -76,7 +78,7 @@ onDestroy(() => {
       <li>
         <Button
           onclick={() => {
-            workspace.openModal();
+            workspace.openModal(AboutModal);
           }}>
           <InfoIcon></InfoIcon>
         </Button>

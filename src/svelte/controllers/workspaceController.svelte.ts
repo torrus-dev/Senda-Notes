@@ -17,25 +17,32 @@ class WorkspaceController {
     },
     modal: {
       isOpen: false,
+      content: undefined,
     },
   });
 
   // Modal
 
-  openModal = () => {
+  openModal = (modalContent = undefined) => {
     this.state.modal = {
       isOpen: true,
+      content: modalContent,
     };
   };
 
   closeModal = () => {
     this.state.modal = {
       isOpen: false,
+      content: undefined,
     };
   };
 
   isModalOpen = () => {
     return this.state.modal.isOpen;
+  };
+
+  getModalContent = () => {
+    return this.state.modal.content;
   };
 
   // ========= Métodos para Property Editor =========

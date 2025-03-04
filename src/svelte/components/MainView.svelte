@@ -13,7 +13,7 @@ const activeNote = $derived(noteController.getActiveNote());
 </script>
 
 <main class="overflow-auto">
-  <Modal>asfsadfs</Modal>
+  <Modal />
   {#if activeNote}
     <div
       class="border-border-normal flex min-h-16 w-full items-center border-b-2 px-8 py-2 shadow-sm">

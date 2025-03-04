@@ -47,7 +47,7 @@
 }
 
 input {
-  @apply rounded-field text-base-content bg-transparent p-1.5;
+  @apply rounded-field text-base-content p-1.5;
 }
 
 @font-face {
