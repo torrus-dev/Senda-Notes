@@ -3,15 +3,21 @@ import { noteController } from "../controllers/noteController.svelte";
 import { focusController } from "../controllers/focusController.svelte";
 import { FocusTarget } from "../types/types";
 
-let { id } = $props();
-let title = $derived(noteController.getNoteById(id).title);
+let { note } = $props();
+let id = $derived(note.id);
+let title = $derived(note.title);
+let newTitle = $state(note.title);
 
 function handleTitleChange() {
-  let newTitle = editableElement.innerText;
-  if (title) {
+  if (!title || !newTitle) return;
+  newTitle = noteController.sanitizeTitle(newTitle);
+
+  if (newTitle !== "" && newTitle !== " ") {
     noteController.updateNote(id, {
-      title: noteController.sanitizeTitle(newTitle),
+      title: newTitle,
     });
+  } else {
+    newTitle = title;
   }
 }
 const handleKeydown = (e) => {
@@ -25,7 +31,27 @@ const handleKeydown = (e) => {
     focusController.requestFocus(FocusTarget.EDITOR);
   }
 };
+
 let editableElement;
+
+// Registrar el elemento con el focusController
+$effect(() => {
+  if (editableElement) {
+    focusController.registerElement(FocusTarget.TITLE, editableElement);
+
+    return () => {
+      focusController.unregisterElement(FocusTarget.TITLE);
+    };
+  }
+});
+
+// Efecto separado para la selección de texto
+$effect(() => {
+  const { targetId, timestamp } = focusController.focus;
+  if (targetId === FocusTarget.TITLE && timestamp > 0) {
+    focusController.selectAllText(FocusTarget.TITLE);
+  }
+});
 </script>
 
 <h1
@@ -35,6 +61,6 @@ let editableElement;
   onblur={() => {
     handleTitleChange();
   }}
-  onkeydown={handleKeydown}>
-  {title}
+  onkeydown={handleKeydown}
+  bind:innerText={newTitle}>
 </h1>

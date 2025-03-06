@@ -1,13 +1,18 @@
 <script>
-import Title from "../components/Title.svelte";
-import Editor from "./Editor.svelte";
-import Properties from "./properties/Properties.svelte";
-import DropdownList from "./utils/DropdownList.svelte";
 import { noteController } from "../controllers/noteController.svelte";
-import { MoreVerticalIcon, Trash2Icon, PenLineIcon } from "lucide-svelte";
+import { focusController } from "../controllers/focusController.svelte";
+
+import Title from "../components/Title.svelte";
 import Breadcrumbs from "./utils/Breadcrumbs.svelte";
+import Properties from "./properties/Properties.svelte";
 import ChildNotes from "./ChildNotes.svelte";
+import Editor from "./Editor.svelte";
+import DropdownList from "./utils/DropdownList.svelte";
 import Modal from "./layout/Modal.svelte";
+
+import { FocusTarget } from "../types/types";
+
+import { MoreVerticalIcon, Trash2Icon, PenLineIcon } from "lucide-svelte";
 
 const activeNote = $derived(noteController.getActiveNote());
 </script>
@@ -29,7 +34,7 @@ const activeNote = $derived(noteController.getActiveNote());
             label: "Rename Note",
             icon: PenLineIcon,
             onClick: () => {
-              // focus en el titulo y seleccionar todo
+              focusController.requestFocus(FocusTarget.TITLE);
             },
           },
           {
@@ -45,16 +50,16 @@ const activeNote = $derived(noteController.getActiveNote());
       </DropdownList>
     </div>
 
-    <article class="mx-auto w-3xl p-3">
+    <article class="mx-auto w-full max-w-3xl p-3">
       <header>
-        <Title id={activeNote.id} />
+        <Title note={activeNote} />
         <Properties note={activeNote} />
         <ChildNotes note={activeNote} />
       </header>
       <Editor noteId={activeNote.id} />
     </article>
   {:else}
-    <article class="mx-auto w-3xl p-3">
+    <article class="mx-auto w-full max-w-3xl p-3">
       <header>
         <h1>Create or select a new note</h1>
       </header>
