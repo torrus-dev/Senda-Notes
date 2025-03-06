@@ -12,20 +12,23 @@ import Modal from "./layout/Modal.svelte";
 
 import { FocusTarget } from "../types/types";
 
-import { MoreVerticalIcon, Trash2Icon, PenLineIcon } from "lucide-svelte";
+import {
+  MoreVerticalIcon,
+  Trash2Icon,
+  PenLineIcon,
+  PanelLeft,
+} from "lucide-svelte";
 
 const activeNote = $derived(noteController.getActiveNote());
 </script>
 
 <main class="overflow-auto">
   <Modal />
-  {#if activeNote}
-    <div
-      class="border-border-normal flex min-h-16 w-full items-center border-b-2 px-8 py-2 shadow-sm">
-      <div class="flex-1">
-        <Breadcrumbs note={activeNote}></Breadcrumbs>
-      </div>
 
+  <div
+    class="border-border-normal flex min-h-16 w-full items-center border-b-2 px-8 py-2 shadow-sm">
+    <PanelLeft></PanelLeft>
+    {#if activeNote}
       <DropdownList
         position="end"
         labelClass="outlined"
@@ -48,21 +51,27 @@ const activeNote = $derived(noteController.getActiveNote());
           <MoreVerticalIcon size="20" />
         {/snippet}
       </DropdownList>
-    </div>
+    {/if}
+  </div>
 
-    <article class="mx-auto w-full max-w-3xl p-3">
+  {#if activeNote}
+    <div class="border-border-normal border-b-2 px-2 py-1 md:px-8">
+      <Breadcrumbs note={activeNote}></Breadcrumbs>
+    </div>
+  {/if}
+
+  <article class="mx-auto w-full max-w-3xl p-3">
+    {#if activeNote}
       <header>
         <Title note={activeNote} />
         <Properties note={activeNote} />
         <ChildNotes note={activeNote} />
       </header>
       <Editor noteId={activeNote.id} />
-    </article>
-  {:else}
-    <article class="mx-auto w-full max-w-3xl p-3">
+    {:else}
       <header>
         <h1>Create or select a new note</h1>
       </header>
-    </article>
-  {/if}
+    {/if}
+  </article>
 </main>
