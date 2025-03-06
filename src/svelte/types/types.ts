@@ -52,7 +52,6 @@ export interface WorkspaceState {
   propertyEditor: PropertyEditorState;
   windows: Window[];
   activeWindowId: string | null;
-  focus: FocusState;
   modal: {
     isOpen: boolean;
     content: any;

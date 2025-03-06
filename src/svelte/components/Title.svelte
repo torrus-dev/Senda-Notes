@@ -1,6 +1,6 @@
 <script>
 import { noteController } from "../controllers/noteController.svelte";
-import { workspace } from "../controllers/workspaceController.svelte";
+import { focusController } from "../controllers/focusController.svelte";
 import { FocusTarget } from "../types/types";
 
 let { id } = $props();
@@ -22,7 +22,7 @@ const handleKeydown = (e) => {
     e.preventDefault();
     handleTitleChange();
     editableElement.blur();
-    workspace.requestFocus(FocusTarget.EDITOR);
+    focusController.requestFocus(FocusTarget.EDITOR);
   }
 };
 let editableElement;

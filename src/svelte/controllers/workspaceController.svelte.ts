@@ -11,10 +11,6 @@ class WorkspaceController {
     },
     windows: [],
     activeWindowId: null,
-    focus: {
-      targetId: null,
-      timestamp: 0,
-    },
     modal: {
       isOpen: false,
       content: undefined,
@@ -157,22 +153,6 @@ class WorkspaceController {
       this.state.activeWindowId =
         this.state.windows.length > 0 ? this.state.windows[0].id : null;
     }
-  };
-
-  // ========= Métodos para focus =========
-
-  requestFocus = (targetId: FocusTarget) => {
-    this.state.focus = {
-      targetId,
-      timestamp: Date.now(),
-    };
-  };
-
-  clearFocus = () => {
-    this.state.focus = {
-      targetId: null,
-      timestamp: 0,
-    };
   };
 }
 

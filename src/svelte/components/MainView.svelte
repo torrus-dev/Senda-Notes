@@ -4,7 +4,7 @@ import Editor from "./Editor.svelte";
 import Properties from "./properties/Properties.svelte";
 import DropdownList from "./utils/DropdownList.svelte";
 import { noteController } from "../controllers/noteController.svelte";
-import { MoreVerticalIcon, Trash2Icon } from "lucide-svelte";
+import { MoreVerticalIcon, Trash2Icon, PenLineIcon } from "lucide-svelte";
 import Breadcrumbs from "./utils/Breadcrumbs.svelte";
 import ChildNotes from "./ChildNotes.svelte";
 import Modal from "./layout/Modal.svelte";
@@ -25,6 +25,13 @@ const activeNote = $derived(noteController.getActiveNote());
         position="end"
         labelClass="outlined"
         menuItems={[
+          {
+            label: "Rename Note",
+            icon: PenLineIcon,
+            onClick: () => {
+              // focus en el titulo y seleccionar todo
+            },
+          },
           {
             label: "Delete Note",
             icon: Trash2Icon,
