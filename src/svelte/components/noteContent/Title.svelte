@@ -1,7 +1,7 @@
 <script>
-import { noteController } from "../controllers/noteController.svelte";
-import { focusController } from "../controllers/focusController.svelte";
-import { FocusTarget } from "../types/types";
+import { noteController } from "../../controllers/noteController.svelte";
+import { focusController } from "../../controllers/focusController.svelte";
+import { FocusTarget } from "../../types/types";
 
 let { note } = $props();
 let id = $derived(note.id);

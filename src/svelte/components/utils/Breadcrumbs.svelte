@@ -18,10 +18,10 @@ import { noteController } from "../../controllers/noteController.svelte";
 import Button from "./Button.svelte";
 
 let { note } = $props();
-let path = $derived(noteController.getBreadcrumbPath(note.id));
+let path = $derived(note ? noteController.getBreadcrumbPath(note.id) : null);
 </script>
 
-<nav aria-label="breadcrumb">
+<div aria-label="breadcrumb">
   {#if path}
     <ul>
       {#each path as crumb, index (crumb.id)}
@@ -41,6 +41,6 @@ let path = $derived(noteController.getBreadcrumbPath(note.id));
       {/each}
     </ul>
   {:else}
-    Path not found!
+    Inicio
   {/if}
-</nav>
+</div>

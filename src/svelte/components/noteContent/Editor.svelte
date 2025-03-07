@@ -43,13 +43,13 @@
 </style>
 
 <script>
-import { workspace } from "../controllers/workspaceController.svelte";
+import { workspace } from "../../controllers/workspaceController.svelte";
 import { onDestroy } from "svelte";
 import EditorJS from "@editorjs/editorjs";
 import DragDrop from "editorjs-drag-drop";
 import { editorConfig } from "./editorConfig";
-import { noteController } from "../controllers/noteController.svelte";
-import { FocusTarget } from "../types/types";
+import { noteController } from "../../controllers/noteController.svelte";
+import { FocusTarget } from "../../types/types";
 
 let { noteId = null } = $props();
 let content = $derived(noteController.getNoteById(noteId).content);
