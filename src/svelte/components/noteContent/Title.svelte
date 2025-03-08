@@ -17,6 +17,7 @@ function handleTitleChange() {
       title: newTitle,
     });
   } else {
+    console.log("titulo invalido");
     newTitle = title;
   }
 }

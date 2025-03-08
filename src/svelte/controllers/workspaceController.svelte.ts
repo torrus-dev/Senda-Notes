@@ -1,5 +1,4 @@
 import type { WorkspaceState, Tab, Window } from "../types/types";
-import { FocusTarget } from "../types/types";
 
 class WorkspaceController {
   // Estado global del workspace (incluye propertyEditor, ventanas y pestañas)
@@ -14,6 +13,10 @@ class WorkspaceController {
     modal: {
       isOpen: false,
       content: undefined,
+    },
+    sidebar: {
+      isOpen: true,
+      width: null,
     },
   });
 
@@ -40,6 +43,38 @@ class WorkspaceController {
   getModalContent = () => {
     return this.state.modal.content;
   };
+
+  // ----- Sidebar --> Apañarlo y añadir persistencia -----
+  setSidebarWidth = (newWidth: number) => {
+    if (typeof newWidth === "number") {
+      this.state.sidebar.width = newWidth;
+    }
+  };
+
+  getSidebarWidth = () => {
+    return this.state.sidebar.width;
+  };
+
+  toggleSidebar = () => {
+    this.state.sidebar.isOpen = !this.state.sidebar.isOpen;
+  };
+
+  isSidebarOpen = () => {
+    return this.state.sidebar.isOpen;
+  };
+
+  // setSidebarWidth = (newWidth: number) => {
+  //   if (typeof newWidth === "number") {
+  //     localStorage.setItem("sidebarWidth", newWidth.toString());
+  //     console.log("saving width", newWidth);
+  //   }
+  // };
+
+  // getSidebarWidth = () => {
+  //   const width = localStorage.getItem("sidebarWidth");
+  //   console.log("getting", width);
+  //   return width !== null ? Number(width) : null;
+  // };
 
   // ========= Métodos para Property Editor =========
 

@@ -1,8 +1,7 @@
 <script>
 import { noteController } from "../../controllers/noteController.svelte";
 
-import Sidebar from "./Sidebar.svelte";
-import Title from "../noteContent/Title.svelte";
+import Sidebar from "./sidebar/Sidebar.svelte";
 import NavBar from "./NavBar.svelte";
 
 import Modal from "./Modal.svelte";

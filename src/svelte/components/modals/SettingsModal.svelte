@@ -22,6 +22,8 @@ let settingsData = {
       defaultValue: "System",
     },
   ],
+  // Por añadir;
+  // Sidebar siempre visible en pantallas medianas o grandes
 };
 </script>
 

@@ -56,4 +56,8 @@ export interface WorkspaceState {
     isOpen: boolean;
     content: any;
   };
+  sidebar: {
+    isOpen: boolean;
+    width: number | null;
+  };
 }

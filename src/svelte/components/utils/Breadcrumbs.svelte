@@ -1,7 +1,5 @@
 <style>
 ul {
-  display: inline-flex;
-  align-items: center;
   li:not(:last-child) {
     &:after {
       color: var(--color-text-faint);
@@ -23,14 +21,14 @@ let path = $derived(note ? noteController.getBreadcrumbPath(note.id) : null);
 
 <div aria-label="breadcrumb">
   {#if path}
-    <ul>
+    <ul class="inline-flex items-center">
       {#each path as crumb, index (crumb.id)}
         {#if index == path.length - 1}
-          <li class="p-1 select-text">
+          <li class="p-1 whitespace-nowrap select-text">
             {crumb.title}
           </li>
         {:else}
-          <li>
+          <li class="whitespace-nowrap">
             <Button
               size="small"
               onclick={() => noteController.setActiveNote(crumb.id)}>
