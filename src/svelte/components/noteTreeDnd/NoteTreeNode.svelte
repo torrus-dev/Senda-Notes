@@ -7,6 +7,10 @@ import { noteController } from "../../controllers/noteController.svelte";
 import { dndController } from "../../controllers/dndController.svelte";
 import NoteTreeLine from "./NoteTreeLine.svelte";
 import NoteTreeLabel from "./NoteTreeLabel.svelte";
+import {
+  createNoteTreeNodeDndHandlers,
+  isNodeDescendant,
+} from "./NoteTreeDnd.svelte";
 
 let { note, position = -1 } = $props();
 
@@ -20,7 +24,7 @@ let isDragged = $derived(
 let parentIsDragging = $derived.by(() => {
   let dragSourceId = dndController.getDragSourceId();
   if (dragSourceId) {
-    return noteController.isDescendant(note.id, dragSourceId);
+    return isNodeDescendant(note.id, dragSourceId);
   }
   return false;
 });
@@ -30,56 +34,21 @@ const toggleExpansion = (event) => {
   isExpanded = !isExpanded;
 };
 
-// handles para drag
-const handleDragStart = (event) => {
-  event.stopPropagation();
-  dndController.setDragSource({
-    id: note.id,
-    type: "notetree-note",
-  });
-  event.dataTransfer.effectAllowed = "move";
-};
-
-const handleDragEnd = (event) => {
-  dndController.clearDragAndDrop();
-};
-
-// Handlers para dragover y drop
-const handleDragOver = (event) => {
-  let dragSourceId = dndController.getDragSourceId();
-  if (!parentIsDragging) {
-    event.stopPropagation();
-    if (dragSourceId && dragSourceId !== note.id) {
-      event.preventDefault();
-      isDragedOver = true;
-    }
-  }
-};
-
-const handleDragLeave = (event) => {
-  let dragSourceId = dndController.getDragSourceId();
-  if (!parentIsDragging && dragSourceId && dragSourceId !== note.id) {
-    event.preventDefault();
-    isDragedOver = false;
-  }
-};
-
-const handleNoteDrop = (event) => {
-  event.preventDefault();
-  event.stopPropagation();
-  dndController.setDropTarget({
-    id: note.id,
-    type: "notetree-note",
-    data: {
-      parentId: note.parentId,
-    },
-  });
-  dndController.handleDrop();
-  isDragedOver = false;
-};
+// Setup drag and drop
+const {
+  handleDragStart,
+  handleDragEnd,
+  handleDragOver,
+  handleDragLeave,
+  handleDrop: handleNoteDrop,
+} = createNoteTreeNodeDndHandlers({
+  note,
+  setIsDraggedOver: (val) => (isDragedOver = val),
+});
 </script>
 
 <NoteTreeLine
+  id={note.id}
   position={position}
   parentId={note.parentId}
   parentIsDragging={parentIsDragging} />

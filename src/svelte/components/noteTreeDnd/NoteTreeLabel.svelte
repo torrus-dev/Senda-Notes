@@ -8,8 +8,15 @@
 import { noteController } from "../../controllers/noteController.svelte";
 import { ChevronRightIcon, PlusIcon } from "lucide-svelte";
 import Button from "../utils/Button.svelte";
+import InlineTitleEditor from "../utils/InlineTitleEditor.svelte";
 
-let { note, toggleExpansion, isExpanded, isDragedOver } = $props();
+let {
+  note,
+  toggleExpansion,
+  isExpanded,
+  isDragedOver,
+  isEditingTitle = false, // Recibimos isEditingTitle como prop
+} = $props();
 
 let isActive = $derived(note.id === noteController.activeNoteId);
 let childrenCount = $derived(noteController.getChildrenCount(note.id));
@@ -17,20 +24,26 @@ let hasChildren = $derived(childrenCount > 0);
 
 const handleSelectTitle = (event) => {
   if (event.key === "Enter" || event.type === "click") {
-    noteController.setActiveNote(note.id);
+    // Solo seleccionar la nota si no estamos en modo edición
+    if (!isEditingTitle) {
+      noteController.setActiveNote(note.id);
+    }
   }
 };
 
-const hangleNewChildNote = (event) => {
+const handleNewChildNote = (event) => {
   event.stopPropagation();
   noteController.createNote(note.id);
 };
+
+// Referencia al componente InlineTitleEditor para acceder a su elemento DOM
+let editableElement;
 </script>
 
 <div
   class="group rounded-field flex min-w-fit flex-row justify-between px-2 py-1.5 pl-1 whitespace-nowrap transition-colors select-none hover:bg-(--color-bg-hover)
-    {isDragedOver ? 'highlight' : ''} 
-    {isActive ? 'bg-(--color-bg-active)' : ''}"
+      {isDragedOver ? 'highlight' : ''} 
+      {isActive ? 'bg-(--color-bg-active)' : ''}"
   role="button"
   tabindex="0"
   onclick={handleSelectTitle}
@@ -39,7 +52,7 @@ const hangleNewChildNote = (event) => {
     {#if hasChildren}
       <button
         class="transition-color rounded-selector cursor-pointer items-center whitespace-nowrap duration-200 ease-in-out hover:bg-(--color-bg-hover)
-        {isExpanded ? 'isExpanded' : ''}"
+          {isExpanded ? 'isExpanded' : ''}"
         onclick={toggleExpansion}
         aria-expanded={isExpanded ? "true" : "false"}
         aria-label={isExpanded ? "Colapsar" : "Expandir"}>
@@ -50,11 +63,17 @@ const hangleNewChildNote = (event) => {
     {:else}
       <span class="w-4"></span>
     {/if}
-    <span class="truncate">{note.title}</span>
+
+    <!-- Usando InlineTitleEditor y bindando la referencia al elemento -->
+    <InlineTitleEditor
+      bind:this={editableElement}
+      note={note}
+      isEditing={isEditingTitle}
+      cssClass="truncate" />
   </div>
   <div class="flex items-center">
     <Button
-      onclick={hangleNewChildNote}
+      onclick={handleNewChildNote}
       cssClass="text-base-content/70 opacity-0 group-hover:opacity-100 p-1"
       size="small"
       title="Add note inside">

@@ -2,38 +2,19 @@
 </style>
 
 <script>
-import { dndController } from "../../controllers/dndController.svelte";
+import { createNoteTreeLineDndHandlers } from "./NoteTreeDnd.svelte";
 
-let { position = -1, parentId = null, parentIsDragging } = $props();
+let { id, position = -1, parentId = null, parentIsDragging } = $props();
 let isDragedOver = $state(false);
 
-const handleDragOver = (event) => {
-  if (!parentIsDragging) {
-    event.preventDefault();
-    event.stopPropagation();
-    isDragedOver = true;
-  }
-};
-
-const handleDragLeave = (event) => {
-  event.preventDefault();
-  isDragedOver = false;
-};
-
-const handleDrop = (event) => {
-  event.preventDefault();
-  event.stopPropagation();
-  isDragedOver = false;
-
-  dndController.setDropTarget({
-    type: "notetree-line",
-    data: {
-      parentId: parentId,
-      position: position,
-    },
+// Setup drag and drop
+const { handleDragOver, handleDragLeave, handleDrop } =
+  createNoteTreeLineDndHandlers({
+    id,
+    position,
+    parentId,
+    setIsDraggedOver: (val) => (isDragedOver = val),
   });
-  dndController.handleDrop();
-};
 </script>
 
 <li
