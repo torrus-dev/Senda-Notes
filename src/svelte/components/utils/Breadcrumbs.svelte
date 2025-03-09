@@ -20,8 +20,8 @@ let path = $derived(note ? noteController.getBreadcrumbPath(note.id) : null);
 </script>
 
 <div aria-label="breadcrumb">
-  {#if path}
-    <ul class="inline-flex items-center">
+  <ul class="inline-flex items-center">
+    {#if path}
       {#each path as crumb, index (crumb.id)}
         {#if index == path.length - 1}
           <li class="p-1 whitespace-nowrap select-text">
@@ -37,8 +37,8 @@ let path = $derived(note ? noteController.getBreadcrumbPath(note.id) : null);
           </li>
         {/if}
       {/each}
-    </ul>
-  {:else}
-    Inicio
-  {/if}
+    {:else}
+      <li class="p-1 whitespace-nowrap select-text">Inicio</li>
+    {/if}
+  </ul>
 </div>

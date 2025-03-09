@@ -3,37 +3,49 @@ import { noteController } from "../../controllers/noteController.svelte";
 import { focusController } from "../../controllers/focusController.svelte";
 import { FocusTarget } from "../../types/types";
 
+// Props
 let { note } = $props();
+
+// Estado derivado
 let id = $derived(note.id);
 let title = $derived(note.title);
-let newTitle = $state(note.title);
 
+// Referencias
+let editableElement;
+
+// Eventos y manejadores
 function handleTitleChange() {
-  if (!title || !newTitle) return;
-  newTitle = noteController.sanitizeTitle(newTitle);
+  if (!editableElement) return;
 
-  if (newTitle !== "" && newTitle !== " ") {
-    noteController.updateNote(id, {
-      title: newTitle,
-    });
+  const newTitle = noteController.sanitizeTitle(editableElement.innerText);
+
+  if (newTitle && newTitle.trim() !== "") {
+    noteController.updateNote(id, { title: newTitle });
   } else {
-    console.log("titulo invalido");
-    newTitle = title;
+    // Restaurar el título original en el elemento editable
+    editableElement.innerText = title;
   }
 }
-const handleKeydown = (e) => {
+
+function handleKeydown(e) {
   if (e.key === "Escape") {
+    // Cancelar edición
+    editableElement.innerText = title; // Restaurar valor original
     editableElement.blur();
-  }
-  if (e.key === "Enter") {
+  } else if (e.key === "Enter") {
     e.preventDefault();
     handleTitleChange();
     editableElement.blur();
     focusController.requestFocus(FocusTarget.EDITOR);
   }
-};
+}
 
-let editableElement;
+// Sincronizar el título cuando cambia externamente
+$effect(() => {
+  if (editableElement && title !== editableElement.innerText) {
+    editableElement.innerText = title;
+  }
+});
 
 // Registrar el elemento con el focusController
 $effect(() => {
@@ -46,10 +58,10 @@ $effect(() => {
   }
 });
 
-// Efecto separado para la selección de texto
+// Manejar selección de texto al recibir foco
 $effect(() => {
   const { targetId, timestamp } = focusController.focus;
-  if (targetId === FocusTarget.TITLE && timestamp > 0) {
+  if (targetId === FocusTarget.TITLE && timestamp > 0 && editableElement) {
     focusController.selectAllText(FocusTarget.TITLE);
   }
 });
@@ -57,11 +69,9 @@ $effect(() => {
 
 <h1
   bind:this={editableElement}
-  class="my-6 text-4xl font-bold"
+  class="my-6 overflow-hidden text-4xl font-bold"
   contenteditable="true"
-  onblur={() => {
-    handleTitleChange();
-  }}
-  onkeydown={handleKeydown}
-  bind:innerText={newTitle}>
+  onblur={handleTitleChange}
+  onkeydown={handleKeydown}>
+  <!-- El contenido visible lo controla directamente el campo contenteditable -->
 </h1>

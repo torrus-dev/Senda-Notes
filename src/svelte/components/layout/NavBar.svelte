@@ -13,21 +13,30 @@ import {
   MoreVerticalIcon,
   Trash2Icon,
   PenLineIcon,
-  PanelLeftIcon,
+  PanelLeftOpenIcon,
+  PanelLeftCloseIcon,
   ArrowLeftIcon,
   ArrowRightIcon,
 } from "lucide-svelte";
 
 let { note } = $props();
+let isSidebarOpen = $derived(workspace.isSidebarOpen());
 </script>
 
 <nav
-  class="border-border-normal flex h-14 w-full items-center justify-between gap-4 p-2 shadow">
+  class="border-border-normal flex h-14 w-full items-center justify-between gap-2 p-2 shadow">
   <!-- left button controls -->
-  <div class="flex gap-1">
+
+  {#if isSidebarOpen}
     <Button onclick={workspace.toggleSidebar}>
-      <PanelLeftIcon size="18" />
+      <PanelLeftCloseIcon size="18" />
     </Button>
+  {:else}
+    <Button onclick={workspace.toggleSidebar}>
+      <PanelLeftOpenIcon size="18" />
+    </Button>
+  {/if}
+  <div class="flex gap-1">
     <Button>
       <ArrowLeftIcon size="18" />
     </Button>
@@ -35,10 +44,10 @@ let { note } = $props();
       <ArrowRightIcon size="18" />
     </Button>
   </div>
-  <div
-    class="bg-base-200 rounded-selector flex-1 justify-between overflow-y-auto">
+
+  <div class="bg-base-200 rounded-selector flex-1 justify-between">
     <div class="flex items-center justify-between">
-      <div class="p-1">
+      <div class="overflow-x-auto px-2 py-1">
         <Breadcrumbs note={note ? note : null}></Breadcrumbs>
       </div>
 
