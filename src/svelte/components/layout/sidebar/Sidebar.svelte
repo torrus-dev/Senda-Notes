@@ -1,10 +1,5 @@
 <script>
-import {
-  SettingsIcon,
-  InfoIcon,
-  FilesIcon,
-  PanelLeftCloseIcon,
-} from "lucide-svelte";
+import { SettingsIcon, InfoIcon, FilesIcon } from "lucide-svelte";
 import { workspace } from "../../../controllers/workspaceController.svelte";
 
 import NoteTreeRenderer from "../../noteTreeDnd/NoteTreeRenderer.svelte";
@@ -45,7 +40,7 @@ let widthStyle = $derived(isMobile ? "90%" : `${width}rem`);
     class="border-border-normal flex h-14 w-full items-center justify-between gap-4 p-2 shadow">
     <div class="flex gap-1">
       <Button>
-        <FilesIcon size="22" />
+        <FilesIcon size="20" />
       </Button>
     </div>
   </nav>
