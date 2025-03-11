@@ -1,4 +1,6 @@
 <script>
+import { contextMenu, dropdownMenu } from "../../../directives/contextMenu";
+
 let {
   variant = "base",
   cssClass = "",
@@ -6,6 +8,8 @@ let {
   size = "medium",
   shape = "square",
   children,
+  dropdownMenuDirective = undefined,
+  contextMenuDirective = undefined,
   buttonElement = $bindable(),
   ...htmlAttributes
 } = $props();
@@ -46,4 +50,6 @@ let style = `whitespace-nowrap rounded-field bg-interactive inline-flex cursor-p
   {...htmlAttributes}
   class={style}
   onclick={onclick}
+  use:dropdownMenu={dropdownMenuDirective}
+  use:contextMenu={contextMenuDirective}
   bind:this={buttonElement}>{@render children()}</button>

@@ -32,12 +32,10 @@ class DndController {
   };
 
   setDragSource = (dragSource: DragSource) => {
-    console.log("set drag start", dragSource);
     this.dragSource = dragSource;
   };
 
   setDropTarget = (dropTarget: DropTarget) => {
-    console.log("set drop target", dropTarget);
     this.dropTarget = dropTarget;
   };
 

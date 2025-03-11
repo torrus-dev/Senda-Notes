@@ -3,7 +3,7 @@ import { noteController } from "../../controllers/noteController.svelte";
 
 import Sidebar from "./sidebar/Sidebar.svelte";
 import NavBar from "./NavBar.svelte";
-
+import ContextMenu from "./ContextMenu.svelte";
 import Modal from "./Modal.svelte";
 import NoteContent from "../noteContent/NoteContent.svelte";
 
@@ -17,6 +17,9 @@ const activeNote = $derived(noteController.getActiveNote());
   <main class="overflow-auto">
     <!-- Modal component -->
     <Modal />
+
+    <!-- ContextMenu component -->
+    <ContextMenu />
 
     <!-- top bar -->
     <NavBar note={activeNote} />

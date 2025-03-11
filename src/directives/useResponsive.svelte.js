@@ -13,7 +13,6 @@ export function useResponsive() {
 
   function updateViewport() {
     windowWidth = window.innerWidth;
-    console.log("width", windowWidth);
   }
 
   // Valores reactivos derivados

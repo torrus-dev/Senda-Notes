@@ -67,19 +67,6 @@ class WorkspaceController {
     return this.state.sidebar.isOpen;
   };
 
-  // setSidebarWidth = (newWidth: number) => {
-  //   if (typeof newWidth === "number") {
-  //     localStorage.setItem("sidebarWidth", newWidth.toString());
-  //     console.log("saving width", newWidth);
-  //   }
-  // };
-
-  // getSidebarWidth = () => {
-  //   const width = localStorage.getItem("sidebarWidth");
-  //   console.log("getting", width);
-  //   return width !== null ? Number(width) : null;
-  // };
-
   // ========= Métodos para Property Editor =========
 
   openPropertyEditor = (

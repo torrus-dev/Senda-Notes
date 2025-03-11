@@ -5,7 +5,7 @@ import { focusController } from "../../controllers/focusController.svelte";
 import { noteController } from "../../controllers/noteController.svelte";
 import { workspace } from "../../controllers/workspaceController.svelte";
 
-import DropdownList from "../utils/DropdownList.svelte";
+import { contextMenu, dropdownMenu } from "../../../directives/contextMenu";
 import Breadcrumbs from "../utils/Breadcrumbs.svelte";
 import Button from "../utils/Button.svelte";
 
@@ -21,6 +21,22 @@ import {
 
 let { note } = $props();
 let isSidebarOpen = $derived(workspace.isSidebarOpen());
+
+const contextMenuItems = [
+  {
+    label: "Rename Note",
+    icon: PenLineIcon,
+    onClick: () => {
+      focusController.requestFocus(FocusTarget.TITLE);
+    },
+  },
+  {
+    label: "Delete Note",
+    icon: Trash2Icon,
+    onClick: () => noteController.deleteNote(note.id),
+    class: "text-error",
+  },
+];
 </script>
 
 <nav
@@ -52,28 +68,14 @@ let isSidebarOpen = $derived(workspace.isSidebarOpen());
       </div>
 
       {#if note}
-        <DropdownList
-          position="end"
-          menuItems={[
-            {
-              label: "Rename Note",
-              icon: PenLineIcon,
-              onClick: () => {
-                focusController.requestFocus(FocusTarget.TITLE);
-              },
-            },
-            {
-              label: "Delete Note",
-              icon: Trash2Icon,
-              onClick: () => noteController.deleteNote(note.id),
-              class: "text-error",
-            },
-          ]}>
-          {#snippet label()}
-            <MoreVerticalIcon size="20" />
-          {/snippet}
-        </DropdownList>
+        <Button dropdownMenu={contextMenuItems}>
+          <MoreVerticalIcon size="20" />
+        </Button>
       {/if}
     </div>
   </div>
+  <button class="bg-base-200 bordered p-2" use:dropdownMenu={contextMenuItems}
+    >click izquierdo</button>
+  <button class="bg-base-200 bordered p-2" use:contextMenu={contextMenuItems}
+    >click derecho</button>
 </nav>

@@ -67,6 +67,7 @@ const positionClass =
           <Button
             onclick={() => handleItemClick(item)}
             role="menuitem"
+            tabindex="0"
             cssClass="w-full {item.class || ''}">
             {#if item.icon}
               <item.icon size="18"></item.icon>
