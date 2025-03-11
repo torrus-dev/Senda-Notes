@@ -59,6 +59,10 @@ class WorkspaceController {
     this.state.sidebar.isOpen = !this.state.sidebar.isOpen;
   };
 
+  closeSidebar = () => {
+    this.state.sidebar.isOpen = false;
+  };
+
   isSidebarOpen = () => {
     return this.state.sidebar.isOpen;
   };

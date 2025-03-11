@@ -54,7 +54,7 @@
     "editorjs-drag-drop": "^1.1.16",
     "lucide-svelte": "^0.475.0",
     "prettier-plugin-svelte": "^3.3.3",
-    "svelte-i18n": "^4.0.1",
+    "svelte-i18n": "^3.7.1",
     "tailwindcss": "^4.0.3"
   }
 }

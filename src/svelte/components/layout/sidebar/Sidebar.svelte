@@ -1,10 +1,5 @@
 <script>
-import {
-  SettingsIcon,
-  InfoIcon,
-  FilesIcon,
-  PanelLeftCloseIcon,
-} from "lucide-svelte";
+import { SettingsIcon, InfoIcon, FilesIcon } from "lucide-svelte";
 import { workspace } from "../../../controllers/workspaceController.svelte";
 
 import NoteTreeRenderer from "../../noteTreeDnd/NoteTreeRenderer.svelte";
@@ -12,7 +7,8 @@ import SettingsModal from "../../modals/SettingsModal.svelte";
 import AboutModal from "../../modals/AboutModal.svelte";
 import Button from "../../utils/Button.svelte";
 import ResizableHandler from "./ResizableHandler.svelte";
-import { useResponsive } from "./useResponsive.svelte";
+
+import { useResponsive } from "../../../../directives/useResponsive.svelte";
 
 let width = $state(workspace.getSidebarWidth());
 let isMobile = $derived(useResponsive().isMobile);
