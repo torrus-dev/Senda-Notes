@@ -6,12 +6,28 @@ import NavBar from "./NavBar.svelte";
 import ContextMenu from "./ContextMenu.svelte";
 import Modal from "./Modal.svelte";
 import NoteContent from "../noteContent/NoteContent.svelte";
+import { contextMenu, dropdownMenu } from "../../../directives/contextMenu";
 
 const activeNote = $derived(noteController.getActiveNote());
+
+const contextMenuItems = [
+  {
+    label: "Rename Note",
+    onClick: () => {
+      focusController.requestFocus(FocusTarget.TITLE);
+    },
+  },
+  {
+    label: "Delete Note",
+    onClick: () => noteController.deleteNote(note.id),
+    class: "text-error",
+  },
+];
 </script>
 
 <div
-  class="text-base-content grid h-screen grid-flow-col grid-cols-[min-content_1fr] overflow-hidden bg-(--color-base-100)">
+  class="text-base-content grid h-screen grid-flow-col grid-cols-[min-content_1fr] overflow-hidden bg-(--color-base-100)"
+  use:contextMenu={contextMenuItems}>
   <Sidebar></Sidebar>
 
   <main class="overflow-auto">

@@ -74,8 +74,8 @@ const contextMenuItems = [
       {/if}
     </div>
   </div>
-  <button class="bg-base-200 bordered p-2" use:dropdownMenu={contextMenuItems}
-    >click izquierdo</button>
   <button class="bg-base-200 bordered p-2" use:contextMenu={contextMenuItems}
     >click derecho</button>
+  <button class="bg-base-200 bordered p-2" use:dropdownMenu={contextMenuItems}
+    >click izquierdo</button>
 </nav>

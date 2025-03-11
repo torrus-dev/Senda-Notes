@@ -1,5 +1,7 @@
-// contextMenu.js
-import { contextMenuController } from "../svelte/controllers/contextMenuController.svelte";
+import {
+  contextMenuController,
+  MenuType,
+} from "../svelte/controllers/contextMenuController.svelte";
 
 function checkValid(options) {
   if (options && Array.isArray(options) && options.length > 0) {
@@ -26,13 +28,12 @@ export function contextMenu(node, options) {
     event.preventDefault();
     event.stopPropagation();
 
-    
-
     // Abrir nuestro menú contextual personalizado
     contextMenuController.open(
       { x: event.clientX, y: event.clientY },
       options,
       node,
+      MenuType.Context,
     );
   }
 
@@ -43,7 +44,6 @@ export function contextMenu(node, options) {
     // Actualizar las opciones si cambian
     update(newOptions) {
       options = newOptions;
-
       // Si las opciones cambian a inválidas, remover el listener
       if (!checkValid(newOptions)) {
         node.removeEventListener("contextmenu", handleContextMenu);
@@ -52,7 +52,6 @@ export function contextMenu(node, options) {
         node.addEventListener("contextmenu", handleContextMenu);
       }
     },
-
     // Limpiar event listeners al destruir el componente
     destroy() {
       node.removeEventListener("contextmenu", handleContextMenu);
@@ -106,7 +105,6 @@ export function dropdownMenu(node, options) {
     update(newOptions) {
       const wasValid = checkValid(options);
       const isValid = checkValid(newOptions);
-
       options = newOptions;
 
       // Si las opciones cambian a inválidas, remover el listener
@@ -117,7 +115,6 @@ export function dropdownMenu(node, options) {
         node.addEventListener("click", handleClick);
       }
     },
-
     // Limpiar event listeners al destruir el componente
     destroy() {
       node.removeEventListener("click", handleClick);
