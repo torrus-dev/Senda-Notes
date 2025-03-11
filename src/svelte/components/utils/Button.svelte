@@ -1,5 +1,8 @@
 <script>
-import { contextMenu, dropdownMenu } from "../../../directives/contextMenu";
+import {
+  contextMenu,
+  dropdownMenu,
+} from "../../../directives/contextMenu.svelte";
 
 let {
   variant = "base",

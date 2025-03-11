@@ -6,7 +6,7 @@ import NavBar from "./NavBar.svelte";
 import ContextMenu from "./ContextMenu.svelte";
 import Modal from "./Modal.svelte";
 import NoteContent from "../noteContent/NoteContent.svelte";
-import { contextMenu, dropdownMenu } from "../../../directives/contextMenu";
+import { contextMenu } from "../../../directives/contextMenu.svelte";
 
 const activeNote = $derived(noteController.getActiveNote());
 

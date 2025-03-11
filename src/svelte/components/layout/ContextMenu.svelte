@@ -1,6 +1,7 @@
 <script>
 import Button from "../utils/Button.svelte";
 import { contextMenuController } from "../../controllers/contextMenuController.svelte";
+import { closeOnOutsideOrEsc } from "../../../directives/closeOnOutsideOrEsc";
 
 let menuElement = $state(null);
 
@@ -25,8 +26,8 @@ function handleItemClick(item) {
   contextMenuController.close();
 }
 
-let positionX = $derived(contextMenuController.adjustedPosition.x);
-let positionY = $derived(contextMenuController.adjustedPosition.y);
+let positionX = $derived(contextMenuController.getPositionX());
+let positionY = $derived(contextMenuController.getPositionY());
 </script>
 
 {#if contextMenuController.isOpen}
@@ -36,6 +37,9 @@ let positionY = $derived(contextMenuController.adjustedPosition.y);
     role="menu"
     aria-orientation="vertical"
     tabindex="-1"
+    use:closeOnOutsideOrEsc={() => {
+      contextMenuController.close();
+    }}
     class="rounded-box bordered bg-base-200 absolute z-20 mt-1 p-2 shadow"
     style="left: {positionX}px; top: {positionY}px;">
     {#each contextMenuController.items as item, i}

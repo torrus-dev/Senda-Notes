@@ -5,7 +5,10 @@ import { focusController } from "../../controllers/focusController.svelte";
 import { noteController } from "../../controllers/noteController.svelte";
 import { workspace } from "../../controllers/workspaceController.svelte";
 
-import { contextMenu, dropdownMenu } from "../../../directives/contextMenu";
+import {
+  contextMenu,
+  dropdownMenu,
+} from "../../../directives/contextMenu.svelte";
 import Breadcrumbs from "../utils/Breadcrumbs.svelte";
 import Button from "../utils/Button.svelte";
 
