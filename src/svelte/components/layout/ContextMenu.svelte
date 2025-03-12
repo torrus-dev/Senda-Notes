@@ -18,6 +18,13 @@ $effect(() => {
   }
 });
 
+$effect(() => {
+  if (contextMenuController.isOpen && menuElement) {
+    // Actualizar la referencia al elemento en el controlador
+    contextMenuController.setMenuElement(menuElement);
+  }
+});
+
 // Maneja el clic en un elemento del menú
 function handleItemClick(item) {
   if (item.onClick) {
@@ -41,7 +48,9 @@ let positionY = $derived(contextMenuController.getPositionY());
       contextMenuController.close();
     }}
     class="rounded-box bordered bg-base-200 absolute z-20 mt-1 p-2 shadow"
-    style="left: {positionX}px; top: {positionY}px;">
+    style="left: {positionX}px; top: {positionY}px; visibility: {contextMenuController.isVisible
+      ? 'visible'
+      : 'hidden'};">
     {#each contextMenuController.items as item, i}
       {#if item.separator}
         <li class="border-border-normal my-1 border-t-2" role="separator"></li>

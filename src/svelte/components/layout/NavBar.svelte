@@ -81,4 +81,8 @@ const contextMenuItems = [
     >click derecho</button>
   <button class="bg-base-200 bordered p-2" use:dropdownMenu={contextMenuItems}
     >click izquierdo</button>
+  <button class="bg-base-200 bordered p-2" use:dropdownMenu={contextMenuItems}
+    >click izquierdo</button>
+  <button class="bg-base-200 bordered p-2" use:dropdownMenu={contextMenuItems}
+    >click izquierdo</button>
 </nav>
