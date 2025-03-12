@@ -4,26 +4,22 @@ import { contextMenuController } from "../../controllers/contextMenuController.s
 import { closeOnOutsideOrEsc } from "../../../directives/closeOnOutsideOrEsc";
 
 let menuElement = $state(null);
-
-// Efecto para manejar el foco cuando el menú se abre
-$effect(() => {
-  if (contextMenuController.isOpen && menuElement) {
-    // Cuando se abre el menú, enfocar el primer elemento
-    setTimeout(() => {
-      const firstItem = menuElement.querySelector('[role="menuitem"]');
-      if (firstItem) {
-        firstItem.focus();
-      }
-    }, 0);
-  }
-});
+let calculatedPosition = $state(null);
 
 $effect(() => {
   if (contextMenuController.isOpen && menuElement) {
-    // Actualizar la referencia al elemento en el controlador
-    contextMenuController.setMenuElement(menuElement);
+    if (contextMenuController.menuType === "context") {
+      calculateContextMenu();
+    } else if (contextMenuController.menuType === "dropdown") {
+    }
   }
 });
+
+function calculateContextMenu() {
+  let { windowWidth, windowHeight } = contextMenuController.windowSize;
+
+  console.log("menuElement", menuElement.innerWidth);
+}
 
 // Maneja el clic en un elemento del menú
 function handleItemClick(item) {
@@ -48,10 +44,8 @@ let positionY = $derived(contextMenuController.getPositionY());
       contextMenuController.close();
     }}
     class="rounded-box bordered bg-base-200 absolute z-20 mt-1 p-2 shadow"
-    style="left: {positionX}px; top: {positionY}px; visibility: {contextMenuController.isVisible
-      ? 'visible'
-      : 'hidden'};">
-    {#each contextMenuController.items as item, i}
+    style="left: {positionX}px; top: {positionY}px;">
+    {#each contextMenuController.menuItems as item, i}
       {#if item.separator}
         <li class="border-border-normal my-1 border-t-2" role="separator"></li>
       {:else}
