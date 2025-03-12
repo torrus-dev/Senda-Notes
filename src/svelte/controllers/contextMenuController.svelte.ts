@@ -33,16 +33,37 @@ class ContextMenuController {
   position = $state<Coordinates>({ x: 0, y: 0 });
   menuItems = $state<MenuItem[]>([]);
   triggerInfo = $state<TriggerInfo | null>(null);
+  //sacar windowSize y su calculo a workspace controller
   windowSize = $state<WindowDimensions>({
     width: window.innerWidth,
     height: window.innerHeight,
   });
+  menuDimensions = $state({ width: 0, height: 0 });
 
   // Inicialización de los listeners globales
   constructor() {
     if (typeof window !== "undefined") {
       // Usamos delegación de eventos con un solo listener global
-      // window.addEventListener("resize", this.handleWindowResize);
+      window.addEventListener("resize", this.handleWindowResize);
+    }
+  }
+
+  private handleWindowResize() {
+    this.windowSize = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
+    if (this.isOpen && this.triggerInfo?.element) {
+      // Actualizar el rect del elemento activador al cambiar el tamaño
+      this.triggerInfo = {
+        element: this.triggerInfo.element,
+        rect: this.triggerInfo.element.getBoundingClientRect(),
+      };
+      // Forzar recálculo de la posición ajustada
+      this.position = { ...this.position };
+    } else if (this.isOpen) {
+      // Si no hay elemento activador, solo actualizar la posición
+      this.position = { ...this.position };
     }
   }
 
@@ -68,11 +89,15 @@ class ContextMenuController {
     this.isOpen = true;
   }
 
-  getPositionX() {
-    return this.position.x;
+  getAdaptedPosition(): Coordinates {
+    if (contextMenuController.menuType === "context") {
+    }
+    return this.position;
   }
-  getPositionY() {
-    return this.position.y;
+
+  setMenuDimensions(width: number, height: number) {
+    this.menuDimensions = { width, height };
+    console.log(this.menuDimensions);
   }
 }
 
