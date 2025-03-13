@@ -1,62 +1,29 @@
-import type { Component } from "svelte";
-
-// Tipos para las opciones del menú
-export interface MenuItem {
-  label: string;
-  icon?: Component | undefined; // Lucide icon component
-  onClick?: () => void;
-  class?: string;
-  separator?: boolean;
-}
-
-// Posición del menú
-interface Coordinates {
-  x: number;
-  y: number;
-}
-
-interface WindowDimensions {
-  width: number;
-  height: number;
-}
-
-// Información sobre los límites del elemento activador
-interface TriggerInfo {
-  element: HTMLElement;
-  rect: DOMRect;
-}
+import type { MenuItem, Coordinates, TriggerInfo } from "../types/contextMenu";
+import { workspace } from "./workspaceController.svelte";
 
 // Clase singleton para gestionar el estado del menú contextual
 class ContextMenuController {
   menuType = $state<"dropdown" | "context" | null>(null);
-  isOpen = $state(false);
+  isOpen = $state<boolean>(false);
   position = $state<Coordinates>({ x: 0, y: 0 });
   menuItems = $state<MenuItem[]>([]);
   triggerInfo = $state<TriggerInfo | null>(null);
-  windowSize = $state<WindowDimensions>({
-    width: window.innerWidth,
-    height: window.innerHeight,
-  });
+
   menuDimensions = $state({ width: 0, height: 0 });
   initialRender = $state(true); // Controla si es el primer renderizado
+
+  windowSize = $derived(workspace.windowSize);
+
+  readonly DROPDOWN_MARGIN = 4;
 
   // Inicialización de los listeners globales
   constructor() {
     if (typeof window !== "undefined") {
       window.addEventListener("resize", () => this.handleWindowResize());
-      // Actualizar windowSize inicialmente
-      this.windowSize = {
-        width: window.innerWidth,
-        height: window.innerHeight,
-      };
     }
   }
 
   private handleWindowResize() {
-    this.windowSize = {
-      width: window.innerWidth,
-      height: window.innerHeight,
-    };
     // Forzar recálculo de la posición al cambiar el tamaño de la ventana
     if (this.isOpen && this.menuDimensions.width > 0) {
       if (this.triggerInfo?.element) {
@@ -120,28 +87,28 @@ class ContextMenuController {
     }
 
     let { x, y } = this.position;
-    const { width, height } = this.menuDimensions;
+    const { width: menuWidth, height: menuHeight } = this.menuDimensions;
     const { width: winWidth, height: winHeight } = this.windowSize;
 
     // Verificar y ajustar horizontalmente
-    if (x + width > winWidth) {
+    if (x + menuWidth > winWidth) {
       if (this.menuType === "context") {
         // Para context menu, colocar a la izquierda del cursor
-        x = Math.max(0, this.position.x - width);
+        x = Math.max(0, this.position.x - menuWidth);
       } else if (this.menuType === "dropdown" && this.triggerInfo) {
         // Para dropdown, alinear con el borde derecho del trigger
-        x = Math.max(0, this.triggerInfo.rect.right - width);
+        x = Math.max(0, this.triggerInfo.rect.right - menuWidth);
       }
     }
 
     // Verificar y ajustar verticalmente
-    if (y + height > winHeight) {
+    if (y + menuHeight > winHeight) {
       if (this.menuType === "context") {
         // Para context menu, colocar arriba del cursor
-        y = Math.max(0, this.position.y - height);
+        y = Math.max(0, this.position.y - menuHeight);
       } else if (this.menuType === "dropdown" && this.triggerInfo) {
         // Para dropdown, colocar arriba del trigger
-        y = Math.max(0, this.triggerInfo.rect.top - height);
+        y = Math.max(0, this.triggerInfo.rect.top - menuHeight);
       }
     }
 
@@ -150,11 +117,11 @@ class ContextMenuController {
     y = Math.max(5, y);
 
     // Asegurar que el menú sea visible aunque sea parcialmente
-    if (x + width > winWidth) {
-      x = Math.max(5, winWidth - width - 5);
+    if (x + menuWidth > winWidth) {
+      x = Math.max(5, winWidth - menuWidth - 5);
     }
-    if (y + height > winHeight) {
-      y = Math.max(5, winHeight - height - 5);
+    if (y + menuHeight > winHeight) {
+      y = Math.max(5, winHeight - menuHeight - 5);
     }
 
     return { x, y };

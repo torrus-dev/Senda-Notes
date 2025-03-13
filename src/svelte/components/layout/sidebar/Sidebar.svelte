@@ -9,6 +9,7 @@ import Button from "../../utils/Button.svelte";
 import ResizableHandler from "./ResizableHandler.svelte";
 
 import { useResponsive } from "../../../../directives/useResponsive.svelte";
+import { dropdownMenu } from "../../../../directives/contextMenu.svelte";
 
 let width = $state(workspace.getSidebarWidth());
 let isMobile = $derived(useResponsive().isMobile);
@@ -32,7 +33,7 @@ let widthStyle = $derived(isMobile ? "90%" : `${width}rem`);
 </script>
 
 <aside
-  class="relative w-0 overflow-clip bg-(--color-base-200) {!isResizing
+  class="relative w-0 overflow-clip bg-(--color-base-200) shadow {!isResizing
     ? 'transition-all duration-300'
     : ''}"
   style={isSidebarOpen ? `width: ${widthStyle};` : ""}>
@@ -54,14 +55,14 @@ let widthStyle = $derived(isMobile ? "90%" : `${width}rem`);
     onResizeEnd={handleResizeEnd} />
 
   <!-- Contenido principal -->
-  <div class="overflow-y-auto">
+  <div class="overflow-auto">
     <NoteTreeRenderer />
   </div>
 
   <!-- Footer -->
   <div>
     <ul
-      class="text-base-content/70 border-border-normal absolute bottom-0 left-0 flex w-full gap-0.5 border-t-2 p-2">
+      class="text-base-content/70 border-border-normal bg-base-200 absolute bottom-0 left-0 flex w-full gap-0.5 border-t-2 p-2">
       <li>
         <Button
           onclick={() => {

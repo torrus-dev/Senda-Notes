@@ -11,8 +11,8 @@ let {
   size = "medium",
   shape = "square",
   children,
-  dropdownMenuDirective = undefined,
-  contextMenuDirective = undefined,
+  dropdownMenuItems = undefined,
+  contextMenuItems = undefined,
   buttonElement = $bindable(),
   ...htmlAttributes
 } = $props();
@@ -53,6 +53,6 @@ let style = `whitespace-nowrap rounded-field bg-interactive inline-flex cursor-p
   {...htmlAttributes}
   class={style}
   onclick={onclick}
-  use:dropdownMenu={dropdownMenuDirective}
-  use:contextMenu={contextMenuDirective}
+  use:dropdownMenu={dropdownMenuItems}
+  use:contextMenu={contextMenuItems}
   bind:this={buttonElement}>{@render children()}</button>
