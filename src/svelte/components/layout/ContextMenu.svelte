@@ -2,38 +2,31 @@
 import Button from "../utils/Button.svelte";
 import { contextMenuController } from "../../controllers/contextMenuController.svelte";
 import { closeOnOutsideOrEsc } from "../../../directives/closeOnOutsideOrEsc";
+import { tick } from "svelte";
 
 let menuElement = $state(null);
-let isRendered = $state(false); // visibilidad del menú para prevenir flash de overflow
+let isRendered = $state(false); // Control de visibilidad para evitar flash de overflow
 
-$effect(() => {
-  // Este efecto se ejecuta cuando cambia el estado de apertura del menú
+$effect(async () => {
   if (contextMenuController.isOpen) {
     isRendered = false;
-
-    // Usar RAF para asegurar que el menú sea inicialmente invisible
-    requestAnimationFrame(() => {
-      if (menuElement) {
-        // Medir el menú mientras está invisible
-        const width = menuElement.offsetWidth;
-        const height = menuElement.offsetHeight;
-
-        if (width > 0 && height > 0) {
-          contextMenuController.setMenuDimensions(width, height);
-
-          // Hacer visible el menú después de que se hayan calculado las dimensiones
-          requestAnimationFrame(() => {
-            isRendered = true;
-          });
-        }
+    await tick(); // Espera a que se actualice el DOM
+    if (menuElement) {
+      // Medir dimensiones del menú ya renderizado (aunque invisible)
+      const width = menuElement.offsetWidth;
+      const height = menuElement.offsetHeight;
+      if (width > 0 && height > 0) {
+        contextMenuController.setMenuDimensions(width, height);
+        await tick(); // Espera a que se apliquen los cambios
+        isRendered = true;
       }
-    });
+    }
   } else {
     isRendered = false;
   }
 });
 
-// Posición adaptada derivada
+// Posición adaptada derivada de los datos del controlador
 let adaptedPosition = $derived(contextMenuController.getAdaptedPosition());
 </script>
 
@@ -49,12 +42,12 @@ let adaptedPosition = $derived(contextMenuController.getAdaptedPosition());
     }}
     class="rounded-box bordered bg-base-200 absolute z-20 min-w-[160px] p-2 shadow-lg"
     style="
-        left: {adaptedPosition.x}px; 
-        top: {adaptedPosition.y}px; 
-        visibility: {isRendered ? 'visible' : 'hidden'};
-        opacity: {isRendered ? '1' : '0'};
-        transition: opacity 0.1s ease-in-out;
-      ">
+      left: {adaptedPosition.x}px; 
+      top: {adaptedPosition.y}px; 
+      visibility: {isRendered ? 'visible' : 'hidden'};
+      opacity: {isRendered ? '1' : '0'};
+      transition: opacity 0.1s ease-in-out;
+    ">
     {#each contextMenuController.menuItems as item, i}
       {#if item.separator}
         <li class="border-border-normal my-1 border-t-2" role="separator"></li>
@@ -62,9 +55,7 @@ let adaptedPosition = $derived(contextMenuController.getAdaptedPosition());
         <li>
           <Button
             onclick={() => {
-              if (item.onClick) {
-                item.onClick();
-              }
+              if (item.onClick) item.onClick();
               contextMenuController.close();
             }}
             role="menuitem"

@@ -19,11 +19,16 @@ class ContextMenuController {
   // Inicialización de los listeners globales
   constructor() {
     if (typeof window !== "undefined") {
-      window.addEventListener("resize", () => this.handleWindowResize());
+      window.addEventListener("resize", this.handleWindowResize);
+    }
+  }
+  destroy() {
+    if (typeof window !== "undefined") {
+      window.removeEventListener("resize", this.handleWindowResize);
     }
   }
 
-  private handleWindowResize() {
+  private handleWindowResize = () => {
     // Forzar recálculo de la posición al cambiar el tamaño de la ventana
     if (this.isOpen && this.menuDimensions.width > 0) {
       if (this.triggerInfo?.element) {
@@ -41,7 +46,7 @@ class ContextMenuController {
         };
       }
     }
-  }
+  };
 
   close() {
     this.menuType = null;
@@ -80,7 +85,7 @@ class ContextMenuController {
   }
 
   getAdaptedPosition(): Coordinates {
-    // Si no hay dimensiones de menú o no está abierto, devolver posición original
+    // Si el menú no está abierto o no se han medido sus dimensiones, devuelve la posición original.
     if (
       !this.isOpen ||
       !this.menuDimensions.width ||
@@ -93,42 +98,33 @@ class ContextMenuController {
     const { width: menuWidth, height: menuHeight } = this.menuDimensions;
     const { width: winWidth, height: winHeight } = this.windowSize;
 
-    // Verificar y ajustar horizontalmente
+    // Función helper para limitar el valor entre un mínimo y un máximo.
+    const clamp = (value: number, min: number, max: number): number =>
+      Math.min(Math.max(value, min), max);
+
+    // Ajuste horizontal
     if (x + menuWidth > winWidth) {
-      if (this.menuType === "context") {
-        // Para context menu, colocar a la izquierda del cursor
-        x = Math.max(0, this.position.x - menuWidth);
-      } else if (this.menuType === "dropdown" && this.triggerInfo) {
-        // Para dropdown, alinear con el borde derecho del trigger
-        x = Math.max(0, this.triggerInfo.rect.right - menuWidth);
-      }
+      x =
+        this.menuType === "context"
+          ? this.position.x - menuWidth
+          : this.triggerInfo
+            ? this.triggerInfo.rect.right - menuWidth
+            : x;
     }
+    // Limitar para que no se salga por la izquierda ni por la derecha.
+    x = clamp(x, 5, winWidth - menuWidth - 5);
 
-    // Verificar y ajustar verticalmente
+    // Ajuste vertical
     if (y + menuHeight > winHeight) {
-      if (this.menuType === "context") {
-        // Para context menu, colocar arriba del cursor
-        y = Math.max(0, this.position.y - menuHeight);
-      } else if (this.menuType === "dropdown" && this.triggerInfo) {
-        // Para dropdown, colocar arriba del trigger con el margen invertido
-        y = Math.max(
-          0,
-          this.triggerInfo.rect.top - menuHeight - this.DROPDOWN_MARGIN,
-        );
-      }
+      y =
+        this.menuType === "context"
+          ? this.position.y - menuHeight
+          : this.triggerInfo
+            ? this.triggerInfo.rect.top - menuHeight - this.DROPDOWN_MARGIN
+            : y;
     }
-
-    // Asegurar que no se salga por la izquierda o arriba
-    x = Math.max(5, x);
-    y = Math.max(5, y);
-
-    // Asegurar que el menú sea visible aunque sea parcialmente
-    if (x + menuWidth > winWidth) {
-      x = Math.max(5, winWidth - menuWidth - 5);
-    }
-    if (y + menuHeight > winHeight) {
-      y = Math.max(5, winHeight - menuHeight - 5);
-    }
+    // Limitar para que no se salga por arriba ni por abajo.
+    y = clamp(y, 5, winHeight - menuHeight - 5);
 
     return { x, y };
   }

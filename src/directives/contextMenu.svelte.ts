@@ -77,9 +77,7 @@ export function dropdownMenu(node: HTMLElement, menuItems: MenuItem[]) {
     event.preventDefault();
     event.stopPropagation();
 
-    // Comprobar si el menú ya está abierto
-    const isOpen = $derived(contextMenuController.isOpen);
-    if (isOpen) {
+    if (contextMenuController.isOpen) {
       contextMenuController.close();
     } else {
       // Abrir el menú dropdown
