@@ -28,6 +28,11 @@ export function contextMenu(node: HTMLElement, menuItems: MenuItem[]) {
     event.preventDefault();
     event.stopPropagation();
 
+    // Cerrar cualquier menú abierto previamente
+    if (contextMenuController.isOpen) {
+      contextMenuController.close();
+    }
+
     // Abrir nuestro menú contextual personalizado
     contextMenuController.openContextMenu(
       { x: event.clientX, y: event.clientY },
@@ -47,10 +52,10 @@ export function contextMenu(node: HTMLElement, menuItems: MenuItem[]) {
 
       // Si las opciones cambian a inválidas, remover el listener
       if (wasValid && !isValid) {
-        node.removeEventListener("click", handleContextMenu);
+        node.removeEventListener("contextmenu", handleContextMenu);
       } else if (!wasValid && isValid) {
         // Si pasamos de opciones inválidas a válidas, añadir el listener
-        node.addEventListener("click", handleContextMenu);
+        node.addEventListener("contextmenu", handleContextMenu);
       }
     },
     // Limpiar event listeners al destruir el componente
@@ -74,10 +79,12 @@ export function dropdownMenu(node: HTMLElement, menuItems: MenuItem[]) {
     event.preventDefault();
     event.stopPropagation();
 
-    let isOpen = $derived(contextMenuController.isOpen);
+    // Comprobar si el menú ya está abierto
+    const isOpen = $derived(contextMenuController.isOpen);
     if (isOpen) {
       contextMenuController.close();
     } else {
+      // Abrir el menú dropdown
       contextMenuController.openDropdownMenu(node, menuItems);
     }
   }

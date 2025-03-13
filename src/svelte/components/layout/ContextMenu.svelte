@@ -4,17 +4,37 @@ import { contextMenuController } from "../../controllers/contextMenuController.s
 import { closeOnOutsideOrEsc } from "../../../directives/closeOnOutsideOrEsc";
 
 let menuElement = $state(null);
+let isRendered = $state(false); // visibilidad del menú para prevenir flash de overflow
 
 $effect(() => {
+  // Este efecto se ejecuta cuando cambia el estado de apertura del menú
   if (contextMenuController.isOpen) {
-    contextMenuController.setMenuDimensions(
-      menuElement.offsetWidth,
-      menuElement.offsetHeight,
-    );
+    isRendered = false;
+
+    // Usar RAF para asegurar que el menú sea inicialmente invisible
+    requestAnimationFrame(() => {
+      if (menuElement) {
+        // Medir el menú mientras está invisible
+        const width = menuElement.offsetWidth;
+        const height = menuElement.offsetHeight;
+
+        if (width > 0 && height > 0) {
+          contextMenuController.setMenuDimensions(width, height);
+
+          // Hacer visible el menú después de que se hayan calculado las dimensiones
+          requestAnimationFrame(() => {
+            isRendered = true;
+          });
+        }
+      }
+    });
+  } else {
+    isRendered = false;
   }
 });
 
-let position = $derived(contextMenuController.getAdaptedPosition());
+// Posición adaptada derivada
+let adaptedPosition = $derived(contextMenuController.getAdaptedPosition());
 </script>
 
 {#if contextMenuController.isOpen}
@@ -27,8 +47,14 @@ let position = $derived(contextMenuController.getAdaptedPosition());
     use:closeOnOutsideOrEsc={() => {
       contextMenuController.close();
     }}
-    class="rounded-box bordered bg-base-200 absolute z-20 mt-1 p-2 shadow"
-    style="left: {position.x}px; top: {position.y}px;">
+    class="rounded-box bordered bg-base-200 absolute z-20 min-w-[160px] p-2 shadow-lg"
+    style="
+        left: {adaptedPosition.x}px; 
+        top: {adaptedPosition.y}px; 
+        visibility: {isRendered ? 'visible' : 'hidden'};
+        opacity: {isRendered ? '1' : '0'};
+        transition: opacity 0.1s ease-in-out;
+      ">
     {#each contextMenuController.menuItems as item, i}
       {#if item.separator}
         <li class="border-border-normal my-1 border-t-2" role="separator"></li>
@@ -45,7 +71,7 @@ let position = $derived(contextMenuController.getAdaptedPosition());
             tabindex="0"
             cssClass="w-full {item.class || ''}">
             {#if item.icon}
-              <item.icon size="18"></item.icon>
+              <item.icon size="18" />
             {/if}
             {item.label}
           </Button>
