@@ -34,7 +34,10 @@ class ContextMenuController {
         };
         this.position = {
           x: this.triggerInfo.rect.left,
-          y: this.triggerInfo.rect.bottom,
+          y:
+            this.menuType === "dropdown"
+              ? this.triggerInfo.rect.bottom + this.DROPDOWN_MARGIN
+              : this.triggerInfo.rect.bottom,
         };
       }
     }
@@ -68,7 +71,7 @@ class ContextMenuController {
     };
     this.position = {
       x: rect.left,
-      y: rect.bottom,
+      y: rect.bottom + this.DROPDOWN_MARGIN, // Añadido el margen aquí
     };
     this.menuItems = menuItems;
     this.isOpen = true;
@@ -107,8 +110,11 @@ class ContextMenuController {
         // Para context menu, colocar arriba del cursor
         y = Math.max(0, this.position.y - menuHeight);
       } else if (this.menuType === "dropdown" && this.triggerInfo) {
-        // Para dropdown, colocar arriba del trigger
-        y = Math.max(0, this.triggerInfo.rect.top - menuHeight);
+        // Para dropdown, colocar arriba del trigger con el margen invertido
+        y = Math.max(
+          0,
+          this.triggerInfo.rect.top - menuHeight - this.DROPDOWN_MARGIN,
+        );
       }
     }
 
