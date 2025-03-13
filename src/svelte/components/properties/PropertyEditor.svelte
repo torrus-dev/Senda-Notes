@@ -49,7 +49,7 @@ function closeEditor() {
 </script>
 
 <div
-  class="property-editor rounded-box bordered absolute top-full left-0 z-30 mt-1 flex flex-col gap-2 bg-(--color-base-200) px-4 py-2 shadow"
+  class="property-editor rounded-box bordered absolute top-full left-0 z-30 mt-1 flex flex-col gap-2 bg-(--color-base-200) px-4 py-2 shadow-lg"
   use:closeOnOutsideOrEsc={closeEditor}
   onkeydown={(event) => {
     if (event.key === "Enter") {

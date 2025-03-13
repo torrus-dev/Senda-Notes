@@ -56,7 +56,7 @@ const positionClass =
 
   {#if isOpen && !disabled}
     <ul
-      class="rounded-box bordered absolute z-20 mt-1 bg-(--color-base-200) p-2 shadow {positionClass}"
+      class="rounded-box bordered absolute z-20 mt-1 bg-(--color-base-200) p-2 shadow-lg {positionClass}"
       style="max-width: {maxMenuWidth}rem;"
       role="menu"
       use:closeOnOutsideOrEsc={closeDropdown}

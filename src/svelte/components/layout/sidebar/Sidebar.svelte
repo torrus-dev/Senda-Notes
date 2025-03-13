@@ -33,13 +33,12 @@ let widthStyle = $derived(isMobile ? "90%" : `${width}rem`);
 </script>
 
 <aside
-  class="relative w-0 overflow-clip bg-(--color-base-200) shadow {!isResizing
+  class="relative w-0 overflow-clip bg-(--color-base-200) shadow-xl {!isResizing
     ? 'transition-all duration-300'
     : ''}"
   style={isSidebarOpen ? `width: ${widthStyle};` : ""}>
   <!-- Header -->
-  <nav
-    class="border-border-normal flex h-14 w-full items-center justify-between gap-4 p-2 shadow">
+  <nav class="flex h-14 w-full items-center justify-between gap-4 p-2">
     <div class="flex gap-1">
       <Button>
         <FilesIcon size="20" />

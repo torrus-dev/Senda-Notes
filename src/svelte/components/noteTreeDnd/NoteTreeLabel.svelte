@@ -6,26 +6,23 @@
 
 <script>
 import { noteController } from "../../controllers/noteController.svelte";
-import { ChevronRightIcon, PlusIcon } from "lucide-svelte";
+import { ChevronRightIcon, PlusIcon, PencilLineIcon } from "lucide-svelte";
 import Button from "../utils/Button.svelte";
 import InlineTitleEditor from "../utils/InlineTitleEditor.svelte";
+import { contextMenu } from "../../../directives/contextMenu.svelte";
 
-let {
-  note,
-  toggleExpansion,
-  isExpanded,
-  isDragedOver,
-  isEditingTitle = false, // Recibimos isEditingTitle como prop
-} = $props();
+let { note, toggleExpansion, isExpanded, isDragedOver } = $props();
 
 let isActive = $derived(note.id === noteController.activeNoteId);
 let childrenCount = $derived(noteController.getChildrenCount(note.id));
 let hasChildren = $derived(childrenCount > 0);
 
+let isEditingTitle = $state(false); // Recibimos isEditingTitle como prop
+
 const handleSelectTitle = (event) => {
-  if (event.key === "Enter" || event.type === "click") {
-    // Solo seleccionar la nota si no estamos en modo edición
-    if (!isEditingTitle) {
+  if (!isEditingTitle) {
+    if (event.key === "Enter" || event.type === "click") {
+      // Solo seleccionar la nota si no estamos en modo edición
       noteController.setActiveNote(note.id);
     }
   }
@@ -34,6 +31,13 @@ const handleSelectTitle = (event) => {
 const handleNewChildNote = (event) => {
   event.stopPropagation();
   noteController.createNote(note.id);
+};
+
+const startEditingLabel = () => {
+  isEditingTitle = true;
+};
+const stopEditingLabel = () => {
+  isEditingTitle = false;
 };
 
 // Referencia al componente InlineTitleEditor para acceder a su elemento DOM
@@ -46,6 +50,13 @@ let editableElement;
       {isActive ? 'bg-(--color-bg-active)' : ''}"
   role="button"
   tabindex="0"
+  use:contextMenu={[
+    {
+      icon: PencilLineIcon,
+      label: "Rename Note",
+      onClick: startEditingLabel,
+    },
+  ]}
   onclick={handleSelectTitle}
   onkeydown={handleSelectTitle}>
   <div class="flex gap-1">
@@ -69,7 +80,8 @@ let editableElement;
       bind:this={editableElement}
       note={note}
       isEditing={isEditingTitle}
-      cssClass="truncate" />
+      cssClass="truncate"
+      onEditComplete={stopEditingLabel} />
   </div>
   <div class="flex items-center">
     <Button

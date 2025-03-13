@@ -38,7 +38,7 @@ const noteOptionsItems = [
 </script>
 
 <nav
-  class="border-border-normal flex h-14 w-full items-center justify-between gap-2 p-2 shadow">
+  class="border-border-normal flex h-14 w-full items-center justify-between gap-2 p-2">
   <!-- toggle sidebar button -->
   {#if isSidebarOpen}
     <Button onclick={workspace.toggleSidebar}>
