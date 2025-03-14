@@ -10,9 +10,9 @@ import { createDragAndDropHandlers } from "./PropertyDnd";
 
 import { SlidersHorizontalIcon, Trash2Icon } from "lucide-svelte";
 
-import DropdownList from "../utils/DropdownList.svelte";
 import PropertyValue from "./propertyTypes/PropertyValue.svelte";
 import PropertyEditor from "./PropertyEditor.svelte";
+import Button from "../utils/Button.svelte";
 
 let { noteId = null, position, property = null } = $props();
 
@@ -49,9 +49,8 @@ const IconComponent = $derived(getIconComponent(property.type));
   ondragover={handleDragOver}
   ondragleave={handleDragLeave}
   ondrop={handleDrop}>
-  <DropdownList
-    position="start"
-    menuItems={[
+  <Button
+    dropdownMenuItems={[
       {
         label: "Edit Property",
         icon: SlidersHorizontalIcon,
@@ -68,17 +67,14 @@ const IconComponent = $derived(getIconComponent(property.type));
         },
         class: "text-error",
       },
-    ]}
-    disabled={isEditorOpen}>
-    {#snippet label()}
-      {#if IconComponent}
-        <span class="property-icon"><IconComponent size="18" /></span>
-      {/if}
-      <p class="w-[9rem] overflow-clip text-left">
-        {property.name}
-      </p>
-    {/snippet}
-  </DropdownList>
+    ]}>
+    {#if IconComponent}
+      <span class="property-icon"><IconComponent size="18" /></span>
+    {/if}
+    <p class="w-[9rem] overflow-clip text-left">
+      {property.name}
+    </p>
+  </Button>
   <PropertyValue noteId={noteId} property={property}></PropertyValue>
 
   {#if isEditorOpen}

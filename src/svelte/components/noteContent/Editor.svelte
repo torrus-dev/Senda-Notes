@@ -43,13 +43,11 @@
 </style>
 
 <script>
-import { workspace } from "../../controllers/workspaceController.svelte";
 import { onDestroy } from "svelte";
 import EditorJS from "@editorjs/editorjs";
 import DragDrop from "editorjs-drag-drop";
 import { editorConfig } from "./editorConfig";
 import { noteController } from "../../controllers/noteController.svelte";
-import { FocusTarget } from "../../types/types";
 
 let { noteId = null } = $props();
 let content = $derived(noteController.getNoteById(noteId).content);
@@ -74,7 +72,6 @@ function initializeEditor(initialContent = null) {
     editorInstance = new EditorJS({
       holder: "editorjs",
       tools: editorConfig,
-      autofocus: true,
       inlineToolbar: ["bold", "italic", "link", "marker", "inlineCode"],
       data: initialContent ? JSON.parse(initialContent) : { blocks: [] },
       onReady: () => {

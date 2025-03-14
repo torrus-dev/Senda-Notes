@@ -1,5 +1,5 @@
 <script>
-import { SettingsIcon, InfoIcon, FilesIcon } from "lucide-svelte";
+import { SettingsIcon, InfoIcon } from "lucide-svelte";
 import { workspace } from "../../../controllers/workspaceController.svelte";
 
 import NoteTreeRenderer from "../../noteTreeDnd/NoteTreeRenderer.svelte";
@@ -7,9 +7,9 @@ import SettingsModal from "../../modals/SettingsModal.svelte";
 import AboutModal from "../../modals/AboutModal.svelte";
 import Button from "../../utils/Button.svelte";
 import ResizableHandler from "./ResizableHandler.svelte";
+import SidebarHeader from "./SidebarHeader.svelte";
 
 import { useResponsive } from "../../../../directives/useResponsive.svelte";
-import { dropdownMenu } from "../../../../directives/contextMenu.svelte";
 
 let width = $state(workspace.getSidebarWidth());
 let isMobile = $derived(useResponsive().isMobile);
@@ -33,18 +33,11 @@ let widthStyle = $derived(isMobile ? "90%" : `${width}rem`);
 </script>
 
 <aside
-  class="relative w-0 overflow-clip bg-(--color-base-200) shadow-xl {!isResizing
+  class="relative h-screen w-0 overflow-clip bg-(--color-base-200) shadow-xl {!isResizing
     ? 'transition-all duration-300'
     : ''}"
   style={isSidebarOpen ? `width: ${widthStyle};` : ""}>
-  <!-- Header -->
-  <nav class="flex h-14 w-full items-center justify-between gap-4 p-2">
-    <div class="flex gap-1">
-      <Button>
-        <FilesIcon size="20" />
-      </Button>
-    </div>
-  </nav>
+  <SidebarHeader />
 
   <!-- Controlador de redimensión (deshabilitado en móviles) -->
   <ResizableHandler

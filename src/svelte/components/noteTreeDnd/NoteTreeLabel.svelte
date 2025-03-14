@@ -6,7 +6,12 @@
 
 <script>
 import { noteController } from "../../controllers/noteController.svelte";
-import { ChevronRightIcon, PlusIcon, PencilLineIcon } from "lucide-svelte";
+import {
+  ChevronRightIcon,
+  PlusIcon,
+  PenLineIcon,
+  Trash2Icon,
+} from "lucide-svelte";
 import Button from "../utils/Button.svelte";
 import InlineTitleEditor from "../utils/InlineTitleEditor.svelte";
 import { contextMenu } from "../../../directives/contextMenu.svelte";
@@ -52,9 +57,15 @@ let editableElement;
   tabindex="0"
   use:contextMenu={[
     {
-      icon: PencilLineIcon,
       label: "Rename Note",
+      icon: PenLineIcon,
       onClick: startEditingLabel,
+    },
+    {
+      label: "Delete Note",
+      icon: Trash2Icon,
+      onClick: () => noteController.deleteNote(note.id),
+      class: "text-error",
     },
   ]}
   onclick={handleSelectTitle}

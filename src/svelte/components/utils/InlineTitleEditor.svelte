@@ -78,7 +78,7 @@ $effect(() => {
 
 <span
   bind:this={editableElement}
-  class="inline-block {cssClass}"
+  class="inline-block {cssClass} {isEditing ? 'cursor-text underline' : ''}"
   tabindex="0"
   role="textbox"
   contenteditable={isEditing}

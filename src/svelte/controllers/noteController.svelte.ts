@@ -1,4 +1,5 @@
-import type { Note, Property } from "../types/types";
+import { FocusTarget, type Note, type Property } from "../types/types";
+import { focusController } from "./focusController.svelte";
 import { currentDate } from "./utils.svelte";
 
 class NoteController {
@@ -203,6 +204,7 @@ class NoteController {
     }
 
     this.activeNoteId = note.id;
+    focusController.requestFocus(FocusTarget.TITLE);
   };
 
   updateNote = (id: string, updates: Partial<Note>): void => {
