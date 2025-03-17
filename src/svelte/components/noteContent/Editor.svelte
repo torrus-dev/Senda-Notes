@@ -1,60 +1,84 @@
 <style>
-:global(.codex-editor),
-:global(.ce-block),
-:global(.ce-toolbar__content) {
-  max-width: 100% !important;
-  width: 100% !important;
+.tiptap-editor {
+  width: 100%;
+  height: 100%;
+  outline: none;
+}
+:global(.tiptap-editor > div:focus) {
+  outline: none;
 }
 
-:global(.ce-block__content) {
-  max-width: 100% !important;
-  margin: 0 auto;
-  position: relative;
+/* Estilos básicos para empezar */
+:global(.tiptap-editor p) {
+  margin-bottom: 0.5rem;
 }
 
-:global(.ce-paragraph),
-:global(.ce-header),
-:global(.cdx-list) {
-  white-space: pre-wrap !important;
-  word-wrap: break-word !important;
-  word-break: break-word !important;
-  overflow-wrap: break-word !important;
+:global(.tiptap-editor ul, .tiptap-editor ol) {
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
-:global(.ce-block--dragging) {
-  opacity: 0.5;
-  pointer-events: none;
+:global(
+  .tiptap-editor h1,
+  .tiptap-editor h2,
+  .tiptap-editor h3,
+  .tiptap-editor h4,
+  .tiptap-editor h5,
+  .tiptap-editor h6
+) {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
 }
 
-:global(.ce-block--dropped) {
-  animation: dropAnimation 0.3s ease;
+:global(.tiptap-editor h1) {
+  font-size: 1.8rem;
+}
+:global(.tiptap-editor h2) {
+  font-size: 1.6rem;
+}
+:global(.tiptap-editor h3) {
+  font-size: 1.4rem;
+}
+:global(.tiptap-editor h4) {
+  font-size: 1.2rem;
+}
+:global(.tiptap-editor h5) {
+  font-size: 1.1rem;
+}
+:global(.tiptap-editor h6) {
+  font-size: 1rem;
 }
 
-@keyframes dropAnimation {
-  from {
-    opacity: 0.5;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+:global(.tiptap-editor pre) {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  overflow-x: auto;
+}
+
+:global(.tiptap-editor code) {
+  font-family: monospace;
+}
+
+:global(.tiptap-editor blockquote) {
+  border-left: 3px solid #ddd;
+  padding-left: 1rem;
+  margin-left: 0;
+  font-style: italic;
 }
 </style>
 
 <script>
 import { onDestroy } from "svelte";
-import EditorJS from "@editorjs/editorjs";
-import DragDrop from "editorjs-drag-drop";
-import { editorConfig } from "./editorConfig";
+import { Editor } from "@tiptap/core";
+import StarterKit from "@tiptap/starter-kit";
 import { noteController } from "../../controllers/noteController.svelte";
 
 let { noteId = null } = $props();
-let content = $derived(noteController.getNoteById(noteId).content);
-
+let content = $derived(noteController.getNoteById(noteId)?.content || "");
 let editorInstance = null;
-let dragDropInstance = null;
-let isInitialized = false;
+let editorElement;
 let currentNoteId = null;
 
 function onContentChange(newContent) {
@@ -65,44 +89,45 @@ function onContentChange(newContent) {
   }
 }
 
-function initializeEditor(initialContent = null) {
+function initializeEditor(initialContent = "") {
   destroyEditor(); // Limpiar instancias previas antes de crear una nueva
 
   try {
-    editorInstance = new EditorJS({
-      holder: "editorjs",
-      tools: editorConfig,
-      inlineToolbar: ["bold", "italic", "link", "marker", "inlineCode"],
-      data: initialContent ? JSON.parse(initialContent) : { blocks: [] },
-      onReady: () => {
-        dragDropInstance = new DragDrop(editorInstance);
-        isInitialized = true;
-      },
-      onChange: async () => {
-        if (!isInitialized) return;
-        try {
-          const savedData = await editorInstance.save();
-          onContentChange(JSON.stringify(savedData));
-        } catch (error) {
-          console.error("Error al guardar el contenido del editor:", error);
-        }
+    // Convertir el contenido inicial si es necesario
+    let initialData = initialContent;
+    try {
+      // Intenta parsear el contenido como JSON por compatibilidad
+      const parsedContent = JSON.parse(initialContent);
+      // Si es un objeto EditorJS, usamos un string vacío
+      initialData = "";
+    } catch (e) {
+      // Si no es JSON, asumimos que ya es un string válido para TipTap
+      initialData = initialContent || "";
+    }
+
+    editorInstance = new Editor({
+      element: editorElement,
+      extensions: [StarterKit],
+      content: initialData,
+      autofocus: true,
+      editable: true,
+      injectCSS: false,
+      onUpdate: ({ editor }) => {
+        // Guardar el contenido en formato HTML
+        const html = editor.getHTML();
+        onContentChange(html);
       },
     });
   } catch (error) {
-    console.error("Error al inicializar EditorJS:", error);
+    console.error("Error al inicializar TipTap:", error);
   }
 }
 
 function destroyEditor() {
-  if (dragDropInstance && typeof dragDropInstance.destroy === "function") {
-    dragDropInstance.destroy();
-    dragDropInstance = null;
-  }
-  if (editorInstance && typeof editorInstance.destroy === "function") {
+  if (editorInstance) {
     editorInstance.destroy();
     editorInstance = null;
   }
-  isInitialized = false;
 }
 
 // Reactividad: solo reinicializa si cambia el noteId
@@ -118,4 +143,7 @@ onDestroy(() => {
 });
 </script>
 
-<div id="editorjs" class="font-stretch-75%"></div>
+<div
+  bind:this={editorElement}
+  class="tiptap-editor prose prose-lg w-full max-w-full text-inherit focus:outline-none">
+</div>

@@ -3,6 +3,8 @@
 @import "tailwindcss";
 @import "tailwindcss/preflight.css" layer(base);
 
+@plugin "@tailwindcss/typography";
+
 @utility bg-interactive {
   @apply hover:bg-(--color-bg-hover) focus:bg-(--color-bg-hover);
 }
