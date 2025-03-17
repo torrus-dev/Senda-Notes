@@ -1,5 +1,7 @@
 <script>
 import { SearchIcon } from "lucide-svelte";
+import Button from "../utils/Button.svelte";
+import { workspace } from "../../controllers/workspaceController.svelte";
 let searchQuery = $state("");
 let settingsData = {
   App: [
@@ -37,6 +39,13 @@ let settingsData = {
       bind:value={searchQuery}
       placeholder="Search..." />
   </div>
-  <h3>Settings</h3>
+  <main>
+    <h3>Appereance</h3>
+    <Button
+      cssClass="bordered"
+      onclick={() => {
+        console.log("click");
+        workspace.toggleThemeMode();
+      }}>Toggle Dark/Light theme</Button>
+  </main>
 </aside>
-<main></main>

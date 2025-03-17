@@ -33,9 +33,8 @@ let widthStyle = $derived(isMobile ? "90%" : `${width}rem`);
 </script>
 
 <aside
-  class="relative h-screen w-0 overflow-clip bg-(--color-base-200) shadow-xl {!isResizing
-    ? 'transition-all duration-300'
-    : ''}"
+  class="relative h-screen w-0 overflow-clip bg-(--color-base-200) shadow-xl
+  {!isResizing ? 'transition-all duration-300' : ''}"
   style={isSidebarOpen ? `width: ${widthStyle};` : ""}>
   <SidebarHeader />
 

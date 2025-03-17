@@ -3,7 +3,9 @@
   width: 100%;
   height: 100%;
   outline: none;
+  color: inherit;
 }
+
 :global(.tiptap-editor > div:focus) {
   outline: none;
 }
@@ -51,7 +53,6 @@
 }
 
 :global(.tiptap-editor pre) {
-  background-color: rgba(0, 0, 0, 0.05);
   padding: 0.5rem;
   border-radius: 0.25rem;
   overflow-x: auto;
@@ -74,6 +75,7 @@ import { onDestroy } from "svelte";
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import { noteController } from "../../controllers/noteController.svelte";
+import { workspace } from "../../controllers/workspaceController.svelte";
 
 let { noteId = null } = $props();
 let content = $derived(noteController.getNoteById(noteId)?.content || "");
@@ -144,6 +146,10 @@ onDestroy(() => {
 </script>
 
 <div
+  id="editor"
   bind:this={editorElement}
-  class="tiptap-editor prose prose-lg w-full max-w-full text-inherit focus:outline-none">
+  class="tiptap-editor prose prose-neutral lg:prose-lg w-full max-w-full {workspace.theme ===
+  'dark'
+    ? 'prose-invert'
+    : ''}">
 </div>

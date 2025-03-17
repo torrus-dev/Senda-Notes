@@ -6,7 +6,7 @@ import PropertyList from "./PropertyList.svelte";
 import PropertyNumber from "./PropertyNumber.svelte";
 import PropertyCheck from "./PropertyCheck.svelte";
 import PropertyDate from "./PropertyDate.svelte";
-import PropertyDatetime from "./PropertyDatetime.svelte";
+import PropertyDatetime from "./PropertyDateTime.svelte";
 
 const components = {
   text: PropertyText,

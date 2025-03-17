@@ -1,4 +1,4 @@
-@import "./css/theme.css";
+@import "./theme.css";
 
 @import "tailwindcss";
 @import "tailwindcss/preflight.css" layer(base);
@@ -53,6 +53,19 @@ input {
 }
 
 @font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter.ttf") format("truetype");
+  font-weight: 1 999;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/Inter-Italic.ttf") format("truetype");
+  font-weight: 1 999;
+  font-style: italic;
+}
+/* @font-face {
   font-family: "Source Sans 3";
   src: url("/fonts/SourceSans3.ttf") format("truetype");
   font-weight: 1 999;
@@ -64,8 +77,16 @@ input {
   src: url("/fonts/SourceSans3-Italic.ttf") format("truetype");
   font-weight: 1 999;
   font-style: italic;
-}
+} */
 
-body {
-  font-family: "Source Sans 3", sans-serif;
+:root {
+  box-sizing: content-box;
+  font-family: "Inter", "Source Sans 3", sans-serif;
+  font-feature-settings:
+    "ss03" 1,
+    "cv01" 1,
+    "cv02" 1,
+    "cv05" 1,
+    "cv06" 1,
+    "cv08" 1;
 }

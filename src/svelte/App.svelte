@@ -2,7 +2,7 @@
 </style>
 
 <script>
-import "./app.css";
+import "./css/app.css";
 import MainView from "./components/layout/MainView.svelte";
 </script>
 
