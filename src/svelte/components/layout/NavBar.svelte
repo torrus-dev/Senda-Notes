@@ -5,6 +5,8 @@ import { focusController } from "../../controllers/focusController.svelte";
 import { noteController } from "../../controllers/noteController.svelte";
 import { workspace } from "../../controllers/workspaceController.svelte";
 
+import { useResponsive } from "../../../directives/useResponsive.svelte";
+
 import Breadcrumbs from "../utils/Breadcrumbs.svelte";
 import Button from "../utils/Button.svelte";
 
@@ -16,6 +18,7 @@ import {
   PanelLeftCloseIcon,
 } from "lucide-svelte";
 import Navigation from "../utils/Navigation.svelte";
+import { settingsController } from "../../controllers/settingsController.svelte";
 
 let { note } = $props();
 let isSidebarOpen = $derived(workspace.isSidebarOpen());
@@ -40,14 +43,17 @@ const noteOptionsItems = [
 <nav
   class="border-border-normal flex h-14 w-full items-center justify-between gap-2 p-2">
   <!-- toggle sidebar button -->
-  {#if isSidebarOpen}
-    <Button onclick={workspace.toggleSidebar}>
-      <PanelLeftCloseIcon size="18" />
-    </Button>
-  {:else}
-    <Button onclick={workspace.toggleSidebar}>
-      <PanelLeftOpenIcon size="18" />
-    </Button>
+
+  {#if !settingsController.sidebarIsLocked || useResponsive().isMobile}
+    {#if isSidebarOpen}
+      <Button onclick={workspace.toggleSidebar}>
+        <PanelLeftCloseIcon size="18" />
+      </Button>
+    {:else}
+      <Button onclick={workspace.toggleSidebar}>
+        <PanelLeftOpenIcon size="18" />
+      </Button>
+    {/if}
   {/if}
   <!-- navigation -->
   <Navigation />

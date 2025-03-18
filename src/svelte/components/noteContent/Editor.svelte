@@ -75,8 +75,8 @@ import { onDestroy } from "svelte";
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import { noteController } from "../../controllers/noteController.svelte";
-import { workspace } from "../../controllers/workspaceController.svelte";
 import { contextMenuController } from "../../controllers/contextMenuController.svelte";
+import { settingsController } from "../../controllers/settingsController.svelte";
 
 // Importar iconos de Lucide-Svelte
 import {
@@ -288,7 +288,7 @@ onDestroy(() => {
 <div
   id="editor"
   bind:this={editorElement}
-  class="tiptap-editor prose prose-neutral lg:prose-lg w-full max-w-full {workspace.theme ===
+  class="tiptap-editor prose prose-neutral lg:prose-lg w-full max-w-full {settingsController.theme ===
   'dark'
     ? 'prose-invert'
     : ''}">

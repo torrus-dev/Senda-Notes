@@ -20,18 +20,6 @@ class WorkspaceController {
       width: null,
     },
   });
-
-  theme = $state<"light" | "dark">("dark");
-
-  toggleThemeMode = () => {
-    console.log("cambiando tema");
-    if (this.theme === "light") {
-      this.theme = "dark";
-    } else if (this.theme === "dark") {
-      this.theme = "light";
-    }
-  };
-
   // Estado de la ventana
   windowSize = $state<Dimensions>({
     width: window.innerWidth,
