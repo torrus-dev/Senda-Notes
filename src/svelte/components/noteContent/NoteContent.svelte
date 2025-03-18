@@ -3,9 +3,12 @@ import Title from "./Title.svelte";
 import Properties from "../properties/Properties.svelte";
 import ChildNotes from "./ChildNotes.svelte";
 import Editor from "./Editor.svelte";
+import Toolbar from "./Toolbar.svelte";
 
 let { note } = $props();
 </script>
+
+<Toolbar></Toolbar>
 
 <div class="overflow-auto">
   <article class="mx-auto w-full max-w-3xl p-3">
