@@ -69,7 +69,7 @@ $effect(() => {
 
 <h1
   bind:this={editableElement}
-  class="my-6 overflow-hidden text-4xl font-bold"
+  class="my-6 overflow-hidden text-2xl font-bold sm:text-xl lg:text-3xl 2xl:text-4xl"
   contenteditable="true"
   onblur={handleTitleChange}
   onkeydown={handleKeydown}>

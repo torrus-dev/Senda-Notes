@@ -76,6 +76,20 @@ import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import { noteController } from "../../controllers/noteController.svelte";
 import { workspace } from "../../controllers/workspaceController.svelte";
+import { contextMenuController } from "../../controllers/contextMenuController.svelte";
+
+// Importar iconos de Lucide-Svelte
+import {
+  Bold,
+  Italic,
+  Heading1,
+  Heading2,
+  Heading3,
+  List,
+  ListOrdered,
+  Quote,
+  Code,
+} from "lucide-svelte";
 
 let { noteId = null } = $props();
 let content = $derived(noteController.getNoteById(noteId)?.content || "");
@@ -83,30 +97,148 @@ let editorInstance = null;
 let editorElement;
 let currentNoteId = null;
 
+// Función para actualizar el contenido de la nota
 function onContentChange(newContent) {
   if (noteId) {
-    noteController.updateNote(noteId, {
-      content: newContent,
-    });
+    noteController.updateNote(noteId, { content: newContent });
   }
 }
 
+// Función para manejar el clic derecho en el editor
+function handleEditorContextMenu(event) {
+  event.preventDefault();
+
+  // Si no hay una instancia del editor, salir
+  if (!editorInstance) return;
+
+  const { view } = editorInstance;
+  const { state } = view;
+
+  // Verificar si hay texto seleccionado
+  const hasSelection = !state.selection.empty;
+
+  // Si no hay selección, seleccionar la palabra actual
+  if (!hasSelection) {
+    const pos = view.posAtCoords({ left: event.clientX, top: event.clientY });
+    if (pos) {
+      // Buscar los límites de la palabra actual
+      const wordRange = findWordAt(state.doc, pos.pos);
+      if (wordRange) {
+        // Seleccionar la palabra
+        const { from, to } = wordRange;
+        view.dispatch(
+          state.tr.setSelection(
+            state.selection.constructor.create(state.doc, from, to),
+          ),
+        );
+      }
+    }
+  }
+
+  // Mostrar el menú contextual con opciones de formato
+  contextMenuController.openContextMenu(
+    { x: event.clientX, y: event.clientY },
+    getFormatMenuItems(editorInstance),
+  );
+}
+
+// Función para encontrar los límites de una palabra
+function findWordAt(doc, pos) {
+  // Si estamos en un espacio o al límite del documento, salir
+  if (
+    pos === 0 ||
+    pos === doc.content.size ||
+    (/\s/.test(doc.textBetween(Math.max(0, pos - 1), pos)) &&
+      /\s/.test(doc.textBetween(pos, Math.min(doc.content.size, pos + 1))))
+  ) {
+    return null;
+  }
+
+  let from = pos;
+  let to = pos;
+
+  // Encontrar inicio de la palabra
+  while (from > 0 && !/\s/.test(doc.textBetween(from - 1, from))) {
+    from--;
+  }
+
+  // Encontrar fin de la palabra
+  while (to < doc.content.size && !/\s/.test(doc.textBetween(to, to + 1))) {
+    to++;
+  }
+
+  return { from, to };
+}
+
+// Crear elementos de menú para formato
+function getFormatMenuItems(editor) {
+  return [
+    {
+      label: "Negrita",
+      icon: Bold,
+      onClick: () => editor.chain().focus().toggleBold().run(),
+    },
+    {
+      label: "Cursiva",
+      icon: Italic,
+      onClick: () => editor.chain().focus().toggleItalic().run(),
+    },
+    { separator: true },
+    {
+      label: "Encabezado 1",
+      icon: Heading1,
+      onClick: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
+    },
+    {
+      label: "Encabezado 2",
+      icon: Heading2,
+      onClick: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
+    },
+    {
+      label: "Encabezado 3",
+      icon: Heading3,
+      onClick: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
+    },
+    { separator: true },
+    {
+      label: "Lista de viñetas",
+      icon: List,
+      onClick: () => editor.chain().focus().toggleBulletList().run(),
+    },
+    {
+      label: "Lista numerada",
+      icon: ListOrdered,
+      onClick: () => editor.chain().focus().toggleOrderedList().run(),
+    },
+    { separator: true },
+    {
+      label: "Cita",
+      icon: Quote,
+      onClick: () => editor.chain().focus().toggleBlockquote().run(),
+    },
+    {
+      label: "Código",
+      icon: Code,
+      onClick: () => editor.chain().focus().toggleCodeBlock().run(),
+    },
+  ];
+}
+
+// Inicializar el editor
 function initializeEditor(initialContent = "") {
-  destroyEditor(); // Limpiar instancias previas antes de crear una nueva
+  destroyEditor();
 
   try {
-    // Convertir el contenido inicial si es necesario
+    // Procesar el contenido inicial
     let initialData = initialContent;
     try {
-      // Intenta parsear el contenido como JSON por compatibilidad
       const parsedContent = JSON.parse(initialContent);
-      // Si es un objeto EditorJS, usamos un string vacío
       initialData = "";
     } catch (e) {
-      // Si no es JSON, asumimos que ya es un string válido para TipTap
       initialData = initialContent || "";
     }
 
+    // Crear instancia del editor
     editorInstance = new Editor({
       element: editorElement,
       extensions: [StarterKit],
@@ -115,24 +247,32 @@ function initializeEditor(initialContent = "") {
       editable: true,
       injectCSS: false,
       onUpdate: ({ editor }) => {
-        // Guardar el contenido en formato HTML
-        const html = editor.getHTML();
-        onContentChange(html);
+        onContentChange(editor.getHTML());
       },
     });
+
+    // Agregar listener para el clic derecho
+    if (editorElement) {
+      editorElement.addEventListener("contextmenu", handleEditorContextMenu);
+    }
   } catch (error) {
     console.error("Error al inicializar TipTap:", error);
   }
 }
 
+// Limpiar recursos
 function destroyEditor() {
+  if (editorElement) {
+    editorElement.removeEventListener("contextmenu", handleEditorContextMenu);
+  }
+
   if (editorInstance) {
     editorInstance.destroy();
     editorInstance = null;
   }
 }
 
-// Reactividad: solo reinicializa si cambia el noteId
+// Efecto para inicializar el editor cuando cambia el noteId
 $effect(() => {
   if (noteId !== currentNoteId) {
     currentNoteId = noteId;

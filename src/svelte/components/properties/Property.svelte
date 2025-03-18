@@ -40,43 +40,48 @@ const IconComponent = $derived(getIconComponent(property.type));
 </script>
 
 <li
-  class="bg-transaprent rounded-field relative ml-[-0.5rem] grid grid-cols-[12rem_auto] gap-2 transition-colors duration-300 {isDragedOver
+  class="bg-transaprent rounded-field relative ml-[-0.5rem] transition-colors duration-300 {isDragedOver
     ? 'highlight'
     : ''}"
-  draggable="true"
-  ondragstart={handleDragStart}
-  ondragend={handleDragEnd}
   ondragover={handleDragOver}
   ondragleave={handleDragLeave}
   ondrop={handleDrop}>
-  <Button
-    dropdownMenuItems={[
-      {
-        label: "Edit Property",
-        icon: SlidersHorizontalIcon,
-        onClick: () => {
-          workspace.openPropertyEditor(noteId, property.id);
-        },
-      },
-      {
-        label: "Delete Property",
-        icon: Trash2Icon,
-        onClick: () => {
-          propertyController.deleteProperty(noteId, property.id);
-          // close
-        },
-        class: "text-error",
-      },
-    ]}>
-    {#if IconComponent}
-      <span class="property-icon"><IconComponent size="18" /></span>
-    {/if}
-    <p class="w-[9rem] overflow-clip text-left">
-      {property.name}
-    </p>
-  </Button>
-  <PropertyValue noteId={noteId} property={property}></PropertyValue>
-
+  <div class="grid grid-cols-[12rem_auto]">
+    <div
+      draggable="true"
+      role="listitem"
+      ondragstart={handleDragStart}
+      ondragend={handleDragEnd}>
+      <Button
+        size="small"
+        dropdownMenuItems={[
+          {
+            label: "Edit Property",
+            icon: SlidersHorizontalIcon,
+            onClick: () => {
+              workspace.openPropertyEditor(noteId, property.id);
+            },
+          },
+          {
+            label: "Delete Property",
+            icon: Trash2Icon,
+            onClick: () => {
+              propertyController.deleteProperty(noteId, property.id);
+              // close
+            },
+            class: "text-error",
+          },
+        ]}>
+        {#if IconComponent}
+          <span class=""><IconComponent size="1.0625em" /></span>
+        {/if}
+        <p class="w-[9rem] overflow-clip text-left">
+          {property.name}
+        </p>
+      </Button>
+    </div>
+    <PropertyValue noteId={noteId} property={property}></PropertyValue>
+  </div>
   {#if isEditorOpen}
     <PropertyEditor noteId={noteId} property={property} />
   {/if}

@@ -15,10 +15,10 @@ let isAddPropertyOpen = $derived(workspace.isOpenPropertyEditor());
 </script>
 
 {#if note}
-  <div class="custom-properties my-6">
-    <h3 class="py-1 text-xl font-bold">Properties</h3>
+  <div class="custom-properties my-8">
+    <h3 class="mb-2 text-xl font-bold">Properties</h3>
     {#if note.properties && note.properties.length > 0}
-      <ul class="mb-2 rounded-lg">
+      <ul class="rounded-lg">
         {#each note.properties as property, index (property.id)}
           <Property noteId={note.id} property={property} position={index} />
         {/each}
@@ -31,7 +31,7 @@ let isAddPropertyOpen = $derived(workspace.isOpenPropertyEditor());
       </div>
     {:else}
       <Button
-        cssClass="ml-[-.5rem] mt-2"
+        cssClass="ml-[-.5rem]"
         onclick={() => {
           workspace.openPropertyEditor();
         }}>
