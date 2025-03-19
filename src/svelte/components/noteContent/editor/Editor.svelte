@@ -24,6 +24,7 @@ let content = $derived(noteController.getNoteById(noteId)?.content || "");
 let editorInstance = null;
 let editorElement;
 let currentNoteId = null;
+let currentWordRange = null;
 
 // Función para actualizar el contenido de la nota
 function onContentChange(newContent) {
@@ -39,17 +40,55 @@ function handleEditorContextMenu(event) {
   // Si no hay una instancia del editor, salir
   if (!editorInstance) return;
 
-  // Intentar seleccionar la palabra en la posición del clic
-  editorUtils.selectWordAtPosition(
+  // Obtener información contextual basada en la posición y estado actual
+  const contextInfo = editorUtils.getContextInfo(
     editorInstance,
     event.clientX,
     event.clientY,
   );
 
+  if (!contextInfo) return;
+
+  // Almacenar el rango de palabra para los comandos de formato
+  currentWordRange = contextInfo.hasSelection
+    ? contextInfo.selectionRange
+    : contextInfo.wordRange;
+
+  // Preparar elementos de menú con la palabra/selección actual
+  const menuItems = getFormatMenuItems(editorInstance).map((item) => {
+    if (item.separator) return item;
+
+    // Modificar el onClick para aplicar al rango correcto
+    return {
+      ...item,
+      onClick: () => {
+        if (currentWordRange) {
+          // Para comandos que requieren selección explícita
+          const { view } = editorInstance;
+          const { state } = view;
+          const { from, to } = currentWordRange;
+
+          // Primero seleccionar la palabra
+          view.dispatch(
+            state.tr.setSelection(
+              state.selection.constructor.create(state.doc, from, to),
+            ),
+          );
+
+          // Luego ejecutar el comando original
+          item.onClick();
+        } else {
+          // Si no hay rango, ejecutar normalmente
+          item.onClick();
+        }
+      },
+    };
+  });
+
   // Mostrar el menú contextual con opciones de formato
   contextMenuController.openContextMenu(
     { x: event.clientX, y: event.clientY },
-    getFormatMenuItems(editorInstance),
+    menuItems,
   );
 }
 
@@ -78,6 +117,10 @@ function initializeEditor(initialContent = "") {
       onUpdate: ({ editor }) => {
         onContentChange(editor.getHTML());
       },
+      onSelectionUpdate: () => {
+        // Limpiar el rango de palabra cuando cambia la selección manualmente
+        currentWordRange = null;
+      },
     });
 
     // Agregar listener para el clic derecho
@@ -99,6 +142,8 @@ function destroyEditor() {
     editorInstance.destroy();
     editorInstance = null;
   }
+
+  currentWordRange = null;
 }
 
 // Efecto para inicializar el editor cuando cambia el noteId

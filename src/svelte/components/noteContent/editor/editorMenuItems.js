@@ -120,34 +120,107 @@ export const editorUtils = {
   },
 
   /**
-   * Selecciona la palabra en la posición actual
+   * Determina si una posición está dentro de la selección actual
+   * @param {Selection} selection - La selección actual
+   * @param {number} pos - Posición a verificar
+   * @returns {boolean} - true si la posición está dentro de la selección
+   */
+  isPosInSelection(selection, pos) {
+    return pos >= selection.from && pos <= selection.to;
+  },
+
+  /**
+   * Almacena información sobre la palabra en la posición actual sin seleccionarla visualmente
    * @param {Editor} editor - Instancia del editor
    * @param {number} x - Coordenada x del clic
    * @param {number} y - Coordenada y del clic
-   * @returns {boolean} - true si se seleccionó una palabra, false en caso contrario
+   * @returns {Object|null} - Objeto con el rango de la palabra o null si no hay palabra
    */
-  selectWordAtPosition(editor, x, y) {
+  storeWordAtPosition(editor, x, y) {
+    const { view } = editor;
+    const { state } = view;
+
+    const pos = view.posAtCoords({ left: x, top: y });
+    if (!pos) return null;
+
+    // Mover el cursor a la posición del clic
+    view.dispatch(
+      state.tr.setSelection(
+        state.selection.constructor.create(state.doc, pos.pos, pos.pos),
+      ),
+    );
+
+    // Buscar los límites de la palabra actual
+    return this.findWordAt(state.doc, pos.pos);
+  },
+
+  /**
+   * Aplica el formato a la palabra en las coordenadas dadas sin selección visual
+   * @param {Editor} editor - Instancia del editor
+   * @param {number} x - Coordenada x del clic
+   * @param {number} y - Coordenada y del clic
+   * @returns {Object|null} - Información sobre la palabra o null
+   */
+  getContextInfo(editor, x, y) {
     const { view } = editor;
     const { state } = view;
 
     // Verificar si hay texto seleccionado
-    if (!state.selection.empty) return true;
+    const hasSelection = !state.selection.empty;
 
+    // Obtener posición en el documento desde las coordenadas
     const pos = view.posAtCoords({ left: x, top: y });
-    if (!pos) return false;
+    if (!pos) return null;
 
-    // Buscar los límites de la palabra actual
-    const wordRange = this.findWordAt(state.doc, pos.pos);
-    if (!wordRange) return false;
+    // Verificar si el clic fue dentro de la selección actual
+    const clickedInSelection =
+      hasSelection && this.isPosInSelection(state.selection, pos.pos);
 
-    // Seleccionar la palabra
-    const { from, to } = wordRange;
-    view.dispatch(
-      state.tr.setSelection(
-        state.selection.constructor.create(state.doc, from, to),
-      ),
-    );
+    if (hasSelection) {
+      // Si ya hay selección y el clic fue fuera de ella
+      if (!clickedInSelection) {
+        // Cancelar selección y mover cursor
+        view.dispatch(
+          state.tr.setSelection(
+            state.selection.constructor.create(state.doc, pos.pos, pos.pos),
+          ),
+        );
 
-    return true;
+        // Buscar palabra en nueva posición
+        const wordRange = this.findWordAt(state.doc, pos.pos);
+
+        return {
+          hasSelection: false,
+          clickedInSelection: false,
+          wordRange,
+          currentPos: pos.pos,
+        };
+      }
+
+      // Si el clic fue dentro de la selección, mantener la selección actual
+      return {
+        hasSelection: true,
+        clickedInSelection: true,
+        selectionRange: { from: state.selection.from, to: state.selection.to },
+        currentPos: pos.pos,
+      };
+    } else {
+      // Si no hay selección, verificar si hay palabra en la posición
+      const wordRange = this.findWordAt(state.doc, pos.pos);
+
+      // Mover el cursor a la posición del clic
+      view.dispatch(
+        state.tr.setSelection(
+          state.selection.constructor.create(state.doc, pos.pos, pos.pos),
+        ),
+      );
+
+      return {
+        hasSelection: false,
+        clickedInSelection: false,
+        wordRange,
+        currentPos: pos.pos,
+      };
+    }
   },
 };
