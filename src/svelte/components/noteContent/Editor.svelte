@@ -2,71 +2,11 @@
 .tiptap-editor {
   width: 100%;
   height: 100%;
-  outline: none;
   color: inherit;
 }
 
 :global(.tiptap-editor > div:focus) {
   outline: none;
-}
-
-/* Estilos básicos para empezar */
-:global(.tiptap-editor p) {
-  margin-bottom: 0.5rem;
-}
-
-:global(.tiptap-editor ul, .tiptap-editor ol) {
-  padding-left: 1.5rem;
-  margin-bottom: 0.5rem;
-}
-
-:global(
-  .tiptap-editor h1,
-  .tiptap-editor h2,
-  .tiptap-editor h3,
-  .tiptap-editor h4,
-  .tiptap-editor h5,
-  .tiptap-editor h6
-) {
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-}
-
-:global(.tiptap-editor h1) {
-  font-size: 1.8rem;
-}
-:global(.tiptap-editor h2) {
-  font-size: 1.6rem;
-}
-:global(.tiptap-editor h3) {
-  font-size: 1.4rem;
-}
-:global(.tiptap-editor h4) {
-  font-size: 1.2rem;
-}
-:global(.tiptap-editor h5) {
-  font-size: 1.1rem;
-}
-:global(.tiptap-editor h6) {
-  font-size: 1rem;
-}
-
-:global(.tiptap-editor pre) {
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  overflow-x: auto;
-}
-
-:global(.tiptap-editor code) {
-  font-family: monospace;
-}
-
-:global(.tiptap-editor blockquote) {
-  border-left: 3px solid #ddd;
-  padding-left: 1rem;
-  margin-left: 0;
-  font-style: italic;
 }
 </style>
 
@@ -144,81 +84,93 @@ function handleEditorContextMenu(event) {
 
 // Función para encontrar los límites de una palabra
 function findWordAt(doc, pos) {
-  // Si estamos en un espacio o al límite del documento, salir
-  if (
-    pos === 0 ||
-    pos === doc.content.size ||
-    (/\s/.test(doc.textBetween(Math.max(0, pos - 1), pos)) &&
-      /\s/.test(doc.textBetween(pos, Math.min(doc.content.size, pos + 1))))
-  ) {
-    return null;
+  // Resolvemos la posición para obtener información del nodo
+  const resolvedPosition = doc.resolve(pos);
+  // Los límites del bloque actual
+  const blockStart = resolvedPosition.start();
+  const blockEnd = resolvedPosition.end();
+  // Obtenemos el texto del bloque, insertando un espacio en saltos de nodo
+  const blockText = doc.textBetween(blockStart, blockEnd, " ");
+  // Calculamos la posición relativa dentro del bloque
+  const offset = pos - blockStart;
+
+  // Si en la posición hay un espacio, no hay palabra a seleccionar
+  if (/\s/.test(blockText[offset])) return null;
+
+  let start = offset;
+  let end = offset;
+
+  // Retrocedemos hasta encontrar un espacio o el inicio del bloque
+  while (start > 0 && !/\s/.test(blockText[start - 1])) {
+    start--;
   }
 
-  let from = pos;
-  let to = pos;
-
-  // Encontrar inicio de la palabra
-  while (from > 0 && !/\s/.test(doc.textBetween(from - 1, from))) {
-    from--;
+  // Avanzamos hasta encontrar un espacio o el final del bloque
+  while (end < blockText.length && !/\s/.test(blockText[end])) {
+    end++;
   }
 
-  // Encontrar fin de la palabra
-  while (to < doc.content.size && !/\s/.test(doc.textBetween(to, to + 1))) {
-    to++;
-  }
-
-  return { from, to };
+  return { from: blockStart + start, to: blockStart + end };
 }
 
-// Crear elementos de menú para formato
+// Crear elementos de menú para formato con estado de checked
 function getFormatMenuItems(editor) {
   return [
     {
       label: "Negrita",
       icon: Bold,
+      checked: editor.isActive("bold"),
       onClick: () => editor.chain().focus().toggleBold().run(),
     },
     {
       label: "Cursiva",
       icon: Italic,
+      checked: editor.isActive("italic"),
       onClick: () => editor.chain().focus().toggleItalic().run(),
     },
     { separator: true },
     {
       label: "Encabezado 1",
       icon: Heading1,
+      checked: editor.isActive("heading", { level: 1 }),
       onClick: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
     },
     {
       label: "Encabezado 2",
       icon: Heading2,
+      checked: editor.isActive("heading", { level: 2 }),
       onClick: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
     },
     {
       label: "Encabezado 3",
       icon: Heading3,
+      checked: editor.isActive("heading", { level: 3 }),
       onClick: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
     },
     { separator: true },
     {
       label: "Lista de viñetas",
       icon: List,
+      checked: editor.isActive("bulletList"),
       onClick: () => editor.chain().focus().toggleBulletList().run(),
     },
     {
       label: "Lista numerada",
       icon: ListOrdered,
+      checked: editor.isActive("orderedList"),
       onClick: () => editor.chain().focus().toggleOrderedList().run(),
     },
     { separator: true },
     {
       label: "Cita",
       icon: Quote,
+      checked: editor.isActive("blockquote"),
       onClick: () => editor.chain().focus().toggleBlockquote().run(),
     },
     {
       label: "Código",
       icon: Code,
+      checked: editor.isActive("codeBlock"),
       onClick: () => editor.chain().focus().toggleCodeBlock().run(),
     },
   ];
