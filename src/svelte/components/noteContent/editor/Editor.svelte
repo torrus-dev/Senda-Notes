@@ -14,9 +14,9 @@
 import { onDestroy } from "svelte";
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
-import { noteController } from "../../controllers/noteController.svelte";
-import { contextMenuController } from "../../controllers/contextMenuController.svelte";
-import { settingsController } from "../../controllers/settingsController.svelte";
+import { noteController } from "../../../controllers/noteController.svelte";
+import { contextMenuController } from "../../../controllers/contextMenuController.svelte";
+import { settingsController } from "../../../controllers/settingsController.svelte";
 
 // Importar iconos de Lucide-Svelte
 import {

@@ -2,7 +2,7 @@
 import Title from "./Title.svelte";
 import Properties from "../properties/Properties.svelte";
 import ChildNotes from "./ChildNotes.svelte";
-import Editor from "./Editor.svelte";
+import Editor from "./editor/Editor.svelte";
 import Toolbar from "./Toolbar.svelte";
 
 let { note } = $props();
