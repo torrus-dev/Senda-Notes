@@ -3,6 +3,7 @@ import Button from "../utils/Button.svelte";
 import { contextMenuController } from "../../controllers/contextMenuController.svelte";
 import { closeOnOutsideOrEsc } from "../../../directives/closeOnOutsideOrEsc";
 import { tick, onDestroy } from "svelte";
+import Check from "lucide-svelte/icons/check"; // Asumiendo que usas Lucide para iconos
 
 let menuElement = $state(null);
 let isRendered = $state(false);
@@ -74,9 +75,6 @@ $effect(async () => {
         contextMenuController.setMenuDimensions(width, height);
         await tick();
         isRendered = true;
-
-        // Ya no necesitamos enfocar el menú o la primera opción automáticamente
-        // El listener global se encargará de la navegación
       }
     }
   } else {
@@ -101,7 +99,7 @@ let adaptedPosition = $derived(contextMenuController.getAdaptedPosition());
     style=" left: {adaptedPosition.x}px; top: {adaptedPosition.y}px; visibility: {isRendered
       ? 'visible'
       : 'hidden'}; opacity: {isRendered ? '1' : '0'}; transition: opacity 0.1s
-    ease-in-out; ">
+      ease-in-out; ">
     {#each contextMenuController.menuItems as item, i}
       {#if item.separator}
         <li class="border-border-normal my-1 border-t-2" role="separator"></li>
@@ -113,14 +111,31 @@ let adaptedPosition = $derived(contextMenuController.getAdaptedPosition());
               contextMenuController.close();
             }}
             role="menuitem"
+            aria-checked={item.checked !== undefined
+              ? item.checked
+                ? "true"
+                : "false"
+              : undefined}
             tabindex={i === activeIndex ? "0" : "-1"}
-            cssClass="w-full {item.class || ''} {activeIndex === i
+            cssClass="w-full flex items-center justify-between {item.class ||
+              ''} {activeIndex === i
               ? 'bg-primary/10'
               : ''} focus:outline-none">
-            {#if item.icon}
-              <item.icon size="18" />
+            <div class="flex items-center">
+              {#if item.icon}
+                <span class="mr-2">
+                  <item.icon size="18" />
+                </span>
+              {/if}
+              <span>{item.label}</span>
+            </div>
+            {#if item.checked !== undefined}
+              <div class="ml-2 flex w-5 justify-center">
+                {#if item.checked}
+                  <Check size="16" />
+                {/if}
+              </div>
             {/if}
-            {item.label}
           </Button>
         </li>
       {/if}

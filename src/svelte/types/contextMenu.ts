@@ -7,6 +7,7 @@ export interface MenuItem {
   onClick?: () => void;
   class?: string;
   separator?: boolean;
+  checked?: boolean;
 }
 
 // Posición del menú
