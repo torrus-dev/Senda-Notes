@@ -10,113 +10,144 @@ import {
   Code,
 } from "lucide-svelte";
 
-import { isFormatActiveAt, applySmartCommand } from "./editorUtils.js";
-
 /**
- * Crea los elementos de menú para formato de texto
- * @param {Object} editor - Instancia del editor TipTap
- * @param {Object} wordRange - Rango de palabra (opcional)
- * @returns {Array} - Array de elementos del menú
+ * Genera los elementos del menú de formato con su estado actual
+ * @param {Editor} editor - Instancia del editor TipTap
+ * @returns {Array} - Array de objetos de menú con sus propiedades
  */
-export function createFormatMenuItems(editor, wordRange) {
-  // Determinar el rango que se utilizará para verificar el estado
-  const checkRange =
-    wordRange && editor.state.selection.empty ? wordRange : null;
+export function getFormatMenuItems(editor) {
+  if (!editor) return [];
 
   return [
     {
       label: "Negrita",
       icon: Bold,
-      checked: isFormatActiveAt(editor, "bold", null, checkRange),
-      onClick: () =>
-        applySmartCommand(editor, (chain) => chain.toggleBold(), wordRange),
+      checked: editor.isActive("bold"),
+      onClick: () => editor.chain().focus().toggleBold().run(),
     },
     {
       label: "Cursiva",
       icon: Italic,
-      checked: isFormatActiveAt(editor, "italic", null, checkRange),
-      onClick: () =>
-        applySmartCommand(editor, (chain) => chain.toggleItalic(), wordRange),
+      checked: editor.isActive("italic"),
+      onClick: () => editor.chain().focus().toggleItalic().run(),
     },
     { separator: true },
     {
       label: "Encabezado 1",
       icon: Heading1,
-      checked: isFormatActiveAt(editor, "heading", { level: 1 }, checkRange),
-      onClick: () =>
-        applySmartCommand(
-          editor,
-          (chain) => chain.toggleHeading({ level: 1 }),
-          wordRange,
-        ),
+      checked: editor.isActive("heading", { level: 1 }),
+      onClick: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
     },
     {
       label: "Encabezado 2",
       icon: Heading2,
-      checked: isFormatActiveAt(editor, "heading", { level: 2 }, checkRange),
-      onClick: () =>
-        applySmartCommand(
-          editor,
-          (chain) => chain.toggleHeading({ level: 2 }),
-          wordRange,
-        ),
+      checked: editor.isActive("heading", { level: 2 }),
+      onClick: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
     },
     {
       label: "Encabezado 3",
       icon: Heading3,
-      checked: isFormatActiveAt(editor, "heading", { level: 3 }, checkRange),
-      onClick: () =>
-        applySmartCommand(
-          editor,
-          (chain) => chain.toggleHeading({ level: 3 }),
-          wordRange,
-        ),
+      checked: editor.isActive("heading", { level: 3 }),
+      onClick: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
     },
     { separator: true },
     {
       label: "Lista de viñetas",
       icon: List,
-      checked: isFormatActiveAt(editor, "bulletList", null, checkRange),
-      onClick: () =>
-        applySmartCommand(
-          editor,
-          (chain) => chain.toggleBulletList(),
-          wordRange,
-        ),
+      checked: editor.isActive("bulletList"),
+      onClick: () => editor.chain().focus().toggleBulletList().run(),
     },
     {
       label: "Lista numerada",
       icon: ListOrdered,
-      checked: isFormatActiveAt(editor, "orderedList", null, checkRange),
-      onClick: () =>
-        applySmartCommand(
-          editor,
-          (chain) => chain.toggleOrderedList(),
-          wordRange,
-        ),
+      checked: editor.isActive("orderedList"),
+      onClick: () => editor.chain().focus().toggleOrderedList().run(),
     },
     { separator: true },
     {
       label: "Cita",
       icon: Quote,
-      checked: isFormatActiveAt(editor, "blockquote", null, checkRange),
-      onClick: () =>
-        applySmartCommand(
-          editor,
-          (chain) => chain.toggleBlockquote(),
-          wordRange,
-        ),
+      checked: editor.isActive("blockquote"),
+      onClick: () => editor.chain().focus().toggleBlockquote().run(),
     },
     {
       label: "Código",
       icon: Code,
-      checked: isFormatActiveAt(editor, "codeBlock", null, checkRange),
-      onClick: () =>
-        applySmartCommand(
-          editor,
-          (chain) => chain.toggleCodeBlock(),
-          wordRange,
-        ),
+      checked: editor.isActive("codeBlock"),
+      onClick: () => editor.chain().focus().toggleCodeBlock().run(),
     },
   ];
 }
+
+/**
+ * Funciones de utilidad para manipular el editor
+ */
+export const editorUtils = {
+  /**
+   * Encuentra los límites de una palabra en el documento
+   * @param {Node} doc - Documento de ProseMirror
+   * @param {number} pos - Posición en el documento
+   * @returns {Object|null} - Objeto con las posiciones from y to, o null si no hay palabra
+   */
+  findWordAt(doc, pos) {
+    // Resolvemos la posición para obtener información del nodo
+    const resolvedPosition = doc.resolve(pos);
+    // Los límites del bloque actual
+    const blockStart = resolvedPosition.start();
+    const blockEnd = resolvedPosition.end();
+    // Obtenemos el texto del bloque, insertando un espacio en saltos de nodo
+    const blockText = doc.textBetween(blockStart, blockEnd, " ");
+    // Calculamos la posición relativa dentro del bloque
+    const offset = pos - blockStart;
+
+    // Si en la posición hay un espacio, no hay palabra a seleccionar
+    if (/\s/.test(blockText[offset])) return null;
+
+    let start = offset;
+    let end = offset;
+
+    // Retrocedemos hasta encontrar un espacio o el inicio del bloque
+    while (start > 0 && !/\s/.test(blockText[start - 1])) {
+      start--;
+    }
+
+    // Avanzamos hasta encontrar un espacio o el final del bloque
+    while (end < blockText.length && !/\s/.test(blockText[end])) {
+      end++;
+    }
+
+    return { from: blockStart + start, to: blockStart + end };
+  },
+
+  /**
+   * Selecciona la palabra en la posición actual
+   * @param {Editor} editor - Instancia del editor
+   * @param {number} x - Coordenada x del clic
+   * @param {number} y - Coordenada y del clic
+   * @returns {boolean} - true si se seleccionó una palabra, false en caso contrario
+   */
+  selectWordAtPosition(editor, x, y) {
+    const { view } = editor;
+    const { state } = view;
+
+    // Verificar si hay texto seleccionado
+    if (!state.selection.empty) return true;
+
+    const pos = view.posAtCoords({ left: x, top: y });
+    if (!pos) return false;
+
+    // Buscar los límites de la palabra actual
+    const wordRange = this.findWordAt(state.doc, pos.pos);
+    if (!wordRange) return false;
+
+    // Seleccionar la palabra
+    const { from, to } = wordRange;
+    view.dispatch(
+      state.tr.setSelection(
+        state.selection.constructor.create(state.doc, from, to),
+      ),
+    );
+
+    return true;
+  },
+};
