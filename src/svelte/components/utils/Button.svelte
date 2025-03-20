@@ -2,7 +2,7 @@
 import {
   contextMenu,
   dropdownMenu,
-} from "../../../directives/contextMenu.svelte";
+} from "../../../directives/floatingMenuDirective.svelte";
 
 let {
   variant = "base",
@@ -49,10 +49,40 @@ const colorStyle = {
 let style = `whitespace-nowrap rounded-field bg-interactive inline-flex cursor-pointer items-center hover:text-base-content/70 focus:text-base-content/70 gap-2 ${sizeStyle[size]} ${colorStyle[variant]} ${cssClass}`;
 </script>
 
-<button
-  {...htmlAttributes}
-  class={style}
-  onclick={onclick}
-  use:dropdownMenu={dropdownMenuItems}
-  use:contextMenu={contextMenuItems}
-  bind:this={buttonElement}>{@render children()}</button>
+{#if dropdownMenuItems && contextMenuItems}
+  <button
+    {...htmlAttributes}
+    class={style}
+    onclick={onclick}
+    use:dropdownMenu={dropdownMenuItems}
+    use:contextMenu={contextMenuItems}
+    bind:this={buttonElement}>
+    {@render children()}
+  </button>
+{:else if dropdownMenuItems}
+  <button
+    {...htmlAttributes}
+    class={style}
+    onclick={onclick}
+    use:dropdownMenu={dropdownMenuItems}
+    bind:this={buttonElement}>
+    {@render children()}
+  </button>
+{:else if contextMenuItems}
+  <button
+    {...htmlAttributes}
+    class={style}
+    onclick={onclick}
+    use:contextMenu={contextMenuItems}
+    bind:this={buttonElement}>
+    {@render children()}
+  </button>
+{:else}
+  <button
+    {...htmlAttributes}
+    class={style}
+    onclick={onclick}
+    bind:this={buttonElement}>
+    {@render children()}
+  </button>
+{/if}

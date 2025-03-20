@@ -38,6 +38,12 @@ export function getFormatMenuItems(editor: Editor) {
       icon: Heading1Icon, // Puedes usar un icono que represente los encabezados
       children: [
         {
+          label: "Negrita",
+          icon: Bold,
+          checked: editor.isActive("bold"),
+          onClick: () => editor.chain().focus().toggleBold().run(),
+        },
+        {
           label: "Encabezado 1",
           icon: Heading1Icon,
           checked: editor.isActive("heading", { level: 1 }),

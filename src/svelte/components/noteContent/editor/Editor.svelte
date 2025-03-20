@@ -62,6 +62,7 @@ function handleEditorContextMenu(event) {
     return {
       ...item,
       onClick: () => {
+        console.log("es alguna cosa de estas");
         if (currentWordRange) {
           // Para comandos que requieren selección explícita
           const { view } = editorInstance;

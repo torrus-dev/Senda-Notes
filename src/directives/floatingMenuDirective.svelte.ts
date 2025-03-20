@@ -21,7 +21,6 @@ export function contextMenu(node: HTMLElement, menuItems: MenuItem[]) {
   }
 
   function handleContextMenu(event: MouseEvent) {
-    // Prevenir el menú contextual del navegador
     event.preventDefault();
     event.stopPropagation();
 

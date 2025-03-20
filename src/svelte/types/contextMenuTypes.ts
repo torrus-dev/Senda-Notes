@@ -57,3 +57,13 @@ export interface TriggerInfo {
 
 // Tipo para el menú
 export type MenuType = "dropdown" | "context" | null;
+
+// Nueva interfaz para el estado del submenú
+export interface SubMenuState {
+  isOpen: boolean;
+  parentItemIndex: number;
+  items: MenuItem[];
+  position: Coordinates;
+  dimensions: Dimensions;
+  initialRender: boolean;
+}
