@@ -5,13 +5,13 @@ import type {
 } from "../types/contextMenuTypes";
 import { workspace } from "./workspaceController.svelte";
 
-// Clase singleton para gestionar el estado del menú contextual
-class ContextMenuController {
+class FloatingMenuController {
   menuType = $state<"dropdown" | "context" | null>(null);
   isOpen = $state<boolean>(false);
   position = $state<Coordinates>({ x: 0, y: 0 });
   menuItems = $state<MenuItem[]>([]);
   triggerInfo = $state<TriggerInfo | null>(null);
+  //subMenu = $state<FloatingMenu | null>(null);
 
   menuDimensions = $state({ width: 0, height: 0 });
   initialRender = $state(true); // Controla si es el primer renderizado
@@ -22,12 +22,12 @@ class ContextMenuController {
 
   // Inicialización de los listeners globales
   constructor() {
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && this.menuType === "dropdown") {
       window.addEventListener("resize", this.handleWindowResize);
     }
   }
   destroy() {
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && this.menuType === "dropdown") {
       window.removeEventListener("resize", this.handleWindowResize);
     }
   }
@@ -148,4 +148,4 @@ class ContextMenuController {
 }
 
 // Exportamos una única instancia para toda la aplicación
-export const contextMenuController = new ContextMenuController();
+export const floatingMenuController = new FloatingMenuController();

@@ -1,82 +1,52 @@
-<!-- Menu.svelte -->
 <script>
+import { floatingMenuController } from "../../controllers/floatingMenuController.svelte";
 import { tick, onDestroy } from "svelte";
 import { closeOnOutsideOrEsc } from "../../../directives/closeOnOutsideOrEsc";
 import Button from "../utils/Button.svelte";
-import Check from "lucide-svelte/icons/check"; // Para los iconos
-
-let { menuController } = $props();
+import Check from "lucide-svelte/icons/check";
+import { initKeyboardNavigation } from "./keyboardNavigation.js";
 
 let menuElement = $state(null);
 let isRendered = $state(false);
 let activeIndex = $state(-1);
 
-// Función para manejar la interacción con submenús
+// Control de submenús
 function handleMouseEnter(index) {
-  const item = menuController.menuItems[index];
+  const item = floatingMenuController.menuItems[index];
   if (item.children) {
-    menuController.openSubMenu(menuElement, item.children); // Abre el submenú
+    floatingMenuController.openSubMenu(menuElement, item.children);
   }
 }
 
-function handleKeyDown(event) {
-  if (!menuController.isOpen) return;
-
-  const itemElements = Array.from(
-    menuElement?.querySelectorAll("li button") || [],
-  );
-  if (itemElements.length === 0) return;
-
-  switch (event.key) {
-    case "ArrowDown":
-      event.preventDefault();
-      activeIndex = (activeIndex + 1) % itemElements.length;
-      itemElements[activeIndex]?.focus();
-      break;
-    case "ArrowUp":
-      event.preventDefault();
-      activeIndex =
-        (activeIndex - 1 + itemElements.length) % itemElements.length;
-      itemElements[activeIndex]?.focus();
-      break;
-    case "Enter":
-      if (activeIndex >= 0) {
-        const activeItems = menuController.menuItems.filter(
-          (item) => !item.separator,
-        );
-        if (activeIndex < activeItems.length) {
-          const item = activeItems[activeIndex];
-          if (item.onClick) item.onClick();
-          menuController.close(); // Cierra el menú después de la selección
-        }
-      }
-      break;
-  }
-}
-
-// Configurar los listeners de teclado
+// Configuración del listener de teclado
+let removeKeyDownListener;
 $effect(() => {
-  if (menuController.isOpen) {
-    window.addEventListener("keydown", handleKeyDown);
-  } else {
-    window.removeEventListener("keydown", handleKeyDown);
+  if (floatingMenuController.isOpen) {
+    removeKeyDownListener = initKeyboardNavigation({
+      menuElement,
+      contextMenuController: floatingMenuController,
+      onActiveChange: (index) => (activeIndex = index),
+    });
+  } else if (removeKeyDownListener) {
+    removeKeyDownListener();
+    removeKeyDownListener = null;
   }
 });
 
 onDestroy(() => {
-  window.removeEventListener("keydown", handleKeyDown);
+  if (removeKeyDownListener) removeKeyDownListener();
 });
 
 $effect(async () => {
-  if (menuController.isOpen) {
-    activeIndex = -1; // Resetear la selección activa
+  if (floatingMenuController.isOpen) {
+    activeIndex = -1;
     isRendered = false;
     await tick();
     if (menuElement) {
       const width = menuElement.offsetWidth;
       const height = menuElement.offsetHeight;
       if (width > 0 && height > 0) {
-        menuController.setMenuDimensions(width, height);
+        floatingMenuController.setMenuDimensions(width, height);
         await tick();
         isRendered = true;
       }
@@ -86,24 +56,24 @@ $effect(async () => {
   }
 });
 
-let adaptedPosition = $derived(menuController.getAdaptedPosition());
+let adaptedPosition = $derived(floatingMenuController.getAdaptedPosition());
 </script>
 
-{#if menuController.isOpen}
+{#if floatingMenuController.isOpen}
   <ul
     bind:this={menuElement}
-    id="menu"
+    id="context-menu"
     role="menu"
     aria-orientation="vertical"
     tabindex="-1"
-    use:closeOnOutsideOrEsc={() => menuController.close()}
+    use:closeOnOutsideOrEsc={() => floatingMenuController.close()}
     class="rounded-box bordered bg-base-200 absolute z-20 min-w-[160px] p-1 shadow-lg"
     style="left: {adaptedPosition.x}px; top: {adaptedPosition.y}px; visibility: {isRendered
       ? 'visible'
       : 'hidden'}; opacity: {isRendered
       ? '1'
       : '0'}; transition: opacity 0.1s ease-in-out;">
-    {#each menuController.menuItems as item, i}
+    {#each floatingMenuController.menuItems as item, i}
       {#if item.separator}
         <li class="border-border-normal my-1 border-t-2" role="separator"></li>
       {:else}
@@ -111,7 +81,7 @@ let adaptedPosition = $derived(menuController.getAdaptedPosition());
           <Button
             onclick={() => {
               if (item.onClick) item.onClick();
-              menuController.close();
+              floatingMenuController.close();
             }}
             role="menuitem"
             aria-checked={item.checked !== undefined
@@ -144,4 +114,8 @@ let adaptedPosition = $derived(menuController.getAdaptedPosition());
       {/if}
     {/each}
   </ul>
+  <!-- Sub menu: Esta es solo la idea que tengo -->
+  <!-- {#if floatingMenuController.subMenu.isOpen}
+    <ul...>
+  {/if} -->
 {/if}

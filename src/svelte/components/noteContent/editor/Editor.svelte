@@ -15,7 +15,7 @@ import { onDestroy } from "svelte";
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import { noteController } from "../../../controllers/noteController.svelte";
-import { contextMenuController } from "../../../controllers/contextMenuController.svelte";
+import { floatingMenuController } from "../../../controllers/floatingMenuController.svelte";
 import { settingsController } from "../../../controllers/settingsController.svelte";
 import { getFormatMenuItems, editorUtils } from "./editorMenuItems.js";
 
@@ -86,7 +86,7 @@ function handleEditorContextMenu(event) {
   });
 
   // Mostrar el menú contextual con opciones de formato
-  contextMenuController.openContextMenu(
+  floatingMenuController.openContextMenu(
     { x: event.clientX, y: event.clientY },
     menuItems,
   );

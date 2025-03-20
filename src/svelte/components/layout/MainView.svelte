@@ -1,16 +1,13 @@
 <script>
 import { noteController } from "../../controllers/noteController.svelte";
-import {
-  contextMenuController,
-  subMenuController,
-} from "../../controllers/contextMenuController.svelte";
+import { floatingMenuController } from "../../controllers/floatingMenuController.svelte";
+import { settingsController } from "../../controllers/settingsController.svelte";
 
 import Sidebar from "./sidebar/Sidebar.svelte";
 import NavBar from "./NavBar.svelte";
-import Menu from "./Menu.svelte";
 import Modal from "./Modal.svelte";
 import NoteContent from "../noteContent/NoteContent.svelte";
-import { settingsController } from "../../controllers/settingsController.svelte";
+import FloatingMenu from "../menu/FloatingMenu.svelte";
 
 const activeNote = $derived(noteController.getActiveNote());
 </script>
@@ -18,16 +15,11 @@ const activeNote = $derived(noteController.getActiveNote());
 <div
   class="text-base-content bg-base-100
   {settingsController.theme === 'dark' ? 'theme-dark' : 'theme-light'}">
-  <!-- Modal component -->
   <Modal />
-  <!-- ContextMenu component -->
-  <Menu menuController={contextMenuController} />
-  <!-- SubMenu component -->
-  <Menu menuController={subMenuController} />
-
+  <FloatingMenu />
   <div
     class="text-base-content bg-base-100 grid h-screen grid-flow-col grid-cols-[min-content_1fr]">
-    <Sidebar></Sidebar>
+    <Sidebar />
 
     <main>
       <div class="flex h-screen flex-col">

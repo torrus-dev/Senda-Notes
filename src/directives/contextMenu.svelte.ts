@@ -1,10 +1,9 @@
-import { contextMenuController } from "../svelte/controllers/contextMenuController.svelte";
+import { floatingMenuController } from "../svelte/controllers/floatingMenuController.svelte";
 import { MenuItem } from "../svelte/types/contextMenuTypes";
 
 function checkValid(menuItems: MenuItem[]) {
   if (menuItems && Array.isArray(menuItems) && menuItems.length > 0) {
-    const realOptions = menuItems.filter((item) => !item.separator);
-    if (realOptions.length > 0) {
+    if (menuItems.length > 0) {
       return true;
     }
   }
@@ -27,12 +26,12 @@ export function contextMenu(node: HTMLElement, menuItems: MenuItem[]) {
     event.stopPropagation();
 
     // Cerrar cualquier menú abierto previamente
-    if (contextMenuController.isOpen) {
-      contextMenuController.close();
+    if (floatingMenuController.isOpen) {
+      floatingMenuController.close();
     }
 
     // Abrir nuestro menú contextual personalizado
-    contextMenuController.openContextMenu(
+    floatingMenuController.openContextMenu(
       { x: event.clientX, y: event.clientY },
       menuItems,
     );
@@ -77,11 +76,11 @@ export function dropdownMenu(node: HTMLElement, menuItems: MenuItem[]) {
     event.preventDefault();
     event.stopPropagation();
 
-    if (contextMenuController.isOpen) {
-      contextMenuController.close();
+    if (floatingMenuController.isOpen) {
+      floatingMenuController.close();
     } else {
       // Abrir el menú dropdown
-      contextMenuController.openDropdownMenu(node, menuItems);
+      floatingMenuController.openDropdownMenu(node, menuItems);
     }
   }
 
