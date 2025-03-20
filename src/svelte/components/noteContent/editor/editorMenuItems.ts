@@ -9,16 +9,21 @@ import {
   Quote,
   Code,
 } from "lucide-svelte";
+import type { Editor } from "@tiptap/core";
+import { MenuItem } from "../../../types/contextMenuTypes";
+import { Selection } from "@tiptap/pm/state";
+import { Node } from "@tiptap/pm/model";
+import { TextSelection } from "@tiptap/pm/state";
 
 /**
  * Genera los elementos del menú de formato con su estado actual
  * @param {Editor} editor - Instancia del editor TipTap
  * @returns {Array} - Array de objetos de menú con sus propiedades
  */
-export function getFormatMenuItems(editor) {
+export function getFormatMenuItems(editor: Editor) {
   if (!editor) return [];
 
-  return [
+  return <MenuItem[]>[
     {
       label: "Negrita",
       icon: Bold,
@@ -89,7 +94,7 @@ export const editorUtils = {
    * @param {number} pos - Posición en el documento
    * @returns {Object|null} - Objeto con las posiciones from y to, o null si no hay palabra
    */
-  findWordAt(doc, pos) {
+  findWordAt(doc: Node, pos: number) {
     // Resolvemos la posición para obtener información del nodo
     const resolvedPosition = doc.resolve(pos);
     // Los límites del bloque actual
@@ -125,7 +130,7 @@ export const editorUtils = {
    * @param {number} pos - Posición a verificar
    * @returns {boolean} - true si la posición está dentro de la selección
    */
-  isPosInSelection(selection, pos) {
+  isPosInSelection(selection: Selection, pos: number) {
     return pos >= selection.from && pos <= selection.to;
   },
 
@@ -136,7 +141,7 @@ export const editorUtils = {
    * @param {number} y - Coordenada y del clic
    * @returns {Object|null} - Objeto con el rango de la palabra o null si no hay palabra
    */
-  storeWordAtPosition(editor, x, y) {
+  storeWordAtPosition(editor: Editor, x: number, y: number) {
     const { view } = editor;
     const { state } = view;
 
@@ -145,9 +150,7 @@ export const editorUtils = {
 
     // Mover el cursor a la posición del clic
     view.dispatch(
-      state.tr.setSelection(
-        state.selection.constructor.create(state.doc, pos.pos, pos.pos),
-      ),
+      state.tr.setSelection(TextSelection.create(state.doc, pos.pos)),
     );
 
     // Buscar los límites de la palabra actual
@@ -161,7 +164,7 @@ export const editorUtils = {
    * @param {number} y - Coordenada y del clic
    * @returns {Object|null} - Información sobre la palabra o null
    */
-  getContextInfo(editor, x, y) {
+  getContextInfo(editor: Editor, x: number, y: number) {
     const { view } = editor;
     const { state } = view;
 
@@ -181,9 +184,7 @@ export const editorUtils = {
       if (!clickedInSelection) {
         // Cancelar selección y mover cursor
         view.dispatch(
-          state.tr.setSelection(
-            state.selection.constructor.create(state.doc, pos.pos, pos.pos),
-          ),
+          state.tr.setSelection(TextSelection.create(state.doc, pos.pos)),
         );
 
         // Buscar palabra en nueva posición
@@ -210,9 +211,7 @@ export const editorUtils = {
 
       // Mover el cursor a la posición del clic
       view.dispatch(
-        state.tr.setSelection(
-          state.selection.constructor.create(state.doc, pos.pos, pos.pos),
-        ),
+        state.tr.setSelection(TextSelection.create(state.doc, pos.pos)),
       );
 
       return {

@@ -1,5 +1,5 @@
 import { contextMenuController } from "../svelte/controllers/contextMenuController.svelte";
-import { MenuItem } from "../svelte/types/contextMenu";
+import { MenuItem } from "../svelte/types/contextMenuTypes";
 
 function checkValid(menuItems: MenuItem[]) {
   if (menuItems && Array.isArray(menuItems) && menuItems.length > 0) {

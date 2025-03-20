@@ -1,5 +1,5 @@
 import type { WorkspaceState } from "../types/types";
-import type { Dimensions } from "../types/contextMenu";
+import type { Dimensions } from "../types/contextMenuTypes";
 
 class WorkspaceController {
   // Estado global del workspace (incluye propertyEditor, ventanas y pestañas)

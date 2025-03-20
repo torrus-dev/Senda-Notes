@@ -1,4 +1,8 @@
-import type { MenuItem, Coordinates, TriggerInfo } from "../types/contextMenu";
+import type {
+  MenuItem,
+  Coordinates,
+  TriggerInfo,
+} from "../types/contextMenuTypes";
 import { workspace } from "./workspaceController.svelte";
 
 // Clase singleton para gestionar el estado del menú contextual
