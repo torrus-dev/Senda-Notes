@@ -1,9 +1,11 @@
+<!-- Menu.svelte -->
 <script>
-import { contextMenuController } from "../../controllers/contextMenuController.svelte";
 import { tick, onDestroy } from "svelte";
 import { closeOnOutsideOrEsc } from "../../../directives/closeOnOutsideOrEsc";
 import Button from "../utils/Button.svelte";
 import Check from "lucide-svelte/icons/check"; // Para los iconos
+
+let { menuController } = $props();
 
 let menuElement = $state(null);
 let isRendered = $state(false);
@@ -11,15 +13,14 @@ let activeIndex = $state(-1);
 
 // Función para manejar la interacción con submenús
 function handleMouseEnter(index) {
-  const item = contextMenuController.menuItems[index];
+  const item = menuController.menuItems[index];
   if (item.children) {
-    // Abrir submenú al pasar el ratón
-    contextMenuController.openSubMenu(menuElement, item.children);
+    menuController.openSubMenu(menuElement, item.children); // Abre el submenú
   }
 }
 
 function handleKeyDown(event) {
-  if (!contextMenuController.isOpen) return;
+  if (!menuController.isOpen) return;
 
   const itemElements = Array.from(
     menuElement?.querySelectorAll("li button") || [],
@@ -40,13 +41,13 @@ function handleKeyDown(event) {
       break;
     case "Enter":
       if (activeIndex >= 0) {
-        const activeItems = contextMenuController.menuItems.filter(
+        const activeItems = menuController.menuItems.filter(
           (item) => !item.separator,
         );
         if (activeIndex < activeItems.length) {
           const item = activeItems[activeIndex];
           if (item.onClick) item.onClick();
-          contextMenuController.close();
+          menuController.close(); // Cierra el menú después de la selección
         }
       }
       break;
@@ -55,7 +56,7 @@ function handleKeyDown(event) {
 
 // Configurar los listeners de teclado
 $effect(() => {
-  if (contextMenuController.isOpen) {
+  if (menuController.isOpen) {
     window.addEventListener("keydown", handleKeyDown);
   } else {
     window.removeEventListener("keydown", handleKeyDown);
@@ -67,15 +68,15 @@ onDestroy(() => {
 });
 
 $effect(async () => {
-  if (contextMenuController.isOpen) {
-    activeIndex = -1;
+  if (menuController.isOpen) {
+    activeIndex = -1; // Resetear la selección activa
     isRendered = false;
     await tick();
     if (menuElement) {
       const width = menuElement.offsetWidth;
       const height = menuElement.offsetHeight;
       if (width > 0 && height > 0) {
-        contextMenuController.setMenuDimensions(width, height);
+        menuController.setMenuDimensions(width, height);
         await tick();
         isRendered = true;
       }
@@ -85,24 +86,24 @@ $effect(async () => {
   }
 });
 
-let adaptedPosition = $derived(contextMenuController.getAdaptedPosition());
+let adaptedPosition = $derived(menuController.getAdaptedPosition());
 </script>
 
-{#if contextMenuController.isOpen}
+{#if menuController.isOpen}
   <ul
     bind:this={menuElement}
-    id="context-menu"
+    id="menu"
     role="menu"
     aria-orientation="vertical"
     tabindex="-1"
-    use:closeOnOutsideOrEsc={() => contextMenuController.close()}
+    use:closeOnOutsideOrEsc={() => menuController.close()}
     class="rounded-box bordered bg-base-200 absolute z-20 min-w-[160px] p-1 shadow-lg"
     style="left: {adaptedPosition.x}px; top: {adaptedPosition.y}px; visibility: {isRendered
       ? 'visible'
       : 'hidden'}; opacity: {isRendered
       ? '1'
       : '0'}; transition: opacity 0.1s ease-in-out;">
-    {#each contextMenuController.menuItems as item, i}
+    {#each menuController.menuItems as item, i}
       {#if item.separator}
         <li class="border-border-normal my-1 border-t-2" role="separator"></li>
       {:else}
@@ -110,7 +111,7 @@ let adaptedPosition = $derived(contextMenuController.getAdaptedPosition());
           <Button
             onclick={() => {
               if (item.onClick) item.onClick();
-              contextMenuController.close();
+              menuController.close();
             }}
             role="menuitem"
             aria-checked={item.checked !== undefined

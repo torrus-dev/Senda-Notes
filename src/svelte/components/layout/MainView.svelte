@@ -1,9 +1,13 @@
 <script>
 import { noteController } from "../../controllers/noteController.svelte";
+import {
+  contextMenuController,
+  subMenuController,
+} from "../../controllers/contextMenuController.svelte";
 
 import Sidebar from "./sidebar/Sidebar.svelte";
 import NavBar from "./NavBar.svelte";
-import ContextMenu from "./ContextMenu.svelte";
+import Menu from "./Menu.svelte";
 import Modal from "./Modal.svelte";
 import NoteContent from "../noteContent/NoteContent.svelte";
 import { settingsController } from "../../controllers/settingsController.svelte";
@@ -17,7 +21,10 @@ const activeNote = $derived(noteController.getActiveNote());
   <!-- Modal component -->
   <Modal />
   <!-- ContextMenu component -->
-  <ContextMenu />
+  <Menu menuController={contextMenuController} />
+  <!-- SubMenu component -->
+  <Menu menuController={subMenuController} />
+
   <div
     class="text-base-content bg-base-100 grid h-screen grid-flow-col grid-cols-[min-content_1fr]">
     <Sidebar></Sidebar>

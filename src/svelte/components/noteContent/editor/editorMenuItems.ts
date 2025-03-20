@@ -1,7 +1,7 @@
 import {
   Bold,
   Italic,
-  Heading1,
+  Heading1Icon,
   Heading2,
   Heading3,
   List,
@@ -10,16 +10,11 @@ import {
   Code,
 } from "lucide-svelte";
 import type { Editor } from "@tiptap/core";
-import { MenuItem } from "../../../types/contextMenuTypes";
+import { MenuItem, SubmenuMenuItem } from "../../../types/contextMenuTypes";
 import { Selection } from "@tiptap/pm/state";
 import { Node } from "@tiptap/pm/model";
 import { TextSelection } from "@tiptap/pm/state";
 
-/**
- * Genera los elementos del menú de formato con su estado actual
- * @param {Editor} editor - Instancia del editor TipTap
- * @returns {Array} - Array de objetos de menú con sus propiedades
- */
 export function getFormatMenuItems(editor: Editor) {
   if (!editor) return [];
 
@@ -37,24 +32,34 @@ export function getFormatMenuItems(editor: Editor) {
       onClick: () => editor.chain().focus().toggleItalic().run(),
     },
     { separator: true },
+    // Submenú de Encabezados
     {
-      label: "Encabezado 1",
-      icon: Heading1,
-      checked: editor.isActive("heading", { level: 1 }),
-      onClick: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
-    },
-    {
-      label: "Encabezado 2",
-      icon: Heading2,
-      checked: editor.isActive("heading", { level: 2 }),
-      onClick: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
-    },
-    {
-      label: "Encabezado 3",
-      icon: Heading3,
-      checked: editor.isActive("heading", { level: 3 }),
-      onClick: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
-    },
+      label: "Encabezado",
+      icon: Heading1Icon, // Puedes usar un icono que represente los encabezados
+      children: [
+        {
+          label: "Encabezado 1",
+          icon: Heading1Icon,
+          checked: editor.isActive("heading", { level: 1 }),
+          onClick: () =>
+            editor.chain().focus().toggleHeading({ level: 1 }).run(),
+        },
+        {
+          label: "Encabezado 2",
+          icon: Heading2,
+          checked: editor.isActive("heading", { level: 2 }),
+          onClick: () =>
+            editor.chain().focus().toggleHeading({ level: 2 }).run(),
+        },
+        {
+          label: "Encabezado 3",
+          icon: Heading3,
+          checked: editor.isActive("heading", { level: 3 }),
+          onClick: () =>
+            editor.chain().focus().toggleHeading({ level: 3 }).run(),
+        },
+      ] as MenuItem[], // Especificamos que los hijos son del tipo MenuItem
+    } as SubmenuMenuItem,
     { separator: true },
     {
       label: "Lista de viñetas",

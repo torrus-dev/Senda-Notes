@@ -1,9 +1,7 @@
-import type { Component } from "svelte";
-
 // Interfaz base para propiedades comunes a todos los MenuItems
 interface BaseMenuItem {
   label: string;
-  icon?: Component;
+  icon?: any;
   class?: string;
 }
 
@@ -14,7 +12,6 @@ export interface SeparatorMenuItem {
 
 // Tipo para un elemento de acción (con onClick)
 export interface ActionMenuItem extends BaseMenuItem {
-  separator?: false;
   onClick: () => void;
   checked?: boolean;
   children?: never; // No puede tener hijos
@@ -22,7 +19,6 @@ export interface ActionMenuItem extends BaseMenuItem {
 
 // Tipo para un elemento de submenú
 export interface SubmenuMenuItem extends BaseMenuItem {
-  separator?: false;
   children: MenuItem[]; // Debe tener hijos
   onClick?: never; // No debe tener onClick
   checked?: never; // No debe tener checked
