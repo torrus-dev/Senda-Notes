@@ -34,6 +34,7 @@ function onContentChange(newContent) {
 }
 
 // Función para manejar el clic derecho en el editor
+// Función para manejar el clic derecho en el editor
 function handleEditorContextMenu(event) {
   event.preventDefault();
 
@@ -54,36 +55,70 @@ function handleEditorContextMenu(event) {
     ? contextInfo.selectionRange
     : contextInfo.wordRange;
 
-  // Preparar elementos de menú con la palabra/selección actual
-  const menuItems = getFormatMenuItems(editorInstance).map((item) => {
+  // Función para envolver el onClick con la lógica de selección
+  function wrapWithSelection(originalOnClick) {
+    return () => {
+      console.log("Ejecutando onClick modificado");
+      if (currentWordRange) {
+        // Para comandos que requieren selección explícita
+        const { view } = editorInstance;
+        const { state } = view;
+        const { from, to } = currentWordRange;
+
+        // Primero seleccionar la palabra
+        view.dispatch(
+          state.tr.setSelection(
+            state.selection.constructor.create(state.doc, from, to),
+          ),
+        );
+
+        // Luego ejecutar el comando original
+        originalOnClick();
+      } else {
+        // Si no hay rango, ejecutar normalmente
+        originalOnClick();
+      }
+    };
+  }
+
+  // Obtener los elementos de menú base
+  const baseMenuItems = getFormatMenuItems(editorInstance);
+
+  // Procesar los elementos de menú
+  const menuItems = baseMenuItems.map((item) => {
+    // Si es un separador, devolverlo sin cambios
     if (item.separator) return item;
 
-    // Modificar el onClick para aplicar al rango correcto
-    return {
-      ...item,
-      onClick: () => {
-        console.log("es alguna cosa de estas");
-        if (currentWordRange) {
-          // Para comandos que requieren selección explícita
-          const { view } = editorInstance;
-          const { state } = view;
-          const { from, to } = currentWordRange;
+    // Crear una copia del item para no modificar el original
+    const processedItem = { ...item };
 
-          // Primero seleccionar la palabra
-          view.dispatch(
-            state.tr.setSelection(
-              state.selection.constructor.create(state.doc, from, to),
-            ),
-          );
+    // Si el item tiene onClick, envolverlo con la lógica de selección
+    if ("onClick" in processedItem) {
+      const originalOnClick = processedItem.onClick;
+      processedItem.onClick = wrapWithSelection(originalOnClick);
+    }
 
-          // Luego ejecutar el comando original
-          item.onClick();
-        } else {
-          // Si no hay rango, ejecutar normalmente
-          item.onClick();
+    // Si el item tiene hijos (es un submenú), procesar cada hijo
+    if ("children" in processedItem && Array.isArray(processedItem.children)) {
+      console.log("procesando hijos");
+      processedItem.children = processedItem.children.map((childItem) => {
+        // Si es un separador, devolverlo sin cambios
+        if (childItem.separator) return childItem;
+
+        // Crear una copia del hijo para no modificar el original
+        const processedChild = { ...childItem };
+
+        // Si el hijo tiene onClick, envolverlo con la lógica de selección
+        if ("onClick" in processedChild) {
+          const originalChildOnClick = processedChild.onClick;
+          processedChild.onClick = wrapWithSelection(originalChildOnClick);
         }
-      },
-    };
+
+        return processedChild;
+      });
+    }
+
+    return processedItem;
   });
 
   // Mostrar el menú contextual con opciones de formato

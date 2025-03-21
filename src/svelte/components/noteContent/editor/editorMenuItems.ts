@@ -1,13 +1,27 @@
 import {
-  Bold,
-  Italic,
+  CopyIcon,
+  ScissorsIcon,
+  ClipboardPasteIcon,
+  PenLineIcon,
+  BoldIcon,
+  ItalicIcon,
+  StrikethroughIcon,
+  CodeIcon,
+  EraserIcon,
+  ListOrderedIcon,
+  ListIcon,
   Heading1Icon,
-  Heading2,
-  Heading3,
-  List,
-  ListOrdered,
-  Quote,
-  Code,
+  Heading2Icon,
+  Heading3Icon,
+  Heading4Icon,
+  Heading5Icon,
+  Heading6Icon,
+  TextIcon,
+  QuoteIcon,
+  SquareCodeIcon,
+  MinusIcon,
+  PilcrowIcon,
+  BetweenHorizontalStartIcon,
 } from "lucide-svelte";
 import type { Editor } from "@tiptap/core";
 import { MenuItem, SubmenuMenuItem } from "../../../types/contextMenuTypes";
@@ -20,77 +34,165 @@ export function getFormatMenuItems(editor: Editor) {
 
   return <MenuItem[]>[
     {
-      label: "Negrita",
-      icon: Bold,
-      checked: editor.isActive("bold"),
-      onClick: () => editor.chain().focus().toggleBold().run(),
-    },
-    {
-      label: "Cursiva",
-      icon: Italic,
-      checked: editor.isActive("italic"),
-      onClick: () => editor.chain().focus().toggleItalic().run(),
-    },
-    { separator: true },
-    // Submenú de Encabezados
-    {
-      label: "Encabezado",
-      icon: Heading1Icon, // Puedes usar un icono que represente los encabezados
+      label: "Formato",
+      icon: PenLineIcon,
       children: [
         {
           label: "Negrita",
-          icon: Bold,
+          icon: BoldIcon,
           checked: editor.isActive("bold"),
           onClick: () => editor.chain().focus().toggleBold().run(),
         },
         {
-          label: "Encabezado 1",
+          label: "Cursiva",
+          icon: ItalicIcon,
+          checked: editor.isActive("italic"),
+          onClick: () => editor.chain().focus().toggleItalic().run(),
+        },
+        {
+          label: "Tachado",
+          icon: StrikethroughIcon,
+          checked: editor.isActive("strike"),
+          onClick: () => editor.chain().focus().toggleStrike().run(),
+        },
+        { separator: true },
+        {
+          label: "Código en línea",
+          icon: CodeIcon,
+          checked: editor.isActive("code"),
+          onClick: () => editor.chain().focus().toggleCode().run(),
+        },
+        { separator: true },
+        {
+          label: "Limpiar formato",
+          icon: EraserIcon,
+          onClick: () =>
+            editor.chain().focus().unsetAllMarks().clearNodes().run(),
+        },
+      ],
+    },
+    {
+      label: "Párrafo",
+      icon: PilcrowIcon,
+      children: [
+        {
+          label: "Lista numerada",
+          icon: ListOrderedIcon,
+          checked: editor.isActive("orderedList"),
+          onClick: () => editor.chain().focus().toggleOrderedList().run(),
+        },
+        {
+          label: "Lista normal",
+          icon: ListIcon,
+          checked: editor.isActive("bulletList"),
+          onClick: () => editor.chain().focus().toggleBulletList().run(),
+        },
+        { separator: true },
+        {
+          label: "Título 1",
           icon: Heading1Icon,
           checked: editor.isActive("heading", { level: 1 }),
           onClick: () =>
             editor.chain().focus().toggleHeading({ level: 1 }).run(),
         },
         {
-          label: "Encabezado 2",
-          icon: Heading2,
+          label: "Título 2",
+          icon: Heading2Icon,
           checked: editor.isActive("heading", { level: 2 }),
           onClick: () =>
             editor.chain().focus().toggleHeading({ level: 2 }).run(),
         },
         {
-          label: "Encabezado 3",
-          icon: Heading3,
+          label: "Título 3",
+          icon: Heading3Icon,
           checked: editor.isActive("heading", { level: 3 }),
           onClick: () =>
             editor.chain().focus().toggleHeading({ level: 3 }).run(),
         },
-      ] as MenuItem[], // Especificamos que los hijos son del tipo MenuItem
-    } as SubmenuMenuItem,
+        {
+          label: "Título 4",
+          icon: Heading4Icon,
+          checked: editor.isActive("heading", { level: 4 }),
+          onClick: () =>
+            editor.chain().focus().toggleHeading({ level: 4 }).run(),
+        },
+        {
+          label: "Título 5",
+          icon: Heading5Icon,
+          checked: editor.isActive("heading", { level: 5 }),
+          onClick: () =>
+            editor.chain().focus().toggleHeading({ level: 5 }).run(),
+        },
+        {
+          label: "Título 6",
+          icon: Heading6Icon,
+          checked: editor.isActive("heading", { level: 6 }),
+          onClick: () =>
+            editor.chain().focus().toggleHeading({ level: 6 }).run(),
+        },
+        {
+          label: "Párrafo normal",
+          icon: TextIcon,
+          checked: editor.isActive("paragraph"),
+          onClick: () => editor.chain().focus().setParagraph().run(),
+        },
+        { separator: true },
+        {
+          label: "Cita",
+          icon: QuoteIcon,
+          checked: editor.isActive("blockquote"),
+          onClick: () => editor.chain().focus().toggleBlockquote().run(),
+        },
+      ],
+    },
+    {
+      label: "Insertar",
+      icon: BetweenHorizontalStartIcon,
+      children: [
+        {
+          label: "Bloque de código",
+          icon: SquareCodeIcon,
+          checked: editor.isActive("codeBlock"),
+          onClick: () => editor.chain().focus().toggleCodeBlock().run(),
+        },
+        {
+          label: "Línea horizontal",
+          icon: MinusIcon,
+          onClick: () => editor.chain().focus().setHorizontalRule().run(),
+        },
+      ],
+    },
     { separator: true },
     {
-      label: "Lista de viñetas",
-      icon: List,
-      checked: editor.isActive("bulletList"),
-      onClick: () => editor.chain().focus().toggleBulletList().run(),
+      label: "Copiar",
+      icon: CopyIcon,
+      disabled: editor.state.selection.empty,
+      onClick: async () => {
+        const { from, to } = editor.state.selection;
+        const selectedText = editor.state.doc.textBetween(from, to, " ");
+        await navigator.clipboard.writeText(selectedText);
+      },
     },
     {
-      label: "Lista numerada",
-      icon: ListOrdered,
-      checked: editor.isActive("orderedList"),
-      onClick: () => editor.chain().focus().toggleOrderedList().run(),
-    },
-    { separator: true },
-    {
-      label: "Cita",
-      icon: Quote,
-      checked: editor.isActive("blockquote"),
-      onClick: () => editor.chain().focus().toggleBlockquote().run(),
+      label: "Cortar",
+      icon: ScissorsIcon,
+      disabled: editor.state.selection.empty,
+      onClick: async () => {
+        const { from, to } = editor.state.selection;
+        const selectedText = editor.state.doc.textBetween(from, to, " ");
+        await navigator.clipboard.writeText(selectedText);
+        editor.chain().focus().deleteSelection().run();
+      },
     },
     {
-      label: "Código",
-      icon: Code,
-      checked: editor.isActive("codeBlock"),
-      onClick: () => editor.chain().focus().toggleCodeBlock().run(),
+      label: "Pegar",
+      icon: ClipboardPasteIcon,
+      onClick: async () => {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          editor.chain().focus().insertContent(text).run();
+        }
+      },
     },
   ];
 }

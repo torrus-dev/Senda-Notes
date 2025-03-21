@@ -2,17 +2,20 @@
 import { floatingMenuController } from "../../controllers/floatingMenuController.svelte";
 import { tick, onDestroy } from "svelte";
 import { closeOnOutsideOrEsc } from "../../../directives/closeOnOutsideOrEsc";
-import Button from "../utils/Button.svelte";
-import Check from "lucide-svelte/icons/check";
-import ChevronRight from "lucide-svelte/icons/chevron-right";
+import BaseMenu from "./BaseMenu.svelte";
 import { initKeyboardNavigation } from "./keyboardNavigation.js";
 
+// Estados para el menú principal
 let menuElement = $state(null);
-let submenuElement = $state(null);
 let isRendered = $state(false);
-let isSubmenuRendered = $state(false);
 let activeIndex = $state(-1);
+
+// Estados para el submenú
+let submenuElement = $state(null);
+let isSubmenuRendered = $state(false);
 let activeSubmenuIndex = $state(-1);
+
+// Control de debounce para hover
 let hoverTimeout = $state(null);
 
 // Control de submenús - debounce para evitar parpadeos
@@ -31,7 +34,7 @@ function handleItemMouseEnter(index) {
   }
 
   const item = floatingMenuController.menuItems[index];
-  if ("children" in item && item.children && item.children.length > 0) {
+  if (hasChildren(item)) {
     // Pequeño delay para evitar cambios rápidos cuando el usuario mueve el mouse
     hoverTimeout = setTimeout(() => {
       // Abrir el submenú solo si el elemento tiene hijos
@@ -73,6 +76,27 @@ function isMouseOverSubmenu() {
   );
 }
 
+// Para determinar si un ítem tiene submenú
+function hasChildren(item) {
+  return "children" in item && item.children && item.children.length > 0;
+}
+
+// Manejador unificado para clicks en elementos del menú
+function handleItemClick(item, event) {
+  // Si el evento viene del submenú, prevenir propagación
+  if (
+    floatingMenuController.subMenu.isOpen &&
+    floatingMenuController.subMenu.items.includes(item)
+  ) {
+    event.stopPropagation();
+  }
+
+  if ("onClick" in item && item.onClick) {
+    item.onClick();
+    floatingMenuController.close();
+  }
+}
+
 function handleSubmenuMouseEnter(index) {
   activeSubmenuIndex = index;
   // Si hay un timeout pendiente, cancelarlo
@@ -80,19 +104,6 @@ function handleSubmenuMouseEnter(index) {
     clearTimeout(hoverTimeout);
     hoverTimeout = null;
   }
-}
-
-// Manejar el click en un elemento del menú principal
-function handleMenuItemClick(item) {
-  if ("onClick" in item && item.onClick) {
-    item.onClick();
-    floatingMenuController.close(); // Cerrar el menú completo
-  }
-}
-
-// Evitar que se cierre el submenú cuando el ratón está sobre él
-function handleSubmenuMouseLeave() {
-  // No hacemos nada por ahora - el evento se manejará desde el elemento padre
 }
 
 // Configuración del listener de teclado
@@ -155,138 +166,55 @@ $effect(async () => {
   }
 });
 
-// Posición adaptada del menú principal
+// Posiciones adaptadas
 let adaptedPosition = $derived(floatingMenuController.getAdaptedPosition());
-
-// Posición adaptada del submenú
 let adaptedSubmenuPosition = $derived(
   floatingMenuController.getAdaptedPosition(true),
 );
 
-// Para determinar si un ítem tiene submenú
-function hasChildren(item) {
-  return "children" in item && item.children && item.children.length > 0;
-}
+// Preparamos los items para el menú principal con datos adicionales
+let enhancedMenuItems = $derived(
+  floatingMenuController.menuItems.map((item, i) => ({
+    ...item,
+    expanded:
+      floatingMenuController.subMenu.isOpen &&
+      floatingMenuController.subMenu.parentItemIndex === i,
+  })),
+);
 </script>
 
 {#if floatingMenuController.isOpen}
-  <ul
-    bind:this={menuElement}
-    id="context-menu"
+  <!-- Contenedor principal que engloba tanto el menú como el submenú -->
+  <div
     role="menu"
-    aria-orientation="vertical"
-    tabindex="-1"
-    use:closeOnOutsideOrEsc={() => floatingMenuController.close()}
-    class="rounded-box bordered bg-base-200 absolute z-20 min-w-[160px] p-1 shadow-lg"
-    style="left: {adaptedPosition.x}px; top: {adaptedPosition.y}px; visibility: {isRendered
-      ? 'visible'
-      : 'hidden'}; opacity: {isRendered
-      ? '1'
-      : '0'}; transition: opacity 0.1s ease-in-out;">
-    {#each floatingMenuController.menuItems as item, i}
-      {#if "separator" in item && item.separator}
-        <li class="border-border-normal my-1 border-t-2" role="separator"></li>
-      {:else}
-        <li
-          class="relative"
-          onmouseenter={() => handleItemMouseEnter(i)}
-          class:has-submenu={hasChildren(item)}>
-          <Button
-            onclick={() => handleMenuItemClick(item)}
-            role="menuitem"
-            aria-haspopup={hasChildren(item) ? "true" : undefined}
-            aria-expanded={hasChildren(item) &&
-            floatingMenuController.subMenu.isOpen &&
-            floatingMenuController.subMenu.parentItemIndex === i
-              ? "true"
-              : "false"}
-            aria-checked={"checked" in item && item.checked !== undefined
-              ? item.checked
-                ? "true"
-                : "false"
-              : undefined}
-            tabindex={i === activeIndex ? "0" : "-1"}
-            cssClass="w-full flex items-center justify-between {item.class ||
-              ''} {activeIndex === i
-              ? 'bg-primary/10'
-              : ''} focus:outline-none">
-            <div class="flex items-center">
-              {#if "icon" in item && item.icon}
-                <span class="mr-2">
-                  <item.icon size="18" />
-                </span>
-              {/if}
-              <span>{item.label}</span>
-            </div>
-            <div class="ml-2 flex w-5 justify-center">
-              {#if "checked" in item && item.checked !== undefined}
-                {#if item.checked}
-                  <Check size="16" />
-                {/if}
-              {:else if hasChildren(item)}
-                <ChevronRight size="16" />
-              {/if}
-            </div>
-          </Button>
-        </li>
-      {/if}
-    {/each}
-  </ul>
+    tabindex="0"
+    use:closeOnOutsideOrEsc={() => floatingMenuController.close()}>
+    <!-- Menú principal -->
+    <BaseMenu
+      bind:menuElement={menuElement}
+      items={enhancedMenuItems}
+      position={adaptedPosition}
+      activeIndex={activeIndex}
+      isRendered={isRendered}
+      zIndex={20}
+      showSubmenuIndicator={true}
+      onItemClick={handleItemClick}
+      onItemMouseEnter={handleItemMouseEnter}
+      cssClass="menu-primary" />
 
-  <!-- Submenú -->
-  {#if floatingMenuController.subMenu.isOpen}
-    <ul
-      bind:this={submenuElement}
-      id="submenu"
-      role="menu"
-      aria-orientation="vertical"
-      tabindex="-1"
-      class="rounded-box bordered bg-base-200 absolute z-30 min-w-[160px] p-1 shadow-lg"
-      style="left: {adaptedSubmenuPosition.x}px; top: {adaptedSubmenuPosition.y}px; visibility: {isSubmenuRendered
-        ? 'visible'
-        : 'hidden'}; opacity: {isSubmenuRendered
-        ? '1'
-        : '0'}; transition: opacity 0.1s ease-in-out;"
-      onmouseleave={handleSubmenuMouseLeave}>
-      {#each floatingMenuController.subMenu.items as subItem, i}
-        {#if "separator" in subItem && subItem.separator}
-          <li class="border-border-normal my-1 border-t-2" role="separator">
-          </li>
-        {:else}
-          <li onmouseenter={() => handleSubmenuMouseEnter(i)}>
-            <Button
-              onclick={() => handleMenuItemClick(subItem)}
-              role="menuitem"
-              aria-checked={"checked" in subItem &&
-              subItem.checked !== undefined
-                ? subItem.checked
-                  ? "true"
-                  : "false"
-                : undefined}
-              tabindex={i === activeSubmenuIndex ? "0" : "-1"}
-              cssClass="w-full flex items-center justify-between {subItem.class ||
-                ''} {activeSubmenuIndex === i
-                ? 'bg-primary/10'
-                : ''} focus:outline-none">
-              <div class="flex items-center">
-                {#if "icon" in subItem && subItem.icon}
-                  <span class="mr-2">
-                    <subItem.icon size="18" />
-                  </span>
-                {/if}
-                <span>{subItem.label}</span>
-              </div>
-              {#if "checked" in subItem && subItem.checked !== undefined}
-                <div class="ml-2 flex w-5 justify-center">
-                  {#if subItem.checked}
-                    <Check size="16" />
-                  {/if}
-                </div>
-              {/if}
-            </Button>
-          </li>
-        {/if}
-      {/each}
-    </ul>
-  {/if}
+    <!-- Submenú -->
+    {#if floatingMenuController.subMenu.isOpen}
+      <BaseMenu
+        bind:menuElement={submenuElement}
+        items={floatingMenuController.subMenu.items}
+        position={adaptedSubmenuPosition}
+        activeIndex={activeSubmenuIndex}
+        isRendered={isSubmenuRendered}
+        zIndex={30}
+        showSubmenuIndicator={false}
+        onItemClick={handleItemClick}
+        onItemMouseEnter={handleSubmenuMouseEnter}
+        cssClass="menu-secondary" />
+    {/if}
+  </div>
 {/if}

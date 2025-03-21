@@ -47,6 +47,7 @@ export function closeOnOutsideOrEsc(
 
   // Manejadores de eventos
   const handleClickOutside = (event: MouseEvent) => {
+    console.log("procesando click outside");
     if (
       config.closeOnClickOutside &&
       node &&
