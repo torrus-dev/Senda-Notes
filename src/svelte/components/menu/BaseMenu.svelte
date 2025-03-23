@@ -24,12 +24,18 @@ export let menuElement;
   role={role}
   aria-orientation="vertical"
   tabindex="-1"
-  class="rounded-box bordered bg-base-200 absolute min-w-[160px] p-1 shadow-lg {cssClass}"
-  style="left: {position.x}px; top: {position.y}px; z-index: {zIndex}; visibility: {isRendered
-    ? 'visible'
-    : 'hidden'}; opacity: {isRendered
-    ? '1'
-    : '0'}; transition: opacity 0.1s ease-in-out;">
+  class="
+    rounded-box bordered bg-base-200 absolute min-w-[160px] p-1 shadow-xl
+    {cssClass}
+  "
+  style="
+    left: {position.x}px; 
+    top: {position.y}px; 
+    z-index: {zIndex}; 
+    visibility: {isRendered ? 'visible' : 'hidden'}; 
+    opacity: {isRendered ? '1' : '0'}; 
+    transition: opacity 0.1s ease-in-out;
+  ">
   {#each items as item, i}
     {#if "separator" in item && item.separator}
       <li class="border-border-normal my-1 border-t-2" role="separator"></li>
