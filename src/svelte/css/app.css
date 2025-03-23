@@ -2,6 +2,7 @@
 
 @import "tailwindcss";
 @import "tailwindcss/preflight.css" layer(base);
+@import "./note_content.css";
 
 @plugin "@tailwindcss/typography";
 

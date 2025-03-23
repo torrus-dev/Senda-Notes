@@ -29,7 +29,7 @@ function handleResizeEnd() {
 }
 
 // Usar $derived correctamente para calcular el ancho
-let widthStyle = $derived(isMobile ? "90%" : `${width}rem`);
+let widthStyle = $derived(isMobile ? "90%" : `${width}em`);
 </script>
 
 <aside

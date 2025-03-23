@@ -4,38 +4,6 @@
   height: 100%;
   color: inherit;
 }
-
-:global(.tiptap-editor > div:focus) {
-  outline: none;
-}
-
-/* Estilos para las listas de tareas */
-:global(.tiptap-editor ul[data-type="taskList"]) {
-  list-style: none;
-  padding: 0;
-}
-
-:global(.tiptap-editor ul[data-type="taskList"] li) {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 0.5em;
-}
-
-:global(.tiptap-editor ul[data-type="taskList"] li > label) {
-  flex: 0 0 auto;
-  margin-right: 0.5em;
-  user-select: none;
-}
-
-:global(.tiptap-editor ul[data-type="taskList"] li > div) {
-  flex: 1 1 auto;
-}
-
-/* Estilos para el texto destacado */
-:global(.tiptap-editor mark) {
-  background-color: hsla(59, 100%, 50%, 0.5);
-  color: inherit;
-}
 </style>
 
 <script>
@@ -267,11 +235,4 @@ onDestroy(() => {
 });
 </script>
 
-<div
-  bind:this={editorElement}
-  class="tiptap-editor prose prose-neutral lg:prose-lg w-full max-w-full {settingsController.theme ===
-  'dark'
-    ? 'prose-invert'
-    : ''}
-    ">
-</div>
+<div bind:this={editorElement} class="tiptap-editor w-full max-w-full"></div>
