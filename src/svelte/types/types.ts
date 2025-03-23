@@ -7,6 +7,7 @@ export interface Property {
 
 export interface Note {
   id: string;
+  icon?: string;
   title: string;
   content: string;
   children: string[];

@@ -11,38 +11,38 @@
 .tiptap-editor h1,
 #title {
   font-size: 2.986rem;
-  line-height: 1.1;
-  letter-spacing: -0.03em;
+  line-height: 1.5;
+  letter-spacing: -0.025em;
 }
 
 .tiptap-editor h2 {
   font-size: 2.488rem;
-  line-height: 1.15;
+  line-height: 1.75;
   letter-spacing: -0.02em;
 }
 
 .tiptap-editor h3 {
   font-size: 2.074rem;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
+  line-height: 2;
+  letter-spacing: -0.015em;
 }
 
 .tiptap-editor h4 {
   font-size: 1.728rem;
-  line-height: 1.3;
-  letter-spacing: 0em;
+  line-height: 2.25;
+  letter-spacing: 0.01em;
 }
 
 .tiptap-editor h5 {
   font-size: 1.44rem;
-  line-height: 1.4;
-  letter-spacing: 0.01em;
+  line-height: 2.5;
+  letter-spacing: 0.005em;
 }
 
 .tiptap-editor h6 {
   font-size: 1.2rem;
-  line-height: 1.5;
-  letter-spacing: 0.02em;
+  line-height: 2.75;
+  letter-spacing: 0em;
 }
 
 .tiptap-editor > div:focus {
