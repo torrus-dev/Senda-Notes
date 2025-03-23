@@ -58,7 +58,6 @@ $effect(() => {
   }
 });
 
-// Manejar selección de texto al recibir foco
 $effect(() => {
   const { targetId, timestamp } = focusController.focus;
   if (targetId === FocusTarget.TITLE && timestamp > 0 && editableElement) {
@@ -68,6 +67,7 @@ $effect(() => {
 </script>
 
 <h1
+  id="title"
   bind:this={editableElement}
   class="my-6 overflow-hidden text-2xl font-bold sm:text-xl lg:text-3xl 2xl:text-4xl"
   contenteditable="true"

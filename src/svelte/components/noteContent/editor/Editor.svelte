@@ -8,16 +8,51 @@
 :global(.tiptap-editor > div:focus) {
   outline: none;
 }
+
+/* Estilos para las listas de tareas */
+:global(.tiptap-editor ul[data-type="taskList"]) {
+  list-style: none;
+  padding: 0;
+}
+
+:global(.tiptap-editor ul[data-type="taskList"] li) {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 0.5em;
+}
+
+:global(.tiptap-editor ul[data-type="taskList"] li > label) {
+  flex: 0 0 auto;
+  margin-right: 0.5em;
+  user-select: none;
+}
+
+:global(.tiptap-editor ul[data-type="taskList"] li > div) {
+  flex: 1 1 auto;
+}
+
+/* Estilos para el texto destacado */
+:global(.tiptap-editor mark) {
+  background-color: hsla(59, 100%, 50%, 0.5);
+  color: inherit;
+}
 </style>
 
 <script>
 import { onDestroy } from "svelte";
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
+// Importamos las nuevas extensiones
+import TaskList from "@tiptap/extension-task-list";
+import TaskItem from "@tiptap/extension-task-item";
+import Highlight from "@tiptap/extension-highlight";
+
 import { noteController } from "../../../controllers/noteController.svelte";
 import { floatingMenuController } from "../../../controllers/floatingMenuController.svelte";
 import { settingsController } from "../../../controllers/settingsController.svelte";
+import { focusController } from "../../../controllers/focusController.svelte";
 import { getFormatMenuItems, editorUtils } from "./editorMenuItems.js";
+import { FocusTarget } from "../../../types/types";
 
 let { noteId = null } = $props();
 let content = $derived(noteController.getNoteById(noteId)?.content || "");
@@ -26,6 +61,34 @@ let editorElement;
 let currentNoteId = null;
 let currentWordRange = null;
 
+// Registrar el elemento editable de TipTap con el focusController
+$effect(() => {
+  if (editorInstance && editorElement) {
+    // TipTap crea elementos internos, necesitamos encontrar el elemento contenteditable
+    const tiptapEditableElement = editorElement.querySelector(".ProseMirror");
+
+    if (tiptapEditableElement) {
+      focusController.registerElement(
+        FocusTarget.EDITOR,
+        tiptapEditableElement,
+      );
+
+      return () => {
+        focusController.unregisterElement(FocusTarget.EDITOR);
+      };
+    }
+  }
+});
+
+// Manejar las solicitudes de enfoque
+$effect(() => {
+  const { targetId, timestamp } = focusController.focus;
+  if (targetId === FocusTarget.EDITOR && timestamp > 0 && editorInstance) {
+    // Simplemente enfocamos sin seleccionar todo el texto
+    editorInstance.commands.focus();
+  }
+});
+
 // Función para actualizar el contenido de la nota
 function onContentChange(newContent) {
   if (noteId) {
@@ -33,7 +96,6 @@ function onContentChange(newContent) {
   }
 }
 
-// Función para manejar el clic derecho en el editor
 // Función para manejar el clic derecho en el editor
 function handleEditorContextMenu(event) {
   event.preventDefault();
@@ -142,10 +204,20 @@ function initializeEditor(initialContent = "") {
       initialData = initialContent || "";
     }
 
-    // Crear instancia del editor
+    // Crear instancia del editor con las nuevas extensiones
     editorInstance = new Editor({
       element: editorElement,
-      extensions: [StarterKit],
+      extensions: [
+        StarterKit,
+        // Añadimos las nuevas extensiones
+        TaskList,
+        TaskItem.configure({
+          nested: true,
+        }),
+        Highlight.configure({
+          multicolor: false, // Usamos solo un color para destacar
+        }),
+      ],
       content: initialData,
       autofocus: true,
       editable: true,
@@ -196,10 +268,10 @@ onDestroy(() => {
 </script>
 
 <div
-  id="editor"
   bind:this={editorElement}
   class="tiptap-editor prose prose-neutral lg:prose-lg w-full max-w-full {settingsController.theme ===
   'dark'
     ? 'prose-invert'
-    : ''}">
+    : ''}
+    ">
 </div>

@@ -22,6 +22,8 @@ import {
   MinusIcon,
   PilcrowIcon,
   BetweenHorizontalStartIcon,
+  CheckSquareIcon,
+  HighlighterIcon,
 } from "lucide-svelte";
 import type { Editor } from "@tiptap/core";
 import { MenuItem, SubmenuMenuItem } from "../../../types/contextMenuTypes";
@@ -62,6 +64,13 @@ export function getFormatMenuItems(editor: Editor) {
           checked: editor.isActive("code"),
           onClick: () => editor.chain().focus().toggleCode().run(),
         },
+        // Añadimos la opción de texto destacado
+        {
+          label: "Destacar",
+          icon: HighlighterIcon,
+          checked: editor.isActive("highlight"),
+          onClick: () => editor.chain().focus().toggleHighlight().run(),
+        },
         { separator: true },
         {
           label: "Limpiar formato",
@@ -86,6 +95,13 @@ export function getFormatMenuItems(editor: Editor) {
           icon: ListIcon,
           checked: editor.isActive("bulletList"),
           onClick: () => editor.chain().focus().toggleBulletList().run(),
+        },
+        // Añadimos la opción de lista de tareas
+        {
+          label: "Lista de tareas",
+          icon: CheckSquareIcon,
+          checked: editor.isActive("taskList"),
+          onClick: () => editor.chain().focus().toggleTaskList().run(),
         },
         { separator: true },
         {
@@ -334,5 +350,43 @@ export const editorUtils = {
         currentPos: pos.pos,
       };
     }
+  },
+
+  /**
+   * Función auxiliar para cambiar el estado de un elemento de lista de tareas
+   * @param {Editor} editor - Instancia del editor
+   * @param {number} index - Índice del elemento de la lista
+   * @returns {boolean} - Resultado de la operación
+   */
+  toggleTaskItemStatus(editor: Editor, index: number) {
+    if (!editor) return false;
+
+    let counter = 0;
+    let found = false;
+
+    editor.state.doc.descendants((node, pos) => {
+      if (node.type.name === "taskItem") {
+        if (counter === index) {
+          // Cambiar el estado del atributo checked directamente con updateAttributes
+          const checked = !node.attrs?.checked;
+
+          editor
+            .chain()
+            .focus()
+            .command(({ tr }) => {
+              tr.setNodeMarkup(pos, null, { ...node.attrs, checked });
+              return true;
+            })
+            .run();
+
+          found = true;
+          return false; // Detener la búsqueda
+        }
+        counter++;
+      }
+      return !found; // Continuar hasta encontrar
+    });
+
+    return found;
   },
 };
