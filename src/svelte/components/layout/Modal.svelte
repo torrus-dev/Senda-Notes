@@ -1,5 +1,5 @@
 <script>
-import { workspace } from "../../controllers/workspaceController.svelte";
+import { workspace } from "../../../controllers/workspaceController.svelte";
 import { closeOnOutsideOrEsc } from "../../../directives/closeOnOutsideOrEsc";
 import Button from "../utils/Button.svelte";
 import { XIcon } from "lucide-svelte";

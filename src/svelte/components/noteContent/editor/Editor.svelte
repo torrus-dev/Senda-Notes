@@ -15,12 +15,12 @@ import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import Highlight from "@tiptap/extension-highlight";
 
-import { noteController } from "../../../controllers/noteController.svelte";
-import { floatingMenuController } from "../../../controllers/floatingMenuController.svelte";
-import { settingsController } from "../../../controllers/settingsController.svelte";
-import { focusController } from "../../../controllers/focusController.svelte";
+import { noteController } from "../../../../controllers/noteController.svelte";
+import { floatingMenuController } from "../../../../controllers/floatingMenuController.svelte";
+import { settingsController } from "../../../../controllers/settingsController.svelte";
+import { focusController } from "../../../../controllers/focusController.svelte";
 import { getFormatMenuItems, editorUtils } from "./editorMenuItems.js";
-import { FocusTarget } from "../../../types/types";
+import { FocusTarget } from "../../../../types/types";
 
 let { noteId = null } = $props();
 let content = $derived(noteController.getNoteById(noteId)?.content || "");

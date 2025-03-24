@@ -5,7 +5,7 @@
 </style>
 
 <script>
-import { noteController } from "../../controllers/noteController.svelte";
+import { noteController } from "../../../controllers/noteController.svelte";
 import {
   ChevronRightIcon,
   PlusIcon,

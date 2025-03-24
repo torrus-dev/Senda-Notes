@@ -1,5 +1,5 @@
-import { floatingMenuController } from "../svelte/controllers/floatingMenuController.svelte";
-import { MenuItem } from "../svelte/types/contextMenuTypes";
+import { floatingMenuController } from "../controllers/floatingMenuController.svelte";
+import { MenuItem } from "../types/contextMenuTypes";
 
 function checkValid(menuItems: MenuItem[]) {
   if (menuItems && Array.isArray(menuItems) && menuItems.length > 0) {

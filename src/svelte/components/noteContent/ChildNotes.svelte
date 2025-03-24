@@ -1,5 +1,5 @@
 <script>
-import { noteController } from "../../controllers/noteController.svelte";
+import { noteController } from "../../../controllers/noteController.svelte";
 import Button from "../utils/Button.svelte";
 let { note } = $props();
 let children = $derived(note.children);

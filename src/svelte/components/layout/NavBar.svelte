@@ -1,9 +1,9 @@
 <script>
-import { FocusTarget } from "../../types/types";
+import { FocusTarget } from "../../../types/types";
 
-import { focusController } from "../../controllers/focusController.svelte";
-import { noteController } from "../../controllers/noteController.svelte";
-import { workspace } from "../../controllers/workspaceController.svelte";
+import { focusController } from "../../../controllers/focusController.svelte";
+import { noteController } from "../../../controllers/noteController.svelte";
+import { workspace } from "../../../controllers/workspaceController.svelte";
 
 import { useResponsive } from "../../../directives/useResponsive.svelte";
 
@@ -18,7 +18,7 @@ import {
   PanelLeftCloseIcon,
 } from "lucide-svelte";
 import Navigation from "../utils/Navigation.svelte";
-import { settingsController } from "../../controllers/settingsController.svelte";
+import { settingsController } from "../../../controllers/settingsController.svelte";
 
 let { note } = $props();
 let isSidebarOpen = $derived(workspace.isSidebarOpen());

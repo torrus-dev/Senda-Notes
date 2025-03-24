@@ -1,5 +1,5 @@
-import { dndController } from "../../controllers/dndController.svelte";
-import { noteController } from "../../controllers/noteController.svelte";
+import { dndController } from "../../../controllers/dndController.svelte";
+import { noteController } from "../../../controllers/noteController.svelte";
 
 // Handlers para NoteTreeNode
 export function createNoteTreeNodeDndHandlers(params: {

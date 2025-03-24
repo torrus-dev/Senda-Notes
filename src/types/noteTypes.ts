@@ -1,7 +1,9 @@
+import type { DateTime } from "luxon";
+
 export interface Property {
   id: string;
   name: string;
-  value: string | string[] | number | boolean | Date;
+  value: string | string[] | number | boolean | Date | DateTime;
   type: "text" | "list" | "number" | "check" | "date" | "datetime";
 }
 
@@ -23,8 +25,8 @@ export interface Note {
 }
 
 export interface NoteMetadata {
-  created: string;
-  modified: string;
+  created: DateTime;
+  modified: DateTime;
   outgoingLinks: Reference[];
   incomingLinks: Reference[];
   aliases: string[];

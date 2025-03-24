@@ -1,6 +1,6 @@
 <script>
 import { onDestroy } from "svelte";
-import { workspace } from "../../../controllers/workspaceController.svelte";
+import { workspace } from "../../../../controllers/workspaceController.svelte";
 
 // Propiedades del componente
 let { disabled = false, updateWidth, onResizeStart, onResizeEnd } = $props();

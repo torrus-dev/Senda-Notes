@@ -1,4 +1,3 @@
-// src/directives/closeOnOutsideOrEsc.ts
 export interface CloseOptions {
   onClose: () => void;
   closeOnEsc?: boolean;
@@ -47,7 +46,7 @@ export function closeOnOutsideOrEsc(
 
   // Manejadores de eventos
   const handleClickOutside = (event: MouseEvent) => {
-    console.log("procesando click outside");
+    console.log("procesando click outside", event);
     if (
       config.closeOnClickOutside &&
       node &&

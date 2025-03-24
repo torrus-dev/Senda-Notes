@@ -1,5 +1,5 @@
 <script>
-import { floatingMenuController } from "../../controllers/floatingMenuController.svelte";
+import { floatingMenuController } from "../../../controllers/floatingMenuController.svelte";
 import { tick, onDestroy } from "svelte";
 import { closeOnOutsideOrEsc } from "../../../directives/closeOnOutsideOrEsc";
 import BaseMenu from "./BaseMenu.svelte";
@@ -196,7 +196,7 @@ let enhancedMenuItems = $derived(
       position={adaptedPosition}
       activeIndex={activeIndex}
       isRendered={isRendered}
-      zIndex={20}
+      zIndex={100}
       showSubmenuIndicator={true}
       onItemClick={handleItemClick}
       onItemMouseEnter={handleItemMouseEnter}
@@ -210,7 +210,7 @@ let enhancedMenuItems = $derived(
         position={adaptedSubmenuPosition}
         activeIndex={activeSubmenuIndex}
         isRendered={isSubmenuRendered}
-        zIndex={30}
+        zIndex={110}
         showSubmenuIndicator={false}
         onItemClick={handleItemClick}
         onItemMouseEnter={handleSubmenuMouseEnter}

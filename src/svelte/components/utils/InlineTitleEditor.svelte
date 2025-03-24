@@ -1,5 +1,5 @@
 <script>
-import { noteController } from "../../controllers/noteController.svelte";
+import { noteController } from "../../../controllers/noteController.svelte";
 
 // Props
 let {
@@ -19,7 +19,7 @@ let editableElement;
 
 // Eventos y manejadores
 function handleTitleChange() {
-  if (!editableElement) return;
+  if (!editableElement || !isEditing) return;
 
   const newTitle = noteController.sanitizeTitle(editableElement.innerText);
 

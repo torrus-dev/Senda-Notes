@@ -12,7 +12,7 @@ ul {
 </style>
 
 <script>
-import { noteController } from "../../controllers/noteController.svelte";
+import { noteController } from "../../../controllers/noteController.svelte";
 import Button from "./Button.svelte";
 import InlineTitleEditor from "./InlineTitleEditor.svelte";
 

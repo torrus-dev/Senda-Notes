@@ -2,8 +2,8 @@
 </style>
 
 <script>
-import { workspace } from "../../controllers/workspaceController.svelte";
-import { propertyController } from "../../controllers/propertyController.svelte";
+import { workspace } from "../../../controllers/workspaceController.svelte";
+import { propertyController } from "../../../controllers/propertyController.svelte";
 
 import { getIconComponent } from "./propertyUtils";
 import { createDragAndDropHandlers } from "./PropertyDnd";

@@ -9,7 +9,7 @@ import {
   ItalicIcon,
 } from "lucide-svelte";
 import { useResponsive } from "../../../directives/useResponsive.svelte";
-import { settingsController } from "../../controllers/settingsController.svelte";
+import { settingsController } from "../../../controllers/settingsController.svelte";
 
 let isMobile = $derived(useResponsive().isMobile);
 </script>

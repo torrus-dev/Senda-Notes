@@ -1,10 +1,11 @@
-<script>
-import { formatDateTimeForInput } from "../../../controllers/utils.svelte";
+<script lang="ts">
+import { DateTime } from "luxon";
+
 let { property, onUpdate } = $props();
 let newValue = $state(
-  property.value instanceof Date
-    ? formatDateTimeForInput(property.value.toISOString())
-    : formatDateTimeForInput(property.value),
+  DateTime.isDateTime(property.value)
+    ? property.value.toFormat("yyyy-MM-dd'T'HH:mm")
+    : property.value,
 );
 </script>
 

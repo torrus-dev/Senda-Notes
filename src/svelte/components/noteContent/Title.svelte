@@ -1,7 +1,9 @@
 <script>
-import { noteController } from "../../controllers/noteController.svelte";
-import { focusController } from "../../controllers/focusController.svelte";
-import { FocusTarget } from "../../types/types";
+import { sanitizeTitle } from "../../../lib/utils/noteUtils";
+
+import { noteController } from "../../../controllers/noteController.svelte";
+import { focusController } from "../../../controllers/focusController.svelte";
+import { FocusTarget } from "../../../types/types";
 
 // Props
 let { note } = $props();
@@ -17,7 +19,7 @@ let editableElement;
 function handleTitleChange() {
   if (!editableElement) return;
 
-  const newTitle = noteController.sanitizeTitle(editableElement.innerText);
+  const newTitle = sanitizeTitle(editableElement.innerText);
 
   if (newTitle && newTitle.trim() !== "") {
     noteController.updateNote(id, { title: newTitle });

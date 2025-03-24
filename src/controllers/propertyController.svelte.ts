@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import type { Property } from "../types/noteTypes";
 import { noteController } from "./noteController.svelte";
 
@@ -194,9 +195,9 @@ class PropertyController {
       case "check":
         return false;
       case "date":
-        return new Date().toISOString().split("T")[0];
+        return DateTime.now();
       case "datetime":
-        return new Date().toISOString();
+        return DateTime.now();
       default:
         return ""; // Valor seguro por defecto
     }

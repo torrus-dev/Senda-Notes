@@ -3,8 +3,8 @@
 
 <script>
 import NoteTreeNode from "./NoteTreeNode.svelte";
-import { noteController } from "../../controllers/noteController.svelte";
-import { dndController } from "../../controllers/dndController.svelte";
+import { noteController } from "../../../controllers/noteController.svelte";
+import { dndController } from "../../../controllers/dndController.svelte";
 import NoteTreeLine from "./NoteTreeLine.svelte";
 import NoteTreeLabel from "./NoteTreeLabel.svelte";
 import {

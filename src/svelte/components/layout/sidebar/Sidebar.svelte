@@ -1,6 +1,6 @@
 <script>
 import { SettingsIcon, InfoIcon } from "lucide-svelte";
-import { workspace } from "../../../controllers/workspaceController.svelte";
+import { workspace } from "../../../../controllers/workspaceController.svelte";
 
 import NoteTreeRenderer from "../../noteTreeDnd/NoteTreeRenderer.svelte";
 import SettingsModal from "../../modals/SettingsModal.svelte";

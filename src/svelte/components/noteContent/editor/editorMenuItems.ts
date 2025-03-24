@@ -26,7 +26,7 @@ import {
   HighlighterIcon,
 } from "lucide-svelte";
 import type { Editor } from "@tiptap/core";
-import { MenuItem, SubmenuMenuItem } from "../../../types/contextMenuTypes";
+import { MenuItem, SubmenuMenuItem } from "../../../../types/contextMenuTypes";
 import { Selection } from "@tiptap/pm/state";
 import { Node } from "@tiptap/pm/model";
 import { TextSelection } from "@tiptap/pm/state";

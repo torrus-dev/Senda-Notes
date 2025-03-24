@@ -1,5 +1,5 @@
 <script>
-import { propertyController } from "../../../controllers/propertyController.svelte";
+import { propertyController } from "../../../../controllers/propertyController.svelte";
 
 import PropertyText from "./PropertyText.svelte";
 import PropertyList from "./PropertyList.svelte";

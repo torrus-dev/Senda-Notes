@@ -2,8 +2,8 @@
 </style>
 
 <script>
-import { workspace } from "../../controllers/workspaceController.svelte";
-import { propertyController } from "../../controllers/propertyController.svelte";
+import { workspace } from "../../../controllers/workspaceController.svelte";
+import { propertyController } from "../../../controllers/propertyController.svelte";
 import { closeOnOutsideOrEsc } from "../../../directives/closeOnOutsideOrEsc";
 
 let { property = null, noteId = null } = $props();

@@ -1,7 +1,7 @@
 <script>
 import { SearchIcon } from "lucide-svelte";
 import Button from "../utils/Button.svelte";
-import { settingsController } from "../../controllers/settingsController.svelte";
+import { settingsController } from "../../../controllers/settingsController.svelte";
 
 let searchQuery = $state("");
 // let settingsData = {
