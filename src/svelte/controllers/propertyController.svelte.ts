@@ -1,4 +1,4 @@
-import type { Note, Property } from "../types/types";
+import type { Property } from "../types/noteTypes";
 import { noteController } from "./noteController.svelte";
 
 class PropertyController {

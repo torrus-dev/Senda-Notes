@@ -235,4 +235,7 @@ onDestroy(() => {
 });
 </script>
 
-<div bind:this={editorElement} class="tiptap-editor w-full max-w-full"></div>
+<div
+  bind:this={editorElement}
+  class="prose prose-invert prose-neutral tiptap-editor w-full max-w-full">
+</div>

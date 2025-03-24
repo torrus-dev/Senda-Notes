@@ -54,34 +54,20 @@ input {
 }
 
 @font-face {
-  font-family: "Inter";
-  src: url("/fonts/Inter.ttf") format("truetype");
+  font-family: "Adwaita Sans";
+  src: url("/fonts/AdwaitaSans-Regular.ttf") format("truetype");
   font-weight: 1 999;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "Inter";
-  src: url("/fonts/Inter-Italic.ttf") format("truetype");
+  font-family: "Adwaita Sans";
+  src: url("/fonts/AdwaitaSans-Italic.ttf") format("truetype");
   font-weight: 1 999;
   font-style: italic;
 }
-/* @font-face {
-  font-family: "Source Sans 3";
-  src: url("/fonts/SourceSans3.ttf") format("truetype");
-  font-weight: 1 999;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Source Sans 3";
-  src: url("/fonts/SourceSans3-Italic.ttf") format("truetype");
-  font-weight: 1 999;
-  font-style: italic;
-} */
 
 :root {
   box-sizing: content-box;
-  font-family: "Inter", "Source Sans 3", sans-serif;
-  font-feature-settings: "cv01", "cv02", "cv05", "cv08";
+  font-family: "Adwaita Sans", sans-serif;
 }

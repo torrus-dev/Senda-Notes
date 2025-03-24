@@ -5,44 +5,44 @@
   h4,
   h5,
   h6 {
-    @apply font-bold;
+    @apply mt-0 font-bold;
   }
 }
 .tiptap-editor h1,
 #title {
   font-size: 2.986rem;
-  line-height: 1.5;
   letter-spacing: -0.025em;
+  margin-bottom: 0.6em;
 }
 
 .tiptap-editor h2 {
   font-size: 2.488rem;
-  line-height: 1.75;
   letter-spacing: -0.02em;
+  margin-bottom: 0.55em;
 }
 
 .tiptap-editor h3 {
   font-size: 2.074rem;
-  line-height: 2;
   letter-spacing: -0.015em;
+  margin-bottom: 0.6em;
 }
 
 .tiptap-editor h4 {
   font-size: 1.728rem;
-  line-height: 2.25;
   letter-spacing: 0.01em;
+  margin-bottom: 0.65em;
 }
 
 .tiptap-editor h5 {
   font-size: 1.44rem;
-  line-height: 2.5;
   letter-spacing: 0.005em;
+  margin-bottom: 0.7em;
 }
 
 .tiptap-editor h6 {
   font-size: 1.2rem;
-  line-height: 2.75;
   letter-spacing: 0em;
+  margin-bottom: 0.75em;
 }
 
 .tiptap-editor > div:focus {
@@ -50,25 +50,13 @@
 }
 
 /* Estilos para las listas de tareas */
-.tiptap-editor ul[data-type="taskList"] {
-  list-style: none;
-  padding: 0;
-}
-
 .tiptap-editor ul[data-type="taskList"] li {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 0.5em;
-}
-
-.tiptap-editor ul[data-type="taskList"] li > label {
-  flex: 0 0 auto;
-  margin-right: 0.5em;
-  user-select: none;
-}
-
-.tiptap-editor ul[data-type="taskList"] li > div {
-  flex: 1 1 auto;
+  div {
+    display: inline-block;
+    p {
+      @apply my-0 ml-3;
+    }
+  }
 }
 
 /* Estilos para el texto destacado */

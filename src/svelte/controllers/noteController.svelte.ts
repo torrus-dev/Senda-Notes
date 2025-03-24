@@ -1,4 +1,6 @@
-import { FocusTarget, type Note, type Property } from "../types/types";
+import { FocusTarget } from "../types/types";
+import type { Note, NoteMetadata, Property } from "../types/noteTypes";
+
 import { focusController } from "./focusController.svelte";
 import { currentDate } from "./utils.svelte";
 
@@ -57,6 +59,8 @@ class NoteController {
   };
 
   private markModified = (note: Note): Note => {
+    // note.metadata.modified = currentDate();
+
     const updatedMetadata = note.metadata.map((prop) =>
       prop.name === "modified" ? { ...prop, value: currentDate() } : prop,
     );
@@ -140,20 +144,16 @@ class NoteController {
     return `${base} ${index}`;
   };
 
-  private createDefaultMetadata = (): Property[] => [
-    {
-      id: crypto.randomUUID(),
-      name: "created",
-      value: currentDate(),
-      type: "datetime",
-    },
-    {
-      id: crypto.randomUUID(),
-      name: "modified",
-      value: currentDate(),
-      type: "datetime",
-    },
-  ];
+  private createDefaultMetadata = () => {
+    const createdMetadata: NoteMetadata = {
+      created: currentDate(),
+      modified: currentDate(),
+      outgoingLinks: [],
+      incomingLinks: [],
+      aliases: [],
+    };
+    return createdMetadata;
+  };
 
   private getDescendants = (parentId: string): string[] => {
     const parent = this.getNoteById(parentId);

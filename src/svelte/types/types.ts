@@ -1,21 +1,3 @@
-export interface Property {
-  id: string;
-  name: string;
-  value: string | string[] | number | boolean | Date;
-  type: "text" | "list" | "number" | "check" | "date" | "datetime";
-}
-
-export interface Note {
-  id: string;
-  icon?: string;
-  title: string;
-  content: string;
-  children: string[];
-  parentId?: string;
-  metadata: Property[];
-  properties: Property[];
-}
-
 // Estado y tipos para el Property Editor
 export interface PropertyEditorState {
   isOpen: boolean;
