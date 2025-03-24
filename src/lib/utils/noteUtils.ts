@@ -57,15 +57,12 @@ export function isDescendant(
   descendantId: string,
   ancestorId: string,
 ): boolean {
-  let currentNote = notes.find((note) => note.id === descendantId);
-  while (currentNote) {
-    if (currentNote.parentId === ancestorId) return true;
-    if (!currentNote.parentId) break;
-    currentNote = notes.find((note) => {
-      if (currentNote) {
-        note.id === currentNote.parentId;
-      }
-    });
-  }
-  return false;
+  const descendant = notes.find((note) => note.id === descendantId);
+  if (!descendant) return false;
+
+  if (descendant.parentId === ancestorId) return true;
+  if (!descendant.parentId) return false;
+
+  // Se comprueba recursivamente si el padre es descendiente
+  return isDescendant(notes, descendant.parentId, ancestorId);
 }

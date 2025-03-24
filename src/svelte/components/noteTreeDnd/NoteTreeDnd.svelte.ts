@@ -1,3 +1,4 @@
+import { isDescendant } from "../../../lib/utils/noteUtils";
 import { dndController } from "../../../controllers/dndController.svelte";
 import { noteController } from "../../../controllers/noteController.svelte";
 
@@ -11,7 +12,7 @@ export function createNoteTreeNodeDndHandlers(params: {
   const isParentDragging = $derived.by(() => {
     let dragSourceId = dndController.getDragSourceId();
     if (dragSourceId) {
-      return noteController.isDescendant(note.id, dragSourceId);
+      return isDescendant(noteController.notes, note.id, dragSourceId);
     }
     return false;
   });
@@ -98,7 +99,7 @@ export function createNoteTreeLineDndHandlers(params: {
   const isParentDragging = $derived.by(() => {
     let dragSourceId = dndController.getDragSourceId();
     if (dragSourceId) {
-      return noteController.isDescendant(id, dragSourceId);
+      return isDescendant(noteController.notes, id, dragSourceId);
     }
     return false;
   });
@@ -156,5 +157,5 @@ export function isNodeDescendant(
   noteId: string,
   potentialAncestorId: string,
 ): boolean {
-  return noteController.isDescendant(noteId, potentialAncestorId);
+  return isDescendant(noteController.notes, noteId, potentialAncestorId);
 }

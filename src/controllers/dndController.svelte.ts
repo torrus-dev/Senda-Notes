@@ -1,3 +1,4 @@
+import { isDescendant } from "../lib/utils/noteUtils";
 import { noteController } from "./noteController.svelte";
 import { propertyController } from "./propertyController.svelte";
 
@@ -70,7 +71,7 @@ class DndController {
           targetNoteId &&
           draggedNoteId &&
           targetNoteId !== draggedNoteId &&
-          !noteController.isDescendant(targetNoteId, draggedNoteId)
+          !isDescendant(noteController.notes, targetNoteId, draggedNoteId)
         ) {
           // La nota se coloca como último hijo de la nota destino (posición children.length)
           const targetNote = noteController.getNoteById(targetNoteId);
@@ -91,7 +92,7 @@ class DndController {
           draggedNoteId &&
           (!parentId ||
             (parentId !== draggedNoteId &&
-              !noteController.isDescendant(parentId, draggedNoteId)))
+              !isDescendant(noteController.notes, parentId, draggedNoteId)))
         ) {
           this.dropNoteOnLineIndicator(parentId, draggedNoteId, position);
         }
