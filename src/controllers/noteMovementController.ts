@@ -16,17 +16,23 @@ function reorderIds(
 
 /**
  * Elimina a targetId de la lista de hijos de todas las notas.
+ * Se recorre el array una única vez.
  */
 export function removeFromParent(notes: Note[], targetId: string): Note[] {
-  return notes.map((note) =>
-    note.children.includes(targetId)
-      ? { ...note, children: note.children.filter((id) => id !== targetId) }
-      : note,
-  );
+  for (let i = 0; i < notes.length; i++) {
+    if (notes[i].children.indexOf(targetId) !== -1) {
+      notes[i] = {
+        ...notes[i],
+        children: notes[i].children.filter((id) => id !== targetId),
+      };
+    }
+  }
+  return notes;
 }
 
 /**
  * Agrega a targetId como hijo del padre indicado, en la posición deseada (o al final).
+ * Se recorre el array una única vez.
  */
 export function addToParent(
   notes: Note[],
@@ -34,86 +40,109 @@ export function addToParent(
   targetId: string,
   position?: number,
 ): Note[] {
-  return notes.map((note) => {
-    if (note.id === parentId) {
-      // Eliminamos duplicados y posicionamos la nota
-      const newChildren = note.children.filter((id) => id !== targetId);
+  for (let i = 0; i < notes.length; i++) {
+    if (notes[i].id === parentId) {
+      const newChildren = notes[i].children.filter((id) => id !== targetId);
       const pos =
         position !== undefined
           ? Math.min(Math.max(0, position), newChildren.length)
           : newChildren.length;
       newChildren.splice(pos, 0, targetId);
-      return { ...note, children: newChildren };
+      notes[i] = { ...notes[i], children: newChildren };
+      break;
     }
-    return note;
-  });
+  }
+  return notes;
 }
 
 /**
- * Caso: Reordenar una nota manteniendo el mismo padre (o entre raíces).
+ * Reordena una nota manteniendo el mismo padre (o entre raíces).
+ * Para raíces, se actualiza in place recogiendo índices y modificando solo las posiciones necesarias.
  */
 function reorderWithinSameParent(
   notes: Note[],
   targetId: string,
-  parentId: string | null,
+  parentId: string | undefined,
   newPosition: number,
   getNoteById: (id: string) => Note | undefined,
   updateNote: (note: Note) => Note,
 ): Note[] {
-  if (parentId === null) {
-    // Caso raíces: obtenemos IDs de notas sin padre
-    const rootIds = notes.filter((n) => !n.parentId).map((n) => n.id);
+  if (parentId === undefined) {
+    // Recoger índices y IDs de notas raíz en una única pasada.
+    const rootIndices: number[] = [];
+    const rootIds: string[] = [];
+    for (let i = 0; i < notes.length; i++) {
+      if (notes[i].parentId === undefined) {
+        rootIndices.push(i);
+        rootIds.push(notes[i].id);
+      }
+    }
     const newOrder = reorderIds(rootIds, targetId, newPosition);
-    // Actualizamos las raíces y mantenemos el resto intacto
-    const updatedRoots = newOrder
-      .map((id) => {
-        const n = getNoteById(id);
-        return n ? updateNote(n) : null;
-      })
-      .filter((n): n is Note => n !== null);
-    const nonRoots = notes.filter((n) => n.parentId);
-    return [...updatedRoots, ...nonRoots];
+    // Actualizamos las notas en las posiciones indicadas según el nuevo orden.
+    for (let j = 0; j < rootIndices.length; j++) {
+      const idx = rootIndices[j];
+      const updatedNote = getNoteById(newOrder[j]);
+      if (updatedNote) {
+        notes[idx] = updateNote(updatedNote);
+      }
+    }
+    return notes;
   }
-  // Caso nota con padre: se reordena la lista de hijos
+  // Caso nota con padre: se reordena la lista de hijos.
   return addToParent(notes, parentId, targetId, newPosition);
 }
 
 /**
- * Caso: Mover la nota a raíz o a un nuevo padre.
+ * Mueve la nota a raíz o a un nuevo padre.
+ * Para raíz, se actualiza parentId a undefined.
  */
 function moveToNewParentOrRoot(
   notes: Note[],
   targetId: string,
-  newParentId: string | null,
+  newParentId: string | undefined,
   newPosition: number,
   getNoteById: (id: string) => Note | undefined,
   updateNote: (note: Note) => Note,
 ): Note[] {
-  // Quitamos targetId de cualquier lista de hijos
-  let updatedNotes = removeFromParent(notes, targetId);
+  // Elimina targetId de cualquier lista de hijos.
+  removeFromParent(notes, targetId);
 
-  if (newParentId === null) {
-    // Mover a raíz: actualizamos el parentId a undefined
-    updatedNotes = updatedNotes.map((n) =>
-      n.id === targetId ? updateNote({ ...n, parentId: undefined }) : n,
-    );
-    const rootIds = updatedNotes.filter((n) => !n.parentId).map((n) => n.id);
+  if (newParentId === undefined) {
+    // Mover a raíz: actualizamos el parentId a undefined.
+    for (let i = 0; i < notes.length; i++) {
+      if (notes[i].id === targetId) {
+        notes[i] = updateNote({ ...notes[i], parentId: undefined });
+        break;
+      }
+    }
+    // Reordenamos raíces en una única pasada.
+    const rootIndices: number[] = [];
+    const rootIds: string[] = [];
+    for (let i = 0; i < notes.length; i++) {
+      if (notes[i].parentId === undefined) {
+        rootIndices.push(i);
+        rootIds.push(notes[i].id);
+      }
+    }
     const newOrder = reorderIds(rootIds, targetId, newPosition);
-    const updatedRoots = newOrder
-      .map((id) => {
-        const n = getNoteById(id);
-        return n ? updateNote(n) : null;
-      })
-      .filter((n): n is Note => n !== null);
-    const nonRoots = updatedNotes.filter((n) => n.parentId);
-    return [...updatedRoots, ...nonRoots];
+    for (let j = 0; j < rootIndices.length; j++) {
+      const idx = rootIndices[j];
+      const updatedNote = getNoteById(newOrder[j]);
+      if (updatedNote) {
+        notes[idx] = updateNote(updatedNote);
+      }
+    }
+    return notes;
   }
 
-  // Mover a un nuevo padre: actualizamos el parentId y agregamos targetId
-  updatedNotes = updatedNotes.map((n) =>
-    n.id === targetId ? updateNote({ ...n, parentId: newParentId }) : n,
-  );
-  return addToParent(updatedNotes, newParentId, targetId, newPosition);
+  // Mover a un nuevo padre: actualizamos el parentId y agregamos targetId.
+  for (let i = 0; i < notes.length; i++) {
+    if (notes[i].id === targetId) {
+      notes[i] = updateNote({ ...notes[i], parentId: newParentId });
+      break;
+    }
+  }
+  return addToParent(notes, newParentId, targetId, newPosition);
 }
 
 /**
@@ -125,7 +154,7 @@ function moveToNewParentOrRoot(
  *
  * @param notes Array actual de notas.
  * @param targetId ID de la nota a mover.
- * @param newParentId Nuevo padre o null para raíz.
+ * @param newParentId Nuevo padre o undefined para raíz.
  * @param newPosition Posición deseada en el array de hijos (o de raíces).
  * @param getNoteById Función para obtener una nota por su ID.
  * @param updateNote Función para actualizar la nota (ej. refrescar timestamp).
@@ -134,7 +163,7 @@ function moveToNewParentOrRoot(
 export function moveNoteInTree(
   notes: Note[],
   targetId: string,
-  newParentId: string | null,
+  newParentId: string | undefined,
   newPosition: number,
   getNoteById: (id: string) => Note | undefined,
   updateNote: (note: Note) => Note,
@@ -142,9 +171,12 @@ export function moveNoteInTree(
   const note = getNoteById(targetId);
   if (!note) throw new Error(`Note ${targetId} not found`);
 
+  console.log(
+    `Moving note "${note.title}" to "${getNoteById(newParentId).title}" at pos ${newPosition}`,
+  );
+
   if (note.parentId === newParentId) {
     // Si el padre se mantiene, se trata de una reordenación.
-    console.log("reordenación");
     return reorderWithinSameParent(
       notes,
       targetId,
@@ -155,7 +187,6 @@ export function moveNoteInTree(
     );
   } else {
     // En otro caso, se mueve a raíz o a un nuevo padre.
-    console.log("mover a ", newParentId);
     return moveToNewParentOrRoot(
       notes,
       targetId,

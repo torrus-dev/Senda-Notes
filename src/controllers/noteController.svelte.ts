@@ -166,12 +166,12 @@ class NoteController {
 
   moveNoteToPosition = (
     noteId: string,
-    newParentId: string | null,
+    newParentId: string | undefined,
     position: number,
   ): void => {
     const note = this.requireNote(noteId);
 
-    if (newParentId !== null) {
+    if (newParentId) {
       this.requireNote(newParentId, "New parent note");
       if (newParentId === noteId) {
         throw new Error("Cannot move note to itself");
