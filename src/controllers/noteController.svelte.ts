@@ -11,64 +11,50 @@ import {
   updateModifiedMetadata,
 } from "../lib/utils/noteUtils";
 
+import { loadNotesFromStorage, saveNotesToStorage } from "../lib/utils/storage";
+
 class NoteController {
   notes = $state<Note[]>([]);
   activeNoteId = $state<string | null>(null);
+  private saveTimeout: ReturnType<typeof setTimeout> | null = null;
 
   constructor() {
-    this.loadFromLocalStorage();
+    this.notes = loadNotesFromStorage();
     this.setupAutoSave();
   }
 
-  // -------------------
-  // Persistencia y Auto-save
-  // -------------------
   private setupAutoSave() {
     $effect.root(() => {
       $effect(() => {
-        this.saveToLocalStorage();
+        // Crear una copia para asegurar la reactividad
+        const currentNotes = [...this.notes];
+
+        // Limpiar cualquier timeout pendiente
+        if (this.saveTimeout) {
+          clearTimeout(this.saveTimeout);
+        }
+
+        // Establecer un nuevo timeout para guardar
+        this.saveTimeout = setTimeout(() => {
+          saveNotesToStorage(currentNotes);
+          this.saveTimeout = null;
+        }, 5000);
+
+        // Cleanup del efecto
+        return () => {
+          if (this.saveTimeout) {
+            clearTimeout(this.saveTimeout);
+          }
+        };
       });
     });
   }
 
-  private loadFromLocalStorage() {
-    const stored = localStorage.getItem("NoteList");
-    if (stored) {
-      try {
-        const parsedNotes = JSON.parse(stored);
-        // Convertir los campos `created` y `modified` a instancias de DateTime
-        this.notes = parsedNotes.map((note: any) => ({
-          ...note,
-          metadata: {
-            ...note.metadata,
-            created: DateTime.fromISO(note.metadata.created),
-            modified: DateTime.fromISO(note.metadata.modified),
-          },
-        }));
-      } catch (error) {
-        console.error("Error al parsear NoteList desde localStorage:", error);
-        this.notes = [];
-      }
-    } else {
-      this.notes = [];
+  forceImmediateSave() {
+    if (this.saveTimeout) {
+      clearTimeout(this.saveTimeout);
     }
-  }
-
-  private saveToLocalStorage() {
-    try {
-      // Convertir los campos `created` y `modified` a cadenas ISO antes de guardar
-      const serializedNotes = this.notes.map((note) => ({
-        ...note,
-        metadata: {
-          ...note.metadata,
-          created: note.metadata.created.toISO(),
-          modified: note.metadata.modified.toISO(),
-        },
-      }));
-      localStorage.setItem("NoteList", JSON.stringify(serializedNotes));
-    } catch (error) {
-      console.error("Error al guardar NoteList en localStorage:", error);
-    }
+    saveNotesToStorage(this.notes);
   }
 
   // -------------------
@@ -89,17 +75,10 @@ class NoteController {
     updater: (note: Note) => Note,
   ): void => {
     // Recorremos todas las notas y devolvemos una nueva lista actualizada
-    this.notes = this.notes.map((note) => {
-      // Comprobamos si el id de la nota coincide con el id buscado
-
-      // Si no coincide el id, retornamos la nota sin cambios
-      if (note.id !== id) return note;
-
-      // Aplicamos la función de actualización a la nota encontrada
-      const updatedNote = updater(note);
-      // Actualizamos el timestamp de modificación automáticamente y retornamos la nota actualizada
-      return updateModifiedMetadata(updatedNote);
-    });
+    const index = this.notes.findIndex((n) => n.id === id);
+    if (index !== -1) {
+      this.notes[index] = updateModifiedMetadata(updater(this.notes[index]));
+    }
   };
 
   // -------------------
@@ -192,121 +171,85 @@ class NoteController {
 
     this.activeNoteId = note.id;
     focusController.requestFocus(FocusTarget.TITLE);
+
+    this.forceImmediateSave();
   };
 
   updateNote = (id: string, updates: Partial<Note>): void => {
-    this.requireNote(id);
-    if ("parentId" in updates) {
-      // Manejar cambio de padre
-      const newParentId = updates.parentId ?? null;
+    const note = this.requireNote(id);
 
-      // Verificar si realmente cambia el padre
-      const currentNote = this.getNoteById(id);
-      if (currentNote && currentNote.parentId !== newParentId) {
-        if (newParentId) {
-          // Validar el nuevo padre
-          this.requireNote(newParentId, "Parent note");
-          if (id === newParentId)
-            throw new Error("Cannot set parent to itself");
-          if (this.wouldCreateCycle(newParentId, id)) {
-            throw new Error("This operation would create a circular reference");
-          }
+    // Campos que provocan guardado inmediato
+    const STRUCTURAL_FIELDS: (keyof Note)[] = ["title", "icon", "properties"];
 
-          // Primero removemos de su padre actual si tiene
-          if (currentNote.parentId) {
-            this.removeFromParent(id);
-          }
+    // Filtrar solo los campos válidos para actualizar
+    const validUpdates: Partial<Note> = {};
 
-          // Actualizamos la referencia al padre en la nota
-          this.updateNoteById(id, (note) => ({
-            ...note,
-            parentId: newParentId,
-          }));
-
-          // Añadimos la nota al nuevo padre
-          this.addToParent(newParentId, id);
-        } else if (currentNote.parentId) {
-          // Remover de su padre actual y convertir en nota raíz
-          this.removeFromParent(id);
-          this.updateNoteById(id, (note) => ({ ...note, parentId: undefined }));
-        }
-      }
-
-      // Eliminamos parentId de updates para evitar procesarlo dos veces
-      const { parentId, ...restUpdates } = updates;
-      updates = restUpdates;
+    // Verificación y asignación explícita de tipos
+    if (updates.title && typeof updates.title === "string") {
+      validUpdates.title = sanitizeTitle(updates.title);
     }
 
-    // Aplicar el resto de actualizaciones
-    if (Object.keys(updates).length > 0) {
-      this.updateNoteById(id, (note) => {
-        const merged = {
-          ...note,
-          ...updates,
-          title: updates.title ? sanitizeTitle(updates.title) : note.title,
-          properties: updates.properties ?? note.properties,
-        };
-        return merged;
-      });
+    if (updates.icon && typeof updates.icon === "string") {
+      validUpdates.icon = updates.icon;
+    }
+
+    if (updates.content && typeof updates.content === "string") {
+      validUpdates.content = updates.content;
+    }
+
+    if (updates.properties && Array.isArray(updates.properties)) {
+      validUpdates.properties = updates.properties;
+    }
+
+    // Sin actualizaciones, salimos
+    if (Object.keys(validUpdates).length === 0) return;
+
+    // Actualizar la nota
+    this.updateNoteById(id, (existingNote) => ({
+      ...existingNote,
+      ...validUpdates,
+      // Aseguramos propiedades por defecto
+      title: validUpdates.title ?? existingNote.title,
+      properties: validUpdates.properties ?? existingNote.properties,
+    }));
+
+    // Guardado inmediato para cambios estructurales
+    const hasStructuralChanges = STRUCTURAL_FIELDS.some(
+      (field) => field in validUpdates,
+    );
+    if (hasStructuralChanges) {
+      this.forceImmediateSave();
     }
   };
 
   deleteNote = (id: string): void => {
     this.requireNote(id);
+
+    // crear un set con el id recibido y los id de los descendientes
     const idsToDelete = new Set([id, ...getDescendants(this.notes, id)]);
-    this.notes = this.notes
-      .filter((note) => !idsToDelete.has(note.id))
-      .map((note) => {
-        if (note.children.some((child) => idsToDelete.has(child))) {
-          // Se actualiza la lista de children y se refresca el timestamp
-          const updatedNote = {
-            ...note,
-            children: note.children.filter((child) => !idsToDelete.has(child)),
-          };
-          return updateModifiedMetadata(updatedNote);
-        }
-        return note;
-      });
+
+    // Eliminar nota y notas descendientes
+    const remainingNotes = this.notes.filter(
+      (note) => !idsToDelete.has(note.id),
+    );
+
+    // Luego actualizar referencias a hijos eliminados
+    this.notes = remainingNotes.map((note) => {
+      if (note.children.some((child) => idsToDelete.has(child))) {
+        return updateModifiedMetadata({
+          ...note,
+          children: note.children.filter((child) => !idsToDelete.has(child)),
+        });
+      }
+      return note;
+    });
+
+    // Quitar la nota activa si se ha eliminado
     if (this.activeNoteId && idsToDelete.has(this.activeNoteId)) {
       this.activeNoteId = null;
     }
-  };
 
-  moveNote = (noteId: string, newParentId: string | null): void => {
-    const note = this.requireNote(noteId);
-
-    // Si el nuevo padre es el mismo que el actual, no hacer nada
-    if (newParentId === note.parentId) return;
-
-    // Validar movimiento a raíz
-    if (newParentId === null) {
-      if (note.parentId) {
-        this.removeFromParent(noteId);
-        this.updateNoteById(noteId, (note) => ({
-          ...note,
-          parentId: undefined,
-        }));
-      }
-      return;
-    }
-
-    // Validar movimiento a otro padre
-    this.requireNote(newParentId, "New parent note");
-    if (newParentId === noteId) throw new Error("Cannot move note to itself");
-    if (this.wouldCreateCycle(newParentId, noteId)) {
-      throw new Error("Cannot move note to its own descendant");
-    }
-
-    // Remover de su padre actual si tiene
-    if (note.parentId) {
-      this.removeFromParent(noteId);
-    }
-
-    // Actualizar la nota
-    this.updateNoteById(noteId, (note) => ({ ...note, parentId: newParentId }));
-
-    // Añadir al nuevo padre
-    this.addToParent(newParentId, noteId);
+    this.forceImmediateSave();
   };
 
   moveNoteToPosition = (
@@ -346,6 +289,7 @@ class NoteController {
         }
       } else {
         // Reposicionar en las notas hijo
+        // Revisar esta función por que parece que no funciona bien
         this.addToParent(newParentId, noteId, position);
       }
       return;
@@ -400,6 +344,8 @@ class NoteController {
 
     // Al añadir la nota al nuevo padre, addToParent también actualiza modified
     this.addToParent(newParentId, noteId, position);
+
+    this.forceImmediateSave();
   };
 
   // -------------------

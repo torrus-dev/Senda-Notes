@@ -2,11 +2,6 @@
 import { DateTime } from "luxon";
 import type { NoteMetadata } from "../../../types/noteTypes";
 let { metadata }: { metadata: NoteMetadata } = $props();
-console.log("metadata", metadata);
-console.log(
-  "es metadata modified luxon ",
-  DateTime.isDateTime(metadata.modified),
-);
 </script>
 
 <ul class="text-base-content/70 flex w-full gap-6 px-4 py-2">
