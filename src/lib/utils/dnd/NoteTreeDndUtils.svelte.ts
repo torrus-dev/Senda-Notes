@@ -6,7 +6,6 @@ import { noteController } from "../../../controllers/noteController.svelte";
 export function createNoteTreeNodeDndHandlers(params: {
    noteId: string;
    parentId?: string;
-   children?: string[];
    getNotePosition: () => number;
    setIsDraggedOver: (val: boolean) => void;
    getBranchDragging: () => boolean;
@@ -14,7 +13,6 @@ export function createNoteTreeNodeDndHandlers(params: {
    const {
       noteId,
       parentId,
-      children,
       getNotePosition,
       setIsDraggedOver,
       getBranchDragging,
@@ -32,10 +30,6 @@ export function createNoteTreeNodeDndHandlers(params: {
       }
    };
 
-   const handleDragEnd = (_event: DragEvent) => {
-      dndController.clearDragAndDrop();
-   };
-
    const handleDragOver = (event: DragEvent) => {
       event.preventDefault();
       event.stopPropagation();
@@ -44,7 +38,6 @@ export function createNoteTreeNodeDndHandlers(params: {
       if (getBranchDragging()) {
          return;
       }
-      console.log("Drag over sobre una nota valida");
       setIsDraggedOver(true);
    };
 
@@ -58,14 +51,12 @@ export function createNoteTreeNodeDndHandlers(params: {
       event.stopPropagation();
       setIsDraggedOver(false);
 
+      // Si se intenta arrastrar una nota padre a una nota que se encuentre en un nivel inferior de la rama o a si misma, no ocurre nada
       if (getBranchDragging()) {
-         console.error("Cannot drop parent note into a child note");
-         return;
-      }
-
-      let dragSourceId = dndController.getDragSourceId();
-      if (!dragSourceId || dragSourceId === noteId) {
-         setIsDraggedOver(false);
+         console.error(
+            "Cannot drop parent note into a child note or to itself",
+         );
+         dndController.clearDragAndDrop();
          return;
       }
 
@@ -77,6 +68,7 @@ export function createNoteTreeNodeDndHandlers(params: {
             parentId: parentId,
          },
       });
+      console.log("Drop target set to note", dndController.dropTarget);
 
       // finalmente el controlador se encarga de manejar el drop
       dndController.handleDrop();
@@ -85,7 +77,6 @@ export function createNoteTreeNodeDndHandlers(params: {
 
    return {
       handleDragStart,
-      handleDragEnd,
       handleDragOver,
       handleDragLeave,
       handleDrop,
@@ -125,9 +116,11 @@ export function createNoteTreeLineDndHandlers(params: {
       event.stopPropagation();
       setIsDraggedOver(false);
 
-      // Si se intenta arrastrar una nota padre a una note-line que se encuentre en un nivel inferior de la rama, no ocurre nada
+      // Si se intenta arrastrar una nota padre a una note-line que se encuentre en un nivel inferior de la rama o a si misma, no ocurre nada
       if (getBranchDragging()) {
-         console.error("Cannot drop parent note into a child note-line");
+         console.error(
+            "Cannot drop parent note into a child note-line or to itself",
+         );
          return;
       }
 

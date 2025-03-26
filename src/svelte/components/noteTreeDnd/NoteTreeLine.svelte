@@ -11,14 +11,12 @@ let { position, parentId = undefined } = $props();
 let isDragedOver = $state(false);
 let branchDragging = $derived(checkDraggingBranch(parentId));
 
-const getBranchDragging = () => branchDragging;
-
 // Setup drag and drop
 const { handleDragOver, handleDragLeave, handleDrop } =
    createNoteTreeLineDndHandlers({
       parentId,
       getLinePosition: () => position,
-      getBranchDragging,
+      getBranchDragging: () => branchDragging,
       setIsDraggedOver: (val) => (isDragedOver = val),
    });
 </script>
