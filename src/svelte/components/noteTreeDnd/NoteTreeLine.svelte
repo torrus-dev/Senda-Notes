@@ -2,27 +2,34 @@
 </style>
 
 <script>
-import { createNoteTreeLineDndHandlers } from "../../../lib/utils/dnd/NoteTreeDnd.svelte";
+import {
+   createNoteTreeLineDndHandlers,
+   checkDraggingBranch,
+} from "../../../lib/utils/dnd/NoteTreeDndUtils.svelte";
 
-let { id, position = -1, parentId = null, parentIsDragging } = $props();
+let { position, parentId = undefined } = $props();
 let isDragedOver = $state(false);
+let branchDragging = $derived(checkDraggingBranch(parentId));
+
+const getBranchDragging = () => branchDragging;
 
 // Setup drag and drop
 const { handleDragOver, handleDragLeave, handleDrop } =
-  createNoteTreeLineDndHandlers({
-    id,
-    linePosition: position,
-    parentId,
-    setIsDraggedOver: (val) => (isDragedOver = val),
-  });
+   createNoteTreeLineDndHandlers({
+      parentId,
+      getLinePosition: () => position,
+      getBranchDragging,
+      setIsDraggedOver: (val) => (isDragedOver = val),
+   });
 </script>
 
 <li
-  class="bg-transaprent relative top-0 left-0 z-20 my-[-4px] flex h-2.5 cursor-pointer items-center transition-colors duration-300 {isDragedOver
-    ? 'highlight'
-    : ''}"
-  role="region"
-  ondragover={handleDragOver}
-  ondragleave={handleDragLeave}
-  ondrop={handleDrop}>
+   class="
+      bg-transaprent relative top-0 left-0 z-20 my-[-4px] flex h-2.5 cursor-pointer items-center transition-colors duration-300
+      {isDragedOver ? 'highlight' : ''}
+   "
+   role="region"
+   ondragover={handleDragOver}
+   ondragleave={handleDragLeave}
+   ondrop={handleDrop}>
 </li>
