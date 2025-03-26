@@ -16,7 +16,7 @@ import Button from "../utils/Button.svelte";
 import InlineTitleEditor from "../utils/InlineTitleEditor.svelte";
 import { contextMenu } from "../../../directives/floatingMenuDirective.svelte";
 
-let { note, toggleExpansion, isExpanded, isDragedOver } = $props();
+let { note, position, toggleExpansion, isExpanded, isDragedOver } = $props();
 
 let isActive = $derived(note.id === noteController.activeNoteId);
 let childrenCount = $derived(noteController.getChildrenCount(note.id));

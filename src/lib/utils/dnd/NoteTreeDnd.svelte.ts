@@ -7,10 +7,11 @@ export function createNoteTreeNodeDndHandlers(params: {
   noteId: string;
   parentId?: string;
   children?: string[];
-  notePosition: number;
+  getNotePosition: () => number;
   setIsDraggedOver: (val: boolean) => void;
 }) {
-  const { noteId, parentId, children, notePosition, setIsDraggedOver } = params;
+  const { noteId, parentId, children, getNotePosition, setIsDraggedOver } =
+    params;
 
   const isParentDragging = $derived.by(() => {
     let dragSourceId = dndController.getDragSourceId();
@@ -25,7 +26,7 @@ export function createNoteTreeNodeDndHandlers(params: {
     dndController.setDragSource({
       id: noteId,
       type: "notetree-note",
-      position: notePosition,
+      position: getNotePosition(),
     });
     if (event.dataTransfer) {
       event.dataTransfer.effectAllowed = "move";
@@ -73,7 +74,7 @@ export function createNoteTreeNodeDndHandlers(params: {
     event.stopPropagation();
     dndController.setDropTarget({
       id: noteId,
-      position: notePosition,
+      position: getNotePosition(),
       type: "notetree-note",
       data: {
         parentId: parentId,
@@ -95,11 +96,11 @@ export function createNoteTreeNodeDndHandlers(params: {
 // Handlers para NoteTreeLine
 export function createNoteTreeLineDndHandlers(params: {
   id: string;
-  linePosition: number;
   parentId: string | null;
+  getLinePosition: () => number;
   setIsDraggedOver: (val: boolean) => void;
 }) {
-  const { id, linePosition, parentId, setIsDraggedOver } = params;
+  const { id, parentId, getLinePosition, setIsDraggedOver } = params;
 
   const isParentDragging = $derived.by(() => {
     let dragSourceId = dndController.getDragSourceId();
@@ -142,7 +143,7 @@ export function createNoteTreeLineDndHandlers(params: {
 
     dndController.setDropTarget({
       type: "notetree-line",
-      position: linePosition,
+      position: getLinePosition(),
       data: {
         parentId: parentId,
       },

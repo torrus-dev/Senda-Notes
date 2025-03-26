@@ -67,7 +67,8 @@ const {
     note={note}
     position={position}
     toggleExpansion={toggleExpansion}
-    isExpanded={isExpanded} />
+    isExpanded={isExpanded}
+    isDragedOver={isDragedOver} />
 
   {#if isExpanded && note.children && note.children.length > 0}
     <ul class="border-base-400/60 ml-2.5 border-l-2">
