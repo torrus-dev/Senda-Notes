@@ -10,7 +10,7 @@ import NoteTreeLabel from "./NoteTreeLabel.svelte";
 import {
   createNoteTreeNodeDndHandlers,
   isNodeDescendant,
-} from "./NoteTreeDnd.svelte";
+} from "../../../lib/utils/dnd/NoteTreeDnd.svelte";
 
 let { note, position = -1 } = $props();
 

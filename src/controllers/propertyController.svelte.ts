@@ -1,6 +1,6 @@
-import { DateTime } from "luxon";
 import type { Property } from "../types/noteTypes";
 import { noteController } from "./noteController.svelte";
+import { getDefaultTypeValue } from "../lib/utils/propertyUtils";
 
 class PropertyController {
   constructor() {}
@@ -20,7 +20,7 @@ class PropertyController {
     const newProperty: Property = {
       ...property,
       id: crypto.randomUUID(),
-      value: property.value ?? this.getDefaultTypeValue(property.type),
+      value: property.value ?? getDefaultTypeValue(property.type),
     };
 
     // Crear una copia de la nota con la nueva propiedad
@@ -62,7 +62,7 @@ class PropertyController {
           ...updates,
           value:
             updates.type !== undefined
-              ? this.getDefaultTypeValue(newType)
+              ? getDefaultTypeValue(newType)
               : (updates.value ?? prop.value),
           type: newType,
         };
@@ -178,30 +178,6 @@ class PropertyController {
 
     return note.properties.find((p) => p.id === propertyId);
   };
-
-  /**
-   * Devuelve el valor por defecto según el tipo de propiedad
-   * @param type Tipo de la propiedad
-   * @returns Valor por defecto para ese tipo
-   */
-  private getDefaultTypeValue(type: Property["type"]) {
-    switch (type) {
-      case "text":
-        return "";
-      case "list":
-        return [];
-      case "number":
-        return 0;
-      case "check":
-        return false;
-      case "date":
-        return DateTime.now();
-      case "datetime":
-        return DateTime.now();
-      default:
-        return ""; // Valor seguro por defecto
-    }
-  }
 }
 
 export const propertyController = $state(new PropertyController());

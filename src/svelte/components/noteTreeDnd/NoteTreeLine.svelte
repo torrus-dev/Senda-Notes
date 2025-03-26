@@ -2,7 +2,7 @@
 </style>
 
 <script>
-import { createNoteTreeLineDndHandlers } from "./NoteTreeDnd.svelte";
+import { createNoteTreeLineDndHandlers } from "../../../lib/utils/dnd/NoteTreeDnd.svelte";
 
 let { id, position = -1, parentId = null, parentIsDragging } = $props();
 let isDragedOver = $state(false);
@@ -11,7 +11,7 @@ let isDragedOver = $state(false);
 const { handleDragOver, handleDragLeave, handleDrop } =
   createNoteTreeLineDndHandlers({
     id,
-    position,
+    linePosition: position,
     parentId,
     setIsDraggedOver: (val) => (isDragedOver = val),
   });

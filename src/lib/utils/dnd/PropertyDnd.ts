@@ -1,25 +1,33 @@
 import { dndController } from "../../../controllers/dndController.svelte";
+import { Property } from "../../../types/noteTypes";
 
 export function createDragAndDropHandlers(params: {
-  noteId: string | number | null;
-  property: { id: string | number; type: string; value: any; name: string };
-  position: number;
+  noteId: string | null;
+  property: Property;
+  getPosition: () => number;
   setIsDraggedOver: (val: boolean) => void;
 }) {
-  const { noteId, property, position, setIsDraggedOver } = params;
+  const { noteId, property, getPosition, setIsDraggedOver } = params;
 
   const handleDragStart = (event: DragEvent) => {
     event.stopPropagation();
+
+    if (dndController.isDragging) return;
+
     dndController.setDragSource({
+      id: property.id,
       type: "property",
+      position: getPosition(),
       data: {
         noteId: noteId,
-        propertyId: property.id,
       },
     });
+
     if (event.dataTransfer) {
       event.dataTransfer.effectAllowed = "move";
     }
+
+    console.log(dndController.dragSource);
   };
 
   const handleDragEnd = (_event: DragEvent) => {
@@ -40,12 +48,15 @@ export function createDragAndDropHandlers(params: {
   const handleDrop = (event: DragEvent) => {
     event.preventDefault();
     event.stopPropagation();
+
+    if (!dndController.isDragging) return;
+
     setIsDraggedOver(false);
+    // aqui estamos definiendo el que ocurre cuando se hace drop sobre el elemento, no queremos coger el event.target ya que cada property define este evento
     dndController.setDropTarget({
-      type: "property-line",
-      data: {
-        position: position,
-      },
+      id: property.id,
+      type: "property",
+      position: getPosition(),
     });
     dndController.handleDrop();
   };

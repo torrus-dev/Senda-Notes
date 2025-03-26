@@ -35,7 +35,6 @@ export function saveNotesToStorage(notes: Note[]): void {
       },
     }));
     localStorage.setItem("NoteList", JSON.stringify(serializedNotes));
-    console.log("notas guardadas en local storage");
   } catch (error) {
     console.error("Error al guardar NoteList en localStorage:", error);
   }

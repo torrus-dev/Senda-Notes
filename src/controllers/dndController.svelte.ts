@@ -1,34 +1,7 @@
 import { isDescendant } from "../lib/utils/noteUtils";
+import { DragSource, DropTarget, NoteTreeLineData } from "../types/dndTypes";
 import { noteController } from "./noteController.svelte";
 import { propertyController } from "./propertyController.svelte";
-
-// Tipos específicos para los datos de drop según el tipo de drop target.
-interface NoteTreeLineData {
-  parentId?: string;
-  position: number;
-}
-
-interface PropertyLineData {
-  position: number;
-}
-
-// Define los tipos específicos para el DnD
-export type DragSource = {
-  id?: string;
-  type: "notetree-note" | "tab" | "property" | "other";
-  data?: any;
-};
-
-export type DropTarget = {
-  id?: string;
-  type:
-    | "notetree-note"
-    | "notetree-line"
-    | "tab-area"
-    | "property-line"
-    | "other";
-  data?: any;
-};
 
 class DndController {
   // Estado global del workspace (incluye propertyEditor, ventanas y pestañas)
@@ -70,14 +43,24 @@ class DndController {
     try {
       switch (this.dragSource.type) {
         case "notetree-note":
-          this.noteTreeDnd();
+          if (
+            this.dropTarget.type === "notetree-note" ||
+            this.dropTarget.type === "notetree-line"
+          ) {
+            this.noteTreeDnd();
+          } else {
+            console.warn(
+              "Tipo de drop target no manejado para 'notetree-note':",
+              this.dropTarget.type,
+            );
+          }
           break;
         case "property":
-          if (this.dropTarget.type === "property-line") {
+          if (this.dropTarget.type === "property") {
             this.propertyDnd();
           } else {
             console.warn(
-              "Tipo de drop target no manejado para property:",
+              "Tipo de drop target no manejado para 'property':",
               this.dropTarget.type,
             );
           }
@@ -96,6 +79,40 @@ class DndController {
     }
   };
 
+  // Properties
+  propertyDnd = (): void => {
+    const { dragSource, dropTarget } = this;
+
+    // Validar condiciones mínimas para continuar
+    if (
+      !dragSource ||
+      !dragSource.id ||
+      !dropTarget ||
+      dropTarget.position == null
+    ) {
+      return;
+    }
+
+    const noteId = dragSource.data?.noteId;
+    const propertyId = dragSource.id;
+    const newPosition = dropTarget.position;
+
+    // Validar que se tengan todos los datos necesarios
+    if (!noteId || !propertyId || newPosition == null) {
+      console.error(
+        "Datos insuficientes para propertyDnd:",
+        dragSource.data,
+        dropTarget.data,
+      );
+      return;
+    }
+    
+    propertyController.reorderProperty(noteId, propertyId, newPosition);
+
+    dndController.clearDragAndDrop();
+  };
+
+  // Note Tree
   noteTreeDnd = (): void => {
     const draggedNoteId = this.dragSource?.id;
     if (!draggedNoteId) {
@@ -159,20 +176,6 @@ class DndController {
         this.dropTarget.type,
       );
     }
-  };
-
-  propertyDnd = (): void => {
-    const { noteId, propertyId } = this.dragSource?.data || {};
-    const data = this.dropTarget?.data as PropertyLineData | undefined;
-    if (!noteId || !propertyId || !data || typeof data.position !== "number") {
-      console.error(
-        "Datos insuficientes para propertyDnd:",
-        this.dragSource?.data,
-        this.dropTarget?.data,
-      );
-      return;
-    }
-    propertyController.reorderProperty(noteId, propertyId, data.position);
   };
 
   dropNoteOnNote = (

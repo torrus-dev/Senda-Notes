@@ -5,8 +5,8 @@
 import { workspace } from "../../../controllers/workspaceController.svelte";
 import { propertyController } from "../../../controllers/propertyController.svelte";
 
-import { getIconComponent } from "./propertyUtils";
-import { createDragAndDropHandlers } from "./PropertyDnd";
+import { getIconComponent } from "../../../lib/utils/propertyUtils";
+import { createDragAndDropHandlers } from "../../../lib/utils/dnd/PropertyDnd";
 
 import { SlidersHorizontalIcon, Trash2Icon } from "lucide-svelte";
 
@@ -31,7 +31,7 @@ const {
 } = createDragAndDropHandlers({
   noteId,
   property,
-  position,
+  getPosition: () => position,
   setIsDraggedOver: (val) => (isDragedOver = val),
 });
 
