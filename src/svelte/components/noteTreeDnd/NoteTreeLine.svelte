@@ -27,6 +27,11 @@ const { handleDragOver, handleDragLeave, handleDrop } =
       {isDragedOver ? 'highlight' : ''}
    "
    role="region"
+   draggable="true"
+   ondragstart={(event) => {
+      event.preventDefault();
+      event.stopPropagation();
+   }}
    ondragover={handleDragOver}
    ondragleave={handleDragLeave}
    ondrop={handleDrop}>

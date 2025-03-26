@@ -23,6 +23,7 @@ let isDragged = $derived(
       dndController.dragSource.id === note.id,
 );
 let branchDragging = $derived(checkDraggingBranch(note.id));
+console.log(position);
 
 // Setup drag and drop
 const { handleDragStart, handleDragOver, handleDragLeave, handleDrop } =
