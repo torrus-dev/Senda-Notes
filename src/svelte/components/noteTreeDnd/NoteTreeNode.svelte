@@ -7,7 +7,7 @@ import { dndController } from "../../../controllers/dndController.svelte";
 import {
    createNoteTreeNodeDndHandlers,
    checkDraggingBranch,
-} from "../../../lib/utils/dnd/noteTreeDndUtils.svelte";
+} from "../../../lib/utils/dnd/noteTreeDndEvents.svelte";
 
 import NoteTreeNode from "./NoteTreeNode.svelte";
 import NoteTreeLine from "./NoteTreeLine.svelte";

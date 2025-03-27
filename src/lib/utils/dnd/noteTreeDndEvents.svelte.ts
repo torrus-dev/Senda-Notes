@@ -47,7 +47,6 @@ export function createNoteTreeNodeDndHandlers(params: {
 
    const handleDragEnd = () => {
       dndController.clearDragAndDrop();
-      console.log("Drag end");
    };
 
    const handleDragLeave = (event: DragEvent) => {

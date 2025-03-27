@@ -47,9 +47,17 @@ class DndController {
                   this.dropTarget.type === "notetree-note" ||
                   this.dropTarget.type === "notetree-line"
                ) {
-                  if (this.dragSource.data.parentId === this.dropTarget.id) {
+                  if (
+                     this.dragSource.data.parentId !== undefined &&
+                     this.dropTarget.id !== undefined &&
+                     this.dragSource.data.parentId === this.dropTarget.id
+                  ) {
+                     console.warn(
+                        "Intento de mover una nota dentro de su mismo padre, se ha ignorado.",
+                     );
                      break;
                   }
+
                   this.noteTreeDnd();
                } else {
                   console.warn(
@@ -171,6 +179,7 @@ class DndController {
             );
             return;
          }
+
          // Validación adicional para drops en posiciones adyacentes
          if (
             this.dragSource &&
@@ -184,7 +193,6 @@ class DndController {
             );
             return;
          }
-
          this.dropNoteOnLineIndicator(targetParentId, draggedNoteId, position);
       } else {
          console.warn(
@@ -215,6 +223,7 @@ class DndController {
          console.error("Datos inválidos en dropNoteOnLineIndicator");
          return;
       }
+      
       noteController.moveNoteToPosition(draggedNoteId, parentId, position);
    };
 }

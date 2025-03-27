@@ -12,6 +12,7 @@ import {
 } from "../lib/utils/noteUtils";
 import { loadNotesFromStorage, saveNotesToStorage } from "../lib/utils/storage";
 import { moveNoteInTree } from "./noteMovementController";
+import { log } from "console";
 
 class NoteController {
    notes = $state<Note[]>([]);
@@ -189,8 +190,10 @@ class NoteController {
       newParentId: string | undefined,
       position: number,
    ): void => {
+      // Validamos que la nota exista
       const note = this.requireNote(noteId);
 
+      // Si se especifica un nuevo padre, validamos su existencia y evitamos ciclos o asignarla a sí misma
       if (newParentId) {
          this.requireNote(newParentId, "New parent note");
          if (newParentId === noteId) {
@@ -201,14 +204,75 @@ class NoteController {
          }
       }
 
-      this.notes = moveNoteInTree(
-         this.notes,
-         noteId,
-         newParentId,
-         position,
-         this.getNoteById,
-         (updatedNote) => updateModifiedMetadata(updatedNote),
+      // Eliminamos la referencia de la nota en el padre actual (si la tiene)
+      if (note.parentId) {
+         this.notes = this.notes.map((n) => {
+            if (n.id === note.parentId) {
+               return updateModifiedMetadata({
+                  ...n,
+                  children: n.children.filter((childId) => childId !== noteId),
+               });
+            }
+            return n;
+         });
+      }
+
+      // Actualizamos el parentId de la nota a mover
+      this.notes = this.notes.map((n) =>
+         n.id === noteId
+            ? updateModifiedMetadata({ ...n, parentId: newParentId })
+            : n,
       );
+
+      // Si se asigna un nuevo padre, actualizamos su array de children
+      if (newParentId) {
+         this.notes = this.notes.map((n) => {
+            if (n.id === newParentId) {
+               // Filtramos para evitar duplicados
+               const filteredChildren = n.children.filter(
+                  (childId) => childId !== noteId,
+               );
+               // Si la nota se movía dentro del mismo contenedor y estaba antes que la posición de destino,
+               // restamos 1 para ajustar el índice.
+               const originalIndex = n.children.indexOf(noteId);
+               let targetPosition = position;
+               if (originalIndex !== -1 && originalIndex < position) {
+                  targetPosition = position - 1;
+               }
+               const clampedPosition = Math.max(
+                  0,
+                  Math.min(targetPosition, filteredChildren.length),
+               );
+               filteredChildren.splice(clampedPosition, 0, noteId);
+               return updateModifiedMetadata({
+                  ...n,
+                  children: filteredChildren,
+               });
+            }
+            return n;
+         });
+      } else {
+         // Mover la nota a la raíz.
+         // Utilizamos getRootNotes() para obtener las notas sin padre
+         const rootNotes = this.getRootNotes();
+         const originalIndex = rootNotes.findIndex((n) => n.id === noteId);
+         // Eliminamos la nota del array de raíz
+         const filteredRootNotes = rootNotes.filter((n) => n.id !== noteId);
+         let targetPosition = position;
+         if (originalIndex !== -1 && originalIndex < position) {
+            targetPosition = position - 1;
+         }
+         const clampedPosition = Math.max(
+            0,
+            Math.min(targetPosition, filteredRootNotes.length),
+         );
+         filteredRootNotes.splice(clampedPosition, 0, note);
+         // Reconstruimos el array global:
+         // - Mantenemos las notas raíz reordenadas
+         // - Y las notas con padre se mantienen en el resto del array
+         const nonRootNotes = this.notes.filter((n) => n.parentId);
+         this.notes = [...filteredRootNotes, ...nonRootNotes];
+      }
 
       this.forceImmediateSave();
    };
