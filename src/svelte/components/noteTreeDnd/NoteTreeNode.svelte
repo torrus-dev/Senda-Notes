@@ -7,7 +7,7 @@ import { dndController } from "../../../controllers/dndController.svelte";
 import {
    createNoteTreeNodeDndHandlers,
    checkDraggingBranch,
-} from "../../../lib/utils/dnd/NoteTreeDndUtils.svelte";
+} from "../../../lib/utils/dnd/noteTreeDndUtils.svelte";
 
 import NoteTreeNode from "./NoteTreeNode.svelte";
 import NoteTreeLine from "./NoteTreeLine.svelte";
@@ -23,7 +23,6 @@ let isDragged = $derived(
       dndController.dragSource.id === note.id,
 );
 let branchDragging = $derived(checkDraggingBranch(note.id));
-console.log(position);
 
 // Setup drag and drop
 const { handleDragStart, handleDragOver, handleDragLeave, handleDrop } =
@@ -55,13 +54,14 @@ const toggleExpansion = (event) => {
    <NoteTreeLabel
       note={note}
       toggleExpansion={toggleExpansion}
-      isExpanded={isExpanded} />
+      isExpanded={isExpanded}
+      position={position} />
 
    {#if isExpanded && note.children && note.children.length > 0}
       <ul class="border-base-400/60 ml-2.5 border-l-2">
-         {#each note.children as noteId, index}
+         {#each note.children as childNoteId, index (childNoteId)}
             <NoteTreeNode
-               note={noteController.getNoteById(noteId)}
+               note={noteController.getNoteById(childNoteId)}
                position={index} />
          {/each}
          <NoteTreeLine position={note.children.length} parentId={note.id} />

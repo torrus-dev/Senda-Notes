@@ -24,6 +24,9 @@ export function createNoteTreeNodeDndHandlers(params: {
          id: noteId,
          type: "notetree-note",
          position: getNotePosition(),
+         data: {
+            parentId: parentId,
+         },
       });
       if (event.dataTransfer) {
          event.dataTransfer.effectAllowed = "move";
@@ -68,7 +71,6 @@ export function createNoteTreeNodeDndHandlers(params: {
             parentId: parentId,
          },
       });
-      console.log("Drop target set to note", dndController.dropTarget);
 
       // finalmente el controlador se encarga de manejar el drop
       dndController.handleDrop();

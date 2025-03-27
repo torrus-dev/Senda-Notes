@@ -2,10 +2,11 @@
 </style>
 
 <script>
+import { dndController } from "../../../controllers/dndController.svelte";
 import {
    createNoteTreeLineDndHandlers,
    checkDraggingBranch,
-} from "../../../lib/utils/dnd/NoteTreeDndUtils.svelte";
+} from "../../../lib/utils/dnd/noteTreeDndUtils.svelte";
 
 let { position, parentId = undefined } = $props();
 let isDragedOver = $state(false);
@@ -23,15 +24,11 @@ const { handleDragOver, handleDragLeave, handleDrop } =
 
 <li
    class="
-      bg-transaprent relative top-0 left-0 z-20 my-[-4px] flex h-2.5 cursor-pointer items-center transition-colors duration-300
+      bg-transaprent relative top-0 left-0 z-20 my-[-4px] flex h-2.5 cursor-pointer items-center transition-all duration-300
       {isDragedOver ? 'highlight' : ''}
+      {!dndController.isDragging ? 'invisible' : ''}
    "
    role="region"
-   draggable="true"
-   ondragstart={(event) => {
-      event.preventDefault();
-      event.stopPropagation();
-   }}
    ondragover={handleDragOver}
    ondragleave={handleDragLeave}
    ondrop={handleDrop}>

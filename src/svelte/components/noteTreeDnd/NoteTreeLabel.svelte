@@ -102,7 +102,9 @@ let editableElement;
          <PlusIcon size="18"></PlusIcon>
       </Button>
       {#if childrenCount > 0}
-         <p class="text-base-content/70 ml-1">{childrenCount}</p>
+         <p class="text-base-content/50 ml-1">
+            {childrenCount}
+         </p>
       {/if}
    </div>
 </div>

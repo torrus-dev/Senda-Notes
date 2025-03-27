@@ -6,7 +6,7 @@ import { workspace } from "../../../controllers/workspaceController.svelte";
 import { propertyController } from "../../../controllers/propertyController.svelte";
 
 import { getIconComponent } from "../../../lib/utils/propertyUtils";
-import { createDragAndDropHandlers } from "../../../lib/utils/dnd/PropertyDnd";
+import { createDragAndDropHandlers } from "../../../lib/utils/dnd/propertyDnd";
 
 import { SlidersHorizontalIcon, Trash2Icon } from "lucide-svelte";
 
