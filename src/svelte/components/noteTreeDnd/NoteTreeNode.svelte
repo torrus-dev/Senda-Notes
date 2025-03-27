@@ -25,7 +25,7 @@ let isDragged = $derived(
 let branchDragging = $derived(checkDraggingBranch(note.id));
 
 // Setup drag and drop
-const { handleDragStart, handleDragOver, handleDragLeave, handleDrop } =
+const { handleDragStart, handleDragOver, handleDragEnd, handleDragLeave, handleDrop } =
    createNoteTreeNodeDndHandlers({
       noteId: note.id,
       parentId: note.parentId,
@@ -49,6 +49,7 @@ const toggleExpansion = (event) => {
    draggable="true"
    ondragstart={handleDragStart}
    ondragover={handleDragOver}
+   ondragend={handleDragEnd}
    ondragleave={handleDragLeave}
    ondrop={handleDrop}>
    <NoteTreeLabel

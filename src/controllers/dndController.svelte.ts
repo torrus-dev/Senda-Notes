@@ -38,7 +38,6 @@ class DndController {
    handleDrop = (): void => {
       if (!this.dragSource || !this.dropTarget) {
          console.warn("No se dispone de drag source o drop target al soltar");
-         this.clearDragAndDrop();
          return;
       }
       try {
@@ -78,8 +77,6 @@ class DndController {
          }
       } catch (error) {
          console.error("Error en handleDrop:", error);
-      } finally {
-         this.clearDragAndDrop();
       }
    };
 
@@ -112,8 +109,6 @@ class DndController {
       }
 
       propertyController.reorderProperty(noteId, propertyId, newPosition);
-
-      dndController.clearDragAndDrop();
    };
 
    // Note Tree
@@ -147,12 +142,8 @@ class DndController {
             console.error("Target note no encontrada:", targetNoteId);
             return;
          }
-         // Se coloca la nota como último hijo de la nota destino.
-         this.dropNoteOnNote(
-            targetNoteId,
-            draggedNoteId,
-            targetNote.children.length,
-         );
+         // Se coloca la nota como primer hijo de la nota destino.
+         this.dropNoteOnNote(targetNoteId, draggedNoteId, 0);
       } else if (this.dropTarget.type === "notetree-line") {
          // Validamos que los datos tengan la forma esperada.
          const position = this.dropTarget.position;
@@ -180,14 +171,20 @@ class DndController {
             );
             return;
          }
-         console.log(
-            "parent",
-            targetParentId,
-            "note",
-            draggedNoteId,
-            "position",
-            position,
-         );
+         // Validación adicional para drops en posiciones adyacentes
+         if (
+            this.dragSource &&
+            this.dragSource.type === "notetree-note" &&
+            this.dragSource.data.parentId === targetParentId &&
+            (position === this.dragSource.position ||
+               position === this.dragSource.position + 1)
+         ) {
+            console.log(
+               "Drop en posición adyacente a la original; se ignora el reordenamiento.",
+            );
+            return;
+         }
+
          this.dropNoteOnLineIndicator(targetParentId, draggedNoteId, position);
       } else {
          console.warn(

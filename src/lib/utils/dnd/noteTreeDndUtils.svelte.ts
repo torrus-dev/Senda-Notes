@@ -1,6 +1,7 @@
 import { isDescendant } from "../noteUtils";
 import { dndController } from "../../../controllers/dndController.svelte";
 import { noteController } from "../../../controllers/noteController.svelte";
+import { DragSource } from "../../../types/dndTypes";
 
 // Handlers para NoteTreeNode
 export function createNoteTreeNodeDndHandlers(params: {
@@ -44,6 +45,11 @@ export function createNoteTreeNodeDndHandlers(params: {
       setIsDraggedOver(true);
    };
 
+   const handleDragEnd = () => {
+      dndController.clearDragAndDrop();
+      console.log("Drag end");
+   };
+
    const handleDragLeave = (event: DragEvent) => {
       event.preventDefault();
       setIsDraggedOver(false);
@@ -59,7 +65,6 @@ export function createNoteTreeNodeDndHandlers(params: {
          console.error(
             "Cannot drop parent note into a child note or to itself",
          );
-         dndController.clearDragAndDrop();
          return;
       }
 
@@ -74,12 +79,12 @@ export function createNoteTreeNodeDndHandlers(params: {
 
       // finalmente el controlador se encarga de manejar el drop
       dndController.handleDrop();
-      dndController.clearDragAndDrop();
    };
 
    return {
       handleDragStart,
       handleDragOver,
+      handleDragEnd,
       handleDragLeave,
       handleDrop,
    };
@@ -105,6 +110,15 @@ export function createNoteTreeLineDndHandlers(params: {
       if (getBranchDragging()) {
          return;
       }
+
+      // No se marca como "dragged over" para posiciones adyacentes
+      const linePosition = getLinePosition();
+      if (
+         shouldIgnoreLineDrop(dndController.dragSource, parentId, linePosition)
+      ) {
+         return;
+      }
+
       setIsDraggedOver(true);
    };
 
@@ -126,9 +140,16 @@ export function createNoteTreeLineDndHandlers(params: {
          return;
       }
 
+      const linePosition = getLinePosition();
+      if (
+         shouldIgnoreLineDrop(dndController.dragSource, parentId, linePosition)
+      ) {
+         return;
+      }
+
       dndController.setDropTarget({
          type: "notetree-line",
-         position: getLinePosition(),
+         position: linePosition,
          data: {
             parentId: parentId,
          },
@@ -136,7 +157,6 @@ export function createNoteTreeLineDndHandlers(params: {
 
       // finalmente el controlador se encarga de manejar el drop
       dndController.handleDrop();
-      dndController.clearDragAndDrop();
    };
 
    return {
@@ -156,4 +176,17 @@ export function checkDraggingBranch(noteId: string) {
       }
    }
    return false;
+}
+
+function shouldIgnoreLineDrop(
+   dragSource: DragSource | undefined,
+   targetParentId: string | undefined,
+   linePosition: number,
+): boolean {
+   if (!dragSource || dragSource.type !== "notetree-note") return false;
+   if (dragSource.data.parentId !== targetParentId) return false;
+   const originalPosition = dragSource.position;
+   return (
+      linePosition === originalPosition || linePosition === originalPosition + 1
+   );
 }
