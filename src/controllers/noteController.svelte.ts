@@ -79,7 +79,7 @@ class NoteController {
       return false;
    };
 
-   createNote = (parentId?: string | null, position?: number): void => {
+   createNote = (parentId?: string | undefined, position?: number): void => {
       if (typeof parentId === "string") {
          this.requireNote(parentId, "Parent note");
       }
@@ -110,36 +110,39 @@ class NoteController {
       this.forceImmediateSave();
    };
 
+   // Eliminar 'private' para permitir llamadas externas
    updateNote = (id: string, updates: Partial<Note>): void => {
-      const note = this.requireNote(id);
+      this.requireNote(id);
       const STRUCTURAL_FIELDS: (keyof Note)[] = ["title", "icon", "properties"];
-      const validUpdates: Partial<Note> = {};
 
-      if (updates.title && typeof updates.title === "string") {
-         validUpdates.title = sanitizeTitle(updates.title);
-      }
-      if (updates.icon && typeof updates.icon === "string") {
-         validUpdates.icon = updates.icon;
-      }
-      if (updates.content && typeof updates.content === "string") {
-         validUpdates.content = updates.content;
-      }
-      if (updates.properties && Array.isArray(updates.properties)) {
-         validUpdates.properties = updates.properties;
-      }
+      // Validación corregida para tipos estrictos
+      const validUpdates = Object.fromEntries(
+         Object.entries(updates)
+            .filter(([key, value]) => {
+               if (key === "title") return typeof value === "string";
+               if (["icon", "content"].includes(key))
+                  return typeof value === "string";
+               if (key === "properties") return Array.isArray(value);
+               return false;
+            })
+            .map(([key, value]) => [
+               key,
+               key === "title" ? sanitizeTitle(value as string) : value,
+            ]),
+      );
 
       if (Object.keys(validUpdates).length === 0) return;
 
-      this.updateNoteById(id, (existingNote) => ({
-         ...existingNote,
+      this.updateNoteById(id, (existing) => ({
+         ...existing,
          ...validUpdates,
-         title: validUpdates.title ?? existingNote.title,
-         properties: validUpdates.properties ?? existingNote.properties,
       }));
 
+      // Verificación correcta de cambios estructurales
       const hasStructuralChanges = STRUCTURAL_FIELDS.some(
          (field) => field in validUpdates,
       );
+
       if (hasStructuralChanges) {
          this.forceImmediateSave();
       }
@@ -165,17 +168,16 @@ class NoteController {
       this.notes = this.notes.filter((note) => !idsToDelete.has(note.id));
 
       // Actualizamos el array children de las notas restantes (por si algún padre referenciaba notas eliminadas)
-      this.notes = this.notes.map((note) => {
-         if (note.children.some((childId) => idsToDelete.has(childId))) {
-            return updateModifiedMetadata({
-               ...note,
-               children: note.children.filter(
-                  (childId) => !idsToDelete.has(childId),
-               ),
-            });
-         }
-         return note;
-      });
+      this.notes = this.notes.map((n) =>
+         n.children.some((childId) => idsToDelete.has(childId))
+            ? updateModifiedMetadata({
+                 ...n,
+                 children: n.children.filter(
+                    (childId) => !idsToDelete.has(childId),
+                 ),
+              })
+            : n,
+      );
 
       // Si la nota activa fue borrada, se limpia la referencia.
       if (this.activeNoteId && idsToDelete.has(this.activeNoteId)) {
