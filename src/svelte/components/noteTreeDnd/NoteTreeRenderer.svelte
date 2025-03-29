@@ -18,7 +18,7 @@ let childrenCount = $derived(noteController.getNoteCount());
             cssClass="opacity-0 group-hover:opacity-100 p-1"
             size="small"
             title="Add note">
-            <PlusIcon size="18"></PlusIcon>
+            <PlusIcon size="1.125em"></PlusIcon>
          </Button>
          {#if childrenCount > 0}
             <p class="text-base-content/50 ml-1">{childrenCount}</p>

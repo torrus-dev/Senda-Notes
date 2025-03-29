@@ -1,5 +1,5 @@
 // noteController.svelte.ts
-import { FocusTarget } from "../types/types";
+import { FocusTarget } from "../types/focusTypes";
 import type { Note } from "../types/noteTypes";
 
 import { focusController } from "./focusController.svelte";
@@ -11,8 +11,6 @@ import {
    updateModifiedMetadata,
 } from "../lib/utils/noteUtils";
 import { loadNotesFromStorage, saveNotesToStorage } from "../lib/utils/storage";
-import { moveNoteInTree } from "./noteMovementController";
-import { log } from "console";
 
 class NoteController {
    notes = $state<Note[]>([]);

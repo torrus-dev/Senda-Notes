@@ -1,119 +1,140 @@
-import type { WorkspaceState } from "../types/types";
+import type {
+   WorkspaceState,
+   PersistedWorkspaceState,
+} from "../types/workspaceTypes";
 import type { Dimensions } from "../types/contextMenuTypes";
+import { loadWorkspaceState, saveWorkspaceState } from "../lib/utils/storage";
 
 class WorkspaceController {
-  // Estado global del workspace (incluye propertyEditor, ventanas y pestañas)
-  state = $state<WorkspaceState>({
-    propertyEditor: {
-      isOpen: false,
-      noteId: null,
-      propertyId: null,
-    },
-    windows: [],
-    activeWindowId: null,
-    modal: {
-      isOpen: false,
-      content: undefined,
-    },
-    sidebar: {
-      isOpen: true,
-      width: null,
-    },
-  });
-  // Estado de la ventana
-  windowSize = $state<Dimensions>({
-    width: window.innerWidth,
-    height: window.innerHeight,
-  });
+   // Estado global del workspace: incluye propiedades efímeras y la persistente.
+   state = $state<WorkspaceState>({
+      propertyEditor: {
+         isOpen: false,
+         noteId: null,
+         propertyId: null,
+      },
+      windows: [],
+      activeWindowId: null,
+      modal: {
+         isOpen: false,
+         content: undefined,
+      },
+      sidebar: {
+         isOpen: true,
+         width: null,
+      },
+   });
 
-  constructor() {
-    if (typeof window !== "undefined") {
-      window.addEventListener("resize", () => {
-        this.windowSize = {
-          width: window.innerWidth,
-          height: window.innerHeight,
-        };
+   // Estado de la ventana
+   windowSize = $state<Dimensions>({
+      width: window.innerWidth,
+      height: window.innerHeight,
+   });
+
+   constructor() {
+      // Cargamos solo el estado persistente
+      const loadedPersistedState =
+         loadWorkspaceState() as PersistedWorkspaceState | null;
+      if (loadedPersistedState && loadedPersistedState.sidebar) {
+         this.state.sidebar = loadedPersistedState.sidebar;
+      }
+
+      // Guardamos únicamente la parte persistente (sidebar)
+      $effect.root(() => {
+         $effect(() => {
+            const persistableState: PersistedWorkspaceState = {
+               sidebar: this.state.sidebar,
+            };
+            saveWorkspaceState(persistableState);
+         });
       });
-    }
-  }
 
-  // Modal
-  openModal = (modalContent = undefined) => {
-    this.state.modal = {
-      isOpen: true,
-      content: modalContent,
-    };
-  };
+      if (typeof window !== "undefined") {
+         window.addEventListener("resize", () => {
+            this.windowSize = {
+               width: window.innerWidth,
+               height: window.innerHeight,
+            };
+         });
+      }
+   }
 
-  closeModal = () => {
-    this.state.modal = {
-      isOpen: false,
-      content: undefined,
-    };
-  };
+   // ---------- Modal ----------
+   openModal = (modalContent = undefined) => {
+      this.state.modal = {
+         isOpen: true,
+         content: modalContent,
+      };
+   };
 
-  isModalOpen = () => {
-    return this.state.modal.isOpen;
-  };
+   closeModal = () => {
+      this.state.modal = {
+         isOpen: false,
+         content: undefined,
+      };
+   };
 
-  getModalContent = () => {
-    return this.state.modal.content;
-  };
+   isModalOpen = () => {
+      return this.state.modal.isOpen;
+   };
 
-  // ----- Sidebar --> Apañarlo y añadir persistencia -----
-  setSidebarWidth = (newWidth: number) => {
-    if (typeof newWidth === "number") {
-      this.state.sidebar.width = newWidth;
-    }
-  };
+   getModalContent = () => {
+      return this.state.modal.content;
+   };
 
-  getSidebarWidth = () => {
-    return this.state.sidebar.width;
-  };
+   // ---------- Sidebar ----------
+   setSidebarWidth = (newWidth: number) => {
+      if (typeof newWidth === "number") {
+         this.state.sidebar.width = newWidth;
+      }
+   };
 
-  toggleSidebar = () => {
-    this.state.sidebar.isOpen = !this.state.sidebar.isOpen;
-  };
+   getSidebarWidth = () => {
+      return this.state.sidebar.width;
+   };
 
-  closeSidebar = () => {
-    this.state.sidebar.isOpen = false;
-  };
+   toggleSidebar = () => {
+      this.state.sidebar.isOpen = !this.state.sidebar.isOpen;
+   };
 
-  isSidebarOpen = () => {
-    return this.state.sidebar.isOpen;
-  };
+   closeSidebar = () => {
+      this.state.sidebar.isOpen = false;
+   };
 
-  // ========= Métodos para Property Editor =========
+   isSidebarOpen = () => {
+      return this.state.sidebar.isOpen;
+   };
 
-  openPropertyEditor = (
-    noteId: string | null = null,
-    propertyId: string | null = null,
-  ) => {
-    this.state.propertyEditor = {
-      isOpen: true,
-      noteId: noteId,
-      propertyId: propertyId,
-    };
-  };
+   // ---------- Property Editor ----------
+   openPropertyEditor = (
+      noteId: string | null = null,
+      propertyId: string | null = null,
+   ) => {
+      this.state.propertyEditor = {
+         isOpen: true,
+         noteId: noteId,
+         propertyId: propertyId,
+      };
+   };
 
-  closePropertyEditor = () => {
-    this.state.propertyEditor = {
-      isOpen: false,
-      noteId: null,
-      propertyId: null,
-    };
-  };
+   closePropertyEditor = () => {
+      this.state.propertyEditor = {
+         isOpen: false,
+         noteId: null,
+         propertyId: null,
+      };
+   };
 
-  isOpenPropertyEditor = (
-    noteId: string | null = null,
-    propertyId: string | null = null,
-  ) => {
-    return (
-      workspace.state.propertyEditor.isOpen &&
-      workspace.state.propertyEditor.noteId === noteId &&
-      workspace.state.propertyEditor.propertyId === propertyId
-    );
-  };
+   isOpenPropertyEditor = (
+      noteId: string | null = null,
+      propertyId: string | null = null,
+   ) => {
+      return (
+         this.state.propertyEditor.isOpen &&
+         this.state.propertyEditor.noteId === noteId &&
+         this.state.propertyEditor.propertyId === propertyId
+      );
+   };
 }
 
 export const workspace = $state(new WorkspaceController());

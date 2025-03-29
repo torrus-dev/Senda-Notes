@@ -78,7 +78,7 @@ let editableElement;
             aria-expanded={isExpanded ? "true" : "false"}
             aria-label={isExpanded ? "Colapsar" : "Expandir"}>
             <div class="transition duration-200">
-               <ChevronRightIcon size="16" aria-hidden="true" />
+               <ChevronRightIcon size="1.0625rem" aria-hidden="true" />
             </div>
          </button>
       {:else}
@@ -99,7 +99,7 @@ let editableElement;
          cssClass="text-base-content/70 opacity-0 group-hover:opacity-100 p-1"
          size="small"
          title="Add note inside">
-         <PlusIcon size="18"></PlusIcon>
+         <PlusIcon size="1.125em"></PlusIcon>
       </Button>
       {#if childrenCount > 0}
          <p class="text-base-content/50 ml-1">

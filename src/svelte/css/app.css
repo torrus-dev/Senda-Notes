@@ -7,67 +7,67 @@
 @plugin "@tailwindcss/typography";
 
 @utility bg-interactive {
-  @apply hover:bg-(--color-bg-hover) focus:bg-(--color-bg-hover);
+   @apply hover:bg-(--color-bg-hover) focus:bg-(--color-bg-hover);
 }
 @utility highlight {
-  background-color: var(--color-accent-indicator);
+   background-color: var(--color-accent-indicator);
 }
 
 @theme inline {
-  --color-base-100: var(--color-base-100);
-  --color-base-200: var(--color-base-200);
-  --color-base-300: var(--color-base-300);
-  --color-base-400: var(--color-base-400);
+   --color-base-100: var(--color-base-100);
+   --color-base-200: var(--color-base-200);
+   --color-base-300: var(--color-base-300);
+   --color-base-400: var(--color-base-400);
 
-  --color-base-content: var(--color-base-content);
-  --color-muted-content: var(--color-muted-content);
-  --color-faint-content: var(--color-faint-content);
+   --color-base-content: var(--color-base-content);
+   --color-muted-content: var(--color-muted-content);
+   --color-faint-content: var(--color-faint-content);
 
-  --color-border-normal: var(--color-border-normal);
-  --color-border-muted: var(--color-border-muted);
+   --color-border-normal: var(--color-border-normal);
+   --color-border-muted: var(--color-border-muted);
 
-  --radius-selector: var(--radius-selector);
-  --radius-field: var(--radius-field);
-  --radius-box: var(--radius-box);
+   --radius-selector: var(--radius-selector);
+   --radius-field: var(--radius-field);
+   --radius-box: var(--radius-box);
 
-  --color-accent-indicator: var(--color-accent-indicator);
+   --color-accent-indicator: var(--color-accent-indicator);
 
-  --color-error-bg: var(--color-error-bg);
-  --color-error: var(--color-error);
+   --color-error-bg: var(--color-error-bg);
+   --color-error: var(--color-error);
 }
 
 @layer components {
-  .outlined {
-    outline-style: solid;
-    outline-width: var(--border-width);
-    outline-color: var(--color-border-normal);
-  }
-  .bordered {
-    border-style: var(--tw-border-style);
-    border-width: var(--border-width);
-    border-color: var(--color-border-normal);
-  }
+   .outlined {
+      outline-style: solid;
+      outline-width: var(--border-width);
+      outline-color: var(--color-border-normal);
+   }
+   .bordered {
+      border-style: var(--tw-border-style);
+      border-width: var(--border-width);
+      border-color: var(--color-border-normal);
+   }
 }
 
 input {
-  @apply rounded-field text-base-content p-1.5;
+   @apply rounded-field text-base-content p-1.5;
 }
 
 @font-face {
-  font-family: "Adwaita Sans";
-  src: url("/fonts/AdwaitaSans-Regular.ttf") format("truetype");
-  font-weight: 1 999;
-  font-style: normal;
+   font-family: "Adwaita Sans";
+   src: url("/fonts/AdwaitaSans-Regular.ttf") format("truetype");
+   font-weight: 1 999;
+   font-style: normal;
 }
 
 @font-face {
-  font-family: "Adwaita Sans";
-  src: url("/fonts/AdwaitaSans-Italic.ttf") format("truetype");
-  font-weight: 1 999;
-  font-style: italic;
+   font-family: "Adwaita Sans";
+   src: url("/fonts/AdwaitaSans-Italic.ttf") format("truetype");
+   font-weight: 1 999;
+   font-style: italic;
 }
 
 :root {
-  box-sizing: content-box;
-  font-family: "Adwaita Sans", sans-serif;
+   box-sizing: content-box;
+   font-family: "Adwaita Sans", sans-serif;
 }

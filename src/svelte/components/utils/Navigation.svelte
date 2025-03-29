@@ -4,10 +4,10 @@ import { ArrowLeftIcon, ArrowRightIcon } from "lucide-svelte";
 </script>
 
 <div class="flex gap-1">
-  <Button>
-    <ArrowLeftIcon size="18" />
-  </Button>
-  <Button>
-    <ArrowRightIcon size="18" />
-  </Button>
+   <Button>
+      <ArrowLeftIcon size="1.125em" />
+   </Button>
+   <Button>
+      <ArrowRightIcon size="1.125em" />
+   </Button>
 </div>
