@@ -1,40 +1,29 @@
 // Hook para gestionar el estado responsive
-import { get } from "http";
-import { onMount, onDestroy } from "svelte";
+import { MediaQuery } from "svelte/reactivity";
+
+export interface ScreenSizes {
+   isMobile: boolean;
+   isTablet: boolean;
+   isDesktop: boolean;
+}
 
 export function useResponsive() {
    // Breakpoints de Tailwind
-   const MOBILE_BREAKPOINT = 640; // sm
-   const TABLET_BREAKPOINT = 768; // md
-   const DESKTOP_BREAKPOINT = 1024; // lg
+   const MOBILE_MAX_SIZE = 640; // sm
+   const TABLET_MIN_SIZE = 641; // md
+   const TABLET_MAX_SIZE = 768; // md
+   const DESKTOP_MIN_SIZE = 769; // md
+   // const DESKTOP_BREAKPOINT = 1024; // lg
 
-   let getWindowWidth = () =>
-      typeof window !== "undefined" ? window.innerWidth : 0;
-
-   let windowWidth = $state(getWindowWidth());
-
-   function updateViewport() {
-      windowWidth = window.innerWidth;
-   }
-
-   // Valores reactivos derivados
-   let isMobile = $derived(getWindowWidth() < MOBILE_BREAKPOINT);
-   let isTablet = $derived(
-      getWindowWidth() >= MOBILE_BREAKPOINT &&
-         getWindowWidth() < DESKTOP_BREAKPOINT,
+   const isMobile = $derived(new MediaQuery(`max-width: ${MOBILE_MAX_SIZE}px`));
+   const isTablet = $derived(
+      new MediaQuery(
+         `min-width: ${TABLET_MIN_SIZE}px and max-width: ${TABLET_MAX_SIZE}px`,
+      ),
    );
-   let isDesktop = $derived(getWindowWidth() >= DESKTOP_BREAKPOINT);
-
-   if (typeof window !== "undefined") {
-      onMount(() => {
-         updateViewport();
-         window.addEventListener("resize", updateViewport);
-
-         return () => {
-            window.removeEventListener("resize", updateViewport);
-         };
-      });
-   }
+   const isDesktop = $derived(
+      new MediaQuery(`min-width: ${DESKTOP_MIN_SIZE}px`),
+   );
 
    return { isMobile, isTablet, isDesktop };
 }
