@@ -8,10 +8,10 @@ import {
    Heading3Icon,
    ItalicIcon,
 } from "lucide-svelte";
-import { useResponsive } from "@directives/useResponsive.svelte";
+import { screenSizeController } from "@controllers/screenSizeController.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
 
-let isMobile = $derived(useResponsive().isMobile);
+let isMobile = $derived(screenSizeController.isMobile);
 </script>
 
 {#if settingsController.showToolbar || isMobile}

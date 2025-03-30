@@ -9,11 +9,11 @@ import Button from "@components/utils/Button.svelte";
 import ResizableHandler from "./ResizableHandler.svelte";
 import SidebarHeader from "./SidebarHeader.svelte";
 
-import { useResponsive } from "@directives/useResponsive.svelte";
+import { screenSizeController } from "@controllers/screenSizeController.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
 
 let width = $state(workspace.getSidebarWidth());
-let isMobile = $derived(useResponsive().isMobile);
+let isMobile = $derived(screenSizeController.isMobile);
 let isSidebarOpen = $derived(
    workspace.isSidebarOpen() || settingsController.getLockSidebar(),
 );

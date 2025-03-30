@@ -5,7 +5,7 @@ import { focusController } from "@controllers/focusController.svelte";
 import { noteController } from "@controllers/noteController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 
-import { useResponsive } from "@directives/useResponsive.svelte";
+import { screenSizeController } from "@controllers/screenSizeController.svelte";
 
 import Breadcrumbs from "@components/utils/Breadcrumbs.svelte";
 import Button from "@components/utils/Button.svelte";
@@ -57,7 +57,7 @@ const noteOptionsItems = [
    class="border-border-normal flex h-14 w-full items-center justify-between gap-2 p-2">
    <!-- toggle sidebar button -->
 
-   {#if !isSidebarLocked || useResponsive().isMobile}
+   {#if !isSidebarLocked || screenSizeController.isMobile}
       {#if isSidebarOpen}
          <Button onclick={workspace.toggleSidebar}>
             <PanelLeftCloseIcon size="1.125em" />
