@@ -1,27 +1,29 @@
 <script>
-import Button from "../utils/Button.svelte";
+import Button from "@components/utils/Button.svelte";
 import Check from "lucide-svelte/icons/check";
 import ChevronRight from "lucide-svelte/icons/chevron-right";
 
 // Props
-export let items = [];
-export let position = { x: 0, y: 0 };
-export let activeIndex = -1;
-export let isRendered = false;
-export let role = "menu";
-export let zIndex = 20;
-export let onItemClick = (item, event) => {};
-export let onItemMouseEnter = (index) => {};
-export let showSubmenuIndicator = false;
-export let cssClass = "";
+let {
+   items = [],
+   position = { x: 0, y: 0 },
+   activeIndex = -1,
+   isRendered = false,
+   zIndex = 20,
+   onItemClick = (item, event) => {},
+   onItemMouseEnter = (index) => {},
+   showSubmenuIndicator = false,
+   cssClass = "",
+   menuElement,
+} = $props();
 
 // Bind al elemento del menú
-export let menuElement;
+// export let menuElement;
 </script>
 
 <ul
    bind:this={menuElement}
-   role={role}
+   role="menu"
    aria-orientation="vertical"
    tabindex="-1"
    class="

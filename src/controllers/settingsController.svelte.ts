@@ -1,11 +1,12 @@
-import { loadSettingsState, saveSettingsState } from "../lib/utils/storage";
-import { Settings } from "../types/settingsTypes";
+import { loadSettingsState, saveSettingsState } from "@utils/storage";
+import { Settings } from "@projectTypes/settingsTypes";
 
 class SettingsController {
    state = $state<Settings>({
       showToolbar: false,
       theme: "dark",
       sidebarIsLocked: false,
+      showMetadata: false,
    });
 
    constructor() {
@@ -34,8 +35,29 @@ class SettingsController {
          sidebarIsLocked: !this.state.sidebarIsLocked,
       };
    };
+   getLockSidebar = () => this.state.sidebarIsLocked;
 
-   getTheme = () => this.state.theme;
+   /**
+    * @returns {"light" | "dark"} - Returns "light" or "dark" theme.
+    * @description Returns the current theme of the application.
+    */
+   getTheme = (): "light" | "dark" => this.state.theme;
+
+   /**
+    * @returns {void}
+    * @description Hides or shows the metadata information on notes.
+    */
+   toggleShowMetadata = (): void => {
+      this.state.showMetadata = !this.state.showMetadata;
+   };
+
+   /**
+    *
+    * @returns {boolean} - Returns true if the metadata is shown, false otherwise
+    * @description This function is used to get the value of showMetadata from the state.
+    * It is used to determine whether the metadata should be shown or not.
+    */
+   getShowMetadata = (): boolean => this.state.showMetadata;
 }
 
 export const settingsController = $state(new SettingsController());

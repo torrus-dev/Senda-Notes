@@ -2,11 +2,11 @@
 </style>
 
 <script>
-import { dndController } from "../../../controllers/dndController.svelte";
+import { dndController } from "@controllers/dndController.svelte";
 import {
    createNoteTreeLineDndHandlers,
    checkDraggingBranch,
-} from "../../../lib/utils/dnd/noteTreeDndEvents.svelte";
+} from "@utils/dnd/noteTreeDndEvents.svelte";
 
 let { position, parentId = undefined } = $props();
 let isDragedOver = $state(false);

@@ -1,14 +1,14 @@
 <script>
-import { FocusTarget } from "../../../types/focusTypes";
+import { FocusTarget } from "@projectTypes/focusTypes";
 
-import { focusController } from "../../../controllers/focusController.svelte";
-import { noteController } from "../../../controllers/noteController.svelte";
-import { workspace } from "../../../controllers/workspaceController.svelte";
+import { focusController } from "@controllers/focusController.svelte";
+import { noteController } from "@controllers/noteController.svelte";
+import { workspace } from "@controllers/workspaceController.svelte";
 
-import { useResponsive } from "../../../directives/useResponsive.svelte";
+import { useResponsive } from "@directives/useResponsive.svelte";
 
-import Breadcrumbs from "../utils/Breadcrumbs.svelte";
-import Button from "../utils/Button.svelte";
+import Breadcrumbs from "@components/utils/Breadcrumbs.svelte";
+import Button from "@components/utils/Button.svelte";
 
 import {
    MoreVerticalIcon,
@@ -18,11 +18,12 @@ import {
    PanelLeftCloseIcon,
    FileSearchIcon,
 } from "lucide-svelte";
-import Navigation from "../utils/Navigation.svelte";
-import { settingsController } from "../../../controllers/settingsController.svelte";
+import Navigation from "@components/utils/Navigation.svelte";
+import { settingsController } from "@controllers/settingsController.svelte";
 
 let { note } = $props();
 let isSidebarOpen = $derived(workspace.isSidebarOpen());
+let isSidebarLocked = $derived(settingsController.getLockSidebar());
 
 const noteOptionsItems = [
    {
@@ -56,7 +57,7 @@ const noteOptionsItems = [
    class="border-border-normal flex h-14 w-full items-center justify-between gap-2 p-2">
    <!-- toggle sidebar button -->
 
-   {#if !settingsController.sidebarIsLocked || useResponsive().isMobile}
+   {#if !isSidebarLocked || useResponsive().isMobile}
       {#if isSidebarOpen}
          <Button onclick={workspace.toggleSidebar}>
             <PanelLeftCloseIcon size="1.125em" />

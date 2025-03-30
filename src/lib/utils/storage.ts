@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
-import type { Note } from "../../types/noteTypes";
-import type { PersistedWorkspaceState } from "../../types/workspaceTypes"; // Se importa el nuevo tipo
-import { Settings } from "../../types/settingsTypes";
+import type { Note } from "@projectTypes/noteTypes";
+import type { PersistedWorkspaceState } from "@projectTypes/workspaceTypes"; // Se importa el nuevo tipo
+import { Settings } from "@projectTypes/settingsTypes";
 
 const NOTES_STORAGE_KEY = "NoteList";
 const WORKSPACE_STORAGE_KEY = "workspaceState";
@@ -109,5 +109,6 @@ function getDefaultSettingsState(): Settings {
       showToolbar: false,
       theme: "dark",
       sidebarIsLocked: false,
+      showMetadata: false,
    };
 }

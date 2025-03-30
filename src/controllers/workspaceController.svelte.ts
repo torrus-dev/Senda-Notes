@@ -1,9 +1,9 @@
 import type {
    WorkspaceState,
    PersistedWorkspaceState,
-} from "../types/workspaceTypes";
-import type { Dimensions } from "../types/contextMenuTypes";
-import { loadWorkspaceState, saveWorkspaceState } from "../lib/utils/storage";
+} from "@projectTypes/workspaceTypes";
+import type { Dimensions } from "@projectTypes/contextMenuTypes";
+import { loadWorkspaceState, saveWorkspaceState } from "@utils/storage";
 
 class WorkspaceController {
    // Estado global del workspace: incluye propiedades efímeras y la persistente.

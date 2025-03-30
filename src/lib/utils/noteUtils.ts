@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { Note, NoteMetadata } from "../../types/noteTypes";
+import { Note, NoteMetadata } from "@projectTypes/noteTypes";
 
 export function sanitizeTitle(title: string): string {
    return title

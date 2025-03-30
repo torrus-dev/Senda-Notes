@@ -2,17 +2,17 @@
 </style>
 
 <script>
-import { workspace } from "../../../controllers/workspaceController.svelte";
-import { propertyController } from "../../../controllers/propertyController.svelte";
+import { workspace } from "@controllers/workspaceController.svelte";
+import { propertyController } from "@controllers/propertyController.svelte";
 
-import { getIconComponent } from "../../../lib/utils/propertyUtils";
-import { createDragAndDropHandlers } from "../../../lib/utils/dnd/propertyDndEvents";
+import { getIconComponent } from "@utils/propertyUtils";
+import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";
 
 import { SlidersHorizontalIcon, Trash2Icon } from "lucide-svelte";
 
 import PropertyValue from "./propertyTypes/PropertyValue.svelte";
 import PropertyEditor from "./PropertyEditor.svelte";
-import Button from "../utils/Button.svelte";
+import Button from "@components/utils/Button.svelte";
 
 let { noteId = null, position, property = null } = $props();
 

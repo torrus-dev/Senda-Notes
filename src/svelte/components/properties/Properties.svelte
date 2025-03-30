@@ -4,10 +4,10 @@
 <script>
 import Property from "./Property.svelte";
 import PropertyEditor from "./PropertyEditor.svelte";
-import { workspace } from "../../../controllers/workspaceController.svelte";
+import { workspace } from "@controllers/workspaceController.svelte";
 
 import { PlusIcon } from "lucide-svelte";
-import Button from "../utils/Button.svelte";
+import Button from "@components/utils/Button.svelte";
 
 let { note } = $props();
 

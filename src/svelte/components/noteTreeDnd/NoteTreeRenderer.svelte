@@ -1,6 +1,6 @@
 <script>
-import { noteController } from "../../../controllers/noteController.svelte";
-import Button from "../utils/Button.svelte";
+import { noteController } from "@controllers/noteController.svelte";
+import Button from "@components/utils/Button.svelte";
 import NoteTreeLine from "./NoteTreeLine.svelte";
 import NoteTreeNode from "./NoteTreeNode.svelte";
 import { PlusIcon } from "lucide-svelte";

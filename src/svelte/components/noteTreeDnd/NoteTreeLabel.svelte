@@ -5,16 +5,16 @@
 </style>
 
 <script>
-import { noteController } from "../../../controllers/noteController.svelte";
+import { noteController } from "@controllers/noteController.svelte";
 import {
    ChevronRightIcon,
    PlusIcon,
    PenLineIcon,
    Trash2Icon,
 } from "lucide-svelte";
-import Button from "../utils/Button.svelte";
-import InlineTitleEditor from "../utils/InlineTitleEditor.svelte";
-import { contextMenu } from "../../../directives/floatingMenuDirective.svelte";
+import Button from "@components/utils/Button.svelte";
+import InlineTitleEditor from "@components/utils/InlineTitleEditor.svelte";
+import { contextMenu } from "@directives/floatingMenuDirective.svelte";
 
 let { note, toggleExpansion, isExpanded } = $props();
 

@@ -1,7 +1,7 @@
-import { isDescendant } from "../lib/utils/noteUtils";
-import { DragSource, DropTarget, NoteTreeLineData } from "../types/dndTypes";
-import { noteController } from "./noteController.svelte";
-import { propertyController } from "./propertyController.svelte";
+import { isDescendant } from "@utils/noteUtils";
+import { DragSource, DropTarget } from "@projectTypes/dndTypes";
+import { noteController } from "@controllers/noteController.svelte";
+import { propertyController } from "@controllers/propertyController.svelte";
 
 class DndController {
    // Estado global del workspace (incluye propertyEditor, ventanas y pestañas)
@@ -223,7 +223,7 @@ class DndController {
          console.error("Datos inválidos en dropNoteOnLineIndicator");
          return;
       }
-      
+
       noteController.moveNoteToPosition(draggedNoteId, parentId, position);
    };
 }

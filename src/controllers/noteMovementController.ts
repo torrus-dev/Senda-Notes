@@ -1,4 +1,4 @@
-import type { Note } from "../types/noteTypes";
+import type { Note } from "@projectTypes/noteTypes";
 
 /**
  * Reordena un array de IDs moviendo targetId a la posición indicada.

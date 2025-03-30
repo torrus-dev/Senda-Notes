@@ -1,9 +1,9 @@
 <script>
-import { sanitizeTitle } from "../../../lib/utils/noteUtils";
+import { sanitizeTitle } from "@utils/noteUtils";
 
-import { noteController } from "../../../controllers/noteController.svelte";
-import { focusController } from "../../../controllers/focusController.svelte";
-import { FocusTarget } from "../../../types/focusTypes";
+import { noteController } from "@controllers/noteController.svelte";
+import { focusController } from "@controllers/focusController.svelte";
+import { FocusTarget } from "@projectTypes/focusTypes";
 
 // Props
 let { note } = $props();

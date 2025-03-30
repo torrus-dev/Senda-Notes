@@ -1,5 +1,5 @@
 <script>
-import Button from "../utils/Button.svelte";
+import Button from "@components/utils/Button.svelte";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-svelte";
 </script>
 

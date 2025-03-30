@@ -2,12 +2,12 @@
 </style>
 
 <script>
-import { noteController } from "../../../controllers/noteController.svelte";
-import { dndController } from "../../../controllers/dndController.svelte";
+import { noteController } from "@controllers/noteController.svelte";
+import { dndController } from "@controllers/dndController.svelte";
 import {
    createNoteTreeNodeDndHandlers,
    checkDraggingBranch,
-} from "../../../lib/utils/dnd/noteTreeDndEvents.svelte";
+} from "@utils/dnd/noteTreeDndEvents.svelte";
 
 import NoteTreeNode from "./NoteTreeNode.svelte";
 import NoteTreeLine from "./NoteTreeLine.svelte";
@@ -25,14 +25,19 @@ let isDragged = $derived(
 let branchDragging = $derived(checkDraggingBranch(note.id));
 
 // Setup drag and drop
-const { handleDragStart, handleDragOver, handleDragEnd, handleDragLeave, handleDrop } =
-   createNoteTreeNodeDndHandlers({
-      noteId: note.id,
-      parentId: note.parentId,
-      getNotePosition: () => position,
-      setIsDraggedOver: (newValue) => (isDragedOver = newValue),
-      getBranchDragging: () => branchDragging,
-   });
+const {
+   handleDragStart,
+   handleDragOver,
+   handleDragEnd,
+   handleDragLeave,
+   handleDrop,
+} = createNoteTreeNodeDndHandlers({
+   noteId: note.id,
+   parentId: note.parentId,
+   getNotePosition: () => position,
+   setIsDraggedOver: (newValue) => (isDragedOver = newValue),
+   getBranchDragging: () => branchDragging,
+});
 
 const toggleExpansion = (event) => {
    event.stopPropagation();

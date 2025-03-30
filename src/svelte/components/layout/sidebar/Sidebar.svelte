@@ -1,19 +1,22 @@
 <script>
 import { SettingsIcon, InfoIcon, StarIcon, Trash2Icon } from "lucide-svelte";
-import { workspace } from "../../../../controllers/workspaceController.svelte";
+import { workspace } from "@controllers/workspaceController.svelte";
 
 import NoteTreeRenderer from "../../noteTreeDnd/NoteTreeRenderer.svelte";
 import SettingsModal from "../../modals/SettingsModal.svelte";
 import AboutModal from "../../modals/AboutModal.svelte";
-import Button from "../../utils/Button.svelte";
+import Button from "@components/utils/Button.svelte";
 import ResizableHandler from "./ResizableHandler.svelte";
 import SidebarHeader from "./SidebarHeader.svelte";
 
-import { useResponsive } from "../../../../directives/useResponsive.svelte";
+import { useResponsive } from "@directives/useResponsive.svelte";
+import { settingsController } from "@controllers/settingsController.svelte";
 
 let width = $state(workspace.getSidebarWidth());
 let isMobile = $derived(useResponsive().isMobile);
-let isSidebarOpen = $derived(workspace.isSidebarOpen());
+let isSidebarOpen = $derived(
+   workspace.isSidebarOpen() || settingsController.getLockSidebar(),
+);
 let isResizing = $state(false);
 
 function updateWidth(newWidth) {

@@ -1,6 +1,6 @@
 <script>
-import { noteController } from "../../../controllers/noteController.svelte";
-import { sanitizeTitle } from "../../../lib/utils/noteUtils";
+import { noteController } from "@controllers/noteController.svelte";
+import { sanitizeTitle } from "@utils/noteUtils";
 
 // Props
 let {

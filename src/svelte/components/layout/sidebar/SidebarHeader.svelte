@@ -1,6 +1,6 @@
 <script>
 import { FilesIcon, SearchIcon, FileSearchIcon } from "lucide-svelte";
-import Button from "../../utils/Button.svelte";
+import Button from "@components/utils/Button.svelte";
 </script>
 
 <!-- Header -->

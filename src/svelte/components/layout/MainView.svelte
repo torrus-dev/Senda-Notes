@@ -1,6 +1,6 @@
 <script>
-import { noteController } from "../../../controllers/noteController.svelte";
-import { settingsController } from "../../../controllers/settingsController.svelte";
+import { noteController } from "@controllers/noteController.svelte";
+import { settingsController } from "@controllers/settingsController.svelte";
 
 import Sidebar from "./sidebar/Sidebar.svelte";
 import NavBar from "./NavBar.svelte";

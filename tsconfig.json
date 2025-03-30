@@ -1,14 +1,33 @@
 {
-  "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "strict": true,
-    "esModuleInterop": true,
-    "useDefineForClassFields": true,
-    "outDir": "./output",
-    "rootDir": "./src",
-    "skipLibCheck": true
-  },
-  "include": ["src/**/*.ts", "src/**/*.svelte", "src/svelte/i18n.js", "src/svelte/i18n.js"],
-  "exclude": ["node_modules", "output"]
+   "compilerOptions": {
+      "target": "es6",
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "strict": true,
+      "esModuleInterop": true,
+      "useDefineForClassFields": true,
+      "outDir": "./output",
+      "rootDir": "./src",
+      "skipLibCheck": true,
+      "types": ["node", "svelte"],
+      "baseUrl": "./src",
+      "paths": {
+         "@projectTypes/*": ["types/*"],
+         "@electron/*": ["electron/*"],
+         "@utils/*": ["lib/utils/*"],
+         "@controllers/*": ["controllers/*"],
+         "@directives/*": ["directives/*"],
+         "@fonts/*": ["fonts/*"],
+         "@components/*": ["svelte/components/*"],
+         "@i18n/*": ["i18n/*"],
+         "@css/*": ["svelte/css/*"]
+      }
+   },
+   "include": [
+      "src/**/*.ts",
+      "src/**/*.svelte",
+      "src/svelte/i18n.ts",
+      "src/svelte/i18n.ts"
+   ],
+   "exclude": ["node_modules", "output"]
 }
