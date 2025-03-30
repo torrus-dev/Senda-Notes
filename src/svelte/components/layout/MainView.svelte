@@ -9,7 +9,6 @@ import NoteContent from "../noteContent/NoteContent.svelte";
 import FloatingMenu from "../menu/FloatingMenu.svelte";
 
 const activeNote = $derived(noteController.getActiveNote());
-console.log("theme", settingsController.theme);
 </script>
 
 <div

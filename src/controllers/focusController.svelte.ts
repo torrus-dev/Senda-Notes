@@ -44,7 +44,6 @@ class FocusController {
    }
 
    requestFocus = (targetId: FocusTarget) => {
-      console.log("focusing ", targetId);
       this.focus = {
          targetId,
          timestamp: Date.now(),

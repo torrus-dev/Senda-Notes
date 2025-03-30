@@ -19,7 +19,7 @@ class NoteController {
 
    constructor() {
       this.notes = loadNotesFromStorage();
-      console.log($state.snapshot(this.notes));
+      console.log("notas cargadas: ", $state.snapshot(this.notes));
       this.setupAutoSave();
    }
 

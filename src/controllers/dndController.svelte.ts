@@ -188,7 +188,7 @@ class DndController {
             (position === this.dragSource.position ||
                position === this.dragSource.position + 1)
          ) {
-            console.log(
+            console.warn(
                "Drop en posición adyacente a la original; se ignora el reordenamiento.",
             );
             return;

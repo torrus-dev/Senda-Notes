@@ -87,7 +87,6 @@ function handleEditorContextMenu(event) {
    // Función para envolver el onClick con la lógica de selección
    function wrapWithSelection(originalOnClick) {
       return () => {
-         console.log("Ejecutando onClick modificado");
          if (currentWordRange) {
             // Para comandos que requieren selección explícita
             const { view } = editorInstance;

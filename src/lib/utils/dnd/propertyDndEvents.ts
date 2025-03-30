@@ -26,8 +26,6 @@ export function createDragAndDropHandlers(params: {
       if (event.dataTransfer) {
          event.dataTransfer.effectAllowed = "move";
       }
-
-      console.log(dndController.dragSource);
    };
 
    const handleDragEnd = (_event: DragEvent) => {
