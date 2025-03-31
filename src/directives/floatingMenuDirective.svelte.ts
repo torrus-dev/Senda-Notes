@@ -1,5 +1,5 @@
-import { floatingMenuController } from "@controllers/contextMenuController.svelte";
-import { MenuItem } from "@projectTypes/floatingMenuTypes";
+import { contextMenuController } from "@controllers/contextMenuController.svelte";
+import { Coordinates, MenuItem } from "@projectTypes/floatingMenuTypes";
 
 function checkValid(menuItems: MenuItem[]) {
    if (menuItems && Array.isArray(menuItems) && menuItems.length > 0) {
@@ -12,8 +12,8 @@ function checkValid(menuItems: MenuItem[]) {
 
 // Directiva para abrir el menú como context menu (con clic derecho)
 export function contextMenu(node: HTMLElement, menuItems: MenuItem[]) {
-   // Si no hay opciones válidas o options es undefined, no hacer nada
    if (!checkValid(menuItems)) {
+      console.warn("invalid menu items!");
       return {
          update() {},
          destroy() {},
@@ -23,17 +23,11 @@ export function contextMenu(node: HTMLElement, menuItems: MenuItem[]) {
    function handleContextMenu(event: MouseEvent) {
       event.preventDefault();
       event.stopPropagation();
-
-      // Cerrar cualquier menú abierto previamente
-      if (floatingMenuController.isOpen) {
-         floatingMenuController.close();
-      }
+      contextMenuController.close();
 
       // Abrir nuestro menú contextual personalizado
-      floatingMenuController.openContextMenu(
-         { x: event.clientX, y: event.clientY },
-         menuItems,
-      );
+      const coordenates: Coordinates = { x: event.clientX, y: event.clientY };
+      contextMenuController.openMenu(coordenates, menuItems);
    }
 
    // Añadir el event listener
@@ -63,7 +57,7 @@ export function contextMenu(node: HTMLElement, menuItems: MenuItem[]) {
 
 // Directiva para abrir el menú como dropdown (con clic normal)
 export function dropdownMenu(node: HTMLElement, menuItems: MenuItem[]) {
-   if (!checkValid(menuItems)) {
+   if (!checkValid(menuItems) || true) {
       // Si no hay opciones válidas o options es undefined, no hacer nada
       return {
          update() {},
@@ -75,12 +69,12 @@ export function dropdownMenu(node: HTMLElement, menuItems: MenuItem[]) {
       event.preventDefault();
       event.stopPropagation();
 
-      if (floatingMenuController.isOpen) {
-         floatingMenuController.close();
-      } else {
-         // Abrir el menú dropdown
-         floatingMenuController.openDropdownMenu(node, menuItems);
-      }
+      // if (contextMenuController.isOpen) {
+      //    contextMenuController.close();
+      // } else {
+      //    // Abrir el menú dropdown
+      //    contextMenuController.openDropdownMenu(node, menuItems);
+      // }
    }
 
    node.addEventListener("click", handleClick);

@@ -49,6 +49,7 @@
     "@editorjs/marker": "^1.4.0",
     "@editorjs/quote": "^2.7.6",
     "@editorjs/table": "^2.4.3",
+    "@floating-ui/dom": "^1.6.13",
     "@tailwindcss/vite": "^4.0.3",
     "@tiptap/core": "^2.11.5",
     "@tiptap/extension-code-block-lowlight": "^2.11.5",

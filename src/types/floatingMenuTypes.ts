@@ -20,24 +20,18 @@ export interface SeparatorMenuItem {
 export interface ActionMenuItem extends BaseMenuItem {
    onClick: () => void;
    checked?: boolean;
-   children?: never; // No puede tener hijos
+   children?: never;
 }
 
 // Tipo para un elemento de submenú
 export interface GroupMenuItem extends BaseMenuItem {
-   children: MenuItem[]; // Debe tener hijos
-   onClick?: never; // No debe tener onClick
-   checked?: never; // No debe tener checked
+   children: MenuItem[];
+   onClick?: never;
+   checked?: never;
 }
 
 // Tipo unión para todos los tipos de MenuItems
 export type MenuItem = ActionMenuItem | GroupMenuItem | SeparatorMenuItem;
-
-// Interfaces para el controlador de menú
-export interface Coordinates {
-   x: number;
-   y: number;
-}
 
 export interface TriggerInfo {
    element: HTMLElement;

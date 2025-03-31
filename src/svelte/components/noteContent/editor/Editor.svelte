@@ -6,7 +6,7 @@
 }
 </style>
 
-<script>
+<script lang="ts">
 import { onDestroy } from "svelte";
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
@@ -16,10 +16,11 @@ import TaskItem from "@tiptap/extension-task-item";
 import Highlight from "@tiptap/extension-highlight";
 
 import { noteController } from "@controllers/noteController.svelte";
-import { floatingMenuController } from "@controllers/contextMenuController.svelte.js";
+import { contextMenuController } from "@controllers/contextMenuController.svelte.js";
 import { focusController } from "@controllers/focusController.svelte";
 import { getFormatMenuItems, editorUtils } from "./editorMenuItems.js";
 import { FocusTarget } from "@projectTypes/focusTypes";
+import type { Coordinates } from "@projectTypes/floatingMenuTypes.js";
 
 let { noteId = null } = $props();
 let content = $derived(noteController.getNoteById(noteId)?.content || "");
@@ -153,10 +154,8 @@ function handleEditorContextMenu(event) {
    });
 
    // Mostrar el menú contextual con opciones de formato
-   floatingMenuController.openContextMenu(
-      { x: event.clientX, y: event.clientY },
-      menuItems,
-   );
+   const coordinates: Coordinates = { x: event.clientX, y: event.clientY };
+   contextMenuController.openMenu(coordinates, menuItems);
 }
 
 // Inicializar el editor
