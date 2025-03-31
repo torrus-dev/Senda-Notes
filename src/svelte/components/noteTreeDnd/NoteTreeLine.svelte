@@ -24,7 +24,7 @@ const { handleDragOver, handleDragLeave, handleDrop } =
 
 <li
    class="
-      bg-transaprent relative top-0 left-0 z-20 my-[-4px] flex h-2.5 cursor-pointer items-center transition-all duration-300
+      bg-transaprent z-20 my-[-4px] flex h-2.5 cursor-pointer items-center transition-all duration-300
       {isDragedOver ? 'highlight' : ''}
       {!dndController.isDragging ? 'invisible' : ''}
    "

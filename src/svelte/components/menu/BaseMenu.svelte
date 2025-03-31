@@ -34,8 +34,8 @@ let {
     left: {position.x}px; 
     top: {position.y}px; 
     z-index: {zIndex}; 
-    visibility: {isRendered ? 'visible' : 'hidden'}; 
-    opacity: {isRendered ? '1' : '0'}; 
+    visibility: {isRendered || true ? 'visible' : 'hidden'}; 
+    opacity: {isRendered || true ? '1' : '0'}; 
     transition: opacity 0.1s ease-in-out;
   ">
    {#each items as item, i}

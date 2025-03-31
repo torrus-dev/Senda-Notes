@@ -3,37 +3,48 @@
 
 <script lang="ts">
 import { type Snippet } from "svelte";
-import Button from "@components/utils/Button.svelte";
+import { ChevronDownIcon } from "lucide-svelte";
 
 interface CollapsibleProps {
    collapsed?: boolean;
    headingContent?: Snippet;
    children?: Snippet;
+   chevronLeft?: "floating-left" | "left" | "right";
 }
 
 let {
    collapsed = false,
    headingContent,
    children,
+   chevronLeft = "right",
 }: CollapsibleProps = $props();
 let isCollapsed = $state<boolean>(collapsed);
 
 // Función para alternar el estado
 function toggle(): void {
-   console.log("Toggle");
    isCollapsed = !isCollapsed;
 }
 </script>
 
-<div class="collapsible">
+<div>
    {#if headingContent}
-      <Button
+      <button
+         type="button"
          onclick={toggle}
-         cssClass="ml-[-8px]"
+         class="flex w-full cursor-pointer justify-between py-2
+         {chevronLeft ? 'relative' : ''}"
          aria-expanded={!isCollapsed}>
          {@render headingContent()}
-         <span class="icon">{isCollapsed ? "▼" : "▲"}</span>
-      </Button>
+         <div
+            class="rounded-field p-1 {chevronLeft === 'floating-left'
+               ? 'hover:bg-interactive absolute left-[-1.75em]'
+               : ''}">
+            <ChevronDownIcon
+               size="1.125rem"
+               class="transition duration-300 {isCollapsed ? '-rotate-90' : ''}"
+            ></ChevronDownIcon>
+         </div>
+      </button>
    {/if}
 
    {#if children}

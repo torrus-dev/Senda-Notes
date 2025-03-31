@@ -46,13 +46,18 @@ const colorStyle = {
 };
 
 let style = `whitespace-nowrap rounded-field bg-interactive inline-flex cursor-pointer items-center hover:text-base-content/70 focus:text-base-content/70 gap-2 ${sizeStyle[size]} ${colorStyle[variant]} ${cssClass}`;
+
+function handleClick(event) {
+   onclick(event);
+   buttonElement.blur();
+}
 </script>
 
 {#if dropdownMenuItems && contextMenuItems}
    <button
       {...htmlAttributes}
       class={style}
-      onclick={onclick}
+      onclick={handleClick}
       use:dropdownMenu={dropdownMenuItems}
       use:contextMenu={contextMenuItems}
       bind:this={buttonElement}>
@@ -62,7 +67,7 @@ let style = `whitespace-nowrap rounded-field bg-interactive inline-flex cursor-p
    <button
       {...htmlAttributes}
       class={style}
-      onclick={onclick}
+      onclick={handleClick}
       use:dropdownMenu={dropdownMenuItems}
       bind:this={buttonElement}>
       {@render children()}
@@ -71,7 +76,7 @@ let style = `whitespace-nowrap rounded-field bg-interactive inline-flex cursor-p
    <button
       {...htmlAttributes}
       class={style}
-      onclick={onclick}
+      onclick={handleClick}
       use:contextMenu={contextMenuItems}
       bind:this={buttonElement}>
       {@render children()}
@@ -80,7 +85,7 @@ let style = `whitespace-nowrap rounded-field bg-interactive inline-flex cursor-p
    <button
       {...htmlAttributes}
       class={style}
-      onclick={onclick}
+      onclick={handleClick}
       bind:this={buttonElement}>
       {@render children()}
    </button>

@@ -6,34 +6,38 @@ import Property from "./Property.svelte";
 import PropertyEditor from "./PropertyEditor.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 
-import { PlusIcon } from "lucide-svelte";
+import { PlusIcon, TablePropertiesIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
+import Collapsible from "@components/utils/Collapsible.svelte";
 
-let { note } = $props();
+let { noteId, properties } = $props();
 
 let isAddPropertyOpen = $derived(workspace.isOpenPropertyEditor());
 </script>
 
-{#if note}
-   <div class="custom-properties my-8">
-      <h3 class="mb-2 text-xl font-bold">Properties</h3>
-      {#if note.properties && note.properties.length > 0}
+{#if noteId && properties}
+   {#snippet headingContent()}
+      <div class="flex items-center gap-2">
+         <TablePropertiesIcon size="1.125rem" /> Properties
+      </div>
+   {/snippet}
+
+   <Collapsible headingContent={headingContent} chevronLeft={true}>
+      {#if properties.length > 0}
          <ul class="rounded-lg">
-            {#each note.properties as property, index (property.id)}
-               <Property
-                  noteId={note.id}
-                  property={property}
-                  position={index} />
+            {#each properties as property, index (property.id)}
+               <Property noteId={noteId} property={property} position={index} />
             {/each}
          </ul>
       {/if}
 
       {#if isAddPropertyOpen}
          <div class="relative">
-            <PropertyEditor noteId={note.id} />
+            <PropertyEditor noteId={noteId} />
          </div>
       {:else}
          <Button
+            size="small"
             cssClass="ml-[-.5rem] text-base-content/80"
             onclick={() => {
                workspace.openPropertyEditor();
@@ -41,5 +45,5 @@ let isAddPropertyOpen = $derived(workspace.isOpenPropertyEditor());
             <PlusIcon size="1.125em" />Add Property
          </Button>
       {/if}
-   </div>
+   </Collapsible>
 {/if}

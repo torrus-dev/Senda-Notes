@@ -15,12 +15,15 @@ let { note } = $props();
       {#if note}
          <header>
             <Title note={note} />
+         </header>
+         <section class="flex flex-col gap-6">
             {#if settingsController.getShowMetadata()}
                <Metadata noteId={note.id} metadata={note.metadata}></Metadata>
             {/if}
-            <Properties note={note} />
-            <ChildNotes note={note} />
-         </header>
+            <Properties noteId={note.id} properties={note.properties} />
+            <ChildNotes children={note.children} />
+         </section>
+
          <section>
             <Editor noteId={note.id} />
          </section>

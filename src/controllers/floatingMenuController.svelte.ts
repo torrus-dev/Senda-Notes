@@ -4,7 +4,7 @@ import type {
    TriggerInfo,
    SubMenuState,
 } from "@projectTypes/contextMenuTypes";
-import { workspace } from "@controllers/workspaceController.svelte";
+import { screenSizeController } from "@controllers/screenSizeController.svelte";
 
 type MenuDimensions = { width: number; height: number };
 
@@ -29,7 +29,7 @@ class FloatingMenuController {
    });
 
    // Valores derivados
-   windowSize = $derived(workspace.windowSize);
+   windowSize = $derived(screenSizeController.getWindowSize());
 
    // Constantes
    readonly DROPDOWN_MARGIN = 4;
@@ -180,6 +180,13 @@ class FloatingMenuController {
             this.menuDimensions.height,
          )
       ) {
+         console.log(
+            !this.areDimensionsValid(
+               this.menuDimensions.width,
+               this.menuDimensions.height,
+            ),
+         );
+
          return this.position;
       }
 

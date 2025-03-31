@@ -314,6 +314,15 @@ class NoteController {
    getNoteById = (id: string): Note | undefined =>
       this.notes.find((note) => note.id === id);
 
+   getTitleById = (id: string): string | undefined => {
+      const note = this.getNoteById(id);
+      if (note) {
+         return note.title;
+      } else {
+         return undefined;
+      }
+   };
+
    getActiveNote = (): Note | null => {
       if (!this.activeNoteId) return null;
       const note = this.getNoteById(this.activeNoteId);
