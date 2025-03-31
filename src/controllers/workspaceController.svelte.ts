@@ -2,7 +2,7 @@ import type {
    WorkspaceState,
    PersistedWorkspaceState,
 } from "@projectTypes/workspaceTypes";
-import type { Dimensions } from "@projectTypes/contextMenuTypes";
+import type { Dimensions } from "@projectTypes/floatingMenuTypes";
 import { loadWorkspaceState, saveWorkspaceState } from "@utils/storage";
 
 class WorkspaceController {

@@ -1,7 +1,6 @@
-<script>
+<script lang="ts">
 import Button from "@components/utils/Button.svelte";
-import Check from "lucide-svelte/icons/check";
-import ChevronRight from "lucide-svelte/icons/chevron-right";
+import { Check, ChevronRight } from "lucide-svelte";
 
 // Props
 let {

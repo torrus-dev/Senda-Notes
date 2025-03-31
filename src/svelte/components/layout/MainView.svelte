@@ -6,7 +6,7 @@ import Sidebar from "./sidebar/Sidebar.svelte";
 import NavBar from "./NavBar.svelte";
 import Modal from "./Modal.svelte";
 import NoteContent from "../noteContent/NoteContent.svelte";
-import FloatingMenu from "../menu/FloatingMenu.svelte";
+import FloatingMenu from "../floatingMenu/FloatingMenu.svelte";
 
 const activeNote = $derived(noteController.getActiveNote());
 </script>
