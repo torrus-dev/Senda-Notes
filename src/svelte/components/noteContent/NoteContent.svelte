@@ -16,7 +16,7 @@ let { note } = $props();
          <header>
             <Title note={note} />
          </header>
-         <section class="flex flex-col gap-6">
+         <section class="mb-8 flex flex-col gap-4">
             {#if settingsController.getShowMetadata()}
                <Metadata noteId={note.id} metadata={note.metadata}></Metadata>
             {/if}

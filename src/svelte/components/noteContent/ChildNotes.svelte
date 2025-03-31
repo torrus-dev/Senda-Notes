@@ -15,7 +15,7 @@ let { children } = $props();
 {/snippet}
 
 {#if children && children.length > 0}
-   <Collapsible headingContent={headingContent} chevronLeft={true}>
+   <Collapsible headingContent={headingContent} chevronPosition="floating-left">
       <ul class="rounded-field my-2">
          {#each children as childId}
             <li>

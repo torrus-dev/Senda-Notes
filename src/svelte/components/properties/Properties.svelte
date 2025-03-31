@@ -22,7 +22,7 @@ let isAddPropertyOpen = $derived(workspace.isOpenPropertyEditor());
       </div>
    {/snippet}
 
-   <Collapsible headingContent={headingContent} chevronLeft={true}>
+   <Collapsible headingContent={headingContent} chevronPosition="floating-left">
       {#if properties.length > 0}
          <ul class="rounded-lg">
             {#each properties as property, index (property.id)}
