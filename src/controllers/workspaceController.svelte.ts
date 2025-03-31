@@ -25,12 +25,6 @@ class WorkspaceController {
       },
    });
 
-   // Estado de la ventana
-   windowSize = $state<Dimensions>({
-      width: window.innerWidth,
-      height: window.innerHeight,
-   });
-
    constructor() {
       // Cargamos solo el estado persistente
       const loadedPersistedState =
@@ -48,15 +42,6 @@ class WorkspaceController {
             saveWorkspaceState(persistableState);
          });
       });
-
-      if (typeof window !== "undefined") {
-         window.addEventListener("resize", () => {
-            this.windowSize = {
-               width: window.innerWidth,
-               height: window.innerHeight,
-            };
-         });
-      }
    }
 
    // ---------- Modal ----------

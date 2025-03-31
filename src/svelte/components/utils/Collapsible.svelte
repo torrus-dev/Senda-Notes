@@ -3,43 +3,74 @@
 
 <script lang="ts">
 import { type Snippet } from "svelte";
-import Button from "@components/utils/Button.svelte";
+import { ChevronDownIcon } from "lucide-svelte";
 
 interface CollapsibleProps {
    collapsed?: boolean;
    headingContent?: Snippet;
    children?: Snippet;
+   chevronPosition?: "floating-left" | "left" | "right";
 }
 
 let {
    collapsed = false,
    headingContent,
    children,
+   chevronPosition = "right",
 }: CollapsibleProps = $props();
 let isCollapsed = $state<boolean>(collapsed);
 
-// Función para alternar el estado
 function toggle(): void {
-   console.log("Toggle");
    isCollapsed = !isCollapsed;
 }
 </script>
 
-<div class="collapsible">
+<div>
    {#if headingContent}
-      <Button
+      <button
+         type="button"
          onclick={toggle}
-         cssClass="ml-[-8px]"
+         class="flex w-full cursor-pointer items-center p-2
+         {chevronPosition === 'floating-left' ? 'relative' : ''}"
          aria-expanded={!isCollapsed}>
-         {@render headingContent()}
-         <span class="icon">{isCollapsed ? "▼" : "▲"}</span>
-      </Button>
+         {#if chevronPosition === "left"}
+            <div class="rounded-field mr-2 p-1">
+               <ChevronDownIcon
+                  size="1.125rem"
+                  class="transition duration-300 
+                  {isCollapsed ? '-rotate-90' : ''}" />
+            </div>
+         {/if}
+
+         <div class="flex-grow">
+            {@render headingContent()}
+         </div>
+
+         {#if chevronPosition === "right"}
+            <div class="rounded-field p-1">
+               <ChevronDownIcon
+                  size="1.125rem"
+                  class="transition duration-300 {isCollapsed
+                     ? '-rotate-90'
+                     : ''}" />
+            </div>
+         {/if}
+
+         {#if chevronPosition === "floating-left"}
+            <div
+               class="rounded-field hover:bg-interactive absolute left-[-1.75em] p-1">
+               <ChevronDownIcon
+                  size="1.125rem"
+                  class="transition duration-300 {isCollapsed
+                     ? '-rotate-90'
+                     : ''}" />
+            </div>
+         {/if}
+      </button>
    {/if}
 
    {#if children}
-      <div
-         class="content {isCollapsed ? 'hidden' : ''}"
-         aria-hidden={isCollapsed}>
+      <div class={isCollapsed ? "hidden" : ""} aria-hidden={isCollapsed}>
          {@render children()}
       </div>
    {/if}

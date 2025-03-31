@@ -4,7 +4,6 @@ import { noteController } from "@controllers/noteController.svelte";
 import { propertyController } from "@controllers/propertyController.svelte";
 
 class DndController {
-   // Estado global del workspace (incluye propertyEditor, ventanas y pestañas)
    isDragging = $state<boolean>(false);
    dragSource = $state<DragSource | undefined>(undefined);
    dropTarget = $state<DropTarget | undefined>(undefined);

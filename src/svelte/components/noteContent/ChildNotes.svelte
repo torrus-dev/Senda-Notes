@@ -1,19 +1,29 @@
-<script>
+<script lang="ts">
 import { noteController } from "@controllers/noteController.svelte";
 import Button from "@components/utils/Button.svelte";
-let { note } = $props();
-let children = $derived(note.children);
+import Collapsible from "@components/utils/Collapsible.svelte";
+
+import { NetworkIcon } from "lucide-svelte";
+
+let { children } = $props();
 </script>
 
-{#if children.length > 0}
-   <div>
-      <h3 class="text-lg font-bold">Children:</h3>
-      <div
-         class="mb-6 grid grid-cols-[repeat(auto-fill,minmax(8rem,1fr))] gap-4">
-         {#each children as childId}
-            <Button onclick={() => noteController.setActiveNote(childId)}
-               >{noteController.getNoteById(childId).title}</Button>
-         {/each}
-      </div>
+{#snippet headingContent()}
+   <div class="flex items-center gap-2">
+      <NetworkIcon size="1.125rem" /> Children
    </div>
+{/snippet}
+
+{#if children && children.length > 0}
+   <Collapsible headingContent={headingContent} chevronPosition="floating-left">
+      <ul class="rounded-field my-2">
+         {#each children as childId}
+            <li>
+               <Button onclick={() => noteController.setActiveNote(childId)}>
+                  {noteController.getTitleById(childId)}
+               </Button>
+            </li>
+         {/each}
+      </ul>
+   </Collapsible>
 {/if}
