@@ -6,21 +6,18 @@ import type {
 } from "@projectTypes/floatingMenuTypes";
 
 import { contextMenuController } from "@controllers/floatingMenuController.svelte";
-import {
-   computePosition,
-   offset,
-   flip,
-   shift,
-   autoPlacement,
-} from "@floating-ui/dom";
+import { computePosition, offset, flip, shift } from "@floating-ui/dom";
 import Button from "@components/utils/Button.svelte";
 import { closeOnOutsideOrEsc } from "@directives/closeOnOutsideOrEsc";
+import { ChevronRight } from "lucide-svelte";
 
 import { tick } from "svelte";
 
+// Runes para gestionar el estado
 let { isOpen, menuItems, originalPosition }: ContextMenuData = $derived(
    contextMenuController.getMenuState(),
 );
+
 let menuElement = $state<HTMLElement | null>(null);
 let positionStyles = $state("left:0; top:0;");
 
@@ -54,35 +51,40 @@ $effect(() => {
                virtualReference,
                menuElement,
                {
-                  placement: "bottom-start", // posición por defecto: abajo y a la derecha
+                  placement: "bottom-start",
                   middleware: [
-                     offset(0), // sin desplazamiento adicional; puedes ajustar si lo deseas
-                     flip({ fallbackPlacements: ["top-start"] }), // si no cabe abajo, se posiciona arriba
-                     shift({ padding: 5 }), // evita que se desborde; padding opcional
+                     offset(0),
+                     flip({ fallbackPlacements: ["top-start"] }),
+                     shift({ padding: 5 }),
                   ],
                },
             );
             positionStyles = `left:${x}px; top:${y}px;`;
          }
       });
+   } else {
+      // Limpiar el estado cuando se cierra el menú
+      activeSubMenu = null;
+      subMenuPositions = {};
    }
 });
 
-// Función para manejar el hover en ítems con submenús
-async function handleSubMenuHover(itemId: string, parentItem: HTMLElement) {
+// Función para activar un submenú al pasar el ratón sobre una opción GroupMenuItem
+async function activateSubMenu(itemId: string, parentItem: HTMLElement) {
+   // Si se activa un nuevo submenú, cerramos el anterior
    activeSubMenu = itemId;
 
-   // Necesitamos esperar a que el DOM se actualice
+   // Esperamos a que el DOM se actualice
    await tick();
 
    const subMenuElement = subMenuElements[itemId];
    if (subMenuElement) {
-      // Definimos la referencia virtual para el submenú
+      // Referencia virtual para el posicionamiento del submenú
       const subMenuReference = {
          getBoundingClientRect() {
             const rect = parentItem.getBoundingClientRect();
             return {
-               x: rect.right, // Tomamos la esquina superior derecha del ítem padre
+               x: rect.right,
                y: rect.top,
                width: 0,
                height: rect.height,
@@ -96,13 +98,11 @@ async function handleSubMenuHover(itemId: string, parentItem: HTMLElement) {
 
       // Calculamos la posición del submenú
       const { x, y } = await computePosition(subMenuReference, subMenuElement, {
-         placement: "right-start", // Por defecto, a la derecha
+         placement: "right-start",
          middleware: [
-            offset(5), // Pequeño espacio entre el ítem y el submenú
+            offset(5),
             flip({
                fallbackPlacements: ["left-start", "right-end", "left-end"],
-               // Si no hay espacio a la derecha, intentar a la izquierda
-               // Si no hay espacio abajo, intentar arriba
             }),
             shift({ padding: 5 }),
          ],
@@ -112,24 +112,24 @@ async function handleSubMenuHover(itemId: string, parentItem: HTMLElement) {
    }
 }
 
-// Función para cerrar el submenú cuando el mouse sale
-function handleSubMenuLeave() {
-   activeSubMenu = null;
-}
-
 // Función para verificar si un ítem es un GroupMenuItem
 function isGroupMenuItem(item: MenuItem): item is GroupMenuItem {
    return "children" in item && Array.isArray(item.children);
 }
+
+// Función para cerrar el menú contextual completo (incluyendo submenús)
+function closeContextMenu() {
+   contextMenuController.close();
+}
 </script>
 
 {#if isOpen && menuItems && originalPosition}
-   <!-- Menú contextual -->
+   <!-- Menú contextual principal -->
    <div class="absolute z-100" style={positionStyles} bind:this={menuElement}>
       {#if menuItems.length > 0}
          <ul
-            class="rounded-field outlined bg-base-200 flex flex-col p-1 shadow-xl"
-            use:closeOnOutsideOrEsc={() => contextMenuController.close()}>
+            class="rounded-field outlined bg-base-200 flex min-w-40 flex-col p-1 shadow-xl"
+            use:closeOnOutsideOrEsc={closeContextMenu}>
             {#each menuItems as menuItem, index}
                {#if "separator" in menuItem && menuItem.separator}
                   <li
@@ -140,24 +140,23 @@ function isGroupMenuItem(item: MenuItem): item is GroupMenuItem {
                   {#if isGroupMenuItem(menuItem)}
                      <!-- Ítem con submenú -->
                      <li
+                        class="relative"
                         onmouseenter={(e) =>
-                           handleSubMenuHover(
+                           activateSubMenu(
                               `submenu-${index}`,
                               e.currentTarget,
-                           )}
-                        onmouseleave={handleSubMenuLeave}
-                        class="relative">
+                           )}>
                         <Button
                            size="small"
                            cssClass="w-full flex justify-between items-center">
-                           <div class="flex items-center">
+                           <div class="flex items-center gap-2">
                               {#if menuItem.icon}
                                  <menuItem.icon size="1.0625rem" />
                               {/if}
                               <span>{menuItem.label}</span>
                            </div>
-                           <!-- Indicador de submenú -->
-                           <span class="ml-2">›</span>
+                           <!-- Indicador de submenú con lucide-svelte -->
+                           <ChevronRight size="1rem" />
                         </Button>
 
                         <!-- Submenú -->
@@ -167,7 +166,7 @@ function isGroupMenuItem(item: MenuItem): item is GroupMenuItem {
                               style={subMenuPositions[`submenu-${index}`] || ""}
                               bind:this={subMenuElements[`submenu-${index}`]}>
                               <ul
-                                 class="rounded-field outlined bg-base-200 flex min-w-32 flex-col p-1 shadow-xl">
+                                 class="rounded-field outlined bg-base-200 flex min-w-40 flex-col p-1 shadow-xl">
                                  {#each menuItem.children as subMenuItem}
                                     {#if "separator" in subMenuItem && subMenuItem.separator}
                                        <li
@@ -178,21 +177,21 @@ function isGroupMenuItem(item: MenuItem): item is GroupMenuItem {
                                        <li>
                                           <Button
                                              size="small"
-                                             cssClass="w-full"
+                                             cssClass="w-full flex items-center gap-2"
                                              onclick={() => {
                                                 if (
                                                    "onClick" in subMenuItem &&
                                                    subMenuItem.onClick
                                                 ) {
                                                    subMenuItem.onClick();
-                                                   contextMenuController.close();
+                                                   closeContextMenu();
                                                 }
                                              }}>
                                              {#if subMenuItem.icon}
                                                 <subMenuItem.icon
                                                    size="1.0625rem" />
                                              {/if}
-                                             {subMenuItem.label}
+                                             <span>{subMenuItem.label}</span>
                                           </Button>
                                        </li>
                                     {/if}
@@ -203,15 +202,15 @@ function isGroupMenuItem(item: MenuItem): item is GroupMenuItem {
                      </li>
                   {:else}
                      <!-- Ítem normal con acción -->
-                     <li>
+                     <li onmouseenter={() => (activeSubMenu = null)}>
                         <Button
                            size="small"
-                           cssClass="w-full"
+                           cssClass="w-full flex items-center gap-2"
                            onclick={menuItem.onClick}>
                            {#if menuItem.icon}
                               <menuItem.icon size="1.0625rem" />
                            {/if}
-                           {menuItem.label}
+                           <span>{menuItem.label}</span>
                         </Button>
                      </li>
                   {/if}
