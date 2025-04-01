@@ -81,29 +81,54 @@ async function positionSubMenu(itemId: string, parentItem: HTMLElement) {
    const subMenuElement = subMenuElements[itemId];
    if (!subMenuElement) return;
 
-   // Referencia virtual basada en el elemento padre
+   const parentRect = parentItem.getBoundingClientRect();
+   // Usamos el ancho del submenú para determinar si cabe a la derecha
+   const submenuWidth = subMenuElement.offsetWidth;
+
+   // Determinamos el placement y la referencia según el espacio disponible
+   let placement: "right-start" | "left-start" = "right-start";
+   let referenceRect = {
+      x: parentRect.right,
+      y: parentRect.top,
+      width: 0,
+      height: parentRect.height,
+      top: parentRect.top,
+      left: parentRect.right,
+      right: parentRect.right,
+      bottom: parentRect.bottom,
+   };
+
+   if (parentRect.right + submenuWidth > window.innerWidth) {
+      // No hay espacio a la derecha: usamos el lado izquierdo del elemento padre
+      placement = "left-start";
+      referenceRect = {
+         x: parentRect.left,
+         y: parentRect.top,
+         width: 0,
+         height: parentRect.height,
+         top: parentRect.top,
+         left: parentRect.left,
+         right: parentRect.left,
+         bottom: parentRect.bottom,
+      };
+   }
+
+   // Creamos la referencia virtual según la posición determinada
    const subMenuReference = {
       getBoundingClientRect() {
-         const rect = parentItem.getBoundingClientRect();
-         return {
-            x: rect.right,
-            y: rect.top,
-            width: 0,
-            height: rect.height,
-            top: rect.top,
-            left: rect.right,
-            right: rect.right,
-            bottom: rect.bottom,
-         };
+         return referenceRect;
       },
    };
 
    const { x, y } = await computePosition(subMenuReference, subMenuElement, {
-      placement: "right-start",
+      placement,
       middleware: [
          offset(5),
          flip({
-            fallbackPlacements: ["left-start", "right-end", "left-end"],
+            // Si por algún motivo se rompe, se usará un fallback acorde
+            fallbackPlacements: [
+               placement === "right-start" ? "right-end" : "left-end",
+            ],
          }),
          shift({ padding: 5 }),
       ],
