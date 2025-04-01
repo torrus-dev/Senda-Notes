@@ -13,20 +13,21 @@ import { ChevronRight } from "lucide-svelte";
 
 import { tick } from "svelte";
 
-// Runes para gestionar el estado
+// Estado principal del menú
 let { isOpen, menuItems, originalPosition }: ContextMenuData = $derived(
    contextMenuController.getMenuState(),
 );
 
+// Referencias y posicionamiento
 let menuElement = $state<HTMLElement | null>(null);
 let positionStyles = $state("left:0; top:0;");
 
-// Para los submenús
+// Estado de submenús
 let activeSubMenu = $state<string | null>(null);
 let subMenuElements = $state<Record<string, HTMLElement | null>>({});
 let subMenuPositions = $state<Record<string, string>>({});
 
-// Virtual reference: un rectángulo de 1x1 en originalPosition
+// Referencia virtual para el menú principal
 const virtualReference = {
    getBoundingClientRect() {
       return {
@@ -42,89 +43,92 @@ const virtualReference = {
    },
 };
 
-// Posicionamiento del menú principal
+// Posicionamiento del menú principal cuando cambia isOpen o originalPosition
 $effect(() => {
-   if (isOpen === true && originalPosition) {
-      tick().then(async () => {
-         if (menuElement && originalPosition) {
-            const { x, y } = await computePosition(
-               virtualReference,
-               menuElement,
-               {
-                  placement: "bottom-start",
-                  middleware: [
-                     offset(0),
-                     flip({ fallbackPlacements: ["top-start"] }),
-                     shift({ padding: 5 }),
-                  ],
-               },
-            );
-            positionStyles = `left:${x}px; top:${y}px;`;
-         }
-      });
-   } else {
-      // Limpiar el estado cuando se cierra el menú
+   if (!isOpen) {
+      // Limpiar estado al cerrar
       activeSubMenu = null;
       subMenuPositions = {};
+      return;
+   }
+
+   if (originalPosition) {
+      positionMainMenu();
    }
 });
 
-// Función para activar un submenú al pasar el ratón sobre una opción GroupMenuItem
-async function activateSubMenu(itemId: string, parentItem: HTMLElement) {
-   // Si se activa un nuevo submenú, cerramos el anterior
-   activeSubMenu = itemId;
+// Funciones de posicionamiento
+async function positionMainMenu() {
+   await tick();
 
-   // Esperamos a que el DOM se actualice
+   if (!menuElement || !originalPosition) return;
+
+   const { x, y } = await computePosition(virtualReference, menuElement, {
+      placement: "bottom-start",
+      middleware: [
+         offset(0),
+         flip({ fallbackPlacements: ["top-start"] }),
+         shift({ padding: 5 }),
+      ],
+   });
+
+   positionStyles = `left:${x}px; top:${y}px;`;
+}
+
+async function positionSubMenu(itemId: string, parentItem: HTMLElement) {
    await tick();
 
    const subMenuElement = subMenuElements[itemId];
-   if (subMenuElement) {
-      // Referencia virtual para el posicionamiento del submenú
-      const subMenuReference = {
-         getBoundingClientRect() {
-            const rect = parentItem.getBoundingClientRect();
-            return {
-               x: rect.right,
-               y: rect.top,
-               width: 0,
-               height: rect.height,
-               top: rect.top,
-               left: rect.right,
-               right: rect.right,
-               bottom: rect.bottom,
-            };
-         },
-      };
+   if (!subMenuElement) return;
 
-      // Calculamos la posición del submenú
-      const { x, y } = await computePosition(subMenuReference, subMenuElement, {
-         placement: "right-start",
-         middleware: [
-            offset(5),
-            flip({
-               fallbackPlacements: ["left-start", "right-end", "left-end"],
-            }),
-            shift({ padding: 5 }),
-         ],
-      });
+   // Referencia virtual basada en el elemento padre
+   const subMenuReference = {
+      getBoundingClientRect() {
+         const rect = parentItem.getBoundingClientRect();
+         return {
+            x: rect.right,
+            y: rect.top,
+            width: 0,
+            height: rect.height,
+            top: rect.top,
+            left: rect.right,
+            right: rect.right,
+            bottom: rect.bottom,
+         };
+      },
+   };
 
-      subMenuPositions[itemId] = `left:${x}px; top:${y}px;`;
-   }
+   const { x, y } = await computePosition(subMenuReference, subMenuElement, {
+      placement: "right-start",
+      middleware: [
+         offset(5),
+         flip({
+            fallbackPlacements: ["left-start", "right-end", "left-end"],
+         }),
+         shift({ padding: 5 }),
+      ],
+   });
+
+   subMenuPositions[itemId] = `left:${x}px; top:${y}px;`;
 }
 
-// Función para verificar si un ítem es un GroupMenuItem
+// Gestión de submenús
+async function activateSubMenu(itemId: string, parentItem: HTMLElement) {
+   activeSubMenu = itemId;
+   await positionSubMenu(itemId, parentItem);
+}
+
+// Utilidades
 function isGroupMenuItem(item: MenuItem): item is GroupMenuItem {
    return "children" in item && Array.isArray(item.children);
 }
 
-// Función para cerrar el menú contextual completo (incluyendo submenús)
 function closeContextMenu() {
    contextMenuController.close();
 }
 </script>
 
 {#if isOpen && menuItems && originalPosition}
-   <!-- Menú contextual principal -->
    <div class="absolute z-100" style={positionStyles} bind:this={menuElement}>
       {#if menuItems.length > 0}
          <ul
@@ -132,6 +136,7 @@ function closeContextMenu() {
             use:closeOnOutsideOrEsc={closeContextMenu}>
             {#each menuItems as menuItem, index}
                {#if "separator" in menuItem && menuItem.separator}
+                  <!-- Separador -->
                   <li
                      class="border-border-normal my-1 w-full border-t-2"
                      role="separator">
@@ -155,7 +160,6 @@ function closeContextMenu() {
                               {/if}
                               <span>{menuItem.label}</span>
                            </div>
-                           <!-- Indicador de submenú con lucide-svelte -->
                            <ChevronRight size="1rem" />
                         </Button>
 
