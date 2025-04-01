@@ -1,4 +1,7 @@
-import { contextMenuController } from "@controllers/floatingMenuController.svelte";
+import {
+   contextMenuController,
+   dropdownMenuController,
+} from "@controllers/floatingMenuController.svelte";
 import { Coordinates, MenuItem } from "@projectTypes/floatingMenuTypes";
 
 function checkValid(menuItems: MenuItem[]) {
@@ -57,8 +60,7 @@ export function contextMenu(node: HTMLElement, menuItems: MenuItem[]) {
 
 // Directiva para abrir el menú como dropdown (con clic normal)
 export function dropdownMenu(node: HTMLElement, menuItems: MenuItem[]) {
-   if (!checkValid(menuItems) || true) {
-      // Si no hay opciones válidas o options es undefined, no hacer nada
+   if (!checkValid(menuItems)) {
       return {
          update() {},
          destroy() {},
@@ -68,13 +70,9 @@ export function dropdownMenu(node: HTMLElement, menuItems: MenuItem[]) {
    function handleClick(event: MouseEvent) {
       event.preventDefault();
       event.stopPropagation();
+      dropdownMenuController.close();
 
-      if (contextMenuController.isOpen) {
-         contextMenuController.close();
-      } else {
-         // Abrir el menú dropdown
-         contextMenuController.openDropdownMenu(node, menuItems);
-      }
+      dropdownMenuController.openMenu(node, menuItems);
    }
 
    node.addEventListener("click", handleClick);
@@ -86,15 +84,12 @@ export function dropdownMenu(node: HTMLElement, menuItems: MenuItem[]) {
          const isValid = checkValid(newMenuItems);
          menuItems = newMenuItems;
 
-         // Si las opciones cambian a inválidas, remover el listener
          if (wasValid && !isValid) {
             node.removeEventListener("click", handleClick);
          } else if (!wasValid && isValid) {
-            // Si pasamos de opciones inválidas a válidas, añadir el listener
             node.addEventListener("click", handleClick);
          }
       },
-      // Limpiar event listeners al destruir el componente
       destroy() {
          node.removeEventListener("click", handleClick);
       },
