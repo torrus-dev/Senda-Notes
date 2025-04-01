@@ -1,5 +1,9 @@
 <script lang="ts">
-import type { ContextMenuData } from "@projectTypes/floatingMenuTypes";
+import type {
+   ActionMenuItem,
+   ContextMenuData,
+   GroupMenuItem,
+} from "@projectTypes/floatingMenuTypes";
 
 import { contextMenuController } from "@controllers/floatingMenuController.svelte";
 import { closeOnOutsideOrEsc } from "@directives/closeOnOutsideOrEsc";
@@ -46,6 +50,9 @@ $effect(() => {
    if (isOpen === true && originalPosition) {
       tick().then(updateMenuPosition);
    }
+   if (isOpen && activeSubMenu !== undefined) {
+      tick().then(updateMenuPosition);
+   }
 });
 </script>
 
@@ -53,9 +60,44 @@ $effect(() => {
    <li class="border-border-normal my-1 w-full border-t-2" role="separator">
    </li>
 {/snippet}
-{#snippet actionItem()}
+{#snippet actionItem(menuItem: ActionMenuItem)}
+   <li>
+      <Button
+         size="small"
+         cssClass="w-full {menuItem.class}"
+         onclick={() => {
+            menuItem.onClick?.();
+            closeMenu();
+         }}>
+         <menuItem.icon size="1.0625rem" />
+         {menuItem.label}
+      </Button>
+   </li>
 {/snippet}
-
+{#snippet groupItem(
+   menuItem: GroupMenuItem,
+   arrowLeft: boolean = false,
+   onclick: () => void,
+)}
+   <li>
+      <Button size="small" cssClass="w-full {menuItem.class}" onclick={onclick}>
+         {#if arrowLeft}
+            <ChevronLeftIcon size="1.0625rem" class="absolute left-2" />
+         {/if}
+         <span
+            class="flex flex-1 items-center gap-2
+            {arrowLeft ? 'justify-center' : ''}">
+            {#if menuItem.icon}
+               <menuItem.icon size="1.0625rem" />
+            {/if}
+            {menuItem.label}
+         </span>
+         {#if !arrowLeft}
+            <ChevronRightIcon size="1.0625rem" />
+         {/if}
+      </Button>
+   </li>
+{/snippet}
 
 {#if isOpen && menuItems && menuItems.length > 0 && originalPosition}
    <div
@@ -70,65 +112,25 @@ $effect(() => {
                {#if menuItem.type === "separator"}
                   {@render separatorItem()}
                {:else if menuItem.type === "action"}
-                  <li>
-                     <Button
-                        size="small"
-                        cssClass="w-full {menuItem.class}"
-                        onclick={() => {
-                           menuItem.onClick?.();
-                           closeMenu();
-                        }}>
-                        <menuItem.icon size="1.0625rem" />
-                        {menuItem.label}
-                     </Button>
-                  </li>
+                  {@render actionItem(menuItem)}
                {:else if menuItem.type === "group"}
-                  <li>
-                     <Button
-                        size="small"
-                        cssClass="w-full justify-between {menuItem.class}"
-                        onclick={() => {
-                           contextMenuController.setActiveSubMenu(menuItem);
-                        }}>
-                        <span class="flex items-center gap-2">
-                           <menuItem.icon size="1.0625rem" />
-                           {menuItem.label}
-                        </span>
-                        <ChevronRightIcon size="1.0625rem" />
-                     </Button>
-                  </li>
+                  {@render groupItem(menuItem, false, () => {
+                     contextMenuController.setActiveSubMenu(menuItem);
+                  })}
                {/if}
             {/each}
          {:else}
-            <li>
-               <Button
-                  size="small"
-                  onclick={contextMenuController.unsetActiveSubMenu}
-                  cssClass="w-full">
-                  <ChevronLeftIcon size="1.0625rem"></ChevronLeftIcon>
-                  <span class="flex items-center gap-2">
-                     <activeSubMenu.icon size="1.0625rem" />
-                     {activeSubMenu.label}
-                  </span>
-               </Button>
-            </li>
+            {@render groupItem(
+               activeSubMenu,
+               true,
+               contextMenuController.unsetActiveSubMenu,
+            )}
             {@render separatorItem()}
             {#each activeSubMenu.children as subMenuItem}
                {#if subMenuItem.type === "separator"}
                   {@render separatorItem()}
                {:else if subMenuItem.type === "action"}
-                  <li>
-                     <Button
-                        size="small"
-                        cssClass="w-full {subMenuItem.class}"
-                        onclick={() => {
-                           subMenuItem.onClick?.();
-                           closeMenu();
-                        }}>
-                        <subMenuItem.icon size="1.0625rem" />
-                        {subMenuItem.label}
-                     </Button>
-                  </li>
+                  {@render actionItem(subMenuItem)}
                {/if}
             {/each}
          {/if}
