@@ -49,6 +49,14 @@ $effect(() => {
 });
 </script>
 
+{#snippet separatorItem()}
+   <li class="border-border-normal my-1 w-full border-t-2" role="separator">
+   </li>
+{/snippet}
+{#snippet actionItem()}
+{/snippet}
+
+
 {#if isOpen && menuItems && menuItems.length > 0 && originalPosition}
    <div
       class="absolute z-100"
@@ -60,10 +68,7 @@ $effect(() => {
          {#if activeSubMenu === undefined}
             {#each menuItems as menuItem}
                {#if menuItem.type === "separator"}
-                  <li
-                     class="border-border-normal my-1 w-full border-t-2"
-                     role="separator">
-                  </li>
+                  {@render separatorItem()}
                {:else if menuItem.type === "action"}
                   <li>
                      <Button
@@ -107,16 +112,10 @@ $effect(() => {
                   </span>
                </Button>
             </li>
-            <li
-               class="border-border-normal my-1 w-full border-t-2"
-               role="separator">
-            </li>
+            {@render separatorItem()}
             {#each activeSubMenu.children as subMenuItem}
                {#if subMenuItem.type === "separator"}
-                  <li
-                     class="border-border-normal my-1 w-full border-t-2"
-                     role="separator">
-                  </li>
+                  {@render separatorItem()}
                {:else if subMenuItem.type === "action"}
                   <li>
                      <Button
