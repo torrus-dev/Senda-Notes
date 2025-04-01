@@ -56,6 +56,7 @@ const IconComponent = $derived(getIconComponent(property.type));
             size="small"
             dropdownMenuItems={[
                {
+                  type: "action",
                   label: "Edit Property",
                   icon: SlidersHorizontalIcon,
                   onClick: () => {
@@ -63,6 +64,7 @@ const IconComponent = $derived(getIconComponent(property.type));
                   },
                },
                {
+                  type: "action",
                   label: "Delete Property",
                   icon: Trash2Icon,
                   onClick: () => {

@@ -36,29 +36,34 @@ export function getFormatMenuItems(editor: Editor) {
 
    return <MenuItem[]>[
       {
+         type: "group",
          label: "Formato",
          icon: PenLineIcon,
          children: [
             {
+               type: "action",
                label: "Negrita",
                icon: BoldIcon,
                checked: editor.isActive("bold"),
                onClick: () => editor.chain().focus().toggleBold().run(),
             },
             {
+               type: "action",
                label: "Cursiva",
                icon: ItalicIcon,
                checked: editor.isActive("italic"),
                onClick: () => editor.chain().focus().toggleItalic().run(),
             },
             {
+               type: "action",
                label: "Tachado",
                icon: StrikethroughIcon,
                checked: editor.isActive("strike"),
                onClick: () => editor.chain().focus().toggleStrike().run(),
             },
-            { separator: true },
+            { type: "separator" },
             {
+               type: "action",
                label: "Código en línea",
                icon: CodeIcon,
                checked: editor.isActive("code"),
@@ -66,13 +71,15 @@ export function getFormatMenuItems(editor: Editor) {
             },
             // Añadimos la opción de texto destacado
             {
+               type: "action",
                label: "Destacar",
                icon: HighlighterIcon,
                checked: editor.isActive("highlight"),
                onClick: () => editor.chain().focus().toggleHighlight().run(),
             },
-            { separator: true },
+            { type: "separator" },
             {
+               type: "action",
                label: "Limpiar formato",
                icon: EraserIcon,
                onClick: () =>
@@ -81,16 +88,19 @@ export function getFormatMenuItems(editor: Editor) {
          ],
       },
       {
+         type: "group",
          label: "Párrafo",
          icon: PilcrowIcon,
          children: [
             {
+               type: "action",
                label: "Lista numerada",
                icon: ListOrderedIcon,
                checked: editor.isActive("orderedList"),
                onClick: () => editor.chain().focus().toggleOrderedList().run(),
             },
             {
+               type: "action",
                label: "Lista normal",
                icon: ListIcon,
                checked: editor.isActive("bulletList"),
@@ -98,13 +108,15 @@ export function getFormatMenuItems(editor: Editor) {
             },
             // Añadimos la opción de lista de tareas
             {
+               type: "action",
                label: "Lista de tareas",
                icon: CheckSquareIcon,
                checked: editor.isActive("taskList"),
                onClick: () => editor.chain().focus().toggleTaskList().run(),
             },
-            { separator: true },
+            { type: "separator" },
             {
+               type: "action",
                label: "Título 1",
                icon: Heading1Icon,
                checked: editor.isActive("heading", { level: 1 }),
@@ -112,6 +124,7 @@ export function getFormatMenuItems(editor: Editor) {
                   editor.chain().focus().toggleHeading({ level: 1 }).run(),
             },
             {
+               type: "action",
                label: "Título 2",
                icon: Heading2Icon,
                checked: editor.isActive("heading", { level: 2 }),
@@ -119,6 +132,7 @@ export function getFormatMenuItems(editor: Editor) {
                   editor.chain().focus().toggleHeading({ level: 2 }).run(),
             },
             {
+               type: "action",
                label: "Título 3",
                icon: Heading3Icon,
                checked: editor.isActive("heading", { level: 3 }),
@@ -126,6 +140,7 @@ export function getFormatMenuItems(editor: Editor) {
                   editor.chain().focus().toggleHeading({ level: 3 }).run(),
             },
             {
+               type: "action",
                label: "Título 4",
                icon: Heading4Icon,
                checked: editor.isActive("heading", { level: 4 }),
@@ -133,6 +148,7 @@ export function getFormatMenuItems(editor: Editor) {
                   editor.chain().focus().toggleHeading({ level: 4 }).run(),
             },
             {
+               type: "action",
                label: "Título 5",
                icon: Heading5Icon,
                checked: editor.isActive("heading", { level: 5 }),
@@ -140,6 +156,7 @@ export function getFormatMenuItems(editor: Editor) {
                   editor.chain().focus().toggleHeading({ level: 5 }).run(),
             },
             {
+               type: "action",
                label: "Título 6",
                icon: Heading6Icon,
                checked: editor.isActive("heading", { level: 6 }),
@@ -147,13 +164,15 @@ export function getFormatMenuItems(editor: Editor) {
                   editor.chain().focus().toggleHeading({ level: 6 }).run(),
             },
             {
+               type: "action",
                label: "Párrafo normal",
                icon: TextIcon,
                checked: editor.isActive("paragraph"),
                onClick: () => editor.chain().focus().setParagraph().run(),
             },
-            { separator: true },
+            { type: "separator" },
             {
+               type: "action",
                label: "Cita",
                icon: QuoteIcon,
                checked: editor.isActive("blockquote"),
@@ -162,24 +181,28 @@ export function getFormatMenuItems(editor: Editor) {
          ],
       },
       {
+         type: "group",
          label: "Insertar",
          icon: BetweenHorizontalStartIcon,
          children: [
             {
+               type: "action",
                label: "Bloque de código",
                icon: SquareCodeIcon,
                checked: editor.isActive("codeBlock"),
                onClick: () => editor.chain().focus().toggleCodeBlock().run(),
             },
             {
+               type: "action",
                label: "Línea horizontal",
                icon: MinusIcon,
                onClick: () => editor.chain().focus().setHorizontalRule().run(),
             },
          ],
       },
-      { separator: true },
+      { type: "separator" },
       {
+         type: "action",
          label: "Copiar",
          icon: CopyIcon,
          disabled: editor.state.selection.empty,
@@ -190,6 +213,7 @@ export function getFormatMenuItems(editor: Editor) {
          },
       },
       {
+         type: "action",
          label: "Cortar",
          icon: ScissorsIcon,
          disabled: editor.state.selection.empty,
@@ -201,6 +225,7 @@ export function getFormatMenuItems(editor: Editor) {
          },
       },
       {
+         type: "action",
          label: "Pegar",
          icon: ClipboardPasteIcon,
          onClick: async () => {

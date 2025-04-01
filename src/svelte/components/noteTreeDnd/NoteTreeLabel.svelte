@@ -56,11 +56,13 @@ let editableElement;
    tabindex="0"
    use:contextMenu={[
       {
+         type: "action",
          label: "Rename Note",
          icon: PenLineIcon,
          onClick: startEditingLabel,
       },
       {
+         type: "action",
          label: "Delete Note",
          icon: Trash2Icon,
          onClick: () => noteController.deleteNote(note.id),

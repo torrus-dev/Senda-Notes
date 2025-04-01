@@ -2,40 +2,37 @@ export interface ContextMenuData {
    isOpen: boolean;
    menuItems: MenuItem[];
    originalPosition: Coordinates;
+   activeSubMenu: GroupMenuItem | undefined;
 }
+
 export interface DropdownMenuData {
    isOpen: boolean;
    menuItems: MenuItem[];
    triggerElement: HTMLElement | null;
+   activeSubMenu: GroupMenuItem | undefined;
 }
 
-// Interfaz base para propiedades comunes a todos los MenuItems
 interface BaseMenuItem {
+   type: "separator" | "group" | "action";
    label: string;
    icon?: any;
    class?: string;
 }
-
-// Tipo para un elemento separador
 export interface SeparatorMenuItem {
-   separator: true;
+   type: "separator";
 }
-
-// Tipo para un elemento de acción (con onClick)
 export interface ActionMenuItem extends BaseMenuItem {
+   type: "action";
    onClick: () => void;
    checked?: boolean;
    children?: never;
 }
-
-// Tipo para un elemento de submenú
 export interface GroupMenuItem extends BaseMenuItem {
+   type: "group";
    children: MenuItem[];
    onClick?: never;
    checked?: never;
 }
-
-// Tipo unión para todos los tipos de MenuItems
 export type MenuItem = ActionMenuItem | GroupMenuItem | SeparatorMenuItem;
 
 // Posición del menú
@@ -47,17 +44,4 @@ export interface Coordinates {
 export interface Dimensions {
    width: number;
    height: number;
-}
-
-// Tipo para el menú
-export type MenuType = "dropdown" | "context" | null;
-
-// Nueva interfaz para el estado del submenú
-export interface SubMenuState {
-   isOpen: boolean;
-   parentItemIndex: number;
-   items: MenuItem[];
-   position: Coordinates;
-   dimensions: Dimensions;
-   initialRender: boolean;
 }

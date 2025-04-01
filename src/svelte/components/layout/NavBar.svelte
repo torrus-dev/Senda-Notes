@@ -27,6 +27,7 @@ let isSidebarLocked = $derived(settingsController.getLockSidebar());
 
 const noteOptionsItems = [
    {
+      type: "action",
       label: "Rename Note",
       icon: PenLineIcon,
       onClick: () => {
@@ -34,18 +35,21 @@ const noteOptionsItems = [
       },
    },
    {
+      type: "action",
       label: "Delete Note",
       icon: Trash2Icon,
       onClick: () => noteController.deleteNote(note.id),
       class: "text-error",
    },
-   { separator: true },
+   { type: "separator" },
    {
+      type: "action",
       label: "Search in Note",
       icon: FileSearchIcon,
       onClick: () => {},
    },
    {
+      type: "action",
       label: "Replace in Note",
       icon: FileSearchIcon,
       onClick: () => {},
