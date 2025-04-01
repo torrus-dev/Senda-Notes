@@ -1,14 +1,14 @@
 <script lang="ts">
-import type { FloatingMenuData } from "@projectTypes/floatingMenuTypes";
+import type { ContextMenuData } from "@projectTypes/floatingMenuTypes";
 
-import { contextMenuController } from "@controllers/contextMenuController.svelte";
+import { contextMenuController } from "@controllers/floatingMenuController.svelte";
 import { computePosition, offset, flip, shift } from "@floating-ui/dom";
 import Button from "@components/utils/Button.svelte";
 import { closeOnOutsideOrEsc } from "@directives/closeOnOutsideOrEsc";
 
 import { tick } from "svelte";
 
-let { isOpen, menuItems, originalPosition }: FloatingMenuData = $derived(
+let { isOpen, menuItems, originalPosition }: ContextMenuData = $derived(
    contextMenuController.getMenuState(),
 );
 let menuElement = $state<HTMLElement | null>(null);
@@ -31,7 +31,7 @@ const virtualReference = {
 };
 
 $effect(() => {
-   if (isOpen && originalPosition) {
+   if (isOpen === true && originalPosition) {
       tick().then(async () => {
          if (menuElement && originalPosition) {
             const { x, y } = await computePosition(

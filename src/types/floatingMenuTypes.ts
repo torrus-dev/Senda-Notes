@@ -1,7 +1,12 @@
-export interface FloatingMenuData {
+export interface ContextMenuData {
    isOpen: boolean;
    menuItems: MenuItem[];
    originalPosition: Coordinates;
+}
+export interface DropdownMenuData {
+   isOpen: boolean;
+   menuItems: MenuItem[];
+   triggerElement: HTMLElement | null;
 }
 
 // Interfaz base para propiedades comunes a todos los MenuItems
@@ -33,11 +38,6 @@ export interface GroupMenuItem extends BaseMenuItem {
 // Tipo unión para todos los tipos de MenuItems
 export type MenuItem = ActionMenuItem | GroupMenuItem | SeparatorMenuItem;
 
-export interface TriggerInfo {
-   element: HTMLElement;
-   rect: DOMRect;
-}
-
 // Posición del menú
 export interface Coordinates {
    x: number;
@@ -47,12 +47,6 @@ export interface Coordinates {
 export interface Dimensions {
    width: number;
    height: number;
-}
-
-// Información sobre el elemento activador
-export interface TriggerInfo {
-   element: HTMLElement;
-   rect: DOMRect;
 }
 
 // Tipo para el menú

@@ -1,4 +1,4 @@
-import { contextMenuController } from "@controllers/contextMenuController.svelte";
+import { contextMenuController } from "@controllers/floatingMenuController.svelte";
 import { Coordinates, MenuItem } from "@projectTypes/floatingMenuTypes";
 
 function checkValid(menuItems: MenuItem[]) {
@@ -69,12 +69,12 @@ export function dropdownMenu(node: HTMLElement, menuItems: MenuItem[]) {
       event.preventDefault();
       event.stopPropagation();
 
-      // if (contextMenuController.isOpen) {
-      //    contextMenuController.close();
-      // } else {
-      //    // Abrir el menú dropdown
-      //    contextMenuController.openDropdownMenu(node, menuItems);
-      // }
+      if (contextMenuController.isOpen) {
+         contextMenuController.close();
+      } else {
+         // Abrir el menú dropdown
+         contextMenuController.openDropdownMenu(node, menuItems);
+      }
    }
 
    node.addEventListener("click", handleClick);
