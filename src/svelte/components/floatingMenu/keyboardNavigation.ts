@@ -37,13 +37,23 @@ export function setupKeyboardNavigation(menuElement: HTMLElement): () => void {
    function focusItem(index: number) {
       const items = getCurrentItems();
       if (items.length > 0 && items[index]?.htmlElement) {
+         console.warn(
+            `Focusing item at index ${index} (${items[index].menuItem.label})`,
+         );
          items[index].htmlElement.focus();
+      } else {
+         console.error(
+            `No se puede enfocar el elemento en el índice ${index}. Items length: ${items.length}`,
+         );
       }
    }
 
    // Listener para la navegación por teclado
    function keyHandler(e: KeyboardEvent) {
       const items = getCurrentItems();
+      console.warn(
+         `Tecla presionada: ${e.key}. currentIndex: ${currentIndex}. Items disponibles: ${items.length}`,
+      );
       if (items.length === 0) return;
 
       switch (e.key) {
@@ -67,35 +77,63 @@ export function setupKeyboardNavigation(menuElement: HTMLElement): () => void {
             break;
          case "ArrowRight":
             e.preventDefault();
-            // Si el elemento activo es de tipo "group", entra en el submenú
-            const currentItem = items[currentIndex];
-            if (currentItem && currentItem.menuItem.type === "group") {
-               contextMenuController.setActiveSubMenu(currentItem.menuItem);
-               currentIndex = -1;
-               // Se espera a que se renderice el submenú antes de que el usuario interactúe
-               setTimeout(() => {
-                  // Sin fijar foco automáticamente
-               }, 0);
+            {
+               const currentItem = items[currentIndex];
+               if (currentItem && currentItem.menuItem.type === "group") {
+                  console.warn(
+                     `Entrando al submenu del elemento ${currentItem.menuItem.label}`,
+                  );
+                  contextMenuController.setActiveSubMenu(currentItem.menuItem);
+                  // Al cambiar de menú, reiniciamos el índice a -1
+                  currentIndex = -1;
+                  // Se espera a que se renderice el submenú para que el usuario interactúe
+                  setTimeout(() => {
+                     console.warn("Submenu renderizado, esperando interacción");
+                  }, 0);
+               } else {
+                  console.warn(
+                     "No hay submenu en el elemento actual o currentIndex no es válido",
+                  );
+               }
             }
             break;
          case "ArrowLeft":
             e.preventDefault();
-            // Si estamos en un submenú, volvemos al menú principal
             if (contextMenuController.getMenuState().activeSubMenu) {
+               console.warn("Volviendo al menú principal desde submenu");
                contextMenuController.unsetActiveSubMenu();
+               // Al volver, reiniciamos el índice a -1
                currentIndex = -1;
                setTimeout(() => {
-                  // Sin fijar foco automáticamente
+                  console.warn(
+                     "Menú principal restaurado, esperando interacción",
+                  );
                }, 0);
             }
             break;
          case "Enter":
          case " ":
             e.preventDefault();
-            // Simula un click en el elemento activo para activar su acción
-            const activeItem = items[currentIndex];
-            if (activeItem && activeItem.htmlElement) {
-               activeItem.htmlElement.click();
+            // Revisamos el caso de retorno: si estamos en submenu y el currentIndex es 0
+            if (
+               contextMenuController.getMenuState().activeSubMenu &&
+               currentIndex === 0
+            ) {
+               console.warn("Seleccionada opción de retorno al menú principal");
+               contextMenuController.unsetActiveSubMenu();
+               currentIndex = -1;
+            } else {
+               const activeItem = items[currentIndex];
+               if (activeItem && activeItem.htmlElement) {
+                  console.warn(
+                     `Activando acción del elemento ${activeItem.menuItem.label} en índice ${currentIndex}`,
+                  );
+                  activeItem.htmlElement.click();
+               } else {
+                  console.error(
+                     "No hay elemento activo para activar la acción.",
+                  );
+               }
             }
             break;
          default:
