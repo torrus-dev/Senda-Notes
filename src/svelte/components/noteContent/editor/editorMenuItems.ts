@@ -47,7 +47,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                label: "Negrita",
                icon: BoldIcon,
                checked: editor.isActive("bold"),
-               onClick: () => editor.chain().focus().toggleBold().run(),
+               action: () => editor.chain().focus().toggleBold().run(),
             },
             {
                id: crypto.randomUUID(),
@@ -55,7 +55,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                label: "Cursiva",
                icon: ItalicIcon,
                checked: editor.isActive("italic"),
-               onClick: () => editor.chain().focus().toggleItalic().run(),
+               action: () => editor.chain().focus().toggleItalic().run(),
             },
             {
                id: crypto.randomUUID(),
@@ -63,7 +63,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                label: "Tachado",
                icon: StrikethroughIcon,
                checked: editor.isActive("strike"),
-               onClick: () => editor.chain().focus().toggleStrike().run(),
+               action: () => editor.chain().focus().toggleStrike().run(),
             },
             { type: "separator" },
             {
@@ -72,7 +72,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                label: "Código en línea",
                icon: CodeIcon,
                checked: editor.isActive("code"),
-               onClick: () => editor.chain().focus().toggleCode().run(),
+               action: () => editor.chain().focus().toggleCode().run(),
             },
             // Añadimos la opción de texto destacado
             {
@@ -81,7 +81,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                label: "Destacar",
                icon: HighlighterIcon,
                checked: editor.isActive("highlight"),
-               onClick: () => editor.chain().focus().toggleHighlight().run(),
+               action: () => editor.chain().focus().toggleHighlight().run(),
             },
             { type: "separator" },
             {
@@ -89,7 +89,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                type: "action",
                label: "Limpiar formato",
                icon: EraserIcon,
-               onClick: () =>
+               action: () =>
                   editor.chain().focus().unsetAllMarks().clearNodes().run(),
             },
          ],
@@ -106,7 +106,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                label: "Lista numerada",
                icon: ListOrderedIcon,
                checked: editor.isActive("orderedList"),
-               onClick: () => editor.chain().focus().toggleOrderedList().run(),
+               action: () => editor.chain().focus().toggleOrderedList().run(),
             },
             {
                id: crypto.randomUUID(),
@@ -114,7 +114,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                label: "Lista normal",
                icon: ListIcon,
                checked: editor.isActive("bulletList"),
-               onClick: () => editor.chain().focus().toggleBulletList().run(),
+               action: () => editor.chain().focus().toggleBulletList().run(),
             },
             // Añadimos la opción de lista de tareas
             {
@@ -123,7 +123,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                label: "Lista de tareas",
                icon: CheckSquareIcon,
                checked: editor.isActive("taskList"),
-               onClick: () => editor.chain().focus().toggleTaskList().run(),
+               action: () => editor.chain().focus().toggleTaskList().run(),
             },
          ],
       },
@@ -139,7 +139,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                label: "Título 1",
                icon: Heading1Icon,
                checked: editor.isActive("heading", { level: 1 }),
-               onClick: () =>
+               action: () =>
                   editor.chain().focus().toggleHeading({ level: 1 }).run(),
             },
             {
@@ -148,7 +148,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                label: "Título 2",
                icon: Heading2Icon,
                checked: editor.isActive("heading", { level: 2 }),
-               onClick: () =>
+               action: () =>
                   editor.chain().focus().toggleHeading({ level: 2 }).run(),
             },
             {
@@ -157,7 +157,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                label: "Título 3",
                icon: Heading3Icon,
                checked: editor.isActive("heading", { level: 3 }),
-               onClick: () =>
+               action: () =>
                   editor.chain().focus().toggleHeading({ level: 3 }).run(),
             },
             {
@@ -166,7 +166,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                label: "Título 4",
                icon: Heading4Icon,
                checked: editor.isActive("heading", { level: 4 }),
-               onClick: () =>
+               action: () =>
                   editor.chain().focus().toggleHeading({ level: 4 }).run(),
             },
             {
@@ -175,7 +175,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                label: "Título 5",
                icon: Heading5Icon,
                checked: editor.isActive("heading", { level: 5 }),
-               onClick: () =>
+               action: () =>
                   editor.chain().focus().toggleHeading({ level: 5 }).run(),
             },
             {
@@ -184,7 +184,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                label: "Título 6",
                icon: Heading6Icon,
                checked: editor.isActive("heading", { level: 6 }),
-               onClick: () =>
+               action: () =>
                   editor.chain().focus().toggleHeading({ level: 6 }).run(),
             },
             {
@@ -193,7 +193,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                label: "Párrafo normal",
                icon: TextIcon,
                checked: editor.isActive("paragraph"),
-               onClick: () => editor.chain().focus().setParagraph().run(),
+               action: () => editor.chain().focus().setParagraph().run(),
             },
          ],
       },
@@ -209,14 +209,14 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                label: "Bloque de código",
                icon: SquareCodeIcon,
                checked: editor.isActive("codeBlock"),
-               onClick: () => editor.chain().focus().toggleCodeBlock().run(),
+               action: () => editor.chain().focus().toggleCodeBlock().run(),
             },
             {
                id: crypto.randomUUID(),
                type: "action",
                label: "Línea horizontal",
                icon: MinusIcon,
-               onClick: () => editor.chain().focus().setHorizontalRule().run(),
+               action: () => editor.chain().focus().setHorizontalRule().run(),
             },
             {
                id: crypto.randomUUID(),
@@ -224,7 +224,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                label: "Cita",
                icon: QuoteIcon,
                checked: editor.isActive("blockquote"),
-               onClick: () => editor.chain().focus().toggleBlockquote().run(),
+               action: () => editor.chain().focus().toggleBlockquote().run(),
             },
          ],
       },
@@ -235,7 +235,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
          label: "Copiar",
          icon: CopyIcon,
          disabled: editor.state.selection.empty,
-         onClick: async () => {
+         action: async () => {
             const { from, to } = editor.state.selection;
             const selectedText = editor.state.doc.textBetween(from, to, " ");
             await navigator.clipboard.writeText(selectedText);
@@ -247,7 +247,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
          label: "Cortar",
          icon: ScissorsIcon,
          disabled: editor.state.selection.empty,
-         onClick: async () => {
+         action: async () => {
             const { from, to } = editor.state.selection;
             const selectedText = editor.state.doc.textBetween(from, to, " ");
             await navigator.clipboard.writeText(selectedText);
@@ -259,7 +259,7 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
          type: "action",
          label: "Pegar",
          icon: ClipboardPasteIcon,
-         onClick: async () => {
+         action: async () => {
             const text = await navigator.clipboard.readText();
             if (text) {
                editor.chain().focus().insertContent(text).run();

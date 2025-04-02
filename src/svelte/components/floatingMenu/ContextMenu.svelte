@@ -1,13 +1,9 @@
 <script lang="ts">
-import type {
-   ActionMenuItem,
-   ContextMenuData,
-   GroupMenuItem,
-} from "@projectTypes/floatingMenuTypes";
+import type { ContextMenuData } from "@projectTypes/floatingMenuTypes";
 
 import { contextMenuController } from "@controllers/floatingMenuController.svelte";
-import { closeOnOutsideOrEsc } from "@directives/closeOnOutsideOrEsc";
-import { keyboardNavigation } from "./keyboardNavigation";
+import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
+import { setupKeyboardNavigation } from "./keyboardNavigation";
 
 import {
    createCoordinateReference,
@@ -15,18 +11,16 @@ import {
 } from "./floatingPositionUtils";
 
 import { tick } from "svelte";
-import Button from "@components/utils/Button.svelte";
-import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-svelte";
+import ActionMenuItem from "./menuItems/ActionMenuItem.svelte";
+import GroupMenuItem from "./menuItems/GroupMenuItem.svelte";
+import SeparatorMenuItem from "./menuItems/SeparatorMenuItem.svelte";
 
 let { isOpen, menuItems, originalPosition, activeSubMenu }: ContextMenuData =
    $derived(contextMenuController.getMenuState());
 
 let menuElement = $state<HTMLElement | null>(null);
-let positionStyles = $state("left:0; top:0;");
 
-function closeMenu() {
-   contextMenuController.close();
-}
+let positionStyles = $state("left:0; top:0;");
 
 async function updateMenuPosition() {
    if (!menuElement || !originalPosition) return;
@@ -52,101 +46,68 @@ $effect(() => {
    if (isOpen === true && originalPosition) {
       tick().then(updateMenuPosition);
       if (menuElement) {
-         keyboardNavigation(menuElement);
+         setupKeyboardNavigation(menuElement);
       }
    }
    if (isOpen && activeSubMenu !== undefined) {
       tick().then(updateMenuPosition);
       if (menuElement) {
-         keyboardNavigation(menuElement);
+         setupKeyboardNavigation(menuElement);
+         console.log(
+            "renderedMainMenu",
+            contextMenuController.renderedMainMenu.length,
+         );
+         console.log(
+            "renderedSubMenu",
+            contextMenuController.renderedSubMenu.length,
+         );
       }
    }
 });
 </script>
 
-{#snippet separatorItem()}
-   <li class="border-border-normal my-1 w-full border-t-2" role="separator">
-   </li>
-{/snippet}
-{#snippet actionItem(menuItem: ActionMenuItem)}
-   <li data-type="action">
-      <Button
-         size="small"
-         cssClass="w-full justify-between {menuItem.class}"
-         onclick={() => {
-            menuItem.onClick?.();
-            closeMenu();
-         }}>
-         <span class="flex items-center gap-2">
-            <menuItem.icon size="1.0625rem" />
-            {menuItem.label}
-         </span>
-         {#if menuItem.checked}
-            <span class="text-base-content/50">
-               <CheckIcon size="1.0625rem" />
-            </span>
-         {/if}
-      </Button>
-   </li>
-{/snippet}
-{#snippet groupItem(
-   menuItem: GroupMenuItem,
-   arrowLeft: boolean = false,
-   onclick: () => void,
-)}
-   <li data-type="group" data-item={JSON.stringify(menuItem)}>
-      <Button size="small" cssClass="w-full {menuItem.class}" onclick={onclick}>
-         {#if arrowLeft}
-            <ChevronLeftIcon size="1.0625rem" class="absolute left-2" />
-         {/if}
-         <span
-            class="flex flex-1 items-center gap-2 {arrowLeft
-               ? 'justify-center'
-               : ''}">
-            {#if menuItem.icon}
-               <menuItem.icon size="1.0625rem" />
-            {/if}
-            {menuItem.label}
-         </span>
-         {#if !arrowLeft}
-            <ChevronRightIcon size="1.0625rem" />
-         {/if}
-      </Button>
-   </li>
-{/snippet}
-
-{#if isOpen && menuItems && menuItems.length > 0 && originalPosition}
+{#if isOpen && menuItems && originalPosition}
    <div
       class="absolute z-100"
       style={positionStyles}
       bind:this={menuElement}
-      use:closeOnOutsideOrEsc={closeMenu}>
+      use:onOutsideOrEsc={() => {
+         console.log("cerrando");
+
+         contextMenuController.close();
+      }}>
       <ul
          class="rounded-field outlined bg-base-200 flex min-w-48 flex-col p-1 shadow-xl">
          {#if activeSubMenu === undefined}
             {#each menuItems as menuItem}
                {#if menuItem.type === "separator"}
-                  {@render separatorItem()}
+                  <SeparatorMenuItem />
                {:else if menuItem.type === "action"}
-                  {@render actionItem(menuItem)}
+                  <ActionMenuItem menuItem={menuItem} inSubMenu={false} />
                {:else if menuItem.type === "group"}
-                  {@render groupItem(menuItem, false, () => {
-                     contextMenuController.setActiveSubMenu(menuItem);
-                  })}
+                  <GroupMenuItem
+                     menuItem={menuItem}
+                     isReturn={false}
+                     inSubMenu={false}
+                     onclick={() => {
+                        contextMenuController.setActiveSubMenu(menuItem);
+                     }} />
                {/if}
             {/each}
          {:else}
-            {@render groupItem(
-               activeSubMenu,
-               true,
-               contextMenuController.unsetActiveSubMenu,
-            )}
-            {@render separatorItem()}
+            <GroupMenuItem
+               menuItem={activeSubMenu}
+               isReturn={true}
+               inSubMenu={true}
+               onclick={() => {
+                  contextMenuController.unsetActiveSubMenu();
+               }} />
+            <SeparatorMenuItem />
             {#each activeSubMenu.children as subMenuItem}
                {#if subMenuItem.type === "separator"}
-                  {@render separatorItem()}
+                  <SeparatorMenuItem />
                {:else if subMenuItem.type === "action"}
-                  {@render actionItem(subMenuItem)}
+                  <ActionMenuItem inSubMenu={true} menuItem={subMenuItem} />
                {/if}
             {/each}
          {/if}

@@ -4,7 +4,7 @@
 <script>
 import { workspace } from "@controllers/workspaceController.svelte";
 import { propertyController } from "@controllers/propertyController.svelte";
-import { closeOnOutsideOrEsc } from "@directives/closeOnOutsideOrEsc";
+import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
 
 let { property = null, noteId = null } = $props();
 
@@ -50,7 +50,7 @@ function closeEditor() {
 
 <div
    class="property-editor rounded-box bordered absolute top-full left-0 z-30 mt-1 flex flex-col gap-2 bg-(--color-base-200) px-4 py-2 shadow-lg"
-   use:closeOnOutsideOrEsc={closeEditor}
+   use:onOutsideOrEsc={closeEditor}
    onkeydown={(event) => {
       if (event.key === "Enter") {
          closeEditor();

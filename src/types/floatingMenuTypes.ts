@@ -26,14 +26,14 @@ export interface ActionMenuItem extends BaseMenuItem {
    id: string;
    type: "action";
    disabled?: boolean;
-   onClick: () => void;
+   action: () => void;
    checked?: boolean;
    children?: never;
 }
 export interface GroupMenuItem extends BaseMenuItem {
    type: "group";
    children: MenuItem[];
-   onClick?: never;
+   action?: never;
    checked?: never;
 }
 export type MenuItem = ActionMenuItem | GroupMenuItem | SeparatorMenuItem;
@@ -47,4 +47,10 @@ export interface Coordinates {
 export interface Dimensions {
    width: number;
    height: number;
+}
+
+export interface RenderItem {
+   renderId: string;
+   menuItem: MenuItem;
+   htmlElement?: HTMLElement;
 }

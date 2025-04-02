@@ -60,14 +60,14 @@ let editableElement;
          type: "action",
          label: "Rename Note",
          icon: PenLineIcon,
-         onClick: startEditingLabel,
+         action: startEditingLabel,
       },
       {
          id: crypto.randomUUID(),
          type: "action",
          label: "Delete Note",
          icon: Trash2Icon,
-         onClick: () => noteController.deleteNote(note.id),
+         action: () => noteController.deleteNote(note.id),
          class: "text-error",
       },
    ]}

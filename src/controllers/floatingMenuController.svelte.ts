@@ -4,17 +4,21 @@ import type {
    GroupMenuItem,
    ContextMenuData,
    DropdownMenuData,
+   RenderItem,
 } from "@projectTypes/floatingMenuTypes";
 
 class ContextMenuController {
-   private resetMenuState = (): ContextMenuData => ({
+   private startingMenuState = (): ContextMenuData => ({
       isOpen: false,
       menuItems: [],
       originalPosition: { x: 0, y: 0 },
       activeSubMenu: undefined,
    });
 
-   private state = $state<ContextMenuData>(this.resetMenuState());
+   renderedMainMenu: RenderItem[] = [];
+   renderedSubMenu: RenderItem[] = [];
+
+   private state = $state<ContextMenuData>(this.startingMenuState());
 
    getMenuState = (): ContextMenuData => this.state;
 
@@ -23,6 +27,14 @@ class ContextMenuController {
       this.state.menuItems = menuItems;
       this.state.originalPosition = position;
       this.state.activeSubMenu = undefined;
+      this.renderedSubMenu = [];
+      this.renderedMainMenu = [];
+   }
+
+   close() {
+      this.state = this.startingMenuState();
+      this.renderedMainMenu = [];
+      this.renderedSubMenu = [];
    }
 
    setActiveSubMenu = (groupMenuITem: GroupMenuItem): void => {
@@ -30,13 +42,11 @@ class ContextMenuController {
    };
    unsetActiveSubMenu = (): void => {
       this.state.activeSubMenu = undefined;
+      this.renderedSubMenu = [];
+      this.renderedMainMenu = [];
    };
 
    getActiveSubMenu = (): GroupMenuItem | undefined => this.state.activeSubMenu;
-
-   close() {
-      this.state = this.resetMenuState();
-   }
 }
 
 class DropdownMenuController {

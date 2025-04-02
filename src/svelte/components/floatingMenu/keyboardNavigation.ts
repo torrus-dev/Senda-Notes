@@ -1,107 +1,117 @@
-// keyboardNavigation.ts
+import type { RenderItem } from "@projectTypes/floatingMenuTypes";
 import { contextMenuController } from "@controllers/floatingMenuController.svelte";
-import type { GroupMenuItem } from "@projectTypes/floatingMenuTypes";
+
+// Obtiene la lista actual de elementos interactivos según el estado del menú.
+function getCurrentItems(): RenderItem[] {
+   const menuState = contextMenuController.getMenuState();
+   return menuState.activeSubMenu
+      ? contextMenuController.renderedSubMenu
+      : contextMenuController.renderedMainMenu;
+}
 
 /**
- * Acción para gestionar la navegación por teclado en el menú contextual.
- * Se espera que el nodo sea el contenedor que engloba el menú (<div> o similar).
+ * Configura la navegación por teclado para el menú.
+ * Añade un listener que gestiona la navegación y, al desmontarse,
+ * restaura el foco al elemento que lo tenía previamente.
+ *
+ * Se fuerza el foco en el contenedor para que se capten los eventos, pero se oculta el outline mediante Tailwind.
+ *
+ * @param menuElement El contenedor del menú que captura los eventos de teclado.
+ * @returns Una función para remover el listener y restaurar el foco.
  */
-export function keyboardNavigation(node: HTMLElement) {
-   let selectedIndex = 0;
+export function setupKeyboardNavigation(menuElement: HTMLElement): () => void {
+   // Guardamos el elemento que tenía el foco antes de abrir el menú
+   const previousFocusedElement = document.activeElement as HTMLElement | null;
+   let currentIndex = -1; // -1 indica que ningún elemento está seleccionado inicialmente
 
-   // Función para obtener los elementos <li> actualizados del menú.
-   function getFocusableItems(): HTMLElement[] {
-      return Array.from(
-         node.querySelectorAll("li[data-type='action'],li[data-type='group']"),
-      );
+   // Aseguramos que el contenedor es focusable y le añadimos clase para ocultar el outline
+   if (!menuElement.hasAttribute("tabindex")) {
+      menuElement.setAttribute("tabindex", "0");
+   }
+   menuElement.classList.add("focus:outline-none");
+
+   // Forzamos el foco en el contenedor para capturar los eventos de teclado
+   menuElement.focus();
+
+   // Función para enfocar el elemento interactivo en la posición indicada
+   function focusItem(index: number) {
+      const items = getCurrentItems();
+      if (items.length > 0 && items[index]?.htmlElement) {
+         items[index].htmlElement.focus();
+      }
    }
 
-   // Actualiza el foco y resalta el elemento seleccionado.
-   function updateFocus() {
-      const items = getFocusableItems();
-      if (items.length === 0) return;
-
-      // Garantizar que el índice esté dentro de los límites.
-      if (selectedIndex < 0) selectedIndex = 0;
-      if (selectedIndex >= items.length) selectedIndex = items.length - 1;
-
-      items.forEach((item, index) => {
-         if (index === selectedIndex) {
-            item.classList.add("bg-interactive");
-            item.setAttribute("tabindex", "0");
-            (item as HTMLElement).focus();
-         } else {
-            item.classList.remove("bg-interactive");
-            item.removeAttribute("tabindex");
-         }
-      });
-   }
-
-   function onKeyDown(e: KeyboardEvent) {
-      const items = getFocusableItems();
+   // Listener para la navegación por teclado
+   function keyHandler(e: KeyboardEvent) {
+      const items = getCurrentItems();
       if (items.length === 0) return;
 
       switch (e.key) {
          case "ArrowDown":
             e.preventDefault();
-            selectedIndex = (selectedIndex + 1) % items.length;
-            updateFocus();
+            if (currentIndex === -1) {
+               currentIndex = 0;
+            } else {
+               currentIndex = (currentIndex + 1) % items.length;
+            }
+            focusItem(currentIndex);
             break;
          case "ArrowUp":
             e.preventDefault();
-            selectedIndex = (selectedIndex - 1 + items.length) % items.length;
-            updateFocus();
+            if (currentIndex === -1) {
+               currentIndex = items.length - 1;
+            } else {
+               currentIndex = (currentIndex - 1 + items.length) % items.length;
+            }
+            focusItem(currentIndex);
             break;
-         case "ArrowRight": {
-            const selectedItem = items[selectedIndex];
-            if (selectedItem && selectedItem.dataset.type === "group") {
-               try {
-                  const group: GroupMenuItem = JSON.parse(
-                     selectedItem.dataset.item || "{}",
-                  );
-                  contextMenuController.setActiveSubMenu(group);
-               } catch (error) {
-                  console.error("Error al parsear el data del grupo:", error);
-               }
+         case "ArrowRight":
+            e.preventDefault();
+            // Si el elemento activo es de tipo "group", entra en el submenú
+            const currentItem = items[currentIndex];
+            if (currentItem && currentItem.menuItem.type === "group") {
+               contextMenuController.setActiveSubMenu(currentItem.menuItem);
+               currentIndex = -1;
+               // Se espera a que se renderice el submenú antes de que el usuario interactúe
+               setTimeout(() => {
+                  // Sin fijar foco automáticamente
+               }, 0);
             }
             break;
-         }
          case "ArrowLeft":
-            contextMenuController.unsetActiveSubMenu();
+            e.preventDefault();
+            // Si estamos en un submenú, volvemos al menú principal
+            if (contextMenuController.getMenuState().activeSubMenu) {
+               contextMenuController.unsetActiveSubMenu();
+               currentIndex = -1;
+               setTimeout(() => {
+                  // Sin fijar foco automáticamente
+               }, 0);
+            }
             break;
          case "Enter":
          case " ":
-            const selectedItem = items[selectedIndex];
-            console.log(selectedItem);
-            if (!selectedItem) {
-               break;
+            e.preventDefault();
+            // Simula un click en el elemento activo para activar su acción
+            const activeItem = items[currentIndex];
+            if (activeItem && activeItem.htmlElement) {
+               activeItem.htmlElement.click();
             }
-            if (selectedItem.dataset.type === "group") {
-               try {
-                  const group: GroupMenuItem = JSON.parse(
-                     selectedItem.dataset.item || "{}",
-                  );
-                  contextMenuController.setActiveSubMenu(group);
-               } catch (error) {
-                  console.error("Error al parsear el data del grupo:", error);
-               }
-               break;
-            } else if (selectedItem.dataset.type === "action") {
-               e.preventDefault();
-               const button = selectedItem?.querySelector("button");
-               button?.click();
-               break;
-            }
+            break;
+         default:
+            break;
       }
    }
 
-   node.addEventListener("keydown", onKeyDown);
-   // Inicializa el foco al montar la acción.
-   updateFocus();
+   // Añadimos el listener al contenedor del menú
+   menuElement.addEventListener("keydown", keyHandler);
 
-   return {
-      destroy() {
-         node.removeEventListener("keydown", onKeyDown);
-      },
+   // Retornamos una función que remueve el listener y restaura el foco original.
+   return () => {
+      menuElement.removeEventListener("keydown", keyHandler);
+      // Restauramos el foco al elemento que lo tenía previamente
+      if (previousFocusedElement) {
+         previousFocusedElement.focus();
+      }
    };
 }

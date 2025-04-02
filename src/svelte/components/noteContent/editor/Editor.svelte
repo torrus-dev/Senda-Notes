@@ -123,8 +123,8 @@ function handleEditorContextMenu(event) {
 
       // Si el item tiene onClick, envolverlo con la lógica de selección
       if ("onClick" in processedItem) {
-         const originalOnClick = processedItem.onClick;
-         processedItem.onClick = wrapWithSelection(originalOnClick);
+         const originalOnClick = processedItem.action;
+         processedItem.action = wrapWithSelection(originalOnClick);
       }
 
       // Si el item tiene hijos (es un submenú), procesar cada hijo
@@ -142,8 +142,8 @@ function handleEditorContextMenu(event) {
 
             // Si el hijo tiene onClick, envolverlo con la lógica de selección
             if ("onClick" in processedChild) {
-               const originalChildOnClick = processedChild.onClick;
-               processedChild.onClick = wrapWithSelection(originalChildOnClick);
+               const originalChildOnClick = processedChild.action;
+               processedChild.action = wrapWithSelection(originalChildOnClick);
             }
 
             return processedChild;

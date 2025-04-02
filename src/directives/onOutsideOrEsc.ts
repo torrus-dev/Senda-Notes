@@ -4,13 +4,13 @@ export interface CloseOptions {
    closeOnClickOutside?: boolean;
 }
 
-export function closeOnOutsideOrEsc(
+export function onOutsideOrEsc(
    node: HTMLElement,
    options?: CloseOptions | (() => void),
 ) {
    // Asegurarnos de que options esté definido
    if (!options) {
-      console.error("closeOnOutsideOrEsc: options is required");
+      console.error("onOutsideOrEsc: options is required");
       return {
          destroy() {},
       };
@@ -39,7 +39,7 @@ export function closeOnOutsideOrEsc(
 
    // Verificar que onClose sea una función válida
    if (typeof config.onClose !== "function") {
-      console.error("closeOnOutsideOrEsc: onClose must be a function", config);
+      console.error("onOutsideOrEsc: onClose must be a function", config);
       return {
          destroy() {},
       };
@@ -98,7 +98,7 @@ export function closeOnOutsideOrEsc(
          // Verificar que onClose siga siendo una función válida
          if (typeof config.onClose !== "function") {
             console.error(
-               "closeOnOutsideOrEsc update: onClose must be a function",
+               "onOutsideOrEsc update: onClose must be a function",
                config,
             );
          }

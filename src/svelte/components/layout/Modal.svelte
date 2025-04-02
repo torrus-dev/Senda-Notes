@@ -1,6 +1,6 @@
 <script>
 import { workspace } from "@controllers/workspaceController.svelte";
-import { closeOnOutsideOrEsc } from "@directives/closeOnOutsideOrEsc";
+import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
 import Button from "@components/utils/Button.svelte";
 import { XIcon } from "lucide-svelte";
 
@@ -18,7 +18,7 @@ function closeModal() {
       aria-hidden={!isOpen}>
       <div
          class="rounded-selector bg-base-200 bordered relative m-auto min-h-2/3 w-3xl p-6 shadow-xl"
-         use:closeOnOutsideOrEsc={closeModal}
+         use:onOutsideOrEsc={closeModal}
          role="dialog">
          <Button cssClass="top-0 right-0 absolute" onclick={closeModal}
             ><XIcon /></Button>

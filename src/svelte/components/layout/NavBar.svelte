@@ -32,7 +32,7 @@ const noteOptionsItems: MenuItem[] = [
       type: "action",
       label: "Rename Note",
       icon: PenLineIcon,
-      onClick: () => {
+      action: () => {
          focusController.requestFocus(FocusTarget.TITLE);
       },
    },
@@ -41,7 +41,7 @@ const noteOptionsItems: MenuItem[] = [
       type: "action",
       label: "Delete Note",
       icon: Trash2Icon,
-      onClick: () => noteController.deleteNote(note.id),
+      action: () => noteController.deleteNote(note.id),
       class: "text-error",
    },
    { type: "separator" },
@@ -50,14 +50,14 @@ const noteOptionsItems: MenuItem[] = [
       type: "action",
       label: "Search in Note",
       icon: FileSearchIcon,
-      onClick: () => {},
+      action: () => {},
    },
    {
       id: crypto.randomUUID(),
       type: "action",
       label: "Replace in Note",
       icon: FileSearchIcon,
-      onClick: () => {},
+      action: () => {},
    },
 ];
 </script>
