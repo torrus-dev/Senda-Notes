@@ -4,7 +4,7 @@
 }
 </style>
 
-<script>
+<script lang="ts">
 import { noteController } from "@controllers/noteController.svelte";
 import {
    ChevronRightIcon,
@@ -24,16 +24,16 @@ let hasChildren = $derived(childrenCount > 0);
 
 let isEditingTitle = $state(false);
 
-const handleSelectTitle = (event) => {
+const handleSelectTitle = (event: KeyboardEvent | MouseEvent) => {
    if (!isEditingTitle) {
-      if (event.key === "Enter" || event.type === "click") {
+      if (("key" in event && event.key === "Enter") || event.type === "click") {
          // Solo seleccionar la nota si no estamos en modo edición
          noteController.setActiveNote(note.id);
       }
    }
 };
 
-const handleNewChildNote = (event) => {
+const handleNewChildNote = (event: Event) => {
    event.stopPropagation();
    noteController.createNote(note.id);
 };
@@ -56,12 +56,14 @@ let editableElement;
    tabindex="0"
    use:contextMenu={[
       {
+         id: crypto.randomUUID(),
          type: "action",
          label: "Rename Note",
          icon: PenLineIcon,
          onClick: startEditingLabel,
       },
       {
+         id: crypto.randomUUID(),
          type: "action",
          label: "Delete Note",
          icon: Trash2Icon,

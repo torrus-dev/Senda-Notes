@@ -10,13 +10,15 @@ export function keyboardNavigation(node: HTMLElement) {
    let selectedIndex = 0;
 
    // Función para obtener los elementos <li> actualizados del menú.
-   function getItems(): HTMLElement[] {
-      return Array.from(node.querySelectorAll("li"));
+   function getFocusableItems(): HTMLElement[] {
+      return Array.from(
+         node.querySelectorAll("li[data-type='action'],li[data-type='group']"),
+      );
    }
 
    // Actualiza el foco y resalta el elemento seleccionado.
    function updateFocus() {
-      const items = getItems();
+      const items = getFocusableItems();
       if (items.length === 0) return;
 
       // Garantizar que el índice esté dentro de los límites.
@@ -25,18 +27,18 @@ export function keyboardNavigation(node: HTMLElement) {
 
       items.forEach((item, index) => {
          if (index === selectedIndex) {
-            item.classList.add("bg-gray-200"); // Clase para resaltar el foco.
+            item.classList.add("bg-interactive");
             item.setAttribute("tabindex", "0");
             (item as HTMLElement).focus();
          } else {
-            item.classList.remove("bg-gray-200");
+            item.classList.remove("bg-interactive");
             item.removeAttribute("tabindex");
          }
       });
    }
 
    function onKeyDown(e: KeyboardEvent) {
-      const items = getItems();
+      const items = getFocusableItems();
       if (items.length === 0) return;
 
       switch (e.key) {
@@ -69,19 +71,27 @@ export function keyboardNavigation(node: HTMLElement) {
             break;
          case "Enter":
          case " ":
-            e.preventDefault();
-            const button = items[selectedIndex]?.querySelector("button");
-            button?.click();
-            break;
-         case "Escape": {
-            const { activeSubMenu } = contextMenuController.getMenuState();
-            if (activeSubMenu !== undefined) {
-               contextMenuController.unsetActiveSubMenu();
-            } else {
-               contextMenuController.close();
+            const selectedItem = items[selectedIndex];
+            console.log(selectedItem);
+            if (!selectedItem) {
+               break;
             }
-            break;
-         }
+            if (selectedItem.dataset.type === "group") {
+               try {
+                  const group: GroupMenuItem = JSON.parse(
+                     selectedItem.dataset.item || "{}",
+                  );
+                  contextMenuController.setActiveSubMenu(group);
+               } catch (error) {
+                  console.error("Error al parsear el data del grupo:", error);
+               }
+               break;
+            } else if (selectedItem.dataset.type === "action") {
+               e.preventDefault();
+               const button = selectedItem?.querySelector("button");
+               button?.click();
+               break;
+            }
       }
    }
 

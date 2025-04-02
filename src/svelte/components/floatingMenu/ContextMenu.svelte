@@ -16,7 +16,7 @@ import {
 
 import { tick } from "svelte";
 import Button from "@components/utils/Button.svelte";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-svelte";
+import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-svelte";
 
 let { isOpen, menuItems, originalPosition, activeSubMenu }: ContextMenuData =
    $derived(contextMenuController.getMenuState());
@@ -51,9 +51,15 @@ async function updateMenuPosition() {
 $effect(() => {
    if (isOpen === true && originalPosition) {
       tick().then(updateMenuPosition);
+      if (menuElement) {
+         keyboardNavigation(menuElement);
+      }
    }
    if (isOpen && activeSubMenu !== undefined) {
       tick().then(updateMenuPosition);
+      if (menuElement) {
+         keyboardNavigation(menuElement);
+      }
    }
 });
 </script>
@@ -63,16 +69,23 @@ $effect(() => {
    </li>
 {/snippet}
 {#snippet actionItem(menuItem: ActionMenuItem)}
-   <li>
+   <li data-type="action">
       <Button
          size="small"
-         cssClass="w-full {menuItem.class}"
+         cssClass="w-full justify-between {menuItem.class}"
          onclick={() => {
             menuItem.onClick?.();
             closeMenu();
          }}>
-         <menuItem.icon size="1.0625rem" />
-         {menuItem.label}
+         <span class="flex items-center gap-2">
+            <menuItem.icon size="1.0625rem" />
+            {menuItem.label}
+         </span>
+         {#if menuItem.checked}
+            <span class="text-base-content/50">
+               <CheckIcon size="1.0625rem" />
+            </span>
+         {/if}
       </Button>
    </li>
 {/snippet}
@@ -81,14 +94,15 @@ $effect(() => {
    arrowLeft: boolean = false,
    onclick: () => void,
 )}
-   <li>
+   <li data-type="group" data-item={JSON.stringify(menuItem)}>
       <Button size="small" cssClass="w-full {menuItem.class}" onclick={onclick}>
          {#if arrowLeft}
             <ChevronLeftIcon size="1.0625rem" class="absolute left-2" />
          {/if}
          <span
-            class="flex flex-1 items-center gap-2
-            {arrowLeft ? 'justify-center' : ''}">
+            class="flex flex-1 items-center gap-2 {arrowLeft
+               ? 'justify-center'
+               : ''}">
             {#if menuItem.icon}
                <menuItem.icon size="1.0625rem" />
             {/if}
@@ -106,8 +120,7 @@ $effect(() => {
       class="absolute z-100"
       style={positionStyles}
       bind:this={menuElement}
-      use:closeOnOutsideOrEsc={closeMenu}
-      use:keyboardNavigation>
+      use:closeOnOutsideOrEsc={closeMenu}>
       <ul
          class="rounded-field outlined bg-base-200 flex min-w-48 flex-col p-1 shadow-xl">
          {#if activeSubMenu === undefined}

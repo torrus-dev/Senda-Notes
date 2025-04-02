@@ -56,6 +56,7 @@ const IconComponent = $derived(getIconComponent(property.type));
             size="small"
             dropdownMenuItems={[
                {
+                  id: crypto.randomUUID(),
                   type: "action",
                   label: "Edit Property",
                   icon: SlidersHorizontalIcon,
@@ -64,6 +65,7 @@ const IconComponent = $derived(getIconComponent(property.type));
                   },
                },
                {
+                  id: crypto.randomUUID(),
                   type: "action",
                   label: "Delete Property",
                   icon: Trash2Icon,

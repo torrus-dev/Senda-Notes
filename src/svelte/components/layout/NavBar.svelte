@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import { FocusTarget } from "@projectTypes/focusTypes";
 
 import { focusController } from "@controllers/focusController.svelte";
@@ -20,13 +20,15 @@ import {
 } from "lucide-svelte";
 import Navigation from "@components/utils/Navigation.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
+import type { MenuItem } from "@projectTypes/floatingMenuTypes";
 
 let { note } = $props();
 let isSidebarOpen = $derived(workspace.isSidebarOpen());
 let isSidebarLocked = $derived(settingsController.getLockSidebar());
 
-const noteOptionsItems = [
+const noteOptionsItems: MenuItem[] = [
    {
+      id: crypto.randomUUID(),
       type: "action",
       label: "Rename Note",
       icon: PenLineIcon,
@@ -35,6 +37,7 @@ const noteOptionsItems = [
       },
    },
    {
+      id: crypto.randomUUID(),
       type: "action",
       label: "Delete Note",
       icon: Trash2Icon,
@@ -43,12 +46,14 @@ const noteOptionsItems = [
    },
    { type: "separator" },
    {
+      id: crypto.randomUUID(),
       type: "action",
       label: "Search in Note",
       icon: FileSearchIcon,
       onClick: () => {},
    },
    {
+      id: crypto.randomUUID(),
       type: "action",
       label: "Replace in Note",
       icon: FileSearchIcon,

@@ -13,6 +13,7 @@ export interface DropdownMenuData {
 }
 
 interface BaseMenuItem {
+   id: string;
    type: "separator" | "group" | "action";
    label: string;
    icon?: any;
@@ -22,7 +23,9 @@ export interface SeparatorMenuItem {
    type: "separator";
 }
 export interface ActionMenuItem extends BaseMenuItem {
+   id: string;
    type: "action";
+   disabled?: boolean;
    onClick: () => void;
    checked?: boolean;
    children?: never;
