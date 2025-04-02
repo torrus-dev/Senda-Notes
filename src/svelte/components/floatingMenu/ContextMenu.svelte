@@ -7,6 +7,8 @@ import type {
 
 import { contextMenuController } from "@controllers/floatingMenuController.svelte";
 import { closeOnOutsideOrEsc } from "@directives/closeOnOutsideOrEsc";
+import { keyboardNavigation } from "./keyboardNavigation";
+
 import {
    createCoordinateReference,
    calculateFloatingPosition,
@@ -104,7 +106,8 @@ $effect(() => {
       class="absolute z-100"
       style={positionStyles}
       bind:this={menuElement}
-      use:closeOnOutsideOrEsc={closeMenu}>
+      use:closeOnOutsideOrEsc={closeMenu}
+      use:keyboardNavigation>
       <ul
          class="rounded-field outlined bg-base-200 flex min-w-48 flex-col p-1 shadow-xl">
          {#if activeSubMenu === undefined}
