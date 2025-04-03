@@ -20,42 +20,40 @@ import { focusController } from "@controllers/focusController.svelte";
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Coordinates } from "@projectTypes/positionTypes";
 import { getFormatMenuItems } from "./editorMenuItems";
+import { parseEditorContent } from "@utils/editorUtils";
 
+// Props
 let { noteId = null } = $props();
 
+// Estado derivado
 let content: string = $derived(
    noteController.getNoteById(noteId)?.content || "",
 );
 
+// Referencias DOM y estado
 let editorElement: HTMLElement;
-
-// Instancia del editor TipTap
 let editorInstance: Editor | null = null;
 let currentNoteId: string | null = null;
-let currentWordRange: { from: number; to: number } | null = null;
 
-// Función que actualiza el contenido de la nota
+/**
+ * Actualiza el contenido de la nota activa
+ */
 function onContentChange(newContent: string) {
    if (noteId) {
       noteController.updateNote(noteId, { content: newContent });
    }
 }
 
-// Inicializa el editor TipTap con el contenido inicial
+/**
+ * Inicializa el editor TipTap con el contenido proporcionado
+ */
 function initializeEditor(initialContent: string) {
    destroyEditor();
 
-   let parsedContent = initialContent;
-   try {
-      JSON.parse(initialContent);
-      // Si es JSON válido, seguimos la lógica actual y usamos cadena vacía
-      parsedContent = "";
-   } catch (e) {
-      parsedContent = initialContent || "";
-   }
+   const parsedContent = parseEditorContent(initialContent);
 
    editorInstance = new Editor({
-      element: editorElement!,
+      element: editorElement,
       extensions: [
          StarterKit,
          TaskList,
@@ -69,53 +67,43 @@ function initializeEditor(initialContent: string) {
       onUpdate: ({ editor }) => {
          onContentChange(editor.getHTML());
       },
-      onSelectionUpdate: () => {
-         currentWordRange = null;
-      },
    });
 
-   // Registrar el elemento editable (.ProseMirror) en el focusController
-   const tiptapEditableElement = editorElement.querySelector(
+   registerEditorWithFocusController();
+}
+
+/**
+ * Registra el elemento editable ProseMirror con el focusController
+ */
+function registerEditorWithFocusController() {
+   const tiptapEditableElement = editorElement?.querySelector(
       ".ProseMirror",
    ) as HTMLElement | null;
+
    if (tiptapEditableElement) {
       focusController.registerElement(
          FocusTarget.EDITOR,
          tiptapEditableElement,
       );
    }
-
-   // Usamos MouseEvent (en lugar de PointerEvent) para evitar conflictos de tipado
-   editorElement.addEventListener(
-      "contextmenu",
-      openEditorContextMenu as EventListener,
-   );
 }
 
-onDestroy(() => {
-   destroyEditor();
-   focusController.unregisterElement(FocusTarget.EDITOR);
-});
-
-// Destruye la instancia actual del editor y limpia listeners
+/**
+ * Limpia recursos del editor
+ */
 function destroyEditor() {
-   if (editorElement) {
-      editorElement.removeEventListener(
-         "contextmenu",
-         openEditorContextMenu as EventListener,
-      );
-   }
    if (editorInstance) {
       editorInstance.destroy();
       editorInstance = null;
    }
-   currentWordRange = null;
 }
 
-function openEditorContextMenu(event: MouseEvent) {
+/**
+ * Maneja el menú contextual del editor
+ */
+function handleContextMenu(event: MouseEvent) {
    event.preventDefault();
 
-   // calculamos posición del context menu
    if (!editorInstance) return;
 
    const { clientX, clientY } = event;
@@ -123,9 +111,9 @@ function openEditorContextMenu(event: MouseEvent) {
       left: clientX,
       top: clientY,
    });
+
    if (!editorPosition) return;
 
-   // abrimos contextMenu
    const coordinates: Coordinates = { x: clientX, y: clientY };
    contextMenuController.openMenu(
       coordinates,
@@ -133,6 +121,7 @@ function openEditorContextMenu(event: MouseEvent) {
    );
 }
 
+// Efecto que inicializa el editor cuando cambia la nota activa
 $effect(() => {
    if (noteId !== currentNoteId) {
       currentNoteId = noteId;
@@ -140,7 +129,7 @@ $effect(() => {
    }
 });
 
-// soporte para recibir el enfoque desde el focusController.
+// Efecto que maneja el enfoque del editor
 $effect(() => {
    if (
       focusController.focus?.targetId === FocusTarget.EDITOR &&
@@ -149,9 +138,17 @@ $effect(() => {
       editorInstance.commands.focus();
    }
 });
+
+// Limpieza al destruir el componente
+onDestroy(() => {
+   destroyEditor();
+   focusController.unregisterElement(FocusTarget.EDITOR);
+});
 </script>
 
 <div
    bind:this={editorElement}
-   class="prose prose-invert prose-neutral tiptap-editor">
+   role="document"
+   class="prose prose-invert prose-neutral tiptap-editor"
+   oncontextmenu={handleContextMenu}>
 </div>
