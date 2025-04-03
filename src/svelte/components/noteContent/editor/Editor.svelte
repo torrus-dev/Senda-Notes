@@ -9,6 +9,7 @@
 <script lang="ts">
 import { onDestroy } from "svelte";
 import { Editor } from "@tiptap/core";
+import type { EditorOptions } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
@@ -20,7 +21,7 @@ import { focusController } from "@controllers/focusController.svelte";
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Coordinates } from "@projectTypes/floatingMenuTypes";
 import { getFormatMenuItems } from "./editorMenuItems";
-import { parseEditorContent } from "@utils/editorUtils";
+import { parseEditorContent, createEditorConfig } from "@utils/editorUtils";
 
 // Props
 let { noteId = null } = $props();
@@ -52,23 +53,14 @@ function initializeEditor(initialContent: string) {
 
    const parsedContent = parseEditorContent(initialContent);
 
-   editorInstance = new Editor({
+   // Utilizamos la configuración desde editorUtils
+   const editorConfig = createEditorConfig({
       element: editorElement,
-      extensions: [
-         StarterKit,
-         TaskList,
-         TaskItem.configure({ nested: true }),
-         Highlight.configure({ multicolor: false }),
-      ],
       content: parsedContent,
-      autofocus: true,
-      editable: true,
-      injectCSS: false,
-      onUpdate: ({ editor }) => {
-         onContentChange(editor.getHTML());
-      },
+      onUpdate: ({ editor }) => onContentChange(editor.getHTML()),
    });
 
+   editorInstance = new Editor(editorConfig);
    registerEditorWithFocusController();
 }
 
@@ -121,7 +113,7 @@ function handleContextMenu(event: MouseEvent) {
    );
 }
 
-// Efecto que inicializa el editor cuando cambia la nota activa
+// Inicializar editor cuando cambia la nota activa
 $effect(() => {
    if (noteId !== currentNoteId) {
       currentNoteId = noteId;
@@ -129,7 +121,7 @@ $effect(() => {
    }
 });
 
-// Efecto que maneja el enfoque del editor
+// Manejar el enfoque del editor
 $effect(() => {
    if (
       focusController.focus?.targetId === FocusTarget.EDITOR &&
