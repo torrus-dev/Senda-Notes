@@ -21,13 +21,19 @@ import { focusController } from "@controllers/focusController.svelte";
 import { getFormatMenuItems, editorUtils } from "./editorMenuItems.js";
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Coordinates } from "@projectTypes/positionTypes";
+import { Note } from "@projectTypes/noteTypes.js";
+import ContextMenu from "@components/floatingMenu/ContextMenu.svelte";
+import { MenuItem } from "@projectTypes/floatingMenuTypes.js";
 
 let { noteId = null } = $props();
 let content = $derived(noteController.getNoteById(noteId)?.content || "");
-let editorInstance = null;
-let editorElement;
-let currentNoteId = null;
-let currentWordRange = null;
+let editorInstance: Editor | null = null;
+let editorElement: Element | undefined;
+let currentNoteId: string | null = null;
+let currentWordRange: {
+   from: number;
+   to: number;
+} | null = null;
 
 // Registrar el elemento editable de TipTap con el focusController
 $effect(() => {
@@ -58,14 +64,14 @@ $effect(() => {
 });
 
 // Función para actualizar el contenido de la nota
-function onContentChange(newContent) {
+function onContentChange(newContent: string) {
    if (noteId) {
       noteController.updateNote(noteId, { content: newContent });
    }
 }
 
 // Función para manejar el clic derecho en el editor
-function handleEditorContextMenu(event) {
+function handleEditorContextMenu(event: PointerEvent) {
    event.preventDefault();
 
    // Si no hay una instancia del editor, salir
@@ -86,7 +92,7 @@ function handleEditorContextMenu(event) {
       : contextInfo.wordRange;
 
    // Función para envolver el onClick con la lógica de selección
-   function wrapWithSelection(originalOnClick) {
+   function wrapWithSelection(originalOnClick: () => {}) {
       return () => {
          if (currentWordRange) {
             // Para comandos que requieren selección explícita
@@ -116,7 +122,7 @@ function handleEditorContextMenu(event) {
    // Procesar los elementos de menú
    const menuItems = baseMenuItems.map((item) => {
       // Si es un separador, devolverlo sin cambios
-      if (item.separator) return item;
+      if ((item.type = "separator")) return item;
 
       // Crear una copia del item para no modificar el original
       const processedItem = { ...item };
@@ -133,21 +139,24 @@ function handleEditorContextMenu(event) {
          Array.isArray(processedItem.children)
       ) {
          console.log("procesando hijos");
-         processedItem.children = processedItem.children.map((childItem) => {
-            // Si es un separador, devolverlo sin cambios
-            if (childItem.separator) return childItem;
+         processedItem.children = processedItem.children.map(
+            (childItem: MenuItem) => {
+               // Si es un separador, devolverlo sin cambios
+               if ((childItem.type = "separator")) return childItem;
 
-            // Crear una copia del hijo para no modificar el original
-            const processedChild = { ...childItem };
+               // Crear una copia del hijo para no modificar el original
+               const processedChild: MenuItem = childItem;
 
-            // Si el hijo tiene onClick, envolverlo con la lógica de selección
-            if ("onClick" in processedChild) {
-               const originalChildOnClick = processedChild.action;
-               processedChild.action = wrapWithSelection(originalChildOnClick);
-            }
+               // Si el hijo tiene onClick, envolverlo con la lógica de selección
+               if ("action" in processedChild) {
+                  const originalChildOnClick = processedChild.action;
+                  processedChild.action =
+                     wrapWithSelection(originalChildOnClick);
+               }
 
-            return processedChild;
-         });
+               return processedChild;
+            },
+         );
       }
 
       return processedItem;

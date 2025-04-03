@@ -36,13 +36,11 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
 
    return [
       {
-         id: crypto.randomUUID(),
          type: "group",
          label: "Formato",
          icon: PenLineIcon,
          children: [
             {
-               id: crypto.randomUUID(),
                type: "action",
                label: "Negrita",
                icon: BoldIcon,
@@ -50,7 +48,6 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                action: () => editor.chain().focus().toggleBold().run(),
             },
             {
-               id: crypto.randomUUID(),
                type: "action",
                label: "Cursiva",
                icon: ItalicIcon,
@@ -58,7 +55,6 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                action: () => editor.chain().focus().toggleItalic().run(),
             },
             {
-               id: crypto.randomUUID(),
                type: "action",
                label: "Tachado",
                icon: StrikethroughIcon,
@@ -67,7 +63,6 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
             },
             { type: "separator" },
             {
-               id: crypto.randomUUID(),
                type: "action",
                label: "Código en línea",
                icon: CodeIcon,
@@ -76,7 +71,6 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
             },
             // Añadimos la opción de texto destacado
             {
-               id: crypto.randomUUID(),
                type: "action",
                label: "Destacar",
                icon: HighlighterIcon,
@@ -85,7 +79,6 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
             },
             { type: "separator" },
             {
-               id: crypto.randomUUID(),
                type: "action",
                label: "Limpiar formato",
                icon: EraserIcon,
@@ -95,13 +88,11 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
          ],
       },
       {
-         id: crypto.randomUUID(),
          type: "group",
          label: "Lista",
          icon: ListIcon,
          children: [
             {
-               id: crypto.randomUUID(),
                type: "action",
                label: "Lista numerada",
                icon: ListOrderedIcon,
@@ -109,7 +100,6 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                action: () => editor.chain().focus().toggleOrderedList().run(),
             },
             {
-               id: crypto.randomUUID(),
                type: "action",
                label: "Lista normal",
                icon: ListIcon,
@@ -118,7 +108,6 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
             },
             // Añadimos la opción de lista de tareas
             {
-               id: crypto.randomUUID(),
                type: "action",
                label: "Lista de tareas",
                icon: CheckSquareIcon,
@@ -128,13 +117,11 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
          ],
       },
       {
-         id: crypto.randomUUID(),
          type: "group",
          label: "Párrafo",
          icon: PilcrowIcon,
          children: [
             {
-               id: crypto.randomUUID(),
                type: "action",
                label: "Título 1",
                icon: Heading1Icon,
@@ -143,7 +130,6 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                   editor.chain().focus().toggleHeading({ level: 1 }).run(),
             },
             {
-               id: crypto.randomUUID(),
                type: "action",
                label: "Título 2",
                icon: Heading2Icon,
@@ -152,7 +138,6 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                   editor.chain().focus().toggleHeading({ level: 2 }).run(),
             },
             {
-               id: crypto.randomUUID(),
                type: "action",
                label: "Título 3",
                icon: Heading3Icon,
@@ -161,7 +146,6 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                   editor.chain().focus().toggleHeading({ level: 3 }).run(),
             },
             {
-               id: crypto.randomUUID(),
                type: "action",
                label: "Título 4",
                icon: Heading4Icon,
@@ -170,7 +154,6 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                   editor.chain().focus().toggleHeading({ level: 4 }).run(),
             },
             {
-               id: crypto.randomUUID(),
                type: "action",
                label: "Título 5",
                icon: Heading5Icon,
@@ -179,7 +162,6 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                   editor.chain().focus().toggleHeading({ level: 5 }).run(),
             },
             {
-               id: crypto.randomUUID(),
                type: "action",
                label: "Título 6",
                icon: Heading6Icon,
@@ -188,7 +170,6 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                   editor.chain().focus().toggleHeading({ level: 6 }).run(),
             },
             {
-               id: crypto.randomUUID(),
                type: "action",
                label: "Párrafo normal",
                icon: TextIcon,
@@ -198,13 +179,11 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
          ],
       },
       {
-         id: crypto.randomUUID(),
          type: "group",
          label: "Insertar",
          icon: BetweenHorizontalStartIcon,
          children: [
             {
-               id: crypto.randomUUID(),
                type: "action",
                label: "Bloque de código",
                icon: SquareCodeIcon,
@@ -212,14 +191,12 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
                action: () => editor.chain().focus().toggleCodeBlock().run(),
             },
             {
-               id: crypto.randomUUID(),
                type: "action",
                label: "Línea horizontal",
                icon: MinusIcon,
                action: () => editor.chain().focus().setHorizontalRule().run(),
             },
             {
-               id: crypto.randomUUID(),
                type: "action",
                label: "Cita",
                icon: QuoteIcon,
@@ -230,7 +207,6 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
       },
       { type: "separator" },
       {
-         id: crypto.randomUUID(),
          type: "action",
          label: "Copiar",
          icon: CopyIcon,
@@ -242,7 +218,6 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
          },
       },
       {
-         id: crypto.randomUUID(),
          type: "action",
          label: "Cortar",
          icon: ScissorsIcon,
@@ -255,7 +230,6 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
          },
       },
       {
-         id: crypto.randomUUID(),
          type: "action",
          label: "Pegar",
          icon: ClipboardPasteIcon,
