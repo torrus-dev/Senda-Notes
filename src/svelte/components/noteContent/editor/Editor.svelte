@@ -10,7 +10,6 @@
 import { onDestroy } from "svelte";
 import { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
-// Importamos las nuevas extensiones
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import Highlight from "@tiptap/extension-highlight";
@@ -18,220 +17,122 @@ import Highlight from "@tiptap/extension-highlight";
 import { noteController } from "@controllers/noteController.svelte";
 import { contextMenuController } from "@controllers/floatingMenuController.svelte.js";
 import { focusController } from "@controllers/focusController.svelte";
-import { getFormatMenuItems, editorUtils } from "./editorMenuItems.js";
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Coordinates } from "@projectTypes/positionTypes";
-import { Note } from "@projectTypes/noteTypes.js";
-import ContextMenu from "@components/floatingMenu/ContextMenu.svelte";
-import { MenuItem } from "@projectTypes/floatingMenuTypes.js";
+import { getFormatMenuItems } from "./editorMenuItems";
 
 let { noteId = null } = $props();
-let content = $derived(noteController.getNoteById(noteId)?.content || "");
+
+let content: string = $derived(
+   noteController.getNoteById(noteId)?.content || "",
+);
+
+let editorElement: HTMLElement;
+
+// Instancia del editor TipTap
 let editorInstance: Editor | null = null;
-let editorElement: Element | undefined;
 let currentNoteId: string | null = null;
-let currentWordRange: {
-   from: number;
-   to: number;
-} | null = null;
+let currentWordRange: { from: number; to: number } | null = null;
 
-// Registrar el elemento editable de TipTap con el focusController
-$effect(() => {
-   if (editorInstance && editorElement) {
-      // TipTap crea elementos internos, necesitamos encontrar el elemento contenteditable
-      const tiptapEditableElement = editorElement.querySelector(".ProseMirror");
-
-      if (tiptapEditableElement) {
-         focusController.registerElement(
-            FocusTarget.EDITOR,
-            tiptapEditableElement,
-         );
-
-         return () => {
-            focusController.unregisterElement(FocusTarget.EDITOR);
-         };
-      }
-   }
-});
-
-// Manejar las solicitudes de enfoque
-$effect(() => {
-   const { targetId, timestamp } = focusController.focus;
-   if (targetId === FocusTarget.EDITOR && timestamp > 0 && editorInstance) {
-      // Simplemente enfocamos sin seleccionar todo el texto
-      editorInstance.commands.focus();
-   }
-});
-
-// Función para actualizar el contenido de la nota
+// Función que actualiza el contenido de la nota
 function onContentChange(newContent: string) {
    if (noteId) {
       noteController.updateNote(noteId, { content: newContent });
    }
 }
 
-// Función para manejar el clic derecho en el editor
-function handleEditorContextMenu(event: PointerEvent) {
-   event.preventDefault();
-
-   // Si no hay una instancia del editor, salir
-   if (!editorInstance) return;
-
-   // Obtener información contextual basada en la posición y estado actual
-   const contextInfo = editorUtils.getContextInfo(
-      editorInstance,
-      event.clientX,
-      event.clientY,
-   );
-
-   if (!contextInfo) return;
-
-   // Almacenar el rango de palabra para los comandos de formato
-   currentWordRange = contextInfo.hasSelection
-      ? contextInfo.selectionRange
-      : contextInfo.wordRange;
-
-   // Función para envolver el onClick con la lógica de selección
-   function wrapWithSelection(originalOnClick: () => {}) {
-      return () => {
-         if (currentWordRange) {
-            // Para comandos que requieren selección explícita
-            const { view } = editorInstance;
-            const { state } = view;
-            const { from, to } = currentWordRange;
-
-            // Primero seleccionar la palabra
-            view.dispatch(
-               state.tr.setSelection(
-                  state.selection.constructor.create(state.doc, from, to),
-               ),
-            );
-
-            // Luego ejecutar el comando original
-            originalOnClick();
-         } else {
-            // Si no hay rango, ejecutar normalmente
-            originalOnClick();
-         }
-      };
-   }
-
-   // Obtener los elementos de menú base
-   const baseMenuItems = getFormatMenuItems(editorInstance);
-
-   // Procesar los elementos de menú
-   const menuItems = baseMenuItems.map((item) => {
-      // Si es un separador, devolverlo sin cambios
-      if ((item.type = "separator")) return item;
-
-      // Crear una copia del item para no modificar el original
-      const processedItem = { ...item };
-
-      // Si el item tiene onClick, envolverlo con la lógica de selección
-      if ("onClick" in processedItem) {
-         const originalOnClick = processedItem.action;
-         processedItem.action = wrapWithSelection(originalOnClick);
-      }
-
-      // Si el item tiene hijos (es un submenú), procesar cada hijo
-      if (
-         "children" in processedItem &&
-         Array.isArray(processedItem.children)
-      ) {
-         console.log("procesando hijos");
-         processedItem.children = processedItem.children.map(
-            (childItem: MenuItem) => {
-               // Si es un separador, devolverlo sin cambios
-               if ((childItem.type = "separator")) return childItem;
-
-               // Crear una copia del hijo para no modificar el original
-               const processedChild: MenuItem = childItem;
-
-               // Si el hijo tiene onClick, envolverlo con la lógica de selección
-               if ("action" in processedChild) {
-                  const originalChildOnClick = processedChild.action;
-                  processedChild.action =
-                     wrapWithSelection(originalChildOnClick);
-               }
-
-               return processedChild;
-            },
-         );
-      }
-
-      return processedItem;
-   });
-
-   // Mostrar el menú contextual con opciones de formato
-   const coordinates: Coordinates = { x: event.clientX, y: event.clientY };
-   contextMenuController.openMenu(coordinates, menuItems);
-}
-
-// Inicializar el editor
-function initializeEditor(initialContent = "") {
+// Inicializa el editor TipTap con el contenido inicial
+function initializeEditor(initialContent: string) {
    destroyEditor();
 
+   let parsedContent = initialContent;
    try {
-      // Procesar el contenido inicial
-      let initialData = initialContent;
-      try {
-         const parsedContent = JSON.parse(initialContent);
-         initialData = "";
-      } catch (e) {
-         initialData = initialContent || "";
-      }
-
-      // Crear instancia del editor con las nuevas extensiones
-      editorInstance = new Editor({
-         element: editorElement,
-         extensions: [
-            StarterKit,
-            // Añadimos las nuevas extensiones
-            TaskList,
-            TaskItem.configure({
-               nested: true,
-            }),
-            Highlight.configure({
-               multicolor: false, // Usamos solo un color para destacar
-            }),
-         ],
-         content: initialData,
-         autofocus: true,
-         editable: true,
-         injectCSS: false,
-         onUpdate: ({ editor }) => {
-            onContentChange(editor.getHTML());
-         },
-         onSelectionUpdate: () => {
-            // Limpiar el rango de palabra cuando cambia la selección manualmente
-            currentWordRange = null;
-         },
-      });
-
-      // Agregar listener para el clic derecho
-      if (editorElement) {
-         editorElement.addEventListener("contextmenu", handleEditorContextMenu);
-      }
-   } catch (error) {
-      console.error("Error al inicializar TipTap:", error);
+      JSON.parse(initialContent);
+      // Si es JSON válido, seguimos la lógica actual y usamos cadena vacía
+      parsedContent = "";
+   } catch (e) {
+      parsedContent = initialContent || "";
    }
+
+   editorInstance = new Editor({
+      element: editorElement!,
+      extensions: [
+         StarterKit,
+         TaskList,
+         TaskItem.configure({ nested: true }),
+         Highlight.configure({ multicolor: false }),
+      ],
+      content: parsedContent,
+      autofocus: true,
+      editable: true,
+      injectCSS: false,
+      onUpdate: ({ editor }) => {
+         onContentChange(editor.getHTML());
+      },
+      onSelectionUpdate: () => {
+         currentWordRange = null;
+      },
+   });
+
+   // Registrar el elemento editable (.ProseMirror) en el focusController
+   const tiptapEditableElement = editorElement.querySelector(
+      ".ProseMirror",
+   ) as HTMLElement | null;
+   if (tiptapEditableElement) {
+      focusController.registerElement(
+         FocusTarget.EDITOR,
+         tiptapEditableElement,
+      );
+   }
+
+   // Usamos MouseEvent (en lugar de PointerEvent) para evitar conflictos de tipado
+   editorElement.addEventListener(
+      "contextmenu",
+      openEditorContextMenu as EventListener,
+   );
 }
 
-// Limpiar recursos
+onDestroy(() => {
+   destroyEditor();
+   focusController.unregisterElement(FocusTarget.EDITOR);
+});
+
+// Destruye la instancia actual del editor y limpia listeners
 function destroyEditor() {
    if (editorElement) {
-      editorElement.removeEventListener("contextmenu", handleEditorContextMenu);
+      editorElement.removeEventListener(
+         "contextmenu",
+         openEditorContextMenu as EventListener,
+      );
    }
-
    if (editorInstance) {
       editorInstance.destroy();
       editorInstance = null;
    }
-
    currentWordRange = null;
 }
 
-// Efecto para inicializar el editor cuando cambia el noteId
+function openEditorContextMenu(event: MouseEvent) {
+   event.preventDefault();
+
+   // calculamos posición del context menu
+   if (!editorInstance) return;
+
+   const { clientX, clientY } = event;
+   const editorPosition = editorInstance.view.posAtCoords({
+      left: clientX,
+      top: clientY,
+   });
+   if (!editorPosition) return;
+
+   // abrimos contextMenu
+   const coordinates: Coordinates = { x: clientX, y: clientY };
+   contextMenuController.openMenu(
+      coordinates,
+      getFormatMenuItems(editorInstance),
+   );
+}
+
 $effect(() => {
    if (noteId !== currentNoteId) {
       currentNoteId = noteId;
@@ -239,12 +140,18 @@ $effect(() => {
    }
 });
 
-onDestroy(() => {
-   destroyEditor();
+// soporte para recibir el enfoque desde el focusController.
+$effect(() => {
+   if (
+      focusController.focus?.targetId === FocusTarget.EDITOR &&
+      editorInstance
+   ) {
+      editorInstance.commands.focus();
+   }
 });
 </script>
 
 <div
    bind:this={editorElement}
-   class="prose prose-invert prose-neutral tiptap-editor w-full max-w-full">
+   class="prose prose-invert prose-neutral tiptap-editor">
 </div>
