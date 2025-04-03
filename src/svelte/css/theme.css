@@ -39,7 +39,8 @@
    --color-border-muted: var(--color-base-200);
 
    --color-bg-hover: #00000010;
-   --color-bg-active: #00000016;
+   --color-bg-focus: #00000014;
+   --color-bg-active: #00000018;
 }
 
 .theme-dark {
@@ -61,5 +62,6 @@
    --color-border-muted: var(--color-base-200);
 
    --color-bg-hover: #ffffff10;
-   --color-bg-active: #ffffff16;
+   --color-bg-focus: #ffffff14;
+   --color-bg-active: #ffffff18;
 }

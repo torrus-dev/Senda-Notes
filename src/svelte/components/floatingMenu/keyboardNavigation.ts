@@ -17,7 +17,6 @@ function getCurrentItems(): RenderItem[] {
  * Se fuerza el foco en el contenedor para que se capten los eventos, pero se oculta el outline mediante Tailwind.
  *
  * @param menuElement El contenedor del menú que captura los eventos de teclado.
- * @returns Una función para remover el listener y restaurar el foco.
  */
 export function setupKeyboardNavigation(menuElement: HTMLElement): () => void {
    let currentIndex = -1; // -1 indica que ningún elemento está seleccionado inicialmente
@@ -95,6 +94,7 @@ export function setupKeyboardNavigation(menuElement: HTMLElement): () => void {
 
    // Retornamos una función que remueve el listener y restaura el foco original.
    return () => {
+      console.log("eliminar key listeners");
       menuElement.removeEventListener("keydown", keyHandler);
    };
 }

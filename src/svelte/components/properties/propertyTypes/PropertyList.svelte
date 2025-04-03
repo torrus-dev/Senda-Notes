@@ -37,7 +37,7 @@ function handleListInput(event) {
    class="rounded-field bordered inline-flex flex-wrap items-center gap-1 px-1">
    {#each property.value as item, index}
       <div
-         class="rounded-selector inline-flex items-center bg-(--color-base-200) p-1 text-sm hover:bg-(--color-bg-hover)">
+         class="rounded-selector bg-base-200 inline-flex items-center p-1 text-sm hover:bg-(--color-bg-hover)">
          <span>{item}</span>
          {#if !isEditing}
             <Button

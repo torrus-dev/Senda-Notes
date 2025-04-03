@@ -40,18 +40,19 @@ async function updateMenuPosition() {
    positionStyles = `left:${x}px; top:${y}px;`;
 }
 
+let removeKeyboardNavigation = $state<any>(undefined);
 $effect(() => {
    if (isOpen === true) {
       if (originalPosition) {
          tick().then(updateMenuPosition);
          if (menuElement) {
-            setupKeyboardNavigation(menuElement);
+            removeKeyboardNavigation = setupKeyboardNavigation(menuElement);
          }
       }
       if (activeSubMenu !== undefined) {
          tick().then(updateMenuPosition);
          if (menuElement) {
-            setupKeyboardNavigation(menuElement);
+            removeKeyboardNavigation = setupKeyboardNavigation(menuElement);
             console.log(
                "renderedMainMenu",
                contextMenuController.renderedMainMenu,
@@ -62,6 +63,8 @@ $effect(() => {
             );
          }
       }
+   } else if (removeKeyboardNavigation) {
+      removeKeyboardNavigation();
    }
 });
 </script>
