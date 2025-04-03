@@ -1,4 +1,14 @@
-import type { Coordinates } from "./positionTypes";
+import { GroupMenuItem, MenuItem } from "./editorMenuTypes";
+
+export interface Coordinates {
+   x: number;
+   y: number;
+}
+
+export interface Dimensions {
+   width: number;
+   height: number;
+}
 
 export interface ContextMenuData {
    isOpen: boolean;
@@ -14,30 +24,6 @@ export interface DropdownMenuData {
    triggerElement: HTMLElement | null;
    activeSubMenu: GroupMenuItem | undefined;
 }
-
-interface BaseMenuItem {
-   type: "separator" | "group" | "action";
-   label: string;
-   icon?: any;
-   class?: string;
-}
-export interface SeparatorMenuItem {
-   type: "separator";
-}
-export interface ActionMenuItem extends BaseMenuItem {
-   type: "action";
-   disabled?: boolean;
-   action: () => void;
-   checked?: boolean;
-   children?: never;
-}
-export interface GroupMenuItem extends BaseMenuItem {
-   type: "group";
-   children: MenuItem[];
-   action?: never;
-   checked?: never;
-}
-export type MenuItem = ActionMenuItem | GroupMenuItem | SeparatorMenuItem;
 
 export interface RenderItem {
    renderId: string;

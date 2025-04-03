@@ -1,11 +1,10 @@
 import type {
-   MenuItem,
-   GroupMenuItem,
+   Coordinates,
    ContextMenuData,
    DropdownMenuData,
    RenderItem,
 } from "@projectTypes/floatingMenuTypes";
-import type { Coordinates } from "@projectTypes/positionTypes";
+import type { MenuItem, GroupMenuItem } from "@projectTypes/editorMenuTypes";
 
 class ContextMenuController {
    private startingMenuState = (): ContextMenuData => ({

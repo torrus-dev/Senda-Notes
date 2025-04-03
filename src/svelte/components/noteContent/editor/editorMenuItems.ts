@@ -26,8 +26,7 @@ import {
    HighlighterIcon,
 } from "lucide-svelte";
 import type { Editor } from "@tiptap/core";
-import type { MenuItem } from "@projectTypes/floatingMenuTypes";
-
+import type { MenuItem } from "@projectTypes/editorMenuTypes";
 
 export function getFormatMenuItems(editor: Editor): MenuItem[] {
    if (!editor) return [];
@@ -240,4 +239,3 @@ export function getFormatMenuItems(editor: Editor): MenuItem[] {
       },
    ];
 }
-

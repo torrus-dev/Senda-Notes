@@ -18,7 +18,7 @@ import { noteController } from "@controllers/noteController.svelte";
 import { contextMenuController } from "@controllers/floatingMenuController.svelte.js";
 import { focusController } from "@controllers/focusController.svelte";
 import { FocusTarget } from "@projectTypes/focusTypes";
-import type { Coordinates } from "@projectTypes/positionTypes";
+import type { Coordinates } from "@projectTypes/floatingMenuTypes";
 import { getFormatMenuItems } from "./editorMenuItems";
 import { parseEditorContent } from "@utils/editorUtils";
 
