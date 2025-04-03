@@ -44,10 +44,10 @@ onMount(() => {
    <Button
       bind:buttonElement={itemElement}
       size="small"
-      cssClass="w-full justify-between {menuItem.class}"
+      cssClass="w-full justify-between outline-none {menuItem.class}"
       onclick={() => {
          menuItem.action?.();
-         contextMenuController.close();
+         contextMenuController.closeMenu();
       }}>
       <span class="flex items-center gap-2">
          <menuItem.icon size="1.0625rem" />

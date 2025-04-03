@@ -20,7 +20,7 @@ import { contextMenuController } from "@controllers/floatingMenuController.svelt
 import { focusController } from "@controllers/focusController.svelte";
 import { getFormatMenuItems, editorUtils } from "./editorMenuItems.js";
 import { FocusTarget } from "@projectTypes/focusTypes";
-import type { Coordinates } from "@projectTypes/floatingMenuTypes.js";
+import type { Coordinates } from "@projectTypes/positionTypes";
 
 let { noteId = null } = $props();
 let content = $derived(noteController.getNoteById(noteId)?.content || "");

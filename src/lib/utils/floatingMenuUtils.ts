@@ -1,5 +1,5 @@
 import { screenSizeController } from "@controllers/screenSizeController.svelte";
-import { Coordinates, Dimensions } from "@projectTypes/floatingMenuTypes";
+import type { Coordinates, Dimensions } from "@projectTypes/positionTypes";
 
 export function calculateContextMenuCoordinates(
    coordinates: Coordinates,

@@ -46,7 +46,7 @@ onMount(() => {
    <Button
       bind:buttonElement={itemElement}
       size="small"
-      cssClass="w-full {menuItem.class}"
+      cssClass="w-full  outline-none {menuItem.class}"
       onclick={onclick}>
       {#if arrowLeft}
          <ChevronLeftIcon size="1.0625rem" class="absolute left-2" />

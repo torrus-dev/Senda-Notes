@@ -1,11 +1,11 @@
 import type {
    MenuItem,
-   Coordinates,
    GroupMenuItem,
    ContextMenuData,
    DropdownMenuData,
    RenderItem,
 } from "@projectTypes/floatingMenuTypes";
+import type { Coordinates } from "@projectTypes/positionTypes";
 
 class ContextMenuController {
    private startingMenuState = (): ContextMenuData => ({
@@ -13,6 +13,7 @@ class ContextMenuController {
       menuItems: [],
       originalPosition: { x: 0, y: 0 },
       activeSubMenu: undefined,
+      previousFocusedElement: undefined,
    });
 
    renderedMainMenu: RenderItem[] = [];
@@ -27,14 +28,24 @@ class ContextMenuController {
       this.state.menuItems = menuItems;
       this.state.originalPosition = position;
       this.state.activeSubMenu = undefined;
+
+      // recordar donde se encontraba el foco antes de abrir el context menu
+      this.state.previousFocusedElement = document.activeElement as
+         | HTMLElement
+         | undefined;
+
       this.renderedSubMenu = [];
       this.renderedMainMenu = [];
    }
 
-   close() {
-      this.state = this.startingMenuState();
+   closeMenu() {
       this.renderedMainMenu = [];
       this.renderedSubMenu = [];
+
+      if (this.state.previousFocusedElement) {
+         this.state.previousFocusedElement.focus();
+      }
+      this.state = this.startingMenuState();
    }
 
    setActiveSubMenu = (groupMenuITem: GroupMenuItem): void => {

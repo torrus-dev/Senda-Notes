@@ -94,7 +94,7 @@ let editableElement;
          bind:this={editableElement}
          note={note}
          isEditing={isEditingTitle}
-         cssClass="truncate"
+         cssClass="truncate {!isExpanded ? 'text-base-content/70' : ''}"
          onEditComplete={stopEditingLabel} />
    </div>
    <div class="flex items-center">

@@ -7,7 +7,7 @@
 @plugin "@tailwindcss/typography";
 
 @utility bg-interactive {
-   @apply hover:bg-(--color-bg-hover) focus:bg-(--color-bg-hover);
+   @apply hover:bg-(--color-bg-hover) focus:bg-(--color-bg-focus);
 }
 @utility highlight {
    background-color: var(--color-accent-indicator);

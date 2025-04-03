@@ -1,8 +1,11 @@
+import type { Coordinates } from "./positionTypes";
+
 export interface ContextMenuData {
    isOpen: boolean;
    menuItems: MenuItem[];
    originalPosition: Coordinates;
    activeSubMenu: GroupMenuItem | undefined;
+   previousFocusedElement: HTMLElement | undefined;
 }
 
 export interface DropdownMenuData {
@@ -37,17 +40,6 @@ export interface GroupMenuItem extends BaseMenuItem {
    checked?: never;
 }
 export type MenuItem = ActionMenuItem | GroupMenuItem | SeparatorMenuItem;
-
-// Posición del menú
-export interface Coordinates {
-   x: number;
-   y: number;
-}
-
-export interface Dimensions {
-   width: number;
-   height: number;
-}
 
 export interface RenderItem {
    renderId: string;

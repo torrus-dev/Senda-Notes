@@ -17,9 +17,7 @@ import SeparatorMenuItem from "./menuItems/SeparatorMenuItem.svelte";
 
 let { isOpen, menuItems, originalPosition, activeSubMenu }: ContextMenuData =
    $derived(contextMenuController.getMenuState());
-
 let menuElement = $state<HTMLElement | null>(null);
-
 let positionStyles = $state("left:0; top:0;");
 
 async function updateMenuPosition() {
@@ -43,24 +41,26 @@ async function updateMenuPosition() {
 }
 
 $effect(() => {
-   if (isOpen === true && originalPosition) {
-      tick().then(updateMenuPosition);
-      if (menuElement) {
-         setupKeyboardNavigation(menuElement);
+   if (isOpen === true) {
+      if (originalPosition) {
+         tick().then(updateMenuPosition);
+         if (menuElement) {
+            setupKeyboardNavigation(menuElement);
+         }
       }
-   }
-   if (isOpen && activeSubMenu !== undefined) {
-      tick().then(updateMenuPosition);
-      if (menuElement) {
-         setupKeyboardNavigation(menuElement);
-         console.log(
-            "renderedMainMenu",
-            contextMenuController.renderedMainMenu.length,
-         );
-         console.log(
-            "renderedSubMenu",
-            contextMenuController.renderedSubMenu.length,
-         );
+      if (activeSubMenu !== undefined) {
+         tick().then(updateMenuPosition);
+         if (menuElement) {
+            setupKeyboardNavigation(menuElement);
+            console.log(
+               "renderedMainMenu",
+               contextMenuController.renderedMainMenu,
+            );
+            console.log(
+               "renderedSubMenu",
+               contextMenuController.renderedSubMenu,
+            );
+         }
       }
    }
 });
@@ -72,9 +72,7 @@ $effect(() => {
       style={positionStyles}
       bind:this={menuElement}
       use:onOutsideOrEsc={() => {
-         console.log("cerrando");
-
-         contextMenuController.close();
+         contextMenuController.closeMenu();
       }}>
       <ul
          class="rounded-field outlined bg-base-200 flex min-w-48 flex-col p-1 shadow-xl">

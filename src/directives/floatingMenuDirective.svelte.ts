@@ -2,7 +2,8 @@ import {
    contextMenuController,
    dropdownMenuController,
 } from "@controllers/floatingMenuController.svelte";
-import { Coordinates, MenuItem } from "@projectTypes/floatingMenuTypes";
+import { MenuItem } from "@projectTypes/floatingMenuTypes";
+import type { Coordinates } from "@projectTypes/positionTypes";
 
 function checkValid(menuItems: MenuItem[]) {
    if (menuItems && Array.isArray(menuItems) && menuItems.length > 0) {
@@ -26,7 +27,7 @@ export function contextMenu(node: HTMLElement, menuItems: MenuItem[]) {
    function handleContextMenu(event: MouseEvent) {
       event.preventDefault();
       event.stopPropagation();
-      contextMenuController.close();
+      contextMenuController.closeMenu();
 
       // Abrir nuestro menú contextual personalizado
       const coordenates: Coordinates = { x: event.clientX, y: event.clientY };
