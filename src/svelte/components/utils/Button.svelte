@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
 import {
    contextMenu,
    dropdownMenu,
@@ -32,33 +32,43 @@ if (shape === "rect") {
    };
 }
 
-let style = `whitespace-nowrap rounded-field bg-interactive inline-flex cursor-pointer items-center hover:text-base-content/70 focus:text-base-content/70 gap-2 ${sizeStyle ? sizeStyle[size] : ""} ${cssClass}`;
-
-function handleClick(event: Event) {
-   if (onclick) {
-      onclick(event);
-   } else {
-      console.warn("no se ha pasado onclick al boton");
-   }
-
-   buttonElement.blur();
-}
+let style = `whitespace-nowrap rounded-field bg-interactive inline-flex cursor-pointer items-center hover:text-base-content/70 focus:text-base-content/70 gap-2 ${sizeStyle[size]} ${cssClass}`;
 </script>
 
-{#snippet button()}
-   {@const optionalAttr = {
-      ...(dropdownMenuItems ? { "use:dropdownMenu": dropdownMenuItems } : {}),
-      ...(contextMenuItems ? { "use:contextMenu": contextMenuItems } : {}),
-   }}
-
+{#if dropdownMenuItems && contextMenuItems}
    <button
-      bind:this={buttonElement}
+      {...htmlAttributes}
       class={style}
-      onclick={handleClick}
-      {...optionalAttr}
-      {...htmlAttributes}>
+      onclick={onclick}
+      use:dropdownMenu={dropdownMenuItems}
+      use:contextMenu={contextMenuItems}
+      bind:this={buttonElement}>
       {@render children()}
    </button>
-{/snippet}
-
-{@render button()}
+{:else if dropdownMenuItems}
+   <button
+      {...htmlAttributes}
+      class={style}
+      onclick={onclick}
+      use:dropdownMenu={dropdownMenuItems}
+      bind:this={buttonElement}>
+      {@render children()}
+   </button>
+{:else if contextMenuItems}
+   <button
+      {...htmlAttributes}
+      class={style}
+      onclick={onclick}
+      use:contextMenu={contextMenuItems}
+      bind:this={buttonElement}>
+      {@render children()}
+   </button>
+{:else}
+   <button
+      {...htmlAttributes}
+      class={style}
+      onclick={onclick}
+      bind:this={buttonElement}>
+      {@render children()}
+   </button>
+{/if}
