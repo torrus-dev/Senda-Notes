@@ -108,7 +108,7 @@ $effect(() => {
       bind:this={menuElement}
       use:onOutsideOrEsc={{
          triggerElement: floatingMenuController.getTriggerElement(),
-         onClose: () => {
+         action: () => {
             floatingMenuController.closeMenu();
          },
       }}>

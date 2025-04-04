@@ -57,8 +57,6 @@ class FloatingMenuController {
          | HTMLElement
          | undefined;
 
-      console.log("TRIGGER ELEMENT", triggerElement);
-
       this.state = {
          ...this.startingDropdownMenuState(),
          isOpen: true,

@@ -1,116 +1,69 @@
 export interface CloseOptions {
-   onClose: () => void;
-   closeOnEsc?: boolean;
-   closeOnClickOutside?: boolean;
+   action: () => void;
+   preventOnEsc?: boolean;
+   preventOnClickOutside?: boolean;
    triggerElement?: HTMLElement;
 }
 
-export function onOutsideOrEsc(
-   node: HTMLElement,
-   options?: CloseOptions | (() => void),
-) {
-   // Asegurarnos de que options esté definido
-   if (!options) {
-      console.error("onOutsideOrEsc: options is required");
-      return {
-         destroy() {},
-      };
+export function onOutsideOrEsc(node: HTMLElement, options: CloseOptions) {
+   if (typeof options.action !== "function") {
+      console.error("onOutsideOrEsc: action must be a function");
+      return { destroy() {} };
    }
 
-   // Inicializar config con valores por defecto
-   let config: CloseOptions;
-
-   if (typeof options === "function") {
-      config = {
-         onClose: options,
-         closeOnEsc: true,
-         closeOnClickOutside: true,
-      };
-   } else {
-      config = {
-         onClose: options.onClose,
-         closeOnEsc:
-            options.closeOnEsc !== undefined ? options.closeOnEsc : true,
-         closeOnClickOutside:
-            options.closeOnClickOutside !== undefined
-               ? options.closeOnClickOutside
-               : true,
-      };
-   }
-
-   // Verificar que onClose sea una función válida
-   if (typeof config.onClose !== "function") {
-      console.error("onOutsideOrEsc: onClose must be a function", config);
-      return {
-         destroy() {},
-      };
-   }
-
-   // Manejadores de eventos
+   // Definir manejadores de eventos
    const handleClickOutside = (event: MouseEvent) => {
-      if (
-         config.closeOnClickOutside &&
-         node &&
-         !node.contains(event.target as Node)
-      ) {
-         config.onClose();
+      console.log("handling click outside");
+      const target = event.target as Node;
+
+      if (!node.contains(target) && !options.triggerElement?.contains(target)) {
+         ("triggering onClickOutisde");
+         options.action();
       }
    };
 
    const handleKeyDown = (event: KeyboardEvent) => {
-      if (config.closeOnEsc && event.key === "Escape") {
-         config.onClose();
+      if (event.key === "Escape") {
+         options.action();
       }
    };
 
-   // Añadir eventos después de un pequeño retraso
-   // para evitar que se activen en el mismo ciclo de renderizado
-   setTimeout(() => {
-      if (config.closeOnClickOutside) {
+   // Agregar event listeners con un pequeño retraso
+   // const timerId = setTimeout(setupListeners, 10);
+   setupListeners();
+
+   // Funciones auxiliares
+   function setupListeners() {
+      console.log("configurando listeners, options:", options);
+      if (!options.preventOnClickOutside) {
          document.addEventListener("mousedown", handleClickOutside, true);
       }
 
-      if (config.closeOnEsc) {
+      if (!options.preventOnEsc) {
          document.addEventListener("keydown", handleKeyDown, true);
       }
-   }, 10);
+   }
 
+   function removeListeners() {
+      document.removeEventListener("mousedown", handleClickOutside, true);
+      document.removeEventListener("keydown", handleKeyDown, true);
+   }
+
+   // Retornar API de la directiva "use:" de Svelte
    return {
       update(newOptions: CloseOptions | (() => void)) {
-         if (!newOptions) {
-            return;
-         }
+         // Actualizar configuración
+         Object.assign(options, newOptions);
 
-         if (typeof newOptions === "function") {
-            config.onClose = newOptions;
-         } else {
-            // Actualizar solo los valores proporcionados
-            if (newOptions.onClose !== undefined) {
-               config.onClose = newOptions.onClose;
-            }
-            if (newOptions.closeOnEsc !== undefined) {
-               config.closeOnEsc = newOptions.closeOnEsc;
-            }
-            if (newOptions.closeOnClickOutside !== undefined) {
-               config.closeOnClickOutside = newOptions.closeOnClickOutside;
-            }
-         }
-
-         // Verificar que onClose siga siendo una función válida
-         if (typeof config.onClose !== "function") {
-            console.error(
-               "onOutsideOrEsc update: onClose must be a function",
-               config,
-            );
+         // Verificar que onClose siga siendo válido
+         if (typeof options.action !== "function") {
+            console.error("onOutsideOrEsc update: onClose must be a function");
          }
       },
+
       destroy() {
-         if (config.closeOnClickOutside) {
-            document.removeEventListener("mousedown", handleClickOutside, true);
-         }
-         if (config.closeOnEsc) {
-            document.removeEventListener("keydown", handleKeyDown, true);
-         }
+         // clearTimeout(timerId);
+         removeListeners();
       },
    };
 }

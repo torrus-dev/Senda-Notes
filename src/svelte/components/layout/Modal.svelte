@@ -18,7 +18,9 @@ function closeModal() {
       aria-hidden={!isOpen}>
       <div
          class="rounded-selector bg-base-200 bordered relative m-auto min-h-2/3 w-3xl p-6 shadow-xl"
-         use:onOutsideOrEsc={closeModal}
+         use:onOutsideOrEsc={{
+            action: closeModal,
+         }}
          role="dialog">
          <Button cssClass="top-0 right-0 absolute" onclick={closeModal}
             ><XIcon /></Button>
