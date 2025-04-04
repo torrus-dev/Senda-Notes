@@ -13,11 +13,13 @@ export function onOutsideOrEsc(node: HTMLElement, options: CloseOptions) {
 
    // Definir manejadores de eventos
    const handleClickOutside = (event: MouseEvent) => {
-      console.log("handling click outside");
       const target = event.target as Node;
 
-      if (!node.contains(target) && !options.triggerElement?.contains(target)) {
-         ("triggering onClickOutisde");
+      if (
+         !node.contains(target) &&
+         options.triggerElement &&
+         !options.triggerElement?.contains(target)
+      ) {
          options.action();
       }
    };
@@ -34,7 +36,6 @@ export function onOutsideOrEsc(node: HTMLElement, options: CloseOptions) {
 
    // Funciones auxiliares
    function setupListeners() {
-      console.log("configurando listeners, options:", options);
       if (!options.preventOnClickOutside) {
          document.addEventListener("mousedown", handleClickOutside, true);
       }
