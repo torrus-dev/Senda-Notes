@@ -46,7 +46,7 @@ function handleClick(event: Event) {
 </script>
 
 {#snippet button()}
-   {@const menuDirectives = {
+   {@const optionalAttr = {
       ...(dropdownMenuItems ? { "use:dropdownMenu": dropdownMenuItems } : {}),
       ...(contextMenuItems ? { "use:contextMenu": contextMenuItems } : {}),
    }}
@@ -55,7 +55,7 @@ function handleClick(event: Event) {
       bind:this={buttonElement}
       class={style}
       onclick={handleClick}
-      {...menuDirectives}
+      {...optionalAttr}
       {...htmlAttributes}>
       {@render children()}
    </button>
