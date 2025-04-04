@@ -78,11 +78,9 @@ export function dropdownMenu(
       event.preventDefault();
       event.stopPropagation();
 
-      // Cerrar cualquier menú abierto antes de abrir uno nuevo
+      const triggerElement = floatingMenuController.getTriggerElement();
       floatingMenuController.closeMenu();
-
-      // Usar el nuevo método unificado para abrir el menú dropdown
-      if (menuItems) {
+      if (menuItems && !(triggerElement === node)) {
          floatingMenuController.openDropdownMenu(node, menuItems);
       }
    }

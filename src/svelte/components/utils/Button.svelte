@@ -17,8 +17,7 @@ let {
 } = $props();
 
 if (onclick && dropdownMenu) {
-   consol.warn("Se esta pasando 'onclick' a un elemento con dropdown");
-   // desactivamos onclick para elementos con dropdown
+   console.warn("Se esta pasando 'onclick' a un elemento con dropdown");
    onclick = null;
 }
 

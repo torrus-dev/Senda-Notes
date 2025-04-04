@@ -21,7 +21,7 @@ class FloatingMenuController {
       type: "dropdown",
       isOpen: false,
       menuItems: [],
-      triggerElement: null,
+      triggerElement: undefined,
       activeSubMenu: undefined,
       previousFocusedElement: undefined,
    });
@@ -57,6 +57,8 @@ class FloatingMenuController {
          | HTMLElement
          | undefined;
 
+      console.log("TRIGGER ELEMENT", triggerElement);
+
       this.state = {
          ...this.startingDropdownMenuState(),
          isOpen: true,
@@ -80,7 +82,8 @@ class FloatingMenuController {
       // Restablecer el estado según el tipo de menú actual
       if (this.state.type === "context") {
          this.state = this.startingContextMenuState();
-      } else {
+      }
+      if (this.state.type === "dropdown") {
          this.state = this.startingDropdownMenuState();
       }
    }
@@ -104,6 +107,13 @@ class FloatingMenuController {
    };
 
    getActiveSubMenu = (): GroupMenuItem | undefined => this.state.activeSubMenu;
+   getTriggerElement = (): HTMLElement | undefined => {
+      if (this.state.type === "dropdown") {
+         return this.state.triggerElement;
+      } else {
+         return undefined;
+      }
+   };
 }
 
 export const floatingMenuController = new FloatingMenuController();

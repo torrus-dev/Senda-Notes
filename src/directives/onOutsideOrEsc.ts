@@ -2,6 +2,7 @@ export interface CloseOptions {
    onClose: () => void;
    closeOnEsc?: boolean;
    closeOnClickOutside?: boolean;
+   triggerElement?: HTMLElement;
 }
 
 export function onOutsideOrEsc(

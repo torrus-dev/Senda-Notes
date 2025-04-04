@@ -106,8 +106,11 @@ $effect(() => {
       class="absolute z-100"
       style={positionStyles}
       bind:this={menuElement}
-      use:onOutsideOrEsc={() => {
-         floatingMenuController.closeMenu();
+      use:onOutsideOrEsc={{
+         triggerElement: floatingMenuController.getTriggerElement(),
+         onClose: () => {
+            floatingMenuController.closeMenu();
+         },
       }}>
       <ul
          class="rounded-field outlined bg-base-200 flex min-w-48 flex-col p-1 shadow-xl">

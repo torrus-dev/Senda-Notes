@@ -25,7 +25,7 @@ export interface ContextMenuData extends BaseMenuData {
 
 export interface DropdownMenuData extends BaseMenuData {
    type: "dropdown";
-   triggerElement: HTMLElement | null;
+   triggerElement: HTMLElement | undefined;
 }
 
 export type FloatingMenuData = ContextMenuData | DropdownMenuData;
