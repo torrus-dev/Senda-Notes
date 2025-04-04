@@ -2,7 +2,7 @@ import { floatingMenuController } from "@controllers/floatingMenuController.svel
 import type { MenuItem } from "@projectTypes/editorMenuTypes";
 import type { Coordinates } from "@projectTypes/floatingMenuTypes";
 
-function checkValid(menuItems: MenuItem[]) {
+function checkValid(menuItems: MenuItem[] | undefined) {
    if (menuItems && Array.isArray(menuItems) && menuItems.length > 0) {
       return true;
    }
@@ -10,9 +10,12 @@ function checkValid(menuItems: MenuItem[]) {
 }
 
 // Directiva para abrir el menú como context menu (con clic derecho)
-export function contextMenu(node: HTMLElement, menuItems: MenuItem[]) {
+export function contextMenu(
+   node: HTMLElement,
+   menuItems: MenuItem[] | undefined,
+) {
+   // Si no hay menuItems, devolver un objeto de directiva "noop" (no operation)
    if (!checkValid(menuItems)) {
-      console.warn("Invalid menu items provided to contextMenu directive!");
       return {
          update() {},
          destroy() {},
@@ -28,7 +31,9 @@ export function contextMenu(node: HTMLElement, menuItems: MenuItem[]) {
 
       // Abrir nuestro menú contextual personalizado
       const coordinates: Coordinates = { x: event.clientX, y: event.clientY };
-      floatingMenuController.openContextMenu(coordinates, menuItems);
+      if (menuItems) {
+         floatingMenuController.openContextMenu(coordinates, menuItems);
+      }
    }
 
    // Añadir el event listener
@@ -36,7 +41,7 @@ export function contextMenu(node: HTMLElement, menuItems: MenuItem[]) {
 
    return {
       // Actualizar las opciones si cambian
-      update(newMenuItems: MenuItem[]) {
+      update(newMenuItems: MenuItem[] | undefined) {
          const wasValid = checkValid(menuItems);
          const isValid = checkValid(newMenuItems);
          menuItems = newMenuItems;
@@ -57,9 +62,12 @@ export function contextMenu(node: HTMLElement, menuItems: MenuItem[]) {
 }
 
 // Directiva para abrir el menú como dropdown (con clic normal)
-export function dropdownMenu(node: HTMLElement, menuItems: MenuItem[]) {
+export function dropdownMenu(
+   node: HTMLElement,
+   menuItems: MenuItem[] | undefined,
+) {
+   // Si no hay menuItems, devolver un objeto de directiva "noop"
    if (!checkValid(menuItems)) {
-      console.warn("Invalid menu items provided to dropdownMenu directive!");
       return {
          update() {},
          destroy() {},
@@ -74,7 +82,9 @@ export function dropdownMenu(node: HTMLElement, menuItems: MenuItem[]) {
       floatingMenuController.closeMenu();
 
       // Usar el nuevo método unificado para abrir el menú dropdown
-      floatingMenuController.openDropdownMenu(node, menuItems);
+      if (menuItems) {
+         floatingMenuController.openDropdownMenu(node, menuItems);
+      }
    }
 
    // Añadir el event listener
@@ -82,7 +92,7 @@ export function dropdownMenu(node: HTMLElement, menuItems: MenuItem[]) {
 
    return {
       // Actualizar las opciones si cambian
-      update(newMenuItems: MenuItem[]) {
+      update(newMenuItems: MenuItem[] | undefined) {
          const wasValid = checkValid(menuItems);
          const isValid = checkValid(newMenuItems);
          menuItems = newMenuItems;

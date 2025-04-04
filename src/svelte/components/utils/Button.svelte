@@ -16,6 +16,12 @@ let {
    ...htmlAttributes
 } = $props();
 
+if (onclick && dropdownMenu) {
+   consol.warn("Se esta pasando 'onclick' a un elemento con dropdown");
+   // desactivamos onclick para elementos con dropdown
+   onclick = null;
+}
+
 let sizeStyle;
 
 if (shape === "rect") {
@@ -35,40 +41,12 @@ if (shape === "rect") {
 let style = `whitespace-nowrap rounded-field bg-interactive inline-flex cursor-pointer items-center hover:text-base-content/70 focus:text-base-content/70 gap-2 ${sizeStyle[size]} ${cssClass}`;
 </script>
 
-{#if dropdownMenuItems && contextMenuItems}
-   <button
-      {...htmlAttributes}
-      class={style}
-      onclick={onclick}
-      use:dropdownMenu={dropdownMenuItems}
-      use:contextMenu={contextMenuItems}
-      bind:this={buttonElement}>
-      {@render children()}
-   </button>
-{:else if dropdownMenuItems}
-   <button
-      {...htmlAttributes}
-      class={style}
-      onclick={onclick}
-      use:dropdownMenu={dropdownMenuItems}
-      bind:this={buttonElement}>
-      {@render children()}
-   </button>
-{:else if contextMenuItems}
-   <button
-      {...htmlAttributes}
-      class={style}
-      onclick={onclick}
-      use:contextMenu={contextMenuItems}
-      bind:this={buttonElement}>
-      {@render children()}
-   </button>
-{:else}
-   <button
-      {...htmlAttributes}
-      class={style}
-      onclick={onclick}
-      bind:this={buttonElement}>
-      {@render children()}
-   </button>
-{/if}
+<button
+   {...htmlAttributes}
+   class={style}
+   onclick={onclick}
+   use:dropdownMenu={dropdownMenuItems}
+   use:contextMenu={contextMenuItems}
+   bind:this={buttonElement}>
+   {@render children()}
+</button>
