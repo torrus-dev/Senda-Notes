@@ -16,7 +16,7 @@ import TaskItem from "@tiptap/extension-task-item";
 import Highlight from "@tiptap/extension-highlight";
 
 import { noteController } from "@controllers/noteController.svelte";
-import { contextMenuController } from "@controllers/floatingMenuController.svelte.js";
+import { floatingMenuController } from "@controllers/floatingMenuController.svelte.js";
 import { focusController } from "@controllers/focusController.svelte";
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Coordinates } from "@projectTypes/floatingMenuTypes";
@@ -107,7 +107,7 @@ function handleContextMenu(event: MouseEvent) {
    if (!editorPosition) return;
 
    const coordinates: Coordinates = { x: clientX, y: clientY };
-   contextMenuController.openMenu(
+   floatingMenuController.openContextMenu(
       coordinates,
       getFormatMenuItems(editorInstance),
    );

@@ -1,7 +1,11 @@
 <script lang="ts">
-import type { ContextMenuData } from "@projectTypes/floatingMenuTypes";
+import type {
+   ContextMenuData,
+   DropdownMenuData,
+   FloatingMenuData,
+} from "@projectTypes/floatingMenuTypes";
 
-import { contextMenuController } from "@controllers/floatingMenuController.svelte";
+import { floatingMenuController } from "@controllers/floatingMenuController.svelte";
 import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
 import { setupKeyboardNavigation } from "./keyboardNavigation";
 
@@ -15,27 +19,55 @@ import ActionMenuItem from "./menuItems/ActionMenuItem.svelte";
 import GroupMenuItem from "./menuItems/GroupMenuItem.svelte";
 import SeparatorMenuItem from "./menuItems/SeparatorMenuItem.svelte";
 
-let { isOpen, menuItems, originalPosition, activeSubMenu }: ContextMenuData =
-   $derived(contextMenuController.getMenuState());
+let menuData: FloatingMenuData = $derived(
+   floatingMenuController.getMenuState(),
+);
+let { isOpen, menuItems, activeSubMenu, type } = $derived(menuData);
 let menuElement = $state<HTMLElement | null>(null);
 let positionStyles = $state("left:0; top:0;");
 
 async function updateMenuPosition() {
-   if (!menuElement || !originalPosition) return;
+   if (!menuElement) return;
 
-   // Crear una referencia virtual basada en las coordenadas originales
-   const reference = createCoordinateReference(
-      originalPosition.x,
-      originalPosition.y,
-   );
-
-   // Calcular la posición usando la utilidad
-   const { x, y } = await calculateFloatingPosition(reference, menuElement, {
+   let reference: HTMLElement | ReturnType<typeof createCoordinateReference>;
+   let placementOptions: any = {
       placement: "bottom-start",
       offsetValue: 0,
       padding: 5,
       fallbackPlacements: ["top-start"],
-   });
+   };
+
+   // Dependiendo del tipo de menú, usamos una referencia diferente
+   if (type === "context") {
+      const contextData = menuData as ContextMenuData;
+      if (!contextData.originalPosition) return;
+
+      // Para context menu, usamos las coordenadas del clic
+      reference = createCoordinateReference(
+         contextData.originalPosition.x,
+         contextData.originalPosition.y,
+      );
+   } else {
+      const dropdownData = menuData as DropdownMenuData;
+      if (!dropdownData.triggerElement) return;
+
+      // Para dropdown menu, usamos el elemento HTML como referencia
+      reference = dropdownData.triggerElement;
+      // Configuración específica para dropdown
+      placementOptions = {
+         placement: "bottom-start",
+         offsetValue: 5, // Un poco de espacio entre el trigger y el menú
+         padding: 5,
+         fallbackPlacements: ["top-start", "bottom-end", "top-end"],
+      };
+   }
+
+   // Calcular la posición usando la utilidad
+   const { x, y } = await calculateFloatingPosition(
+      reference,
+      menuElement,
+      placementOptions,
+   );
 
    positionStyles = `left:${x}px; top:${y}px;`;
 }
@@ -43,23 +75,23 @@ async function updateMenuPosition() {
 let removeKeyboardNavigation = $state<any>(undefined);
 $effect(() => {
    if (isOpen === true) {
-      if (originalPosition) {
-         tick().then(updateMenuPosition);
-         if (menuElement) {
-            removeKeyboardNavigation = setupKeyboardNavigation(menuElement);
-         }
+      tick().then(updateMenuPosition);
+
+      if (menuElement) {
+         removeKeyboardNavigation = setupKeyboardNavigation(menuElement);
       }
+
       if (activeSubMenu !== undefined) {
          tick().then(updateMenuPosition);
          if (menuElement) {
             removeKeyboardNavigation = setupKeyboardNavigation(menuElement);
             console.log(
                "renderedMainMenu",
-               contextMenuController.renderedMainMenu,
+               floatingMenuController.renderedMainMenu,
             );
             console.log(
                "renderedSubMenu",
-               contextMenuController.renderedSubMenu,
+               floatingMenuController.renderedSubMenu,
             );
          }
       }
@@ -69,13 +101,13 @@ $effect(() => {
 });
 </script>
 
-{#if isOpen && menuItems && originalPosition}
+{#if isOpen && menuItems}
    <div
       class="absolute z-100"
       style={positionStyles}
       bind:this={menuElement}
       use:onOutsideOrEsc={() => {
-         contextMenuController.closeMenu();
+         floatingMenuController.closeMenu();
       }}>
       <ul
          class="rounded-field outlined bg-base-200 flex min-w-48 flex-col p-1 shadow-xl">
@@ -91,7 +123,7 @@ $effect(() => {
                      isReturn={false}
                      inSubMenu={false}
                      onclick={() => {
-                        contextMenuController.setActiveSubMenu(menuItem);
+                        floatingMenuController.setActiveSubMenu(menuItem);
                      }} />
                {/if}
             {/each}
@@ -101,7 +133,7 @@ $effect(() => {
                isReturn={true}
                inSubMenu={true}
                onclick={() => {
-                  contextMenuController.unsetActiveSubMenu();
+                  floatingMenuController.unsetActiveSubMenu();
                }} />
             <SeparatorMenuItem />
             {#each activeSubMenu.children as subMenuItem}

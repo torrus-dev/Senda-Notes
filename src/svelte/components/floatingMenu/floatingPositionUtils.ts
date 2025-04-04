@@ -46,7 +46,7 @@ export interface PositioningOptions {
 
 // Función principal para calcular la posición
 export async function calculateFloatingPosition(
-   reference: ReferenceElement,
+   reference: ReferenceElement | HTMLElement, // Ahora soporta tanto HTMLElement como nuestra referencia virtual
    floating: HTMLElement,
    options: PositioningOptions = {},
 ): Promise<{ x: number; y: number }> {

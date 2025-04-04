@@ -54,13 +54,13 @@ const IconComponent = $derived(getIconComponent(property.type));
          ondragend={handleDragEnd}>
          <Button
             size="small"
-            dropdownMenuItems={[
+            contextMenuItems={[
                {
                   id: crypto.randomUUID(),
                   type: "action",
                   label: "Edit Property",
                   icon: SlidersHorizontalIcon,
-                  onClick: () => {
+                  action: () => {
                      workspace.openPropertyEditor(noteId, property.id);
                   },
                },
@@ -69,7 +69,7 @@ const IconComponent = $derived(getIconComponent(property.type));
                   type: "action",
                   label: "Delete Property",
                   icon: Trash2Icon,
-                  onClick: () => {
+                  action: () => {
                      propertyController.deleteProperty(noteId, property.id);
                      // close
                   },

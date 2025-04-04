@@ -2,12 +2,14 @@ import type {
    Coordinates,
    ContextMenuData,
    DropdownMenuData,
+   FloatingMenuData,
    RenderItem,
 } from "@projectTypes/floatingMenuTypes";
 import type { MenuItem, GroupMenuItem } from "@projectTypes/editorMenuTypes";
 
-class ContextMenuController {
-   private startingMenuState = (): ContextMenuData => ({
+class FloatingMenuController {
+   private startingContextMenuState = (): ContextMenuData => ({
+      type: "context",
       isOpen: false,
       menuItems: [],
       originalPosition: { x: 0, y: 0 },
@@ -15,23 +17,53 @@ class ContextMenuController {
       previousFocusedElement: undefined,
    });
 
+   private startingDropdownMenuState = (): DropdownMenuData => ({
+      type: "dropdown",
+      isOpen: false,
+      menuItems: [],
+      triggerElement: null,
+      activeSubMenu: undefined,
+      previousFocusedElement: undefined,
+   });
+
    renderedMainMenu: RenderItem[] = [];
    renderedSubMenu: RenderItem[] = [];
 
-   private state = $state<ContextMenuData>(this.startingMenuState());
+   private state = $state<FloatingMenuData>(this.startingContextMenuState());
 
-   getMenuState = (): ContextMenuData => this.state;
+   getMenuState = (): FloatingMenuData => this.state;
 
-   openMenu(position: Coordinates, menuItems: MenuItem[]) {
-      this.state.isOpen = true;
-      this.state.menuItems = menuItems;
-      this.state.originalPosition = position;
-      this.state.activeSubMenu = undefined;
-
-      // recordar donde se encontraba el foco antes de abrir el context menu
-      this.state.previousFocusedElement = document.activeElement as
+   openContextMenu(position: Coordinates, menuItems: MenuItem[]) {
+      // Guardamos el elemento que tiene el foco antes de abrir el menú
+      const previousFocusedElement = document.activeElement as
          | HTMLElement
          | undefined;
+
+      this.state = {
+         ...this.startingContextMenuState(),
+         isOpen: true,
+         menuItems,
+         originalPosition: position,
+         previousFocusedElement,
+      };
+
+      this.renderedSubMenu = [];
+      this.renderedMainMenu = [];
+   }
+
+   openDropdownMenu(triggerElement: HTMLElement, menuItems: MenuItem[]) {
+      // Guardamos el elemento que tiene el foco antes de abrir el menú
+      const previousFocusedElement = document.activeElement as
+         | HTMLElement
+         | undefined;
+
+      this.state = {
+         ...this.startingDropdownMenuState(),
+         isOpen: true,
+         menuItems,
+         triggerElement,
+         previousFocusedElement,
+      };
 
       this.renderedSubMenu = [];
       this.renderedMainMenu = [];
@@ -44,14 +76,29 @@ class ContextMenuController {
       if (this.state.previousFocusedElement) {
          this.state.previousFocusedElement.focus();
       }
-      this.state = this.startingMenuState();
+
+      // Restablecer el estado según el tipo de menú actual
+      if (this.state.type === "context") {
+         this.state = this.startingContextMenuState();
+      } else {
+         this.state = this.startingDropdownMenuState();
+      }
    }
 
-   setActiveSubMenu = (groupMenuITem: GroupMenuItem): void => {
-      this.state.activeSubMenu = groupMenuITem;
+   setActiveSubMenu = (groupMenuItem: GroupMenuItem): void => {
+      if (this.state.type === "context") {
+         (this.state as ContextMenuData).activeSubMenu = groupMenuItem;
+      } else {
+         (this.state as DropdownMenuData).activeSubMenu = groupMenuItem;
+      }
    };
+
    unsetActiveSubMenu = (): void => {
-      this.state.activeSubMenu = undefined;
+      if (this.state.type === "context") {
+         (this.state as ContextMenuData).activeSubMenu = undefined;
+      } else {
+         (this.state as DropdownMenuData).activeSubMenu = undefined;
+      }
       this.renderedSubMenu = [];
       this.renderedMainMenu = [];
    };
@@ -59,29 +106,4 @@ class ContextMenuController {
    getActiveSubMenu = (): GroupMenuItem | undefined => this.state.activeSubMenu;
 }
 
-class DropdownMenuController {
-   private resetMenuState = (): DropdownMenuData => ({
-      isOpen: false,
-      menuItems: [],
-      triggerElement: null,
-      activeSubMenu: undefined,
-   });
-
-   private state = $state<DropdownMenuData>(this.resetMenuState());
-
-   getMenuState = (): DropdownMenuData => this.state;
-
-   openMenu(triggerElement: HTMLElement, menuItems: MenuItem[]) {
-      this.state.isOpen = true;
-      this.state.menuItems = menuItems;
-      this.state.triggerElement = triggerElement;
-   }
-
-   close() {
-      this.state = this.resetMenuState();
-   }
-}
-
-// Exportamos una única instancia para toda la aplicación
-export const contextMenuController = new ContextMenuController();
-export const dropdownMenuController = new DropdownMenuController();
+export const floatingMenuController = new FloatingMenuController();

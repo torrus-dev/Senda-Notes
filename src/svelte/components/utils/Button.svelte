@@ -35,7 +35,12 @@ if (shape === "rect") {
 let style = `whitespace-nowrap rounded-field bg-interactive inline-flex cursor-pointer items-center hover:text-base-content/70 focus:text-base-content/70 gap-2 ${sizeStyle ? sizeStyle[size] : ""} ${cssClass}`;
 
 function handleClick(event: Event) {
-   onclick(event);
+   if (onclick) {
+      onclick(event);
+   } else {
+      console.warn("no se ha pasado onclick al boton");
+   }
+
    buttonElement.blur();
 }
 </script>

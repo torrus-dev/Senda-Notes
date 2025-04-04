@@ -1,4 +1,4 @@
-import { GroupMenuItem, MenuItem } from "./editorMenuTypes";
+import { GroupMenuItem, MenuItem } from "@projectTypes/editorMenuTypes";
 
 export interface Coordinates {
    x: number;
@@ -10,20 +10,25 @@ export interface Dimensions {
    height: number;
 }
 
-export interface ContextMenuData {
+export interface BaseMenuData {
+   type: "context" | "dropdown";
    isOpen: boolean;
    menuItems: MenuItem[];
-   originalPosition: Coordinates;
    activeSubMenu: GroupMenuItem | undefined;
    previousFocusedElement: HTMLElement | undefined;
 }
 
-export interface DropdownMenuData {
-   isOpen: boolean;
-   menuItems: MenuItem[];
-   triggerElement: HTMLElement | null;
-   activeSubMenu: GroupMenuItem | undefined;
+export interface ContextMenuData extends BaseMenuData {
+   type: "context";
+   originalPosition: Coordinates;
 }
+
+export interface DropdownMenuData extends BaseMenuData {
+   type: "dropdown";
+   triggerElement: HTMLElement | null;
+}
+
+export type FloatingMenuData = ContextMenuData | DropdownMenuData;
 
 export interface RenderItem {
    renderId: string;

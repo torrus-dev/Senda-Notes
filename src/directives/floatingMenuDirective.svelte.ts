@@ -1,15 +1,10 @@
-import {
-   contextMenuController,
-   dropdownMenuController,
-} from "@controllers/floatingMenuController.svelte";
-import { MenuItem } from "@projectTypes/editorMenuTypes";
+import { floatingMenuController } from "@controllers/floatingMenuController.svelte";
+import type { MenuItem } from "@projectTypes/editorMenuTypes";
 import type { Coordinates } from "@projectTypes/floatingMenuTypes";
 
 function checkValid(menuItems: MenuItem[]) {
    if (menuItems && Array.isArray(menuItems) && menuItems.length > 0) {
-      if (menuItems.length > 0) {
-         return true;
-      }
+      return true;
    }
    return false;
 }
@@ -17,7 +12,7 @@ function checkValid(menuItems: MenuItem[]) {
 // Directiva para abrir el menú como context menu (con clic derecho)
 export function contextMenu(node: HTMLElement, menuItems: MenuItem[]) {
    if (!checkValid(menuItems)) {
-      console.warn("invalid menu items!");
+      console.warn("Invalid menu items provided to contextMenu directive!");
       return {
          update() {},
          destroy() {},
@@ -27,11 +22,13 @@ export function contextMenu(node: HTMLElement, menuItems: MenuItem[]) {
    function handleContextMenu(event: MouseEvent) {
       event.preventDefault();
       event.stopPropagation();
-      contextMenuController.closeMenu();
+
+      // Cerrar cualquier menú abierto antes de abrir uno nuevo
+      floatingMenuController.closeMenu();
 
       // Abrir nuestro menú contextual personalizado
-      const coordenates: Coordinates = { x: event.clientX, y: event.clientY };
-      contextMenuController.openMenu(coordenates, menuItems);
+      const coordinates: Coordinates = { x: event.clientX, y: event.clientY };
+      floatingMenuController.openContextMenu(coordinates, menuItems);
    }
 
    // Añadir el event listener
@@ -62,6 +59,7 @@ export function contextMenu(node: HTMLElement, menuItems: MenuItem[]) {
 // Directiva para abrir el menú como dropdown (con clic normal)
 export function dropdownMenu(node: HTMLElement, menuItems: MenuItem[]) {
    if (!checkValid(menuItems)) {
+      console.warn("Invalid menu items provided to dropdownMenu directive!");
       return {
          update() {},
          destroy() {},
@@ -71,11 +69,15 @@ export function dropdownMenu(node: HTMLElement, menuItems: MenuItem[]) {
    function handleClick(event: MouseEvent) {
       event.preventDefault();
       event.stopPropagation();
-      dropdownMenuController.close();
 
-      dropdownMenuController.openMenu(node, menuItems);
+      // Cerrar cualquier menú abierto antes de abrir uno nuevo
+      floatingMenuController.closeMenu();
+
+      // Usar el nuevo método unificado para abrir el menú dropdown
+      floatingMenuController.openDropdownMenu(node, menuItems);
    }
 
+   // Añadir el event listener
    node.addEventListener("click", handleClick);
 
    return {

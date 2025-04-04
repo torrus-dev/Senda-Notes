@@ -1,12 +1,12 @@
 import type { RenderItem } from "@projectTypes/floatingMenuTypes";
-import { contextMenuController } from "@controllers/floatingMenuController.svelte";
+import { floatingMenuController } from "@controllers/floatingMenuController.svelte";
 
 // Obtiene la lista actual de elementos interactivos según el estado del menú.
 function getCurrentItems(): RenderItem[] {
-   const menuState = contextMenuController.getMenuState();
+   const menuState = floatingMenuController.getMenuState();
    return menuState.activeSubMenu
-      ? contextMenuController.renderedSubMenu
-      : contextMenuController.renderedMainMenu;
+      ? floatingMenuController.renderedSubMenu
+      : floatingMenuController.renderedMainMenu;
 }
 
 /**
@@ -67,7 +67,7 @@ export function setupKeyboardNavigation(menuElement: HTMLElement): () => void {
             {
                const currentItem = items[currentIndex];
                if (currentItem && currentItem.menuItem.type === "group") {
-                  contextMenuController.setActiveSubMenu(currentItem.menuItem);
+                  floatingMenuController.setActiveSubMenu(currentItem.menuItem);
                   // Al cambiar de menú, reiniciamos el índice a -1
                   currentIndex = -1;
                   // Se espera a que se renderice el submenú para que el usuario interactúe
@@ -77,8 +77,8 @@ export function setupKeyboardNavigation(menuElement: HTMLElement): () => void {
             break;
          case "ArrowLeft":
             event.preventDefault();
-            if (contextMenuController.getMenuState().activeSubMenu) {
-               contextMenuController.unsetActiveSubMenu();
+            if (floatingMenuController.getMenuState().activeSubMenu) {
+               floatingMenuController.unsetActiveSubMenu();
                // Al volver, reiniciamos el índice a -1
                currentIndex = -1;
                setTimeout(() => {}, 0);

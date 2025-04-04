@@ -1,10 +1,8 @@
 <script lang="ts">
 import Button from "@components/utils/Button.svelte";
-import { contextMenuController } from "@controllers/floatingMenuController.svelte";
-import type {
-   GroupMenuItem,
-   RenderItem,
-} from "@projectTypes/floatingMenuTypes";
+import { floatingMenuController } from "@controllers/floatingMenuController.svelte";
+import type { GroupMenuItem } from "@projectTypes/editorMenuTypes";
+import type { RenderItem } from "@projectTypes/floatingMenuTypes";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-svelte";
 import { onMount } from "svelte";
 
@@ -32,9 +30,9 @@ onMount(() => {
          htmlElement: itemElement,
       };
       if (!inSubMenu) {
-         contextMenuController.renderedMainMenu.push(renderMenuItem);
+         floatingMenuController.renderedMainMenu.push(renderMenuItem);
       } else {
-         contextMenuController.renderedSubMenu.push(renderMenuItem);
+         floatingMenuController.renderedSubMenu.push(renderMenuItem);
       }
    } else {
       console.warn("elemento html no encontrado");
