@@ -20,7 +20,7 @@ import {
 } from "lucide-svelte";
 import Navigation from "@components/utils/Navigation.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
-import type { MenuItem } from "@projectTypes/floatingMenuTypes";
+import type { MenuItem } from "@projectTypes/editorMenuTypes";
 
 let { note } = $props();
 let isSidebarOpen = $derived(workspace.isSidebarOpen());
@@ -28,7 +28,6 @@ let isSidebarLocked = $derived(settingsController.getLockSidebar());
 
 const noteOptionsItems: MenuItem[] = [
    {
-      id: crypto.randomUUID(),
       type: "action",
       label: "Rename Note",
       icon: PenLineIcon,
@@ -37,7 +36,6 @@ const noteOptionsItems: MenuItem[] = [
       },
    },
    {
-      id: crypto.randomUUID(),
       type: "action",
       label: "Delete Note",
       icon: Trash2Icon,
@@ -46,14 +44,12 @@ const noteOptionsItems: MenuItem[] = [
    },
    { type: "separator" },
    {
-      id: crypto.randomUUID(),
       type: "action",
       label: "Search in Note",
       icon: FileSearchIcon,
       action: () => {},
    },
    {
-      id: crypto.randomUUID(),
       type: "action",
       label: "Replace in Note",
       icon: FileSearchIcon,
