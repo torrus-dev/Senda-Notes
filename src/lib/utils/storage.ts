@@ -106,7 +106,7 @@ export function loadSettingsState(): Settings {
 
 function getDefaultSettingsState(): Settings {
    return {
-      showToolbar: false,
+      showEditorToolbar: false,
       theme: "dark",
       sidebarIsLocked: false,
       showMetadata: false,

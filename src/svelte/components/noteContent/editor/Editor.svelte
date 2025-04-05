@@ -9,18 +9,15 @@
 <script lang="ts">
 import { onDestroy } from "svelte";
 import { Editor } from "@tiptap/core";
-import type { EditorOptions } from "@tiptap/core";
-import StarterKit from "@tiptap/starter-kit";
-import TaskList from "@tiptap/extension-task-list";
-import TaskItem from "@tiptap/extension-task-item";
-import Highlight from "@tiptap/extension-highlight";
 
 import { noteController } from "@controllers/noteController.svelte";
-import { floatingMenuController } from "@controllers/floatingMenuController.svelte.js";
+import { workspace } from "@controllers/workspaceController.svelte";
 import { focusController } from "@controllers/focusController.svelte";
+import { floatingMenuController } from "@controllers/floatingMenuController.svelte.js";
+
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Coordinates } from "@projectTypes/floatingMenuTypes";
-import { getFormatMenuItems } from "./editorMenuItems";
+import { getEditorContextMenuItems } from "@utils/editorMenuItems";
 import { parseEditorContent, createEditorConfig } from "@utils/editorUtils";
 
 // Props
@@ -61,6 +58,7 @@ function initializeEditor(initialContent: string) {
    });
 
    editorInstance = new Editor(editorConfig);
+   workspace.setEditorInstance(editorInstance);
    registerEditorWithFocusController();
 }
 
@@ -86,6 +84,7 @@ function registerEditorWithFocusController() {
 function destroyEditor() {
    if (editorInstance) {
       editorInstance.destroy();
+      workspace.unsetEditorInstance();
       editorInstance = null;
    }
 }
@@ -109,7 +108,7 @@ function handleContextMenu(event: MouseEvent) {
    const coordinates: Coordinates = { x: clientX, y: clientY };
    floatingMenuController.openContextMenu(
       coordinates,
-      getFormatMenuItems(editorInstance),
+      getEditorContextMenuItems(editorInstance),
    );
 }
 

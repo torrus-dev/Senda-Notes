@@ -1,5 +1,5 @@
 export type Settings = {
-   showToolbar: boolean;
+   showEditorToolbar: boolean;
    theme: "light" | "dark";
    sidebarIsLocked: boolean;
    showMetadata: boolean;

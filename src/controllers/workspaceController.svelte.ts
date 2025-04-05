@@ -2,6 +2,7 @@ import type {
    WorkspaceState,
    PersistedWorkspaceState,
 } from "@projectTypes/workspaceTypes";
+import { Editor } from "@tiptap/core";
 import { loadWorkspaceState, saveWorkspaceState } from "@utils/storage";
 
 class WorkspaceController {
@@ -22,6 +23,7 @@ class WorkspaceController {
          isOpen: true,
          width: null,
       },
+      editorInstance: null,
    });
 
    constructor() {
@@ -118,6 +120,15 @@ class WorkspaceController {
          this.state.propertyEditor.noteId === noteId &&
          this.state.propertyEditor.propertyId === propertyId
       );
+   };
+
+   // ------ Editor ------
+   getEditorInstance = () => this.state.editorInstance;
+   setEditorInstance = (newEditorInstance: Editor) => {
+      this.state.editorInstance = newEditorInstance;
+   };
+   unsetEditorInstance = () => {
+      this.state.editorInstance = null;
    };
 }
 

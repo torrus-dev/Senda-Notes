@@ -1,13 +1,17 @@
-<script>
+<script lang="ts">
 import Title from "./Title.svelte";
 import Metadata from "./Metadata.svelte";
 import Properties from "@components/properties/Properties.svelte";
 import ChildNotes from "./ChildNotes.svelte";
 import Editor from "./editor/Editor.svelte";
+import Toolbar from "./Toolbar.svelte";
 
 import { settingsController } from "@controllers/settingsController.svelte";
+import { screenSizeController } from "@controllers/screenSizeController.svelte";
+import type { Note } from "@projectTypes/noteTypes";
 
-let { note } = $props();
+let { note }: { note: Note } = $props();
+let isMobile: boolean = $derived(screenSizeController.isMobile);
 </script>
 
 <div class="overflow-auto">
@@ -25,6 +29,11 @@ let { note } = $props();
          </section>
 
          <section>
+            {#if isMobile || settingsController.state.showEditorToolbar}
+               <div class="sticky top-0">
+                  <Toolbar />
+               </div>
+            {/if}
             <Editor noteId={note.id} />
          </section>
       {:else}

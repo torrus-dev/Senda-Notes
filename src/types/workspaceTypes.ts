@@ -1,3 +1,5 @@
+import { Editor } from "@tiptap/core";
+
 // Estado y tipos para el Property Editor
 export interface PropertyEditorState {
    isOpen: boolean;
@@ -18,8 +20,6 @@ export interface Window {
    activeTabId: string | null;
 }
 
-
-
 // Estado global del workspace
 export interface WorkspaceState {
    propertyEditor: PropertyEditorState;
@@ -33,6 +33,7 @@ export interface WorkspaceState {
       isOpen: boolean;
       width: number | null;
    };
+   editorInstance: Editor | null;
 }
 
 export interface PersistedWorkspaceState {

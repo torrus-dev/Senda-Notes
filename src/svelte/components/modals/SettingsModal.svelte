@@ -1,33 +1,9 @@
-<script>
+<script lang="ts">
 import { SearchIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
 
 let searchQuery = $state("");
-// let settingsData = {
-// App: [
-//   {
-//     id: "language",
-//     title: "Lenguaje",
-//     description: "Cambiar lenguaje de la app",
-//     type: "select",
-//     options: ["Spanish", "English"],
-//     defaultValue: "English",
-//   },
-// ],
-// Apariencia: [
-//   {
-//     id: "themeMode",
-//     title: "Modo Claro / Oscuro",
-//     description: "",
-//     type: "select",
-//     options: ["Light", "Dark"],
-//     defaultValue: "System",
-//   },
-// ],
-// Por añadir;
-// Sidebar siempre visible en pantallas medianas o grandes
-// };
 </script>
 
 <aside class="flex gap-2">
@@ -63,6 +39,13 @@ let searchQuery = $state("");
                settingsController.toggleShowMetadata();
             }}>
             Toggle Show Metadata: {settingsController.getShowMetadata()}
+         </Button>
+         <Button
+            cssClass="bordered"
+            onclick={() => {
+               settingsController.toogleShowEditorToolbar();
+            }}>
+            Toggle Editor Toolbar: {settingsController.getShowEditorToolbar()}
          </Button>
       </div>
    </main>

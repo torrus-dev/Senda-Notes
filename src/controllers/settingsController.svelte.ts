@@ -3,10 +3,10 @@ import { Settings } from "@projectTypes/settingsTypes";
 
 class SettingsController {
    state = $state<Settings>({
-      showToolbar: false,
       theme: "dark",
       sidebarIsLocked: false,
       showMetadata: false,
+      showEditorToolbar: false,
    });
 
    constructor() {
@@ -58,6 +58,12 @@ class SettingsController {
     * It is used to determine whether the metadata should be shown or not.
     */
    getShowMetadata = (): boolean => this.state.showMetadata;
+
+   // --- EDITOR TOOLBAR ---
+   getShowEditorToolbar = (): boolean => this.state.showEditorToolbar;
+   toogleShowEditorToolbar = () => {
+      this.state.showEditorToolbar = !this.state.showEditorToolbar;
+   };
 }
 
 export const settingsController = $state(new SettingsController());

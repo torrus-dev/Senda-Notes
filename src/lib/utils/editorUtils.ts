@@ -3,6 +3,7 @@ import StarterKit from "@tiptap/starter-kit";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import Highlight from "@tiptap/extension-highlight";
+import Underline from "@tiptap/extension-underline";
 
 /**
  * Opciones personalizadas para crear la configuración del editor
@@ -49,6 +50,7 @@ export function createEditorConfig(
          TaskList,
          TaskItem.configure({ nested: true }),
          Highlight.configure({ multicolor: false }),
+         Underline,
       ],
       content: options.content,
       autofocus: true,
