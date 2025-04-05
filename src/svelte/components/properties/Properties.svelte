@@ -38,7 +38,7 @@ let isAddPropertyOpen = $derived(workspace.isOpenPropertyEditor());
       {:else}
          <Button
             size="small"
-            cssClass="ml-[-.5rem] text-base-content/80"
+            cssClass="text-base-content/80"
             onclick={() => {
                workspace.openPropertyEditor();
             }}>

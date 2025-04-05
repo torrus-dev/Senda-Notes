@@ -16,7 +16,7 @@ let {
    ...htmlAttributes
 } = $props();
 
-if (onclick && dropdownMenu) {
+if (onclick && dropdownMenuItems) {
    console.warn("Se esta pasando 'onclick' a un elemento con dropdown");
    onclick = null;
 }

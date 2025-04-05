@@ -40,7 +40,7 @@ const IconComponent = $derived(getIconComponent(property.type));
 </script>
 
 <li
-   class="bg-transaprent rounded-field relative ml-[-0.5rem] transition-colors duration-300 {isDragedOver
+   class="bg-transaprent rounded-field relative transition-colors duration-300 {isDragedOver
       ? 'highlight'
       : ''}"
    ondragover={handleDragOver}

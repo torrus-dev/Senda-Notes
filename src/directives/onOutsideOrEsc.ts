@@ -16,9 +16,8 @@ export function onOutsideOrEsc(node: HTMLElement, options: CloseOptions) {
       const target = event.target as Node;
 
       if (
-         !node.contains(target) &&
-         options.triggerElement &&
-         !options.triggerElement?.contains(target)
+         !node.contains(target) ||
+         (options.triggerElement && !options.triggerElement?.contains(target))
       ) {
          options.action();
       }

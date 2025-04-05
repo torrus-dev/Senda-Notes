@@ -30,7 +30,7 @@ function toggle(): void {
       <button
          type="button"
          onclick={toggle}
-         class="flex w-full cursor-pointer items-center p-2
+         class="flex w-full cursor-pointer items-center px-0.5 py-2
          {chevronPosition === 'floating-left' ? 'relative' : ''}"
          aria-expanded={!isCollapsed}>
          {#if chevronPosition === "left"}
@@ -41,11 +41,9 @@ function toggle(): void {
                   {isCollapsed ? '-rotate-90' : ''}" />
             </div>
          {/if}
-
          <div class="flex-grow">
             {@render headingContent()}
          </div>
-
          {#if chevronPosition === "right"}
             <div class="rounded-field p-1">
                <ChevronDownIcon
