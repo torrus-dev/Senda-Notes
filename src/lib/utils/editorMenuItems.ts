@@ -248,118 +248,130 @@ export function getEditorContextMenuItems(editor: Editor | null): MenuItem[] {
    ];
 }
 
-export function getEditorToolbarMenuItems(editor: Editor | null): MenuItem[] {
-   if (!editor) return [];
+export function getEditorToolbarMenuItems(editorBox: {
+   current: Editor;
+}): MenuItem[] {
+   if (!editorBox.current) return [];
 
    return [
       {
          type: "action",
-         label: "Negrita",
+         label: `Negrita: ${editorBox.current.isActive("bold")}`,
          icon: BoldIcon,
-         checked: editor.isActive("bold"),
-         action: () => editor.chain().focus().toggleBold().run(),
+         checked: editorBox.current.isActive("bold"),
+         action: () => editorBox.current.chain().focus().toggleBold().run(),
       },
       {
          type: "action",
          label: "Cursiva",
          icon: ItalicIcon,
-         checked: editor.isActive("italic"),
-         action: () => editor.chain().focus().toggleItalic().run(),
+         checked: editorBox.current.isActive("italic"),
+         action: () => editorBox.current.chain().focus().toggleItalic().run(),
       },
       {
          type: "action",
          label: "Subrayado",
          icon: UnderlineIcon,
-         checked: editor.isActive("underline"),
-         action: () => editor.chain().focus().toggleUnderline().run(),
+         checked: editorBox.current.isActive("underline"),
+         action: () =>
+            editorBox.current.chain().focus().toggleUnderline().run(),
       },
       {
          type: "action",
          label: "Destacar",
          icon: HighlighterIcon,
-         checked: editor.isActive("highlight"),
-         action: () => editor.chain().focus().toggleHighlight().run(),
+         checked: editorBox.current.isActive("highlight"),
+         action: () =>
+            editorBox.current.chain().focus().toggleHighlight().run(),
       },
       {
          type: "action",
          label: "Tachado",
          icon: StrikethroughIcon,
-         checked: editor.isActive("strike"),
-         action: () => editor.chain().focus().toggleStrike().run(),
+         checked: editorBox.current.isActive("strike"),
+         action: () => editorBox.current.chain().focus().toggleStrike().run(),
       },
       { type: "separator" },
       {
          type: "action",
          label: "Código en línea",
          icon: CodeIcon,
-         checked: editor.isActive("code"),
-         action: () => editor.chain().focus().toggleCode().run(),
+         checked: editorBox.current.isActive("code"),
+         action: () => editorBox.current.chain().focus().toggleCode().run(),
       },
       { type: "separator" },
       {
          type: "action",
          label: "Lista numerada",
          icon: ListOrderedIcon,
-         checked: editor.isActive("orderedList"),
-         action: () => editor.chain().focus().toggleOrderedList().run(),
+         checked: editorBox.current.isActive("orderedList"),
+         action: () =>
+            editorBox.current.chain().focus().toggleOrderedList().run(),
       },
       {
          type: "action",
          label: "Lista normal",
          icon: ListIcon,
-         checked: editor.isActive("bulletList"),
-         action: () => editor.chain().focus().toggleBulletList().run(),
+         checked: editorBox.current.isActive("bulletList"),
+         action: () =>
+            editorBox.current.chain().focus().toggleBulletList().run(),
       },
       // Añadimos la opción de lista de tareas
       {
          type: "action",
          label: "Lista de tareas",
          icon: CheckSquareIcon,
-         checked: editor.isActive("taskList"),
-         action: () => editor.chain().focus().toggleTaskList().run(),
+         checked: editorBox.current.isActive("taskList"),
+         action: () => editorBox.current.chain().focus().toggleTaskList().run(),
       },
       { type: "separator" },
       {
          type: "action",
          label: "Título 1",
          icon: Heading1Icon,
-         checked: editor.isActive("heading", { level: 1 }),
-         action: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
+         checked: editorBox.current.isActive("heading", { level: 1 }),
+         action: () =>
+            editorBox.current.chain().focus().toggleHeading({ level: 1 }).run(),
       },
       {
          type: "action",
          label: "Título 2",
          icon: Heading2Icon,
-         checked: editor.isActive("heading", { level: 2 }),
-         action: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
+         checked: editorBox.current.isActive("heading", { level: 2 }),
+         action: () =>
+            editorBox.current.chain().focus().toggleHeading({ level: 2 }).run(),
       },
       {
          type: "action",
          label: "Título 3",
          icon: Heading3Icon,
-         checked: editor.isActive("heading", { level: 3 }),
-         action: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
+         checked: editorBox.current.isActive("heading", { level: 3 }),
+         action: () =>
+            editorBox.current.chain().focus().toggleHeading({ level: 3 }).run(),
       },
       {
          type: "action",
          label: "Título 4",
          icon: Heading4Icon,
-         checked: editor.isActive("heading", { level: 4 }),
-         action: () => editor.chain().focus().toggleHeading({ level: 4 }).run(),
+         checked: editorBox.current.isActive("heading", { level: 4 }),
+         action: () =>
+            editorBox.current.chain().focus().toggleHeading({ level: 4 }).run(),
       },
       {
          type: "action",
          label: "Título 5",
          icon: Heading5Icon,
-         checked: editor.isActive("heading", { level: 5 }),
-         action: () => editor.chain().focus().toggleHeading({ level: 5 }).run(),
+         checked: editorBox.current.isActive("heading", { level: 5 }),
+         action: () =>
+            editorBox.current.chain().focus().toggleHeading({ level: 5 }).run(),
       },
       {
          type: "action",
          label: "Título 6",
          icon: Heading6Icon,
-         checked: editor.isActive("heading", { level: 6 }),
-         action: () => editor.chain().focus().toggleHeading({ level: 6 }).run(),
+         checked: editorBox.current.isActive("heading", { level: 6 }),
+         action: () =>
+            editorBox.current.chain().focus().toggleHeading({ level: 6 }).run(),
       },
       { type: "separator" },
 
@@ -367,15 +379,17 @@ export function getEditorToolbarMenuItems(editor: Editor | null): MenuItem[] {
          type: "action",
          label: "Bloque de código",
          icon: SquareCodeIcon,
-         checked: editor.isActive("codeBlock"),
-         action: () => editor.chain().focus().toggleCodeBlock().run(),
+         checked: editorBox.current.isActive("codeBlock"),
+         action: () =>
+            editorBox.current.chain().focus().toggleCodeBlock().run(),
       },
       {
          type: "action",
          label: "Cita",
          icon: QuoteIcon,
-         checked: editor.isActive("blockquote"),
-         action: () => editor.chain().focus().toggleBlockquote().run(),
+         checked: editorBox.current.isActive("blockquote"),
+         action: () =>
+            editorBox.current.chain().focus().toggleBlockquote().run(),
       },
    ];
 }

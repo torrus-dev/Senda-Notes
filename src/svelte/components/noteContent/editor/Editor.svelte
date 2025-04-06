@@ -1,63 +1,160 @@
 <style>
-.highlight {
-   background-color: blue;
+.tiptap-editor {
+   width: 100%;
+   height: 100%;
+   color: inherit;
 }
 </style>
 
-<script>
-import StarterKit from "@tiptap/starter-kit";
+<script lang="ts">
+import { onDestroy } from "svelte";
 import { Editor } from "@tiptap/core";
-import { onMount } from "svelte";
 
-let { content } = $props();
+import StarterKit from "@tiptap/starter-kit";
+import TaskList from "@tiptap/extension-task-list";
+import TaskItem from "@tiptap/extension-task-item";
+import Highlight from "@tiptap/extension-highlight";
+import Underline from "@tiptap/extension-underline";
 
-let element = $state();
-// Create a box to hold the editor using $state.raw
-let editorBox = $state.raw(null);
+import { noteController } from "@controllers/noteController.svelte";
+import { focusController } from "@controllers/focusController.svelte";
 
-onMount(() => {
+import { floatingMenuController } from "@controllers/floatingMenuController.svelte.js";
+import { screenSizeController } from "@controllers/screenSizeController.svelte";
+import { settingsController } from "@controllers/settingsController.svelte";
+import Toolbar from "../Toolbar.svelte";
+
+import { FocusTarget } from "@projectTypes/focusTypes";
+import type { Coordinates } from "@projectTypes/floatingMenuTypes";
+import { getEditorContextMenuItems } from "@utils/editorMenuItems";
+import { parseEditorContent } from "@utils/editorUtils";
+
+// Props
+let { noteId = null } = $props();
+
+// Estado derivado
+let isMobile: boolean = $derived(screenSizeController.isMobile);
+let content: string = $derived(
+   noteController.getNoteById(noteId)?.content || "",
+);
+
+// Referencias DOM y estado
+let editorElement: HTMLElement;
+let editorBox: { current: Editor | null } = $state.raw({ current: null });
+
+let currentNoteId: string | null = null;
+
+function onContentChange(newContent: string) {
+   if (noteId) {
+      noteController.updateNote(noteId, { content: newContent });
+   }
+}
+
+function initializeEditor(initialContent: string) {
+   destroyEditor();
+
+   const parsedContent = parseEditorContent(initialContent);
+
    const editor = new Editor({
-      element: element,
-      extensions: [StarterKit],
-      content: content,
+      extensions: [
+         StarterKit,
+         TaskList,
+         TaskItem.configure({ nested: true }),
+         Highlight.configure({ multicolor: false }),
+         Underline,
+      ],
+      autofocus: true,
+      editable: true,
+      injectCSS: false,
+      element: editorElement,
+      content: parsedContent,
+      onUpdate: ({ editor }) => onContentChange(editor.getHTML()),
       onTransaction: () => {
          // Create a new object containing the editor to trigger reactivity
          editorBox = { current: editor };
       },
    });
-
    // Initialize the editor box
    editorBox = { current: editor };
+   registerEditorWithFocusController();
+}
+
+function registerEditorWithFocusController() {
+   const tiptapEditableElement = editorElement?.querySelector(
+      ".ProseMirror",
+   ) as HTMLElement | null;
+
+   if (tiptapEditableElement) {
+      focusController.registerElement(
+         FocusTarget.EDITOR,
+         tiptapEditableElement,
+      );
+   }
+}
+
+function destroyEditor() {
+   if (editorBox.current) {
+      editorBox.current.destroy();
+      editorBox.current = null;
+   }
+}
+
+function handleContextMenu(event: MouseEvent) {
+   event.preventDefault();
+
+   if (!editorBox.current) return;
+
+   const { clientX, clientY } = event;
+   const editorPosition = editorBox.current.view.posAtCoords({
+      left: clientX,
+      top: clientY,
+   });
+
+   if (!editorPosition) return;
+
+   const coordinates: Coordinates = { x: clientX, y: clientY };
+   floatingMenuController.openContextMenu(
+      coordinates,
+      getEditorContextMenuItems(editorBox.current),
+   );
+}
+
+// Inicializar editor cuando cambia la nota activa
+$effect(() => {
+   if (noteId !== currentNoteId) {
+      currentNoteId = noteId;
+      initializeEditor(content);
+   }
+});
+
+// Manejar el enfoque del editor
+$effect(() => {
+   if (
+      focusController.focus?.targetId === FocusTarget.EDITOR &&
+      editorBox.current
+   ) {
+      editorBox.current.commands.focus();
+   }
+});
+
+// Limpieza al destruir el componente
+onDestroy(() => {
+   destroyEditor();
+   focusController.unregisterElement(FocusTarget.EDITOR);
 });
 </script>
 
-{#if editorBox?.current}
-   <div class="control-group">
-      <div class="button-group">
-         <button
-            onclick={() => editorBox.current.chain().focus().toggleBold().run()}
-            disabled={!editorBox.current
-               .can()
-               .chain()
-               .focus()
-               .toggleBold()
-               .run()}
-            class={editorBox.current.isActive("bold") ? "highlight" : ""}>
-            Bold
-         </button>
-         <button
-            onclick={() =>
-               editorBox.current.chain().focus().toggleItalic().run()}
-            disabled={!editorBox.current
-               .can()
-               .chain()
-               .focus()
-               .toggleItalic()
-               .run()}
-            class={editorBox.current.isActive("italic") ? "highlight" : ""}>
-            Italic
-         </button>
-      </div>
+{#if editorBox.current && (isMobile || settingsController.state.showEditorToolbar)}
+   <div class="sticky top-0">
+      Bold: {editorBox.current.isActive("bold")}
+      <!-- <Toolbar toolbarItems={menuItems} /> -->
+      <Toolbar editorBox={editorBox} />
    </div>
 {/if}
-<div bind:this={element} />
+
+<div
+   bind:this={editorElement}
+   role="document"
+   class="prose prose-invert prose-neutral tiptap-editor"
+   oncontextmenu={handleContextMenu}>
+</div>
