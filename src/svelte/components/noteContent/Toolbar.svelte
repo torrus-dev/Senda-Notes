@@ -11,36 +11,50 @@ import type {
    SeparatorMenuItem,
    MenuItem,
 } from "@projectTypes/editorMenuTypes";
+import ToolbarActionMenuItem from "./ToolbarActionMenuItem.svelte";
 
 let { editorInstance } = $props();
-let toolbarItems: MenuItem[] | null = $derived(
-   getEditorToolbarMenuItems(editorInstance),
-);
+let toolbarItems: MenuItem[] = $state([]);
 let showToolbar = $derived(
    screenSizeController.isMobile || settingsController.state.showEditorToolbar,
 );
+
+// Actualizar los items de la barra de herramientas cuando el editorInstance cambia
+$effect(() => {
+   if (!editorInstance) {
+      toolbarItems = [];
+      return;
+   }
+
+   // Actualizar inicialmente los items
+   toolbarItems = getEditorToolbarMenuItems(editorInstance);
+
+   // Escuchar eventos de selección y actualizar los items
+   const updateToolbarItems = () => {
+      toolbarItems = getEditorToolbarMenuItems(editorInstance);
+   };
+
+   // Registrar los eventos para actualizar los items cuando cambia la selección
+   editorInstance.on("selectionUpdate", updateToolbarItems);
+   editorInstance.on("focus", updateToolbarItems);
+
+   return () => {
+      // Limpiar los event listeners cuando cambia el editor
+      if (editorInstance) {
+         editorInstance.off("selectionUpdate", updateToolbarItems);
+         editorInstance.off("focus", updateToolbarItems);
+      }
+   };
+});
 </script>
 
-{#snippet actionMenuItem(menuItem: ActionMenuItem)}
-   <li>
-      <Button
-         size="small"
-         cssClass="{menuItem.class} {menuItem.checked ? 'highlight' : ''}"
-         onclick={() => {
-            menuItem.action?.();
-         }}
-         tooltip={menuItem.label}>
-         <menuItem.icon size="1.25rem" />
-      </Button>
-   </li>
-{/snippet}
 {#snippet groupMenuItem(menuItem: GroupMenuItem)}
    <li>
       {#each menuItem.children as childItem}
          {#if childItem.type === "separator"}
             {@render separatorMenuItem(childItem)}
          {:else if childItem.type === "action"}
-            {@render actionMenuItem(childItem)}
+            <ToolbarActionMenuItem menuItem={childItem} />
          {/if}
       {/each}
    </li>
@@ -57,7 +71,7 @@ let showToolbar = $derived(
             {#if toolbarItem.type === "separator"}
                {@render separatorMenuItem(toolbarItem)}
             {:else if toolbarItem.type === "action"}
-               {@render actionMenuItem(toolbarItem)}
+               <ToolbarActionMenuItem menuItem={toolbarItem} />
             {:else if toolbarItem.type === "group"}
                {@render groupMenuItem(toolbarItem)}
             {/if}
