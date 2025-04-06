@@ -26,7 +26,7 @@ let { note }: { note: Note } = $props();
          </section>
 
          <section>
-            <Editor noteId={note.id} />
+            <Editor noteId={note.id} content={note.content} />
          </section>
       {:else}
          <header>
