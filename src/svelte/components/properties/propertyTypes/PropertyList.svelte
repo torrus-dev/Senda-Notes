@@ -41,7 +41,7 @@ function handleListInput(event) {
          <span>{item}</span>
          {#if !isEditing}
             <Button
-               cssClass="mr-[-0.25rem] text-base-content/50"
+               class="text-base-content/50 mr-[-0.25rem]"
                onclick={() => removeListItem(index)}
                aria-label="Remove item"
                size="small"

@@ -7,7 +7,7 @@ let {
    note, // La nota cuyo título se está editando
    isEditing = false, // Estado para controlar si está en modo edición
    onEditComplete = () => {}, // Callback opcional cuando se completa la edición
-   cssClass = "", // Clases CSS personalizables
+   class: userClass = "", // Cambiado de cssClass a class
    onclick = null, // Callback opcional para cuando se hace clic (para Breadcrumbs)
 } = $props();
 
@@ -75,11 +75,14 @@ $effect(() => {
       }, 0);
    }
 });
+
+// Classes derivadas basadas en el estado de edición
+const editingClass = $derived(isEditing ? "cursor-text underline" : "");
 </script>
 
 <span
    bind:this={editableElement}
-   class="inline-block {cssClass} {isEditing ? 'cursor-text underline' : ''}"
+   class="inline-block {userClass} {editingClass}"
    tabindex="0"
    role="textbox"
    contenteditable={isEditing}

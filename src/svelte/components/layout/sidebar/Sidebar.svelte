@@ -56,12 +56,12 @@ let widthStyle = $derived(isMobile ? "90%" : `${width}em`);
       <!-- notas en favoritos y en papelera  -->
       <ul class="my-4 flex w-full flex-col p-2" cl>
          <li class="w-full">
-            <Button cssClass="w-full">
+            <Button class="w-full">
                <StarIcon size="1.125em"></StarIcon>Favoritos
             </Button>
          </li>
          <li>
-            <Button cssClass="w-full">
+            <Button class="w-full">
                <Trash2Icon size="1.125em"></Trash2Icon>Papelera
             </Button>
          </li>

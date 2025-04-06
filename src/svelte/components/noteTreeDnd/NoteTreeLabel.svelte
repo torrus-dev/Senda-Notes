@@ -94,13 +94,13 @@ let editableElement;
          bind:this={editableElement}
          note={note}
          isEditing={isEditingTitle}
-         cssClass="truncate {!isExpanded ? 'text-base-content/70' : ''}"
+         class="truncate {!isExpanded ? 'text-base-content/70' : ''}"
          onEditComplete={stopEditingLabel} />
    </div>
    <div class="flex items-center">
       <Button
          onclick={handleNewChildNote}
-         cssClass="text-base-content/70 opacity-0 group-hover:opacity-100 p-1"
+         class="text-base-content/70 p-1 opacity-0 group-hover:opacity-100"
          size="small"
          title="Add note inside">
          <PlusIcon size="1.125em"></PlusIcon>

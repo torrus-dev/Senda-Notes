@@ -20,28 +20,28 @@ let searchQuery = $state("");
       <h3>Appereance</h3>
       <div class="flex flex-col">
          <Button
-            cssClass="bordered"
+            class="bordered"
             onclick={() => {
                settingsController.toggleThemeMode();
             }}>
             Toggle Dark/Light theme
          </Button>
          <Button
-            cssClass="bordered"
+            class="bordered"
             onclick={() => {
                settingsController.toggleLockSidebar();
             }}>
             Toggle Lock Sidebar: {settingsController.getLockSidebar()}
          </Button>
          <Button
-            cssClass="bordered"
+            class="bordered"
             onclick={() => {
                settingsController.toggleShowMetadata();
             }}>
             Toggle Show Metadata: {settingsController.getShowMetadata()}
          </Button>
          <Button
-            cssClass="bordered"
+            class="bordered"
             onclick={() => {
                settingsController.toogleShowEditorToolbar();
             }}>

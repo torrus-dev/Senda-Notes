@@ -6,13 +6,6 @@
 
 @plugin "@tailwindcss/typography";
 
-@utility bg-interactive {
-   @apply hover:bg-(--color-bg-hover) focus:bg-(--color-bg-focus);
-}
-@utility highlight {
-   background-color: var(--color-accent-indicator);
-}
-
 @theme inline {
    --color-base-100: var(--color-base-100);
    --color-base-200: var(--color-base-200);
@@ -26,6 +19,10 @@
    --color-border-normal: var(--color-border-normal);
    --color-border-muted: var(--color-border-muted);
 
+   --color-interactive-hover: var(--color-bg-hover);
+   --color-interactive-focus: var(--color-bg-focus);
+   --color-interactive-accent: var(--color-bg-focus);
+
    --radius-selector: var(--radius-selector);
    --radius-field: var(--radius-field);
    --radius-box: var(--radius-box);
@@ -34,6 +31,13 @@
 
    --color-error-bg: var(--color-error-bg);
    --color-error: var(--color-error);
+}
+
+@utility bg-interactive {
+   @apply hover:bg-interactive-hover focus:bg-interactive-focus;
+}
+@utility highlight {
+   @apply bg-accent-indicator;
 }
 
 @layer components {

@@ -7,7 +7,7 @@ let { menuItem }: { menuItem: ActionMenuItem } = $props();
 <li>
    <Button
       size="small"
-      cssClass="{menuItem.class} {menuItem.checked ? 'highlight' : ''}"
+      class="{menuItem.class} {menuItem.checked ? 'highlight' : ''}"
       onclick={() => {
          menuItem.action?.();
       }}

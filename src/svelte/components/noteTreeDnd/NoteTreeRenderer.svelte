@@ -16,7 +16,7 @@ let childrenCount = $derived(noteController.getNoteCount());
       <div class="flex items-center">
          <Button
             onclick={() => noteController.createNote()}
-            cssClass="opacity-0 group-hover:opacity-100 p-1"
+            class="p-1 opacity-0 group-hover:opacity-100"
             size="small"
             title="Add note">
             <PlusIcon size="1.125em"></PlusIcon>

@@ -43,7 +43,7 @@ onMount(() => {
    <Button
       bind:buttonElement={itemElement}
       size="small"
-      cssClass="w-full justify-between outline-none {menuItem.class}"
+      class="w-full justify-between outline-none {menuItem.class}"
       onclick={() => {
          menuItem.action?.();
          floatingMenuController.closeMenu();

@@ -28,7 +28,7 @@ let toolbarItems = $derived(getEditorToolbarMenuItems(editorBox));
             >Bold</button>
          <Button
             size="small"
-            cssClass={editorBox.current.isActive("bold") ? "highlight" : ""}
+            class={editorBox.current.isActive("bold") ? "highlight" : ""}
             onclick={() => {
                editorBox.current.chain().focus().toggleBold().run();
             }}
