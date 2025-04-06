@@ -33,7 +33,6 @@ export interface WorkspaceState {
       isOpen: boolean;
       width: number | null;
    };
-   editorInstance: Editor | null;
 }
 
 export interface PersistedWorkspaceState {

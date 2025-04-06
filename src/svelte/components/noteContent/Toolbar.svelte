@@ -4,10 +4,7 @@ import Button from "@components/utils/Button.svelte";
 import { screenSizeController } from "@controllers/screenSizeController.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
-import {
-   getEditorToolbarMenuItems,
-   getEditorContextMenuItems,
-} from "@utils/editorMenuItems";
+import { getEditorToolbarMenuItems } from "@utils/editorMenuItems";
 import type {
    ActionMenuItem,
    GroupMenuItem,
@@ -15,16 +12,10 @@ import type {
    MenuItem,
 } from "@projectTypes/editorMenuTypes";
 
+let { editorInstance } = $props();
 let toolbarItems: MenuItem[] | null = $derived(
-   getEditorToolbarMenuItems(workspace.getEditorInstance()),
+   getEditorToolbarMenuItems(editorInstance),
 );
-// let toolbarItems: MenuItem[] | null = $derived.by(() => {
-//    if (editorInstance) {
-//       return getEditorToolbarMenuItems(editorInstance);
-//    } else {
-//       return null;
-//    }
-// });
 let showToolbar = $derived(
    screenSizeController.isMobile || settingsController.state.showEditorToolbar,
 );

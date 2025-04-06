@@ -13,7 +13,11 @@ import { Editor } from "@tiptap/core";
 import { noteController } from "@controllers/noteController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { focusController } from "@controllers/focusController.svelte";
+
 import { floatingMenuController } from "@controllers/floatingMenuController.svelte.js";
+import { screenSizeController } from "@controllers/screenSizeController.svelte";
+import { settingsController } from "@controllers/settingsController.svelte";
+import Toolbar from "../Toolbar.svelte";
 
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Coordinates } from "@projectTypes/floatingMenuTypes";
@@ -23,15 +27,17 @@ import { parseEditorContent, createEditorConfig } from "@utils/editorUtils";
 // Props
 let { noteId = null } = $props();
 
-// Estado derivado
+// Estado derivadoe
 let content: string = $derived(
    noteController.getNoteById(noteId)?.content || "",
 );
 
 // Referencias DOM y estado
 let editorElement: HTMLElement;
-let editorInstance: Editor | null = null;
+let editorInstance: Editor | null = $state(null);
 let currentNoteId: string | null = null;
+
+let isMobile: boolean = $derived(screenSizeController.isMobile);
 
 /**
  * Actualiza el contenido de la nota activa
@@ -58,7 +64,6 @@ function initializeEditor(initialContent: string) {
    });
 
    editorInstance = new Editor(editorConfig);
-   workspace.setEditorInstance(editorInstance);
    registerEditorWithFocusController();
 }
 
@@ -84,7 +89,6 @@ function registerEditorWithFocusController() {
 function destroyEditor() {
    if (editorInstance) {
       editorInstance.destroy();
-      workspace.unsetEditorInstance();
       editorInstance = null;
    }
 }
@@ -136,6 +140,12 @@ onDestroy(() => {
    focusController.unregisterElement(FocusTarget.EDITOR);
 });
 </script>
+
+{#if isMobile || settingsController.state.showEditorToolbar}
+   <div class="sticky top-0">
+      <Toolbar editorInstance={editorInstance} />
+   </div>
+{/if}
 
 <div
    bind:this={editorElement}
