@@ -14,38 +14,12 @@ import type {
 import ToolbarActionMenuItem from "./ToolbarActionMenuItem.svelte";
 
 let { editorInstance } = $props();
-let toolbarItems: MenuItem[] = $state([]);
+let toolbarItems: MenuItem[] = $derived(
+   getEditorToolbarMenuItems(editorInstance),
+);
 let showToolbar = $derived(
    screenSizeController.isMobile || settingsController.state.showEditorToolbar,
 );
-
-// Actualizar los items de la barra de herramientas cuando el editorInstance cambia
-$effect(() => {
-   if (!editorInstance) {
-      toolbarItems = [];
-      return;
-   }
-
-   // Actualizar inicialmente los items
-   toolbarItems = getEditorToolbarMenuItems(editorInstance);
-
-   // Escuchar eventos de selección y actualizar los items
-   const updateToolbarItems = () => {
-      toolbarItems = getEditorToolbarMenuItems(editorInstance);
-   };
-
-   // Registrar los eventos para actualizar los items cuando cambia la selección
-   editorInstance.on("selectionUpdate", updateToolbarItems);
-   editorInstance.on("focus", updateToolbarItems);
-
-   return () => {
-      // Limpiar los event listeners cuando cambia el editor
-      if (editorInstance) {
-         editorInstance.off("selectionUpdate", updateToolbarItems);
-         editorInstance.off("focus", updateToolbarItems);
-      }
-   };
-});
 </script>
 
 {#snippet groupMenuItem(menuItem: GroupMenuItem)}
