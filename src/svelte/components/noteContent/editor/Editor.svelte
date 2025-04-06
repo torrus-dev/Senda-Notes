@@ -1,3 +1,9 @@
+<style>
+.highlight {
+   background-color: blue;
+}
+</style>
+
 <script>
 import StarterKit from "@tiptap/starter-kit";
 import { Editor } from "@tiptap/core";
@@ -6,34 +12,49 @@ import { onMount } from "svelte";
 let { content } = $props();
 
 let element = $state();
-let editor = $state.raw();
+// Create a box to hold the editor using $state.raw
+let editorBox = $state.raw(null);
 
 onMount(() => {
-   editor = new Editor({
+   const editor = new Editor({
       element: element,
       extensions: [StarterKit],
       content: content,
       onTransaction: () => {
-         // force re-render so editor.isActive works as expected
-         editor = editor;
+         // Create a new object containing the editor to trigger reactivity
+         editorBox = { current: editor };
       },
    });
+
+   // Initialize the editor box
+   editorBox = { current: editor };
 });
 </script>
 
-{#if editor}
+{#if editorBox?.current}
    <div class="control-group">
       <div class="button-group">
          <button
-            onclick={() => editor.chain().focus().toggleBold().run()}
-            disabled={!editor.can().chain().focus().toggleBold().run()}
-            class={editor.isActive("bold") ? "highlight" : ""}>
+            onclick={() => editorBox.current.chain().focus().toggleBold().run()}
+            disabled={!editorBox.current
+               .can()
+               .chain()
+               .focus()
+               .toggleBold()
+               .run()}
+            class={editorBox.current.isActive("bold") ? "highlight" : ""}>
             Bold
          </button>
          <button
-            onclick={() => editor.chain().focus().toggleItalic().run()}
-            disabled={!editor.can().chain().focus().toggleItalic().run()}
-            class={editor.isActive("italic") ? "highlight" : ""}>
+            onclick={() =>
+               editorBox.current.chain().focus().toggleItalic().run()}
+            disabled={!editorBox.current
+               .can()
+               .chain()
+               .focus()
+               .toggleItalic()
+               .run()}
+            class={editorBox.current.isActive("italic") ? "highlight" : ""}>
             Italic
          </button>
       </div>
