@@ -42,22 +42,15 @@ let toolbarItems = $derived(getEditorToolbarMenuItems(editorBox));
 
 {#snippet actionMenuItem(menuItem: ActionMenuItem)}
    <li>
-      <!-- <Button
+      <Button
          size="small"
-         cssClass="{menuItem.class} {menuItem.checked ? 'highlight' : ''}"
+         class="{menuItem.class} {menuItem.checked ? 'highlight' : ''}"
          onclick={() => {
             menuItem.action?.();
          }}
          tooltip={menuItem.label}>
          <menuItem.icon size="1.25rem" />
-      </Button> -->
-      <button
-         class="{menuItem.class} {menuItem.checked ? 'highlight' : ''}"
-         onclick={() => {
-            menuItem.action?.();
-         }}>
-         <menuItem.icon size="1.25rem" />
-      </button>
+      </Button>
    </li>
 {/snippet}
 {#snippet groupMenuItem(menuItem: GroupMenuItem)}

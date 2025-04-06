@@ -5,7 +5,7 @@ import {
 } from "@directives/floatingMenuDirective.svelte";
 
 let {
-   cssClass = "",
+   class: userClass = "",
    onclick = null,
    size = "medium",
    shape = "square",
@@ -21,6 +21,7 @@ if (onclick && dropdownMenuItems) {
    onclick = null;
 }
 
+// Define los estilos por tamaño
 let sizeStyle;
 
 if (shape === "rect") {
@@ -37,12 +38,17 @@ if (shape === "rect") {
    };
 }
 
-let style = `whitespace-nowrap rounded-field bg-interactive inline-flex cursor-pointer items-center hover:text-base-content/70 focus:text-base-content/70 gap-2 ${sizeStyle[size]} ${cssClass}`;
+// Estilo de tamaño basado en las props - usando la runa $derived correctamente
+const sizeClass = $derived(sizeStyle[size]);
 </script>
 
 <button
    {...htmlAttributes}
-   class={style}
+   class="
+      rounded-field bg-interactive hover:text-base-content/70 focus:text-base-content/70 inline-flex cursor-pointer items-center gap-2 whitespace-nowrap
+      {sizeClass} 
+      {userClass}
+   "
    onclick={onclick}
    use:dropdownMenu={dropdownMenuItems}
    use:contextMenu={contextMenuItems}
