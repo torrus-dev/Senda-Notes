@@ -10,8 +10,13 @@
 import { onDestroy } from "svelte";
 import { Editor } from "@tiptap/core";
 
+import StarterKit from "@tiptap/starter-kit";
+import TaskList from "@tiptap/extension-task-list";
+import TaskItem from "@tiptap/extension-task-item";
+import Highlight from "@tiptap/extension-highlight";
+import Underline from "@tiptap/extension-underline";
+
 import { noteController } from "@controllers/noteController.svelte";
-import { workspace } from "@controllers/workspaceController.svelte";
 import { focusController } from "@controllers/focusController.svelte";
 
 import { floatingMenuController } from "@controllers/floatingMenuController.svelte.js";
@@ -22,12 +27,13 @@ import Toolbar from "../Toolbar.svelte";
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Coordinates } from "@projectTypes/floatingMenuTypes";
 import { getEditorContextMenuItems } from "@utils/editorMenuItems";
-import { parseEditorContent, createEditorConfig } from "@utils/editorUtils";
+import { parseEditorContent } from "@utils/editorUtils";
 
 // Props
 let { noteId = null } = $props();
 
-// Estado derivadoe
+// Estado derivado
+let isMobile: boolean = $derived(screenSizeController.isMobile);
 let content: string = $derived(
    noteController.getNoteById(noteId)?.content || "",
 );
@@ -36,8 +42,6 @@ let content: string = $derived(
 let editorElement: HTMLElement;
 let editorInstance: Editor | null = $state(null);
 let currentNoteId: string | null = null;
-
-let isMobile: boolean = $derived(screenSizeController.isMobile);
 
 /**
  * Actualiza el contenido de la nota activa
@@ -56,20 +60,29 @@ function initializeEditor(initialContent: string) {
 
    const parsedContent = parseEditorContent(initialContent);
 
-   // Utilizamos la configuración desde editorUtils
-   const editorConfig = createEditorConfig({
+   editorInstance = new Editor({
+      extensions: [
+         StarterKit,
+         TaskList,
+         TaskItem.configure({ nested: true }),
+         Highlight.configure({ multicolor: false }),
+         Underline,
+      ],
+      autofocus: true,
+      editable: true,
+      injectCSS: false,
       element: editorElement,
       content: parsedContent,
       onUpdate: ({ editor }) => onContentChange(editor.getHTML()),
+      onTransaction: () => {
+         // Forzamos la reactividad re-asignando el editor a sí mismo
+         console.log("ha cambiado el estado del editor");
+         editorInstance = editorInstance;
+      },
    });
-
-   editorInstance = new Editor(editorConfig);
    registerEditorWithFocusController();
 }
 
-/**
- * Registra el elemento editable ProseMirror con el focusController
- */
 function registerEditorWithFocusController() {
    const tiptapEditableElement = editorElement?.querySelector(
       ".ProseMirror",
@@ -83,9 +96,6 @@ function registerEditorWithFocusController() {
    }
 }
 
-/**
- * Limpia recursos del editor
- */
 function destroyEditor() {
    if (editorInstance) {
       editorInstance.destroy();
@@ -93,9 +103,6 @@ function destroyEditor() {
    }
 }
 
-/**
- * Maneja el menú contextual del editor
- */
 function handleContextMenu(event: MouseEvent) {
    event.preventDefault();
 
@@ -145,6 +152,10 @@ onDestroy(() => {
    <div class="sticky top-0">
       <Toolbar editorInstance={editorInstance} />
    </div>
+{/if}
+
+{#if editorInstance}
+   Bold: {editorInstance.isActive("bold")}
 {/if}
 
 <div
