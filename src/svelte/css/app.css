@@ -21,13 +21,12 @@
 
    --color-interactive-hover: var(--color-bg-hover);
    --color-interactive-focus: var(--color-bg-focus);
-   --color-interactive-accent: var(--color-bg-focus);
+   --color-interactive-accent-hover: var(--color-bg-accent-hover);
+   --color-interactive-accent-focus: var(--color-bg-accent-focus);
 
    --radius-selector: var(--radius-selector);
    --radius-field: var(--radius-field);
    --radius-box: var(--radius-box);
-
-   --color-accent-indicator: var(--color-accent-indicator);
 
    --color-error-bg: var(--color-error-bg);
    --color-error: var(--color-error);
@@ -36,8 +35,11 @@
 @utility bg-interactive {
    @apply hover:bg-interactive-hover focus:bg-interactive-focus;
 }
+@utility bg-interactive-accent {
+   @apply hover:bg-interactive-accent-hover focus:bg-interactive-accent-focus;
+}
 @utility highlight {
-   @apply bg-accent-indicator;
+   @apply bg-interactive-accent-focus;
 }
 
 @layer components {

@@ -65,7 +65,7 @@ onDestroy(() => {
       tabindex="-1"
       onmousedown={startDragging}>
       <div
-         class="absolute top-0 right-[0.25rem] bottom-0 w-0.5 bg-base-300 group-hover:w-1 group-hover:bg-(--color-bg-hover) group-active:bg-(--color-bg-hover)">
+         class="bg-base-300 group-hover:bg-interactive-accent-hover group-active:bg-interactive-accent-focus absolute top-0 right-[0.25rem] bottom-0 w-0.5 group-hover:w-1">
       </div>
    </div>
 {/if}

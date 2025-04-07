@@ -29,8 +29,10 @@ import {
 import type { Editor } from "@tiptap/core";
 import type { MenuItem } from "@projectTypes/editorMenuTypes";
 
-export function getEditorContextMenuItems(editor: Editor | null): MenuItem[] {
-   if (!editor) return [];
+export function getEditorContextMenuItems(editorBox: {
+   current: Editor;
+}): MenuItem[] {
+   if (!editorBox.current) return [];
 
    return [
       {
@@ -42,45 +44,51 @@ export function getEditorContextMenuItems(editor: Editor | null): MenuItem[] {
                type: "action",
                label: "Negrita",
                icon: BoldIcon,
-               checked: editor.isActive("bold"),
-               action: () => editor.chain().focus().toggleBold().run(),
+               checked: editorBox.current.isActive("bold"),
+               action: () =>
+                  editorBox.current.chain().focus().toggleBold().run(),
             },
             {
                type: "action",
                label: "Cursiva",
                icon: ItalicIcon,
-               checked: editor.isActive("italic"),
-               action: () => editor.chain().focus().toggleItalic().run(),
+               checked: editorBox.current.isActive("italic"),
+               action: () =>
+                  editorBox.current.chain().focus().toggleItalic().run(),
             },
             {
                type: "action",
                label: "Subrayado",
                icon: UnderlineIcon,
-               checked: editor.isActive("underline"),
-               action: () => editor.chain().focus().toggleUnderline().run(),
+               checked: editorBox.current.isActive("underline"),
+               action: () =>
+                  editorBox.current.chain().focus().toggleUnderline().run(),
             },
             {
                type: "action",
                label: "Tachado",
                icon: StrikethroughIcon,
-               checked: editor.isActive("strike"),
-               action: () => editor.chain().focus().toggleStrike().run(),
+               checked: editorBox.current.isActive("strike"),
+               action: () =>
+                  editorBox.current.chain().focus().toggleStrike().run(),
             },
             { type: "separator" },
             {
                type: "action",
                label: "Código en línea",
                icon: CodeIcon,
-               checked: editor.isActive("code"),
-               action: () => editor.chain().focus().toggleCode().run(),
+               checked: editorBox.current.isActive("code"),
+               action: () =>
+                  editorBox.current.chain().focus().toggleCode().run(),
             },
             // Añadimos la opción de texto destacado
             {
                type: "action",
                label: "Destacar",
                icon: HighlighterIcon,
-               checked: editor.isActive("highlight"),
-               action: () => editor.chain().focus().toggleHighlight().run(),
+               checked: editorBox.current.isActive("highlight"),
+               action: () =>
+                  editorBox.current.chain().focus().toggleHighlight().run(),
             },
             { type: "separator" },
             {
@@ -88,7 +96,12 @@ export function getEditorContextMenuItems(editor: Editor | null): MenuItem[] {
                label: "Limpiar formato",
                icon: EraserIcon,
                action: () =>
-                  editor.chain().focus().unsetAllMarks().clearNodes().run(),
+                  editorBox.current
+                     .chain()
+                     .focus()
+                     .unsetAllMarks()
+                     .clearNodes()
+                     .run(),
             },
          ],
       },
@@ -101,23 +114,26 @@ export function getEditorContextMenuItems(editor: Editor | null): MenuItem[] {
                type: "action",
                label: "Lista numerada",
                icon: ListOrderedIcon,
-               checked: editor.isActive("orderedList"),
-               action: () => editor.chain().focus().toggleOrderedList().run(),
+               checked: editorBox.current.isActive("orderedList"),
+               action: () =>
+                  editorBox.current.chain().focus().toggleOrderedList().run(),
             },
             {
                type: "action",
                label: "Lista normal",
                icon: ListIcon,
-               checked: editor.isActive("bulletList"),
-               action: () => editor.chain().focus().toggleBulletList().run(),
+               checked: editorBox.current.isActive("bulletList"),
+               action: () =>
+                  editorBox.current.chain().focus().toggleBulletList().run(),
             },
             // Añadimos la opción de lista de tareas
             {
                type: "action",
                label: "Lista de tareas",
                icon: CheckSquareIcon,
-               checked: editor.isActive("taskList"),
-               action: () => editor.chain().focus().toggleTaskList().run(),
+               checked: editorBox.current.isActive("taskList"),
+               action: () =>
+                  editorBox.current.chain().focus().toggleTaskList().run(),
             },
          ],
       },
@@ -130,56 +146,81 @@ export function getEditorContextMenuItems(editor: Editor | null): MenuItem[] {
                type: "action",
                label: "Título 1",
                icon: Heading1Icon,
-               checked: editor.isActive("heading", { level: 1 }),
+               checked: editorBox.current.isActive("heading", { level: 1 }),
                action: () =>
-                  editor.chain().focus().toggleHeading({ level: 1 }).run(),
+                  editorBox.current
+                     .chain()
+                     .focus()
+                     .toggleHeading({ level: 1 })
+                     .run(),
             },
             {
                type: "action",
                label: "Título 2",
                icon: Heading2Icon,
-               checked: editor.isActive("heading", { level: 2 }),
+               checked: editorBox.current.isActive("heading", { level: 2 }),
                action: () =>
-                  editor.chain().focus().toggleHeading({ level: 2 }).run(),
+                  editorBox.current
+                     .chain()
+                     .focus()
+                     .toggleHeading({ level: 2 })
+                     .run(),
             },
             {
                type: "action",
                label: "Título 3",
                icon: Heading3Icon,
-               checked: editor.isActive("heading", { level: 3 }),
+               checked: editorBox.current.isActive("heading", { level: 3 }),
                action: () =>
-                  editor.chain().focus().toggleHeading({ level: 3 }).run(),
+                  editorBox.current
+                     .chain()
+                     .focus()
+                     .toggleHeading({ level: 3 })
+                     .run(),
             },
             {
                type: "action",
                label: "Título 4",
                icon: Heading4Icon,
-               checked: editor.isActive("heading", { level: 4 }),
+               checked: editorBox.current.isActive("heading", { level: 4 }),
                action: () =>
-                  editor.chain().focus().toggleHeading({ level: 4 }).run(),
+                  editorBox.current
+                     .chain()
+                     .focus()
+                     .toggleHeading({ level: 4 })
+                     .run(),
             },
             {
                type: "action",
                label: "Título 5",
                icon: Heading5Icon,
-               checked: editor.isActive("heading", { level: 5 }),
+               checked: editorBox.current.isActive("heading", { level: 5 }),
                action: () =>
-                  editor.chain().focus().toggleHeading({ level: 5 }).run(),
+                  editorBox.current
+                     .chain()
+                     .focus()
+                     .toggleHeading({ level: 5 })
+                     .run(),
             },
             {
                type: "action",
                label: "Título 6",
                icon: Heading6Icon,
-               checked: editor.isActive("heading", { level: 6 }),
+               checked: editorBox.current.isActive("heading", { level: 6 }),
                action: () =>
-                  editor.chain().focus().toggleHeading({ level: 6 }).run(),
+                  editorBox.current
+                     .chain()
+                     .focus()
+                     .toggleHeading({ level: 6 })
+                     .run(),
             },
             {
                type: "action",
                label: "Párrafo normal",
                icon: TextIcon,
-               checked: editor.isActive("paragraph"),
-               action: () => editor.chain().focus().setParagraph().run(),
+               checked: editorBox.current.isActive("paragraph"),
+               action: () =>
+                  editorBox.current.chain().focus().setParagraph().run(),
             },
          ],
       },
@@ -192,21 +233,24 @@ export function getEditorContextMenuItems(editor: Editor | null): MenuItem[] {
                type: "action",
                label: "Bloque de código",
                icon: SquareCodeIcon,
-               checked: editor.isActive("codeBlock"),
-               action: () => editor.chain().focus().toggleCodeBlock().run(),
+               checked: editorBox.current.isActive("codeBlock"),
+               action: () =>
+                  editorBox.current.chain().focus().toggleCodeBlock().run(),
             },
             {
                type: "action",
                label: "Línea horizontal",
                icon: MinusIcon,
-               action: () => editor.chain().focus().setHorizontalRule().run(),
+               action: () =>
+                  editorBox.current.chain().focus().setHorizontalRule().run(),
             },
             {
                type: "action",
                label: "Cita",
                icon: QuoteIcon,
-               checked: editor.isActive("blockquote"),
-               action: () => editor.chain().focus().toggleBlockquote().run(),
+               checked: editorBox.current.isActive("blockquote"),
+               action: () =>
+                  editorBox.current.chain().focus().toggleBlockquote().run(),
             },
          ],
       },
@@ -215,10 +259,14 @@ export function getEditorContextMenuItems(editor: Editor | null): MenuItem[] {
          type: "action",
          label: "Copiar",
          icon: CopyIcon,
-         disabled: editor.state.selection.empty,
+         disabled: editorBox.current.state.selection.empty,
          action: async () => {
-            const { from, to } = editor.state.selection;
-            const selectedText = editor.state.doc.textBetween(from, to, " ");
+            const { from, to } = editorBox.current.state.selection;
+            const selectedText = editorBox.current.state.doc.textBetween(
+               from,
+               to,
+               " ",
+            );
             await navigator.clipboard.writeText(selectedText);
          },
       },
@@ -226,12 +274,16 @@ export function getEditorContextMenuItems(editor: Editor | null): MenuItem[] {
          type: "action",
          label: "Cortar",
          icon: ScissorsIcon,
-         disabled: editor.state.selection.empty,
+         disabled: editorBox.current.state.selection.empty,
          action: async () => {
-            const { from, to } = editor.state.selection;
-            const selectedText = editor.state.doc.textBetween(from, to, " ");
+            const { from, to } = editorBox.current.state.selection;
+            const selectedText = editorBox.current.state.doc.textBetween(
+               from,
+               to,
+               " ",
+            );
             await navigator.clipboard.writeText(selectedText);
-            editor.chain().focus().deleteSelection().run();
+            editorBox.current.chain().focus().deleteSelection().run();
          },
       },
       {
@@ -241,7 +293,7 @@ export function getEditorContextMenuItems(editor: Editor | null): MenuItem[] {
          action: async () => {
             const text = await navigator.clipboard.readText();
             if (text) {
-               editor.chain().focus().insertContent(text).run();
+               editorBox.current.chain().focus().insertContent(text).run();
             }
          },
       },

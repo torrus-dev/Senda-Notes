@@ -3,7 +3,7 @@ import { noteController } from "@controllers/noteController.svelte";
 import Button from "@components/utils/Button.svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";
 
-import { NetworkIcon } from "lucide-svelte";
+import { NetworkIcon, PlusIcon } from "lucide-svelte";
 
 let { children } = $props();
 </script>
@@ -16,14 +16,22 @@ let { children } = $props();
 
 {#if children && children.length > 0}
    <Collapsible headingContent={headingContent} chevronPosition="floating-left">
-      <ul class="rounded-field my-2">
+      <ul class="rounded-field mb-2 ">
          {#each children as childId}
             <li>
-               <Button onclick={() => noteController.setActiveNote(childId)}>
+               <Button
+                  size="small"
+                  shape="rect"
+                  onclick={() => noteController.setActiveNote(childId)}>
                   {noteController.getTitleById(childId)}
                </Button>
             </li>
          {/each}
+         <li>
+            <Button size="small" shape="rect" class="pl-1.5">
+               <PlusIcon size="1.0625em"></PlusIcon> Add Child Note
+            </Button>
+         </li>
       </ul>
    </Collapsible>
 {/if}

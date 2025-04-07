@@ -17,29 +17,6 @@ let showToolbar = $derived(
 let toolbarItems = $derived(getEditorToolbarMenuItems(editorBox));
 </script>
 
-{#if editorBox}
-   ToolbarBold = {editorBox.current.isActive("bold")}
-{/if}
-
-<!-- {#if showToolbar && editorBox}
-   <ul>
-      <li>
-         <button class={editorBox.current.isActive("bold") ? "highlight" : ""}
-            >Bold</button>
-         <Button
-            size="small"
-            class={editorBox.current.isActive("bold") ? "highlight" : ""}
-            onclick={() => {
-               editorBox.current.chain().focus().toggleBold().run();
-            }}
-            tooltip="Bold">
-            {editorBox.current.isActive("bold")}
-            <BoldIcon size="1.25rem" />
-         </Button>
-      </li>
-   </ul>
-{/if} -->
-
 {#snippet actionMenuItem(menuItem: ActionMenuItem)}
    <li>
       <Button
@@ -70,8 +47,7 @@ let toolbarItems = $derived(getEditorToolbarMenuItems(editorBox));
 
 {#if showToolbar && toolbarItems}
    {console.log("re-rendering toolbar")}
-   <ul
-      class="bg-base-100 flex w-full flex-row flex-nowrap items-center gap-2 py-2">
+   <ul class="flex w-full flex-row flex-nowrap items-center gap-2 py-2">
       {#each toolbarItems as toolbarItem}
          {#if toolbarItem.type === "separator"}
             {@render separatorMenuItem()}

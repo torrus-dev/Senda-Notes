@@ -30,13 +30,10 @@ import { getEditorContextMenuItems } from "@utils/editorMenuItems";
 import { parseEditorContent } from "@utils/editorUtils";
 
 // Props
-let { noteId = null } = $props();
+let { noteId = null, content = "" } = $props();
 
 // Estado derivado
 let isMobile: boolean = $derived(screenSizeController.isMobile);
-let content: string = $derived(
-   noteController.getNoteById(noteId)?.content || "",
-);
 
 // Referencias DOM y estado
 let editorElement: HTMLElement;
@@ -113,10 +110,12 @@ function handleContextMenu(event: MouseEvent) {
    if (!editorPosition) return;
 
    const coordinates: Coordinates = { x: clientX, y: clientY };
-   floatingMenuController.openContextMenu(
-      coordinates,
-      getEditorContextMenuItems(editorBox.current),
-   );
+   if (editorBox.current) {
+      floatingMenuController.openContextMenu(
+         coordinates,
+         getEditorContextMenuItems({ current: editorBox.current }),
+      );
+   }
 }
 
 // Inicializar editor cuando cambia la nota activa
@@ -145,16 +144,18 @@ onDestroy(() => {
 </script>
 
 {#if editorBox.current && (isMobile || settingsController.state.showEditorToolbar)}
-   <div class="sticky top-0">
-      Bold: {editorBox.current.isActive("bold")}
-      <!-- <Toolbar toolbarItems={menuItems} /> -->
-      <Toolbar editorBox={editorBox} />
+   <div class="bg-base-100 sticky top-0">
+      <div class="mx-auto w-full max-w-2xl">
+         <Toolbar editorBox={editorBox} />
+      </div>
    </div>
 {/if}
 
-<div
-   bind:this={editorElement}
-   role="document"
-   class="prose prose-invert prose-neutral tiptap-editor"
-   oncontextmenu={handleContextMenu}>
+<div class="mx-auto w-full max-w-2xl">
+   <div
+      bind:this={editorElement}
+      role="document"
+      class="prose prose-invert prose-neutral tiptap-editor w-full"
+      oncontextmenu={handleContextMenu}>
+   </div>
 </div>

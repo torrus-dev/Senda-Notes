@@ -12,17 +12,22 @@ let { note }: { note: Note } = $props();
 </script>
 
 <div class="overflow-auto">
-   <article class="mx-auto w-full max-w-3xl p-3">
+   <article>
       {#if note}
-         <header>
-            <Title note={note} />
-         </header>
-         <section class="mb-8 flex flex-col gap-4">
-            {#if settingsController.getShowMetadata()}
-               <Metadata noteId={note.id} metadata={note.metadata}></Metadata>
-            {/if}
-            <Properties noteId={note.id} properties={note.properties} />
-            <ChildNotes children={note.children} />
+         <section class="mx-auto w-full max-w-2xl">
+            <header>
+               <Title note={note} />
+            </header>
+         </section>
+         <section class="mx-auto w-full max-w-2xl">
+            <div class="mb-8 flex flex-col gap-4">
+               {#if settingsController.getShowMetadata()}
+                  <Metadata noteId={note.id} metadata={note.metadata}
+                  ></Metadata>
+               {/if}
+               <Properties noteId={note.id} properties={note.properties} />
+               <ChildNotes children={note.children} />
+            </div>
          </section>
 
          <section>
