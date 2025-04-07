@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import { SettingsIcon, InfoIcon, StarIcon, Trash2Icon } from "lucide-svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 
@@ -19,7 +19,7 @@ let isSidebarOpen = $derived(
 );
 let isResizing = $state(false);
 
-function updateWidth(newWidth) {
+function updateWidth(newWidth: number) {
    width = newWidth;
 }
 
@@ -54,7 +54,7 @@ let widthStyle = $derived(isMobile ? "90%" : `${width}em`);
    </div>
    <div>
       <!-- notas en favoritos y en papelera  -->
-      <ul class="my-4 flex w-full flex-col p-2" cl>
+      <ul class="my-4 flex w-full flex-col p-2">
          <li class="w-full">
             <Button class="w-full">
                <StarIcon size="1.125em"></StarIcon>Favoritos

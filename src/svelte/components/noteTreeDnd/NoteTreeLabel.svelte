@@ -16,7 +16,7 @@ import Button from "@components/utils/Button.svelte";
 import InlineTitleEditor from "@components/utils/InlineTitleEditor.svelte";
 import { contextMenu } from "@directives/floatingMenuDirective.svelte";
 import type { Note } from "@projectTypes/noteTypes";
-import { SvelteComponent } from "svelte";
+import type { SvelteComponent } from "svelte";
 
 let {
    note,

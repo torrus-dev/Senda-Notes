@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import { sanitizeTitle } from "@utils/noteUtils";
 
 import { noteController } from "@controllers/noteController.svelte";
@@ -13,7 +13,7 @@ let id = $derived(note.id);
 let title = $derived(note.title);
 
 // Referencias
-let editableElement;
+let editableElement: HTMLElement;
 
 // Eventos y manejadores
 function handleTitleChange() {
@@ -29,13 +29,13 @@ function handleTitleChange() {
    }
 }
 
-function handleKeydown(e) {
-   if (e.key === "Escape") {
+function handleKeydown(event: KeyboardEvent) {
+   if (event.key === "Escape") {
       // Cancelar edición
       editableElement.innerText = title; // Restaurar valor original
       editableElement.blur();
-   } else if (e.key === "Enter") {
-      e.preventDefault();
+   } else if (event.key === "Enter") {
+      event.preventDefault();
       handleTitleChange();
       editableElement.blur();
       focusController.requestFocus(FocusTarget.EDITOR);

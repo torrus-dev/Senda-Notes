@@ -1,9 +1,8 @@
-<script>
-import { FilesIcon, SearchIcon, FileSearchIcon } from "lucide-svelte";
+<script lang="ts">
+import { FilesIcon, SearchIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
 </script>
 
-<!-- Header -->
 <nav class="flex h-14 w-full items-center justify-between gap-4 p-2">
    <div class="flex gap-1">
       <Button>

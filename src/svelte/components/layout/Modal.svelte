@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import { workspace } from "@controllers/workspaceController.svelte";
 import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
 import Button from "@components/utils/Button.svelte";
@@ -22,8 +22,9 @@ function closeModal() {
             action: closeModal,
          }}
          role="dialog">
-         <Button class="absolute top-0 right-0" onclick={closeModal}
-            ><XIcon /></Button>
+         <Button class="absolute top-0 right-0" onclick={closeModal}>
+            <XIcon />
+         </Button>
          {@render content()}
       </div>
    </div>

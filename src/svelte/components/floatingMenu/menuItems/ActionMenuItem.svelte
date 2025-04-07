@@ -18,7 +18,7 @@ let {
 } = $props();
 
 let renderId = crypto.randomUUID();
-let itemElement: HTMLElement | null = $state(null);
+let itemElement: HTMLElement | undefined = $state(undefined);
 
 onMount(() => {
    // añadir al array del controlador que se usara en la navegación por teclado

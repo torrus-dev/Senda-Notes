@@ -18,7 +18,7 @@ let {
    ...htmlAttributes
 }: {
    class?: string;
-   onclick: (event?: Event) => void;
+   onclick?: (event?: Event) => void;
    size?: "small" | "medium" | "large";
    shape?: "square" | "rect";
    children: Snippet;

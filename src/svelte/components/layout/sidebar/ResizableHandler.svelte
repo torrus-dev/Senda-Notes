@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import { onDestroy } from "svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 
@@ -17,7 +17,7 @@ let isDragging = $state(false);
 let startX = $state(0);
 let startWidth = $state(0);
 
-function startDragging(event) {
+function startDragging(event: MouseEvent) {
    if (disabled) return;
 
    isDragging = true;
@@ -29,7 +29,7 @@ function startDragging(event) {
    onResizeStart();
 }
 
-function handleDrag(event) {
+function handleDrag(event: MouseEvent) {
    if (!isDragging) return;
 
    const deltaX = event.clientX - startX;

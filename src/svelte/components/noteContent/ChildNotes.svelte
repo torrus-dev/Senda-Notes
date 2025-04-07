@@ -5,7 +5,7 @@ import Collapsible from "@components/utils/Collapsible.svelte";
 
 import { NetworkIcon, PlusIcon } from "lucide-svelte";
 
-let { children } = $props();
+let { children }: { children: string[] } = $props();
 </script>
 
 {#snippet headingContent()}
@@ -16,7 +16,7 @@ let { children } = $props();
 
 {#if children && children.length > 0}
    <Collapsible headingContent={headingContent} chevronPosition="floating-left">
-      <ul class="rounded-field mb-2 ">
+      <ul class="rounded-field mb-2">
          {#each children as childId}
             <li>
                <Button

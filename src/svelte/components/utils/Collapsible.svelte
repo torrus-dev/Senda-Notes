@@ -7,7 +7,7 @@ import { ChevronDownIcon } from "lucide-svelte";
 
 interface CollapsibleProps {
    collapsed?: boolean;
-   headingContent?: Snippet;
+   headingContent: Snippet;
    children?: Snippet;
    chevronPosition?: "floating-left" | "left" | "right";
 }

@@ -2,8 +2,8 @@ import type {
    WorkspaceState,
    PersistedWorkspaceState,
 } from "@projectTypes/workspaceTypes";
-import { Editor } from "@tiptap/core";
 import { loadWorkspaceState, saveWorkspaceState } from "@utils/storage";
+import { Component } from "svelte";
 
 class WorkspaceController {
    // Estado global del workspace: incluye propiedades efímeras y la persistente.
@@ -45,7 +45,7 @@ class WorkspaceController {
    }
 
    // ---------- Modal ----------
-   openModal = (modalContent = undefined) => {
+   openModal = (modalContent: Component | undefined = undefined) => {
       this.state.modal = {
          isOpen: true,
          content: modalContent,
