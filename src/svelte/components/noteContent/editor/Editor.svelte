@@ -41,12 +41,6 @@ let editorBox: { current: Editor | null } = $state.raw({ current: null });
 
 let currentNoteId: string | null = null;
 
-function onContentChange(newContent: string) {
-   if (noteId) {
-      noteController.updateNote(noteId, { content: newContent });
-   }
-}
-
 function initializeEditor(initialContent: string) {
    destroyEditor();
 
@@ -65,7 +59,11 @@ function initializeEditor(initialContent: string) {
       injectCSS: false,
       element: editorElement,
       content: parsedContent,
-      onUpdate: ({ editor }) => onContentChange(editor.getHTML()),
+      onUpdate: ({ editor }) => {
+         if (noteId) {
+            noteController.updateNote(noteId, { content: editor.getHTML() });
+         }
+      },
       onTransaction: () => {
          // Create a new object containing the editor to trigger reactivity
          editorBox = { current: editor };
