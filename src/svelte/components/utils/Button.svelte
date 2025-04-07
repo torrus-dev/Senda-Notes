@@ -1,12 +1,14 @@
-<script>
+<script lang="ts">
 import {
    contextMenu,
    dropdownMenu,
 } from "@directives/floatingMenuDirective.svelte";
+import type { MenuItem } from "@projectTypes/editorMenuTypes";
+import type { Snippet } from "svelte";
 
 let {
    class: userClass = "",
-   onclick = null,
+   onclick = () => {},
    size = "medium",
    shape = "square",
    children,
@@ -14,15 +16,24 @@ let {
    contextMenuItems = undefined,
    buttonElement = $bindable(),
    ...htmlAttributes
+}: {
+   class?: string;
+   onclick: (event?: Event) => void;
+   size?: "small" | "medium" | "large";
+   shape?: "square" | "rect";
+   children: Snippet;
+   dropdownMenuItems?: MenuItem[] | undefined;
+   contextMenuItems?: MenuItem[] | undefined;
+   buttonElement?: HTMLElement;
 } = $props();
 
 if (onclick && dropdownMenuItems) {
    console.warn("Se esta pasando 'onclick' a un elemento con dropdown");
-   onclick = null;
+   onclick = () => {};
 }
 
 // Define los estilos por tamaño
-let sizeStyle;
+let sizeStyle = { small: "", medium: "", large: "" };
 
 if (shape === "rect") {
    sizeStyle = {
@@ -39,7 +50,7 @@ if (shape === "rect") {
 }
 
 // Estilo de tamaño basado en las props - usando la runa $derived correctamente
-const sizeClass = $derived(sizeStyle[size]);
+const sizeClass = $derived(sizeStyle[size as "small" | "medium" | "large"]);
 </script>
 
 <button

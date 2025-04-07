@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import { noteController } from "@controllers/noteController.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
 
@@ -8,7 +8,9 @@ import Modal from "./Modal.svelte";
 import NoteContent from "../noteContent/NoteContent.svelte";
 import FloatingMenu from "../floatingMenu/FloatingMenu.svelte";
 
-const activeNote = $derived(noteController.getActiveNote());
+import type { Note } from "@projectTypes/noteTypes";
+
+const activeNote: Note | undefined = $derived(noteController.getActiveNote());
 </script>
 
 <div
@@ -22,10 +24,10 @@ const activeNote = $derived(noteController.getActiveNote());
 
       <main>
          <div class="flex h-screen flex-col">
-            <!-- top bar -->
             <NavBar note={activeNote} />
-
-            <NoteContent note={activeNote} />
+            {#if activeNote}
+               <NoteContent note={activeNote} />
+            {/if}
          </div>
       </main>
    </div>

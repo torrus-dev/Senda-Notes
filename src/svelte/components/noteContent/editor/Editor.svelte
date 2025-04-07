@@ -27,7 +27,6 @@ import Toolbar from "../Toolbar.svelte";
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Coordinates } from "@projectTypes/floatingMenuTypes";
 import { getEditorContextMenuItems } from "@utils/editorMenuItems";
-import { parseEditorContent } from "@utils/editorUtils";
 
 // Props
 let { noteId = null, content = "" } = $props();
@@ -44,8 +43,6 @@ let currentNoteId: string | null = null;
 function initializeEditor(initialContent: string) {
    destroyEditor();
 
-   const parsedContent = parseEditorContent(initialContent);
-
    const editor = new Editor({
       extensions: [
          StarterKit,
@@ -58,7 +55,7 @@ function initializeEditor(initialContent: string) {
       editable: true,
       injectCSS: false,
       element: editorElement,
-      content: parsedContent,
+      content: initialContent,
       onUpdate: ({ editor }) => {
          if (noteId) {
             noteController.updateNote(noteId, { content: editor.getHTML() });
@@ -120,6 +117,7 @@ function handleContextMenu(event: MouseEvent) {
 $effect(() => {
    if (noteId !== currentNoteId) {
       currentNoteId = noteId;
+      noteController.forceImmediateSave();
       initializeEditor(content);
    }
 });
@@ -136,20 +134,22 @@ $effect(() => {
 
 // Limpieza al destruir el componente
 onDestroy(() => {
-   destroyEditor();
+   noteController.forceImmediateSave();
    focusController.unregisterElement(FocusTarget.EDITOR);
+   destroyEditor();
 });
 </script>
 
 {#if editorBox.current && (isMobile || settingsController.state.showEditorToolbar)}
    <div class="bg-base-100 sticky top-0">
       <div class="mx-auto w-full max-w-2xl">
+         {noteController.isDataSaved ? "Guardado" : "Sin Guardar"}
          <Toolbar editorBox={editorBox} />
       </div>
    </div>
 {/if}
 
-<div class="mx-auto w-full max-w-2xl">
+<div class="mx-auto my-4 w-full max-w-2xl">
    <div
       bind:this={editorElement}
       role="document"

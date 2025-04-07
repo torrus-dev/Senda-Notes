@@ -8,6 +8,17 @@ export function sanitizeTitle(title: string): string {
       .slice(0, 100);
 }
 
+export function generateUniqueTitle(notes: Note[]): string {
+   const titleBase = "Nota Nueva";
+
+   const currentTitles = new Set(notes.map((note) => note.title));
+   if (!currentTitles.has(titleBase)) return titleBase;
+   let index = 1;
+   while (currentTitles.has(`${titleBase} ${index}`)) index++;
+
+   return `${titleBase} ${index}`;
+}
+
 export function updateModifiedMetadata(note: Note): Note {
    return {
       ...note,
@@ -28,27 +39,16 @@ export function createDefaultMetadata(): NoteMetadata {
    };
 }
 
-export function generateUniqueTitle(notes: Note[]): string {
-   const titleBase = "Nota Nueva";
-
-   const currentTitles = new Set(notes.map((note) => note.title));
-   if (!currentTitles.has(titleBase)) return titleBase;
-   let index = 1;
-   while (currentTitles.has(`${titleBase} ${index}`)) index++;
-
-   return `${titleBase} ${index}`;
-}
-
 // -------------------
 // Relaciones hijos y padres
 // -------------------
 
-export function getDescendants(notes: Note[], parentId: string): string[] {
+export function getDescendantsId(notes: Note[], parentId: string): string[] {
    const parent = notes.find((note) => note.id === parentId);
    if (!parent) return [];
 
    return parent.children.reduce((acc: string[], childId) => {
-      return [...acc, childId, ...getDescendants(notes, childId)];
+      return [...acc, childId, ...getDescendantsId(notes, childId)];
    }, []);
 }
 

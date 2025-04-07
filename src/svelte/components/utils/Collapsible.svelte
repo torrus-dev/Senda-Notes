@@ -18,7 +18,7 @@ let {
    children,
    chevronPosition = "right",
 }: CollapsibleProps = $props();
-let isCollapsed = $state<boolean>(collapsed);
+let isCollapsed: boolean = $state(collapsed);
 
 function toggle(): void {
    isCollapsed = !isCollapsed;

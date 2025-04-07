@@ -6,7 +6,7 @@ import { focusController } from "@controllers/focusController.svelte";
 import {
    createDefaultMetadata,
    generateUniqueTitle,
-   getDescendants,
+   getDescendantsId,
    sanitizeTitle,
    updateModifiedMetadata,
 } from "@utils/noteUtils";
@@ -14,8 +14,9 @@ import { loadNotesFromStorage, saveNotesToStorage } from "@utils/storage";
 
 class NoteController {
    notes = $state<Note[]>([]);
-   activeNoteId = $state<string | null>(null);
+   activeNoteId = $state<string | undefined>(undefined);
    private saveTimeout: ReturnType<typeof setTimeout> | null = null;
+   isDataSaved = $state(true);
 
    constructor() {
       this.notes = loadNotesFromStorage();
@@ -27,12 +28,14 @@ class NoteController {
       $effect.root(() => {
          $effect(() => {
             const currentNotes = [...this.notes];
+            this.isDataSaved = false;
             if (this.saveTimeout) {
                clearTimeout(this.saveTimeout);
             }
             this.saveTimeout = setTimeout(() => {
                saveNotesToStorage(currentNotes);
                this.saveTimeout = null;
+               this.isDataSaved = true;
             }, 5000);
 
             return () => {
@@ -49,6 +52,7 @@ class NoteController {
          clearTimeout(this.saveTimeout);
       }
       saveNotesToStorage(this.notes);
+      this.isDataSaved = true;
    }
 
    // Actualiza una nota en el array por ID aplicando un updater
@@ -179,7 +183,7 @@ class NoteController {
 
       // Si la nota activa fue borrada, se limpia la referencia.
       if (this.activeNoteId && idsToDelete.has(this.activeNoteId)) {
-         this.activeNoteId = null;
+         this.activeNoteId = undefined;
       }
 
       this.forceImmediateSave();
@@ -323,13 +327,13 @@ class NoteController {
       }
    };
 
-   getActiveNote = (): Note | null => {
-      if (!this.activeNoteId) return null;
+   getActiveNote = (): Note | undefined => {
+      if (!this.activeNoteId) return undefined;
       const note = this.getNoteById(this.activeNoteId);
       if (!note) {
          console.warn("Active note was removed, cleaning reference");
-         this.activeNoteId = null;
-         return null;
+         this.activeNoteId = undefined;
+         return undefined;
       }
       return note;
    };
@@ -358,7 +362,7 @@ class NoteController {
    getChildrenCount = (noteId: string): number => {
       const note = this.getNoteById(noteId);
       if (!note) return 0;
-      const descendants = getDescendants(this.notes, noteId);
+      const descendants = getDescendantsId(this.notes, noteId);
       return descendants.length;
    };
 }

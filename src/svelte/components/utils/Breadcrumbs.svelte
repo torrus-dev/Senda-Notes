@@ -11,26 +11,18 @@ ul {
 }
 </style>
 
-<script>
+<script lang="ts">
 import { noteController } from "@controllers/noteController.svelte";
+
 import Button from "./Button.svelte";
 import InlineTitleEditor from "./InlineTitleEditor.svelte";
 
-let { note } = $props();
-let path = $derived(note ? noteController.getBreadcrumbPath(note.id) : null);
+let { noteId }: { noteId: string } = $props();
 
-// Estado para controlar si la última miga está en modo edición
-let isEditingLastCrumb = $state(false);
-
-// Función para iniciar la edición de la última miga
-const startEditing = () => {
-   isEditingLastCrumb = true;
-};
-
-// Función para terminar la edición
-const finishEditing = () => {
-   isEditingLastCrumb = false;
-};
+let path: { id: string; title: string }[] = $derived(
+   noteController.getBreadcrumbPath(noteId),
+);
+let isEditingLastCrumb: boolean = $state(false);
 </script>
 
 <div aria-label="breadcrumb">
@@ -40,10 +32,15 @@ const finishEditing = () => {
             {#if index == path.length - 1}
                <li class="p-1 whitespace-nowrap select-text">
                   <InlineTitleEditor
-                     note={crumb}
+                     noteId={crumb.id}
+                     noteTitle={crumb.title}
                      isEditing={isEditingLastCrumb}
-                     onEditComplete={finishEditing}
-                     onclick={startEditing} />
+                     onclick={() => {
+                        isEditingLastCrumb = true;
+                     }}
+                     onEditComplete={() => {
+                        isEditingLastCrumb = false;
+                     }} />
                </li>
             {:else}
                <li class="whitespace-nowrap">

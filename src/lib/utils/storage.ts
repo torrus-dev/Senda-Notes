@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import type { Note } from "@projectTypes/noteTypes";
-import type { PersistedWorkspaceState } from "@projectTypes/workspaceTypes"; // Se importa el nuevo tipo
+import type { PersistedWorkspaceState } from "@projectTypes/workspaceTypes";
 import { Settings } from "@projectTypes/settingsTypes";
 
 const NOTES_STORAGE_KEY = "NoteList";

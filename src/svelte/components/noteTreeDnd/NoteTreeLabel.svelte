@@ -15,8 +15,18 @@ import {
 import Button from "@components/utils/Button.svelte";
 import InlineTitleEditor from "@components/utils/InlineTitleEditor.svelte";
 import { contextMenu } from "@directives/floatingMenuDirective.svelte";
+import type { Note } from "@projectTypes/noteTypes";
+import { SvelteComponent } from "svelte";
 
-let { note, toggleExpansion, isExpanded } = $props();
+let {
+   note,
+   toggleExpansion,
+   isExpanded,
+}: {
+   note: Note;
+   toggleExpansion: (event: Event) => void;
+   isExpanded: boolean;
+} = $props();
 
 let isActive = $derived(note.id === noteController.activeNoteId);
 let childrenCount = $derived(noteController.getChildrenCount(note.id));
@@ -33,11 +43,6 @@ const handleSelectTitle = (event: KeyboardEvent | MouseEvent) => {
    }
 };
 
-const handleNewChildNote = (event: Event) => {
-   event.stopPropagation();
-   noteController.createNote(note.id);
-};
-
 const startEditingLabel = () => {
    isEditingTitle = true;
 };
@@ -46,7 +51,7 @@ const stopEditingLabel = () => {
 };
 
 // Referencia al componente InlineTitleEditor para acceder a su elemento DOM
-let editableElement;
+let editableElement: SvelteComponent;
 </script>
 
 <div
@@ -56,14 +61,12 @@ let editableElement;
    tabindex="0"
    use:contextMenu={[
       {
-         id: crypto.randomUUID(),
          type: "action",
          label: "Rename Note",
          icon: PenLineIcon,
          action: startEditingLabel,
       },
       {
-         id: crypto.randomUUID(),
          type: "action",
          label: "Delete Note",
          icon: Trash2Icon,
@@ -92,17 +95,20 @@ let editableElement;
       <!-- Usando InlineTitleEditor y bindando la referencia al elemento -->
       <InlineTitleEditor
          bind:this={editableElement}
-         note={note}
+         noteId={note.id}
+         noteTitle={note.title}
          isEditing={isEditingTitle}
          class="truncate {!isExpanded ? 'text-base-content/70' : ''}"
          onEditComplete={stopEditingLabel} />
    </div>
    <div class="flex items-center">
       <Button
-         onclick={handleNewChildNote}
+         onclick={(event) => {
+            event?.stopPropagation();
+            noteController.createNote(note.id);
+         }}
          class="text-base-content/70 p-1 opacity-0 group-hover:opacity-100"
-         size="small"
-         title="Add note inside">
+         size="small">
          <PlusIcon size="1.125em"></PlusIcon>
       </Button>
       {#if childrenCount > 0}
