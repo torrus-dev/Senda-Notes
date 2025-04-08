@@ -308,7 +308,7 @@ export function getEditorToolbarMenuItems(editorBox: {
    return [
       {
          type: "action",
-         label: `Negrita: ${editorBox.current.isActive("bold")}`,
+         label: "Negrita",
          icon: BoldIcon,
          checked: editorBox.current.isActive("bold"),
          action: () => editorBox.current.chain().focus().toggleBold().run(),

@@ -41,7 +41,8 @@ let isAddPropertyOpen = $derived(workspace.isOpenPropertyEditor());
             class="text-base-content/80"
             onclick={() => {
                workspace.openPropertyEditor();
-            }}>
+            }}
+            title="Add property">
             <PlusIcon size="1.125em" />Add Property
          </Button>
       {/if}

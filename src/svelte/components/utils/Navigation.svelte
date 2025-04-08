@@ -4,10 +4,10 @@ import { ArrowLeftIcon, ArrowRightIcon } from "lucide-svelte";
 </script>
 
 <div class="flex gap-1">
-   <Button onclick={() => {}}>
+   <Button onclick={() => {}} title="Go back">
       <ArrowLeftIcon size="1.125em" />
    </Button>
-   <Button onclick={() => {}}>
+   <Button onclick={() => {}} title="Go forward">
       <ArrowRightIcon size="1.125em" />
    </Button>
 </div>

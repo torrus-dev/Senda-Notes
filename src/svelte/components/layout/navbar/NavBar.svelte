@@ -21,11 +21,11 @@ let isSidebarLocked: boolean = $derived(settingsController.getLockSidebar());
    class="border-border-normal flex h-14 w-full items-center justify-between gap-2 p-2">
    {#if !isSidebarLocked || screenSizeController.isMobile}
       {#if isSidebarOpen}
-         <Button onclick={workspace.toggleSidebar}>
+         <Button onclick={workspace.toggleSidebar} title="Close sidebar">
             <PanelLeftCloseIcon size="1.125em" />
          </Button>
       {:else}
-         <Button onclick={workspace.toggleSidebar}>
+         <Button onclick={workspace.toggleSidebar} title="Open sidebar">
             <PanelLeftOpenIcon size="1.125em" />
          </Button>
       {/if}
@@ -34,10 +34,10 @@ let isSidebarLocked: boolean = $derived(settingsController.getLockSidebar());
 
    <div class="bg-base-200 rounded-selector flex-1 justify-between">
       <div class="flex items-center justify-between">
+         <div class="overflow-x-auto px-2 py-1">
+            <Breadcrumbs noteId={note?.id}></Breadcrumbs>
+         </div>
          {#if note}
-            <div class="overflow-x-auto px-2 py-1">
-               <Breadcrumbs noteId={note.id}></Breadcrumbs>
-            </div>
             <MoreButton noteId={note.id} />
          {/if}
       </div>

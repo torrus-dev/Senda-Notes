@@ -24,7 +24,8 @@ let toolbarItems = $derived(getEditorToolbarMenuItems(editorBox));
          class="{menuItem.class} {menuItem.checked ? 'highlight' : ''}"
          onclick={() => {
             menuItem.action?.();
-         }}>
+         }}
+         title={menuItem.label}>
          <menuItem.icon size="1.25rem" />
       </Button>
    </li>

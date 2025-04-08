@@ -22,13 +22,18 @@ let { children }: { children: string[] } = $props();
                <Button
                   size="small"
                   shape="rect"
-                  onclick={() => noteController.setActiveNote(childId)}>
+                  onclick={() => noteController.setActiveNote(childId)}
+                  title="Abrir nota">
                   {noteController.getTitleById(childId)}
                </Button>
             </li>
          {/each}
          <li>
-            <Button size="small" shape="rect" class="pl-1.5">
+            <Button
+               size="small"
+               shape="rect"
+               class="pl-1.5"
+               title="Add child note">
                <PlusIcon size="1.0625em"></PlusIcon> Add Child Note
             </Button>
          </li>

@@ -17,10 +17,10 @@ import { noteController } from "@controllers/noteController.svelte";
 import Button from "./Button.svelte";
 import InlineTitleEditor from "./InlineTitleEditor.svelte";
 
-let { noteId }: { noteId: string } = $props();
+let { noteId = undefined }: { noteId: string | undefined } = $props();
 
 let path: { id: string; title: string }[] = $derived(
-   noteController.getBreadcrumbPath(noteId),
+   noteId ? noteController.getBreadcrumbPath(noteId) : [],
 );
 let isEditingLastCrumb: boolean = $state(false);
 </script>
@@ -46,7 +46,8 @@ let isEditingLastCrumb: boolean = $state(false);
                <li class="whitespace-nowrap">
                   <Button
                      size="small"
-                     onclick={() => noteController.setActiveNote(crumb.id)}>
+                     onclick={() => noteController.setActiveNote(crumb.id)}
+                     title="Open note">
                      {crumb.title}
                   </Button>
                </li>

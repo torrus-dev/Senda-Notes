@@ -22,7 +22,10 @@ function closeModal() {
             action: closeModal,
          }}
          role="dialog">
-         <Button class="absolute top-0 right-0" onclick={closeModal}>
+         <Button
+            class="absolute top-0 right-0"
+            title="Close modal"
+            onclick={closeModal}>
             <XIcon />
          </Button>
          {@render content()}

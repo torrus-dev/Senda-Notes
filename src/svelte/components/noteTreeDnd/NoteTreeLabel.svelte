@@ -108,7 +108,8 @@ let editableElement: SvelteComponent;
             noteController.createNote(note.id);
          }}
          class="text-base-content/70 p-1 opacity-0 group-hover:opacity-100"
-         size="small">
+         size="small"
+         title="Add child note">
          <PlusIcon size="1.125em"></PlusIcon>
       </Button>
       {#if childrenCount > 0}
