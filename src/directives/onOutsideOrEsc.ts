@@ -6,7 +6,10 @@ export interface CloseOptions {
 }
 
 export function onOutsideOrEsc(node: HTMLElement, options: CloseOptions) {
-   if (typeof options.action !== "function") {
+   let { action, preventOnEsc, preventOnClickOutside, triggerElement } =
+      options;
+
+   if (typeof action !== "function") {
       console.error("onOutsideOrEsc: action must be a function");
       return { destroy() {} };
    }
@@ -14,18 +17,17 @@ export function onOutsideOrEsc(node: HTMLElement, options: CloseOptions) {
    // Definir manejadores de eventos
    const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
-
-      if (
-         !node.contains(target) ||
-         (options.triggerElement && !options.triggerElement?.contains(target))
-      ) {
-         options.action();
+      const clickInDropdownTrigger = triggerElement?.contains(target);
+      if (clickInDropdownTrigger) return;
+      const clickOutide = !node.contains(target);
+      if (clickOutide) {
+         action();
       }
    };
 
    const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-         options.action();
+         action();
       }
    };
 
@@ -35,11 +37,11 @@ export function onOutsideOrEsc(node: HTMLElement, options: CloseOptions) {
 
    // Funciones auxiliares
    function setupListeners() {
-      if (!options.preventOnClickOutside) {
+      if (!preventOnClickOutside) {
          document.addEventListener("mousedown", handleClickOutside, true);
       }
 
-      if (!options.preventOnEsc) {
+      if (!preventOnEsc) {
          document.addEventListener("keydown", handleKeyDown, true);
       }
    }

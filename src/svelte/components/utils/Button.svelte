@@ -19,6 +19,7 @@ let {
 }: {
    class?: string;
    onclick?: ((event?: Event) => void) | undefined;
+   title?: string;
    size?: "small" | "medium" | "large";
    shape?: "square" | "rect";
    children: Snippet;

@@ -4,25 +4,23 @@ import type {
    DropdownMenuData,
    FloatingMenuData,
    RenderItem,
-   BaseMenuData,
+   EmptyMenuData,
 } from "@projectTypes/floatingMenuTypes";
 import type { MenuItem, GroupMenuItem } from "@projectTypes/editorMenuTypes";
 
 class FloatingMenuController {
-
-   private startingFloatingMenuState = (): BaseMenuData => ({
+   private emptyMenuState = (): EmptyMenuData => ({
       type: undefined,
       isOpen: false,
       menuItems: [],
-      triggerElement: undefined,
       activeSubMenu: undefined,
-      previousFocusedElement: undefined,
+      previousFocusHolder: undefined,
    });
 
    renderedMainMenu: RenderItem[] = [];
    renderedSubMenu: RenderItem[] = [];
 
-   private state = $state<FloatingMenuData>(this.startingFloatingMenuState());
+   private state = $state<FloatingMenuData>(this.emptyMenuState());
 
    getMenuState = (): FloatingMenuData => this.state;
 
@@ -33,12 +31,13 @@ class FloatingMenuController {
          | undefined;
 
       this.state = {
-         ...this.startingFloatingMenuState(),
+         ...this.emptyMenuState(),
+         type: "context",
          isOpen: true,
          menuItems,
          originalPosition: position,
-         previousFocusedElement,
-      };
+         previousFocusHolder: previousFocusedElement,
+      } as ContextMenuData;
 
       this.renderedSubMenu = [];
       this.renderedMainMenu = [];
@@ -51,12 +50,13 @@ class FloatingMenuController {
          | undefined;
 
       this.state = {
-         ...this.startingDropdownMenuState(),
+         ...this.emptyMenuState(),
+         type: "dropdown",
          isOpen: true,
          menuItems,
          triggerElement,
-         previousFocusedElement,
-      };
+         previousFocusHolder: previousFocusedElement,
+      } as DropdownMenuData;
 
       this.renderedSubMenu = [];
       this.renderedMainMenu = [];
@@ -66,17 +66,10 @@ class FloatingMenuController {
       this.renderedMainMenu = [];
       this.renderedSubMenu = [];
 
-      if (this.state.previousFocusedElement) {
-         this.state.previousFocusedElement.focus();
+      if (this.state.previousFocusHolder) {
+         this.state.previousFocusHolder.focus();
       }
-
-      // Restablecer el estado según el tipo de menú actual
-      if (this.state.type === "context") {
-         this.state = this.startingContextMenuState();
-      }
-      if (this.state.type === "dropdown") {
-         this.state = this.startingDropdownMenuState();
-      }
+      this.state = this.emptyMenuState();
    }
 
    setActiveSubMenu = (groupMenuItem: GroupMenuItem): void => {
@@ -100,7 +93,6 @@ class FloatingMenuController {
    getActiveSubMenu = (): GroupMenuItem | undefined => this.state.activeSubMenu;
    getTriggerElement = (): HTMLElement | undefined => {
       if (this.state.type === "dropdown") {
-         console.log("get dropdown", this.state.triggerElement);
          return this.state.triggerElement;
       } else {
          return undefined;

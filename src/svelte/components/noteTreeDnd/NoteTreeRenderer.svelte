@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import { noteController } from "@controllers/noteController.svelte";
 import Button from "@components/utils/Button.svelte";
 import NoteTreeLine from "./NoteTreeLine.svelte";

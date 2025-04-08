@@ -10,26 +10,32 @@ export interface Dimensions {
    height: number;
 }
 
-export interface BaseMenuData {
+export interface MenuData {
    type: "context" | "dropdown" | undefined;
    isOpen: boolean;
    menuItems: MenuItem[];
    activeSubMenu: GroupMenuItem | undefined;
-   previousFocusedElement: HTMLElement | undefined;
-   triggerElement?: HTMLElement | undefined;
+   previousFocusHolder: HTMLElement | undefined;
 }
 
-export interface ContextMenuData extends BaseMenuData {
+export interface EmptyMenuData extends MenuData {
+   type: undefined;
+}
+
+export interface ContextMenuData extends MenuData {
    type: "context";
    originalPosition: Coordinates;
 }
 
-export interface DropdownMenuData extends BaseMenuData {
+export interface DropdownMenuData extends MenuData {
    type: "dropdown";
    triggerElement: HTMLElement | undefined;
 }
 
-export type FloatingMenuData = ContextMenuData | DropdownMenuData;
+export type FloatingMenuData =
+   | EmptyMenuData
+   | ContextMenuData
+   | DropdownMenuData;
 
 export interface RenderItem {
    renderId: string;

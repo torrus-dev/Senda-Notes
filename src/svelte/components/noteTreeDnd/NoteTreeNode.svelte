@@ -1,7 +1,7 @@
 <style>
 </style>
 
-<script>
+<script lang="ts">
 import { noteController } from "@controllers/noteController.svelte";
 import { dndController } from "@controllers/dndController.svelte";
 import {
@@ -39,7 +39,7 @@ const {
    getBranchDragging: () => branchDragging,
 });
 
-const toggleExpansion = (event) => {
+const toggleExpansion = (event: Event) => {
    event.stopPropagation();
    isExpanded = !isExpanded;
 };
@@ -60,8 +60,7 @@ const toggleExpansion = (event) => {
    <NoteTreeLabel
       note={note}
       toggleExpansion={toggleExpansion}
-      isExpanded={isExpanded}
-      position={position} />
+      isExpanded={isExpanded} />
 
    {#if isExpanded && note.children && note.children.length > 0}
       <ul class="border-base-400/60 ml-2.5 border-l-2">

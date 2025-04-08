@@ -83,7 +83,6 @@ export function dropdownMenu(
       console.log(triggerElement);
 
       if (menuItems && !(triggerElement === node)) {
-         console.log("abriendo el dropdown");
          floatingMenuController.openDropdownMenu(node, menuItems);
       } else {
          floatingMenuController.closeMenu();
