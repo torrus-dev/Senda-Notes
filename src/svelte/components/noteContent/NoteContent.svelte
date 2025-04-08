@@ -16,7 +16,7 @@ let { note }: { note: Note } = $props();
       {#if note}
          <section class="mx-auto w-full max-w-2xl">
             <header>
-               <Title note={note} />
+               <Title noteId={note.id} noteTitle={note.title} />
             </header>
          </section>
          <section class="mx-auto w-full max-w-2xl">

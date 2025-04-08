@@ -3,14 +3,14 @@ import type {
    ActionMenuItem,
    GroupMenuItem,
 } from "@projectTypes/editorMenuTypes";
+import type { Editor } from "@tiptap/core";
 
 import Button from "@components/utils/Button.svelte";
-
 import { screenSizeController } from "@controllers/screenSizeController.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
 import { getEditorToolbarMenuItems } from "@utils/editorMenuItems";
 
-let { editorBox } = $props();
+let { editorBox }: { editorBox: { current: Editor } } = $props();
 let showToolbar = $derived(
    screenSizeController.isMobile || settingsController.state.showEditorToolbar,
 );
@@ -45,7 +45,6 @@ let toolbarItems = $derived(getEditorToolbarMenuItems(editorBox));
 {/snippet}
 
 {#if showToolbar && toolbarItems}
-   {console.log("re-rendering toolbar")}
    <ul class="flex w-full flex-row flex-nowrap items-center gap-2 py-2">
       {#each toolbarItems as toolbarItem}
          {#if toolbarItem.type === "separator"}

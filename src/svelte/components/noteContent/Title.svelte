@@ -6,11 +6,7 @@ import { focusController } from "@controllers/focusController.svelte";
 import { FocusTarget } from "@projectTypes/focusTypes";
 
 // Props
-let { note } = $props();
-
-// Estado derivado
-let id = $derived(note.id);
-let title = $derived(note.title);
+let { noteId, noteTitle }: { noteId: string; noteTitle: string } = $props();
 
 // Referencias
 let editableElement: HTMLElement;
@@ -22,17 +18,17 @@ function handleTitleChange() {
    const newTitle = sanitizeTitle(editableElement.innerText);
 
    if (newTitle && newTitle.trim() !== "") {
-      noteController.updateNote(id, { title: newTitle });
+      noteController.updateNote(noteId, { title: newTitle });
    } else {
       // Restaurar el título original en el elemento editable
-      editableElement.innerText = title;
+      editableElement.innerText = noteTitle;
    }
 }
 
 function handleKeydown(event: KeyboardEvent) {
    if (event.key === "Escape") {
       // Cancelar edición
-      editableElement.innerText = title; // Restaurar valor original
+      editableElement.innerText = noteTitle; // Restaurar valor original
       editableElement.blur();
    } else if (event.key === "Enter") {
       event.preventDefault();
@@ -44,8 +40,8 @@ function handleKeydown(event: KeyboardEvent) {
 
 // Sincronizar el título cuando cambia externamente
 $effect(() => {
-   if (editableElement && title !== editableElement.innerText) {
-      editableElement.innerText = title;
+   if (editableElement && noteTitle !== editableElement.innerText) {
+      editableElement.innerText = noteTitle;
    }
 });
 
@@ -71,9 +67,9 @@ $effect(() => {
 <h1
    id="title"
    bind:this={editableElement}
-   class="mt-16 overflow-hidden font-bold sm:text-xl lg:text-3xl 2xl:text-4xl"
+   class="overflow-hnoteIdden mt-16 font-bold"
    contenteditable="true"
    onblur={handleTitleChange}
    onkeydown={handleKeydown}>
-   <!-- El contenido visible lo controla directamente el campo contenteditable -->
+   <!-- El contennoteIdo visible lo controla directamente el campo contenteditable -->
 </h1>

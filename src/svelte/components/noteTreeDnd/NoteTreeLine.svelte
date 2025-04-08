@@ -1,7 +1,7 @@
 <style>
 </style>
 
-<script>
+<script lang="ts">
 import { dndController } from "@controllers/dndController.svelte";
 import {
    createNoteTreeLineDndHandlers,

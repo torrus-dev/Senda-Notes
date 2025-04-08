@@ -3,7 +3,7 @@ import { noteController } from "@controllers/noteController.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
 
 import Sidebar from "./sidebar/Sidebar.svelte";
-import NavBar from "./NavBar.svelte";
+import NavBar from "./navbar/NavBar.svelte";
 import Modal from "./Modal.svelte";
 import NoteContent from "../noteContent/NoteContent.svelte";
 import FloatingMenu from "../floatingMenu/FloatingMenu.svelte";

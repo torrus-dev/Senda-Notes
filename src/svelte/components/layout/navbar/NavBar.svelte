@@ -1,6 +1,4 @@
 <script lang="ts">
-import { focusController } from "@controllers/focusController.svelte";
-import { noteController } from "@controllers/noteController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
 import { screenSizeController } from "@controllers/screenSizeController.svelte";
@@ -9,55 +7,14 @@ import Navigation from "@components/utils/Navigation.svelte";
 import Breadcrumbs from "@components/utils/Breadcrumbs.svelte";
 import Button from "@components/utils/Button.svelte";
 
-import {
-   MoreVerticalIcon,
-   Trash2Icon,
-   PenLineIcon,
-   PanelLeftOpenIcon,
-   PanelLeftCloseIcon,
-   FileSearchIcon,
-} from "lucide-svelte";
+import { PanelLeftOpenIcon, PanelLeftCloseIcon } from "lucide-svelte";
 
-import { FocusTarget } from "@projectTypes/focusTypes";
-import type { MenuItem } from "@projectTypes/editorMenuTypes";
 import type { Note } from "@projectTypes/noteTypes";
+import MoreButton from "./MoreButton.svelte";
 
 let { note }: { note: Note | undefined } = $props();
 let isSidebarOpen: boolean = $derived(workspace.isSidebarOpen());
 let isSidebarLocked: boolean = $derived(settingsController.getLockSidebar());
-
-const noteOptionsItems: MenuItem[] = note
-   ? [
-        {
-           type: "action",
-           label: "Rename Note",
-           icon: PenLineIcon,
-           action: () => {
-              focusController.requestFocus(FocusTarget.TITLE);
-           },
-        },
-        {
-           type: "action",
-           label: "Delete Note",
-           icon: Trash2Icon,
-           action: () => noteController.deleteNote(note.id),
-           class: "text-error",
-        },
-        { type: "separator" },
-        {
-           type: "action",
-           label: "Search in Note",
-           icon: FileSearchIcon,
-           action: () => {},
-        },
-        {
-           type: "action",
-           label: "Replace in Note",
-           icon: FileSearchIcon,
-           action: () => {},
-        },
-     ]
-   : [];
 </script>
 
 <nav
@@ -81,11 +38,7 @@ const noteOptionsItems: MenuItem[] = note
             <div class="overflow-x-auto px-2 py-1">
                <Breadcrumbs noteId={note.id}></Breadcrumbs>
             </div>
-            <Button
-               dropdownMenuItems={noteOptionsItems}
-               contextMenuItems={noteOptionsItems}>
-               <MoreVerticalIcon size="1.25em" />
-            </Button>
+            <MoreButton noteId={note.id} />
          {/if}
       </div>
    </div>

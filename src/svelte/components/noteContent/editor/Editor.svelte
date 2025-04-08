@@ -29,16 +29,18 @@ import type { Coordinates } from "@projectTypes/floatingMenuTypes";
 import { getEditorContextMenuItems } from "@utils/editorMenuItems";
 
 // Props
-let { noteId = null, content = "" } = $props();
+let { noteId, content = "" }: { noteId: string; content: string } = $props();
 
 // Estado derivado
 let isMobile: boolean = $derived(screenSizeController.isMobile);
 
 // Referencias DOM y estado
 let editorElement: HTMLElement;
-let editorBox: { current: Editor | null } = $state.raw({ current: null });
+let editorBox: { current: Editor | undefined } = $state.raw({
+   current: undefined,
+});
 
-let currentNoteId: string | null = null;
+let currentNoteId: string | undefined = undefined;
 
 function initializeEditor(initialContent: string) {
    destroyEditor();
@@ -57,9 +59,7 @@ function initializeEditor(initialContent: string) {
       element: editorElement,
       content: initialContent,
       onUpdate: ({ editor }) => {
-         if (noteId) {
-            noteController.updateNote(noteId, { content: editor.getHTML() });
-         }
+         noteController.updateNote(noteId, { content: editor.getHTML() });
       },
       onTransaction: () => {
          // Create a new object containing the editor to trigger reactivity
@@ -87,7 +87,7 @@ function registerEditorWithFocusController() {
 function destroyEditor() {
    if (editorBox.current) {
       editorBox.current.destroy();
-      editorBox.current = null;
+      editorBox.current = undefined;
    }
 }
 
@@ -144,7 +144,7 @@ onDestroy(() => {
    <div class="bg-base-100 sticky top-0">
       <div class="mx-auto w-full max-w-2xl">
          {noteController.isDataSaved ? "Guardado" : "Sin Guardar"}
-         <Toolbar editorBox={editorBox} />
+         <Toolbar editorBox={{ current: editorBox.current }} />
       </div>
    </div>
 {/if}
@@ -153,7 +153,7 @@ onDestroy(() => {
    <div
       bind:this={editorElement}
       role="document"
-      class="prose prose-invert prose-neutral tiptap-editor w-full"
+      class="prose dark:prose-invert prose-neutral tiptap-editor w-full"
       oncontextmenu={handleContextMenu}>
    </div>
 </div>
