@@ -27,6 +27,7 @@ import Toolbar from "../Toolbar.svelte";
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Coordinates } from "@projectTypes/floatingMenuTypes";
 import { getEditorContextMenuItems } from "@utils/editorMenuItems";
+import { CheckIcon } from "lucide-svelte";
 
 // Props
 let { noteId, content = "" }: { noteId: string; content: string } = $props();
@@ -143,7 +144,14 @@ onDestroy(() => {
 {#if editorBox.current && (isMobile || settingsController.state.showEditorToolbar)}
    <div class="bg-base-100 sticky top-0">
       <div class="mx-auto w-full max-w-2xl">
-         {noteController.isDataSaved ? "Guardado" : "Sin Guardar"}
+         {#if noteController.isDataSaved}
+            <div class="flex items-center gap-2 text-emerald-500">
+               <CheckIcon size="1.0625em" /> Guardado
+            </div>
+         {:else}
+            <div>Sin Guardar</div>
+         {/if}
+         {noteController.isDataSaved ? "" : ""}
          <Toolbar editorBox={{ current: editorBox.current }} />
       </div>
    </div>
