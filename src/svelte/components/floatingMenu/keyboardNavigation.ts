@@ -94,7 +94,6 @@ export function setupKeyboardNavigation(menuElement: HTMLElement): () => void {
 
    // Retornamos una función que remueve el listener y restaura el foco original.
    return () => {
-      console.log("eliminar key listeners");
       menuElement.removeEventListener("keydown", keyHandler);
    };
 }

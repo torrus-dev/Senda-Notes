@@ -4,21 +4,14 @@ import type {
    DropdownMenuData,
    FloatingMenuData,
    RenderItem,
+   BaseMenuData,
 } from "@projectTypes/floatingMenuTypes";
 import type { MenuItem, GroupMenuItem } from "@projectTypes/editorMenuTypes";
 
 class FloatingMenuController {
-   private startingContextMenuState = (): ContextMenuData => ({
-      type: "context",
-      isOpen: false,
-      menuItems: [],
-      originalPosition: { x: 0, y: 0 },
-      activeSubMenu: undefined,
-      previousFocusedElement: undefined,
-   });
 
-   private startingDropdownMenuState = (): DropdownMenuData => ({
-      type: "dropdown",
+   private startingFloatingMenuState = (): BaseMenuData => ({
+      type: undefined,
       isOpen: false,
       menuItems: [],
       triggerElement: undefined,
@@ -29,7 +22,7 @@ class FloatingMenuController {
    renderedMainMenu: RenderItem[] = [];
    renderedSubMenu: RenderItem[] = [];
 
-   private state = $state<FloatingMenuData>(this.startingContextMenuState());
+   private state = $state<FloatingMenuData>(this.startingFloatingMenuState());
 
    getMenuState = (): FloatingMenuData => this.state;
 
@@ -40,7 +33,7 @@ class FloatingMenuController {
          | undefined;
 
       this.state = {
-         ...this.startingContextMenuState(),
+         ...this.startingFloatingMenuState(),
          isOpen: true,
          menuItems,
          originalPosition: position,
@@ -107,6 +100,7 @@ class FloatingMenuController {
    getActiveSubMenu = (): GroupMenuItem | undefined => this.state.activeSubMenu;
    getTriggerElement = (): HTMLElement | undefined => {
       if (this.state.type === "dropdown") {
+         console.log("get dropdown", this.state.triggerElement);
          return this.state.triggerElement;
       } else {
          return undefined;

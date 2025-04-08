@@ -6,6 +6,7 @@ function checkValid(menuItems: MenuItem[] | undefined) {
    if (menuItems && Array.isArray(menuItems) && menuItems.length > 0) {
       return true;
    }
+   console.warn("menu items are invalid", menuItems);
    return false;
 }
 
@@ -54,8 +55,8 @@ export function contextMenu(
             node.addEventListener("contextmenu", handleContextMenu);
          }
       },
-      // Limpiar event listeners al destruir el componente
       destroy() {
+         // Limpiar event listeners al destruir el componente
          node.removeEventListener("contextmenu", handleContextMenu);
       },
    };
@@ -79,9 +80,13 @@ export function dropdownMenu(
       event.stopPropagation();
 
       const triggerElement = floatingMenuController.getTriggerElement();
-      floatingMenuController.closeMenu();
+      console.log(triggerElement);
+
       if (menuItems && !(triggerElement === node)) {
+         console.log("abriendo el dropdown");
          floatingMenuController.openDropdownMenu(node, menuItems);
+      } else {
+         floatingMenuController.closeMenu();
       }
    }
 

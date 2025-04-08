@@ -8,7 +8,7 @@ import type { Snippet } from "svelte";
 
 let {
    class: userClass = "",
-   onclick = () => {},
+   onclick = undefined,
    size = "medium",
    shape = "square",
    children,
@@ -18,7 +18,7 @@ let {
    ...htmlAttributes
 }: {
    class?: string;
-   onclick?: (event?: Event) => void;
+   onclick?: ((event?: Event) => void) | undefined;
    size?: "small" | "medium" | "large";
    shape?: "square" | "rect";
    children: Snippet;
@@ -53,16 +53,56 @@ if (shape === "rect") {
 const sizeClass = $derived(sizeStyle[size as "small" | "medium" | "large"]);
 </script>
 
-<button
-   {...htmlAttributes}
-   class="
-      rounded-field bg-interactive hover:text-base-content/70 focus:text-base-content/70 inline-flex cursor-pointer items-center gap-2 whitespace-nowrap
-      {sizeClass} 
-      {userClass}
-   "
-   onclick={onclick}
-   use:dropdownMenu={dropdownMenuItems}
-   use:contextMenu={contextMenuItems}
-   bind:this={buttonElement}>
-   {@render children()}
-</button>
+{#if dropdownMenuItems && contextMenuItems}
+   <button
+      {...htmlAttributes}
+      class="
+         rounded-field bg-interactive hover:text-base-content/70 focus:text-base-content/70 inline-flex cursor-pointer items-center gap-2 whitespace-nowrap
+         {sizeClass} 
+         {userClass}
+      "
+      onclick={onclick}
+      use:dropdownMenu={dropdownMenuItems}
+      use:contextMenu={contextMenuItems}
+      bind:this={buttonElement}>
+      {@render children()}
+   </button>
+{:else if dropdownMenuItems}
+   <button
+      {...htmlAttributes}
+      class="
+         rounded-field bg-interactive hover:text-base-content/70 focus:text-base-content/70 inline-flex cursor-pointer items-center gap-2 whitespace-nowrap
+         {sizeClass} 
+         {userClass}
+      "
+      onclick={onclick}
+      use:dropdownMenu={dropdownMenuItems}
+      bind:this={buttonElement}>
+      {@render children()}
+   </button>
+{:else if contextMenuItems}
+   <button
+      {...htmlAttributes}
+      class="
+         rounded-field bg-interactive hover:text-base-content/70 focus:text-base-content/70 inline-flex cursor-pointer items-center gap-2 whitespace-nowrap
+         {sizeClass} 
+         {userClass}
+      "
+      onclick={onclick}
+      use:contextMenu={contextMenuItems}
+      bind:this={buttonElement}>
+      {@render children()}
+   </button>
+{:else}
+   <button
+      {...htmlAttributes}
+      class="
+         rounded-field bg-interactive hover:text-base-content/70 focus:text-base-content/70 inline-flex cursor-pointer items-center gap-2 whitespace-nowrap
+         {sizeClass} 
+         {userClass}
+      "
+      onclick={onclick}
+      bind:this={buttonElement}>
+      {@render children()}
+   </button>
+{/if}

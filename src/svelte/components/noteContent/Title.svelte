@@ -57,8 +57,10 @@ $effect(() => {
 });
 
 $effect(() => {
+   // Register title in focus controller
    const { targetId, timestamp } = focusController.focus;
    if (targetId === FocusTarget.TITLE && timestamp > 0 && editableElement) {
+      console.log("title element", editableElement);
       focusController.selectAllText(FocusTarget.TITLE);
    }
 });

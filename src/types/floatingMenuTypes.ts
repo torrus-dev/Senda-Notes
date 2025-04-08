@@ -11,11 +11,12 @@ export interface Dimensions {
 }
 
 export interface BaseMenuData {
-   type: "context" | "dropdown";
+   type: "context" | "dropdown" | undefined;
    isOpen: boolean;
    menuItems: MenuItem[];
    activeSubMenu: GroupMenuItem | undefined;
    previousFocusedElement: HTMLElement | undefined;
+   triggerElement?: HTMLElement | undefined;
 }
 
 export interface ContextMenuData extends BaseMenuData {

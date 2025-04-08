@@ -30,8 +30,8 @@ export function onOutsideOrEsc(node: HTMLElement, options: CloseOptions) {
    };
 
    // Agregar event listeners con un pequeño retraso
-   // const timerId = setTimeout(setupListeners, 10);
-   setupListeners();
+   const timerId = setTimeout(setupListeners, 10);
+   // setupListeners();
 
    // Funciones auxiliares
    function setupListeners() {
@@ -62,7 +62,7 @@ export function onOutsideOrEsc(node: HTMLElement, options: CloseOptions) {
       },
 
       destroy() {
-         // clearTimeout(timerId);
+         clearTimeout(timerId);
          removeListeners();
       },
    };
