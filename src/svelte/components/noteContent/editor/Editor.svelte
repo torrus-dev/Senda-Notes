@@ -60,7 +60,7 @@ function initializeEditor(initialContent: string) {
       element: editorElement,
       content: initialContent,
       onUpdate: ({ editor }) => {
-         noteController.updateNote(noteId, { content: editor.getHTML() });
+         noteController.updateNoteContentWithDelay(noteId, editor.getHTML());
       },
       onTransaction: () => {
          // Create a new object containing the editor to trigger reactivity
@@ -118,7 +118,6 @@ function handleContextMenu(event: MouseEvent) {
 $effect(() => {
    if (noteId !== currentNoteId) {
       currentNoteId = noteId;
-      noteController.forceImmediateSave();
       initializeEditor(content);
    }
 });
@@ -135,7 +134,6 @@ $effect(() => {
 
 // Limpieza al destruir el componente
 onDestroy(() => {
-   noteController.forceImmediateSave();
    focusController.unregisterElement(FocusTarget.EDITOR);
    destroyEditor();
 });
