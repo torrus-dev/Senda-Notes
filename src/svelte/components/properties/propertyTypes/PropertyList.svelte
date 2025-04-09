@@ -1,15 +1,27 @@
-<script>
+<script lang="ts">
 import { XIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
+import type { Property } from "@projectTypes/noteTypes";
 
-let { property, onUpdate } = $props();
+let {
+   property,
+   onUpdate,
+}: {
+   property: {
+      id: string;
+      name: string;
+      value: string[];
+      type: "list";
+   };
+   onUpdate: (newValue?: any) => void;
+} = $props();
 
 // Estado de referencia para el input (en caso de list)
-let inputElement = $state(null);
+let inputElement: HTMLInputElement | undefined = $state(undefined);
 let isEditing = false;
 
 // Función para eliminar un elemento de la lista
-function removeListItem(index) {
+function removeListItem(index: number) {
    if (property.type === "list") {
       const newValue = [...property.value];
       newValue.splice(index, 1);
@@ -18,17 +30,22 @@ function removeListItem(index) {
 }
 
 // Manejo de entrada en lista
-function handleListInput(event) {
-   if (event.key === "Enter" || event.type === "blur") {
-      const inputValue = inputElement.value.trim();
-      if (!inputValue) return;
-      const newValue = [...property.value, inputValue];
-      onUpdate(newValue);
-      inputElement.value = "";
-   }
-   if (event.key === "Backspace" || event.key === "Delete") {
-      let lastListItem = property.value.length - 1;
-      removeListItem(lastListItem);
+function handleListInput(event: Event) {
+   if (inputElement) {
+      if ((event as KeyboardEvent).key === "Enter" || event.type === "blur") {
+         const inputValue = inputElement.value?.trim();
+         if (!inputValue) return;
+         const newValue = [...property.value, inputValue];
+         onUpdate(newValue);
+         inputElement.value = "";
+      }
+      if (
+         (event as KeyboardEvent).key === "Backspace" ||
+         (event as KeyboardEvent).key === "Delete"
+      ) {
+         let lastListItem = property.value.length - 1;
+         removeListItem(lastListItem);
+      }
    }
 }
 </script>
@@ -43,8 +60,8 @@ function handleListInput(event) {
             <Button
                class="text-base-content/50 mr-[-0.25rem]"
                onclick={() => removeListItem(index)}
-               aria-label="Remove item"
                size="small"
+               title="Remove item"
                shape="square">
                <XIcon size="14" />
             </Button>
