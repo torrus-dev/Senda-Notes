@@ -1,7 +1,7 @@
 <style>
 </style>
 
-<script>
+<script lang="ts">
 import Property from "./Property.svelte";
 import PropertyEditor from "./PropertyEditor.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
@@ -10,7 +10,10 @@ import { PlusIcon, TablePropertiesIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";
 
-let { noteId, properties } = $props();
+import type { Property as PropertyType } from "@projectTypes/noteTypes";
+
+let { noteId, properties }: { noteId: string; properties: PropertyType[] } =
+   $props();
 
 let isAddPropertyOpen = $derived(workspace.isOpenPropertyEditor());
 </script>

@@ -1,19 +1,23 @@
 <style>
 </style>
 
-<script>
+<script lang="ts">
+import type { Property } from "@projectTypes/noteTypes";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { propertyController } from "@controllers/propertyController.svelte";
 import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
 
-let { property = null, noteId = null } = $props();
+let {
+   property = undefined,
+   noteId,
+}: { property?: Property | undefined; noteId: string } = $props();
 
 const propertyId = property ? property.id : null;
 const propertyName = property ? property.name : "";
 const propertyType = property ? property.type : "text";
 
-let newPropertyName = $state(propertyName);
-let newPropertyType = $state(propertyType);
+let newPropertyName: string = $state(propertyName);
+let newPropertyType: Property["type"] = $state(propertyType);
 
 // Opciones de tipos de propiedades
 const propertyTypes = [
@@ -33,6 +37,7 @@ function handleSave() {
       const newProperty = {
          name: newPropertyName,
          type: newPropertyType,
+         value: "",
       };
       if (propertyId) {
          propertyController.updateProperty(noteId, propertyId, newProperty);
@@ -51,7 +56,6 @@ function closeEditor() {
 <div
    class="property-editor rounded-box bordered absolute top-full left-0 z-30 mt-1 flex flex-col gap-2 bg-(--color-base-200) px-4 py-2 shadow-lg"
    use:onOutsideOrEsc={{
-      
       action: closeEditor,
    }}
    onkeydown={(event) => {

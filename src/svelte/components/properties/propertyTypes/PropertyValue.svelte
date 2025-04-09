@@ -1,5 +1,7 @@
-<script>
+<script lang="ts">
 import { propertyController } from "@controllers/propertyController.svelte";
+
+import type { Property } from "@projectTypes/noteTypes";
 
 import PropertyText from "./PropertyText.svelte";
 import PropertyList from "./PropertyList.svelte";
@@ -17,9 +19,9 @@ const components = {
    datetime: PropertyDatetime,
 };
 
-let { property, noteId } = $props();
+let { property, noteId }: { property: Property; noteId: string } = $props();
 
-function handlePropertyUpdateValue(newValue) {
+function handlePropertyUpdateValue(newValue: Property["value"]) {
    if (!noteId) return;
    propertyController.updateProperty(noteId, property.id, { value: newValue });
 }

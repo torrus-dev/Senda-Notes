@@ -1,20 +1,29 @@
 <style>
 </style>
 
-<script>
+<script lang="ts">
+import { SlidersHorizontalIcon, Trash2Icon } from "lucide-svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { propertyController } from "@controllers/propertyController.svelte";
 
 import { getIconComponent } from "@utils/propertyUtils";
 import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";
 
-import { SlidersHorizontalIcon, Trash2Icon } from "lucide-svelte";
-
 import PropertyValue from "./propertyTypes/PropertyValue.svelte";
 import PropertyEditor from "./PropertyEditor.svelte";
 import Button from "@components/utils/Button.svelte";
 
-let { noteId = null, position, property = null } = $props();
+import type { Property } from "@projectTypes/noteTypes";
+
+let {
+   noteId,
+   position,
+   property,
+}: {
+   noteId: string;
+   position: number;
+   property: Property;
+} = $props();
 
 let isEditorOpen = $derived(
    workspace.isOpenPropertyEditor(noteId, property.id),
@@ -56,7 +65,6 @@ const IconComponent = $derived(getIconComponent(property.type));
             size="small"
             contextMenuItems={[
                {
-                  id: crypto.randomUUID(),
                   type: "action",
                   label: "Edit Property",
                   icon: SlidersHorizontalIcon,
@@ -65,7 +73,6 @@ const IconComponent = $derived(getIconComponent(property.type));
                   },
                },
                {
-                  id: crypto.randomUUID(),
                   type: "action",
                   label: "Delete Property",
                   icon: Trash2Icon,
