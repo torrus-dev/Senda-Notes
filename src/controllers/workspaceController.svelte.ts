@@ -4,6 +4,7 @@ import type {
 } from "@projectTypes/workspaceTypes";
 import { loadWorkspaceState, saveWorkspaceState } from "@utils/storage";
 import { Component } from "svelte";
+import { noteController } from "./noteController.svelte";
 
 class WorkspaceController {
    // Estado global del workspace: incluye propiedades efímeras y la persistente.
@@ -23,6 +24,8 @@ class WorkspaceController {
          isOpen: true,
          width: null,
       },
+      activeNoteId: undefined,
+      previousActiveNoteId: undefined,
    });
 
    constructor() {
@@ -42,7 +45,38 @@ class WorkspaceController {
             saveWorkspaceState(persistableState);
          });
       });
+
+      // Configurar un efecto para monitorear cambios en activeNoteId
+      $effect.root(() => {
+         $effect(() => {
+            const currentActiveId = this.state.activeNoteId;
+
+            // Si había una nota activa anterior, guardar cualquier cambio pendiente
+            if (
+               this.state.previousActiveNoteId &&
+               this.state.previousActiveNoteId !== currentActiveId
+            ) {
+               noteController.saveContentForNote(
+                  this.state.previousActiveNoteId,
+               );
+            }
+
+            // Actualizar el seguimiento de la nota activa
+            this.state.previousActiveNoteId = currentActiveId;
+         });
+      });
    }
+
+   // ---------- Sidebar ----------
+   getActiveNoteId = () => this.state.activeNoteId;
+   setActiveNoteId = (newId: string) => {
+      this.state.previousActiveNoteId = this.state.activeNoteId;
+      this.state.activeNoteId = newId;
+   };
+   unsetActiveNoteId = () => {
+      this.state.previousActiveNoteId = this.state.activeNoteId;
+      this.state.activeNoteId = undefined;
+   };
 
    // ---------- Modal ----------
    openModal = (modalContent: Component | undefined = undefined) => {

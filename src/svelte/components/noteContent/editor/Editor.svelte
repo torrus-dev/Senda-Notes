@@ -54,7 +54,6 @@ function initializeEditor(initialContent: string) {
          Highlight.configure({ multicolor: false }),
          Underline,
       ],
-      autofocus: true,
       editable: true,
       injectCSS: false,
       element: editorElement,

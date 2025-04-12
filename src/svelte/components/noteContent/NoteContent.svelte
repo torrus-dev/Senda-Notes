@@ -2,6 +2,7 @@
 import Title from "./Title.svelte";
 import Metadata from "./Metadata.svelte";
 import Properties from "@components/properties/Properties.svelte";
+import Breadcrumbs from "@components/utils/Breadcrumbs.svelte";
 import ChildNotes from "./ChildNotes.svelte";
 import Editor from "./editor/Editor.svelte";
 
@@ -12,7 +13,10 @@ let { note }: { note: Note } = $props();
 </script>
 
 <div class="overflow-auto">
-   <article>
+   <div class="px-3">
+      <Breadcrumbs noteId={note?.id} />
+   </div>
+   <article class="py-12">
       {#if note}
          <section class="mx-auto w-full max-w-2xl">
             <header>
@@ -22,8 +26,7 @@ let { note }: { note: Note } = $props();
          <section class="mx-auto w-full max-w-2xl">
             <div class="mb-8 flex flex-col gap-4">
                {#if settingsController.getShowMetadata()}
-                  <Metadata noteId={note.id} metadata={note.metadata}
-                  ></Metadata>
+                  <Metadata noteId={note.id} metadata={note.metadata} />
                {/if}
                <Properties noteId={note.id} properties={note.properties} />
                <ChildNotes children={note.children} />

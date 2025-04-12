@@ -33,6 +33,8 @@ export interface WorkspaceState {
       isOpen: boolean;
       width: number | null;
    };
+   activeNoteId: string | undefined;
+   previousActiveNoteId: string | undefined;
 }
 
 export interface PersistedWorkspaceState {

@@ -11,36 +11,17 @@ import {
    updateModifiedMetadata,
 } from "@utils/noteUtils";
 import { loadNotesFromStorage, saveNotesToStorage } from "@utils/storage";
+import { workspace } from "./workspaceController.svelte";
 
 class NoteController {
    notes = $state<Note[]>([]);
-   activeNoteId = $state<string | undefined>(undefined);
    isDataSaved = $state(true);
    private contentSaveTimeout: ReturnType<typeof setTimeout> | null = null;
    private pendingContentUpdates = new Map<string, string>();
-   private previousActiveNoteId: string | undefined = undefined;
 
    constructor() {
       this.notes = loadNotesFromStorage();
       console.log("notas cargadas: ", $state.snapshot(this.notes));
-
-      // Configurar un efecto para monitorear cambios en activeNoteId
-      $effect.root(() => {
-         $effect(() => {
-            const currentActiveId = this.activeNoteId;
-
-            // Si había una nota activa anterior, guardar cualquier cambio pendiente
-            if (
-               this.previousActiveNoteId &&
-               this.previousActiveNoteId !== currentActiveId
-            ) {
-               this.saveContentForNote(this.previousActiveNoteId);
-            }
-
-            // Actualizar el seguimiento de la nota activa
-            this.previousActiveNoteId = currentActiveId;
-         });
-      });
 
       // Configurar un efecto para guardar automáticamente al cerrar/refrescar la página
       this.setupBeforeUnloadHandler();
@@ -59,7 +40,7 @@ class NoteController {
       this.isDataSaved = true;
    }
 
-   private saveContentForNote(noteId: string) {
+   saveContentForNote(noteId: string) {
       // Si hay contenido pendiente para esta nota específica, guardarlo
       if (this.pendingContentUpdates.has(noteId)) {
          const pendingContent = this.pendingContentUpdates.get(noteId)!;
@@ -104,7 +85,7 @@ class NoteController {
       this.requireNote(noteId);
 
       // Si la nota no es la activa, guardar inmediatamente sin delay
-      if (noteId !== this.activeNoteId) {
+      if (noteId !== workspace.getActiveNoteId()) {
          this.updateNoteById(noteId, (note) => ({
             ...note,
             content,
@@ -186,15 +167,14 @@ class NoteController {
          );
       }
 
-      this.activeNoteId = note.id;
+      workspace.setActiveNoteId(note.id);
       focusController.requestFocus(FocusTarget.TITLE);
       this.saveNotes();
    };
 
    // Método para actualización general de notas (guardado inmediato)
-   updateNote = (id: string, updates: Partial<Note>): void => {
-      this.requireNote(id);
-      const STRUCTURAL_FIELDS: (keyof Note)[] = ["title", "icon", "properties"];
+   updateNote = (noteId: string, updates: Partial<Note>): void => {
+      this.requireNote(noteId);
 
       // Si solo hay una actualización de contenido y la nota es la activa,
       // delegamos al método con delay
@@ -202,9 +182,9 @@ class NoteController {
          Object.keys(updates).length === 1 &&
          "content" in updates &&
          typeof updates.content === "string" &&
-         id === this.activeNoteId
+         noteId === workspace.getActiveNoteId()
       ) {
-         this.updateNoteContentWithDelay(id, updates.content);
+         this.updateNoteContentWithDelay(noteId, updates.content);
          return;
       }
 
@@ -229,17 +209,20 @@ class NoteController {
       // Eliminar cualquier actualización pendiente para esta nota si estamos
       // sobrescribiendo el contenido con una actualización inmediata
       if ("content" in validUpdates) {
-         this.pendingContentUpdates.delete(id);
+         this.pendingContentUpdates.delete(noteId);
 
          // Cancelar el timeout si era para esta nota
-         if (id === this.activeNoteId && this.contentSaveTimeout) {
+         if (
+            noteId === workspace.getActiveNoteId() &&
+            this.contentSaveTimeout
+         ) {
             clearTimeout(this.contentSaveTimeout);
             this.contentSaveTimeout = null;
          }
       }
 
       // Actualizar la nota inmediatamente
-      this.updateNoteById(id, (existing) => ({
+      this.updateNoteById(noteId, (existing) => ({
          ...existing,
          ...validUpdates,
       }));
@@ -299,8 +282,9 @@ class NoteController {
       );
 
       // Si la nota activa fue borrada, se limpia la referencia.
-      if (this.activeNoteId && idsToDelete.has(this.activeNoteId)) {
-         this.activeNoteId = undefined;
+      const activeNoteId = workspace.getActiveNoteId();
+      if (activeNoteId && idsToDelete.has(activeNoteId)) {
+         workspace.unsetActiveNoteId();
       }
 
       this.saveNotes();
@@ -448,27 +432,11 @@ class NoteController {
    };
 
    getActiveNote = (): Note | undefined => {
-      if (!this.activeNoteId) return undefined;
-      const note = this.getNoteById(this.activeNoteId);
-      if (!note) {
-         console.warn("Active note was removed, cleaning reference");
-         this.activeNoteId = undefined;
-         return undefined;
-      }
-      return note;
+      const activeNoteId = workspace.getActiveNoteId();
+      return activeNoteId ? this.getNoteById(activeNoteId) : undefined;
    };
 
    getRootNotes = (): Note[] => this.notes.filter((note) => !note.parentId);
-
-   setActiveNote = (id: string): void => {
-      // Guardar cualquier cambio pendiente en la nota actual antes de cambiar
-      if (this.activeNoteId) {
-         this.saveContentForNote(this.activeNoteId);
-      }
-
-      this.requireNote(id);
-      this.activeNoteId = id;
-   };
 
    getBreadcrumbPath(noteId: string): Array<{ id: string; title: string }> {
       const path = [];
