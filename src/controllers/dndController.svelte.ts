@@ -1,8 +1,9 @@
 import { isDescendant } from "@utils/noteUtils";
 import { DragSource, DropTarget } from "@projectTypes/dndTypes";
-import { noteController } from "@controllers/noteController.svelte";
 import { propertyController } from "@controllers/propertyController.svelte";
 import { noteStore } from "@stores/noteStore.svelte";
+import { noteTreeController } from "./noteTreeController.svelte";
+import { noteQueryController } from "./noteQueryController.svelte";
 
 class DndController {
    isDragging = $state<boolean>(false);
@@ -145,7 +146,7 @@ class DndController {
             );
             return;
          }
-         const targetNote = noteController.getNoteById(targetNoteId);
+         const targetNote = noteQueryController.getNoteById(targetNoteId);
          if (!targetNote) {
             console.error("Target note no encontrada:", targetNoteId);
             return;
@@ -211,7 +212,11 @@ class DndController {
          console.error("IDs no definidos en dropNoteOnNote");
          return;
       }
-      noteController.moveNoteToPosition(draggedNoteId, targetNoteId, position);
+      noteTreeController.moveNoteToPosition(
+         draggedNoteId,
+         targetNoteId,
+         position,
+      );
    };
 
    dropNoteOnLineIndicator = (
@@ -224,7 +229,7 @@ class DndController {
          return;
       }
 
-      noteController.moveNoteToPosition(draggedNoteId, parentId, position);
+      noteTreeController.moveNoteToPosition(draggedNoteId, parentId, position);
    };
 }
 

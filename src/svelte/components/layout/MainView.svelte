@@ -1,5 +1,4 @@
 <script lang="ts">
-import { noteController } from "@controllers/noteController.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
 
 import Sidebar from "./sidebar/Sidebar.svelte";
@@ -9,8 +8,11 @@ import NoteContent from "../noteContent/NoteContent.svelte";
 import FloatingMenu from "../floatingMenu/FloatingMenu.svelte";
 
 import type { Note } from "@projectTypes/noteTypes";
+import { noteQueryController } from "@controllers/noteQueryController.svelte";
 
-const activeNote: Note | undefined = $derived(noteController.getActiveNote());
+const activeNote: Note | undefined = $derived(
+   noteQueryController.getActiveNote(),
+);
 </script>
 
 <div

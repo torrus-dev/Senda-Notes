@@ -5,7 +5,11 @@
 </style>
 
 <script lang="ts">
+import type { SvelteComponent } from "svelte";
+import type { Note } from "@projectTypes/noteTypes";
 import { noteController } from "@controllers/noteController.svelte";
+import { noteQueryController } from "@controllers/noteQueryController.svelte";
+import { workspace } from "@controllers/workspaceController.svelte";
 import {
    ChevronRightIcon,
    PlusIcon,
@@ -15,9 +19,6 @@ import {
 import Button from "@components/utils/Button.svelte";
 import InlineTitleEditor from "@components/utils/InlineTitleEditor.svelte";
 import { contextMenu } from "@directives/floatingMenuDirective.svelte";
-import type { Note } from "@projectTypes/noteTypes";
-import type { SvelteComponent } from "svelte";
-import { workspace } from "@controllers/workspaceController.svelte";
 
 let {
    note,
@@ -30,7 +31,7 @@ let {
 } = $props();
 
 let isActive = $derived(note.id === workspace.getActiveNoteId());
-let childrenCount = $derived(noteController.getChildrenCount(note.id));
+let childrenCount = $derived(noteQueryController.getChildrenCount(note.id));
 let hasChildren = $derived(childrenCount > 0);
 
 let isEditingTitle = $state(false);

@@ -12,17 +12,16 @@ ul {
 </style>
 
 <script lang="ts">
-import { noteController } from "@controllers/noteController.svelte";
-
 import Button from "./Button.svelte";
 import InlineTitleEditor from "./InlineTitleEditor.svelte";
 import { HomeIcon } from "lucide-svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
+import { noteQueryController } from "@controllers/noteQueryController.svelte";
 
 let { noteId = undefined }: { noteId: string | undefined } = $props();
 
 let path: { id: string; title: string }[] = $derived(
-   noteId ? noteController.getBreadcrumbPath(noteId) : [],
+   noteId ? noteQueryController.getBreadcrumbPath(noteId) : [],
 );
 let isEditingLastCrumb: boolean = $state(false);
 </script>

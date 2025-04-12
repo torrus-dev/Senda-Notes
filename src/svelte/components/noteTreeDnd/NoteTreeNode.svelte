@@ -2,7 +2,6 @@
 </style>
 
 <script lang="ts">
-import { noteController } from "@controllers/noteController.svelte";
 import { dndController } from "@controllers/dndController.svelte";
 import {
    createNoteTreeNodeDndHandlers,
@@ -12,6 +11,7 @@ import {
 import NoteTreeNode from "./NoteTreeNode.svelte";
 import NoteTreeLine from "./NoteTreeLine.svelte";
 import NoteTreeLabel from "./NoteTreeLabel.svelte";
+import { noteQueryController } from "@controllers/noteQueryController.svelte";
 
 let { note, position } = $props();
 
@@ -66,7 +66,7 @@ const toggleExpansion = (event: Event) => {
       <ul class="border-base-400/60 ml-2.5 border-l-2">
          {#each note.children as childNoteId, index (childNoteId)}
             <NoteTreeNode
-               note={noteController.getNoteById(childNoteId)}
+               note={noteQueryController.getNoteById(childNoteId)}
                position={index} />
          {/each}
          <NoteTreeLine position={note.children.length} parentId={note.id} />

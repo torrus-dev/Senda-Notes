@@ -1,6 +1,7 @@
 import type { Property } from "@projectTypes/noteTypes";
 import { noteController } from "@controllers/noteController.svelte";
 import { getDefaultTypeValue } from "@utils/propertyUtils";
+import { noteQueryController } from "./noteQueryController.svelte";
 
 class PropertyController {
    constructor() {}
@@ -15,7 +16,7 @@ class PropertyController {
       noteId: string,
       property: Omit<Property, "id">,
    ): string => {
-      const note = noteController.getNoteById(noteId);
+      const note = noteQueryController.getNoteById(noteId);
       if (!note) {
          throw new Error(`Note ${noteId} not found`);
       }
@@ -46,7 +47,7 @@ class PropertyController {
       propertyId: string,
       updates: Partial<Omit<Property, "id">>,
    ): void => {
-      const note = noteController.getNoteById(noteId);
+      const note = noteQueryController.getNoteById(noteId);
       if (!note) {
          throw new Error(`Note ${noteId} not found`);
       }
@@ -83,7 +84,7 @@ class PropertyController {
     * @param propertyId ID de la propiedad a eliminar
     */
    deleteProperty = (noteId: string, propertyId: string): void => {
-      const note = noteController.getNoteById(noteId);
+      const note = noteQueryController.getNoteById(noteId);
       if (!note) {
          throw new Error(`Note ${noteId} not found`);
       }
@@ -111,7 +112,7 @@ class PropertyController {
       propertyId: string,
       newPosition: number,
    ): void => {
-      const note = noteController.getNoteById(noteId);
+      const note = noteQueryController.getNoteById(noteId);
       if (!note) {
          throw new Error(`Note ${noteId} not found`);
       }
@@ -156,7 +157,7 @@ class PropertyController {
     * @returns Array con todas las propiedades de la nota
     */
    getNoteProperties = (noteId: string): Property[] => {
-      const note = noteController.getNoteById(noteId);
+      const note = noteQueryController.getNoteById(noteId);
       if (!note) {
          throw new Error(`Note ${noteId} not found`);
       }
@@ -174,7 +175,7 @@ class PropertyController {
       noteId: string,
       propertyId: string,
    ): Property | undefined => {
-      const note = noteController.getNoteById(noteId);
+      const note = noteQueryController.getNoteById(noteId);
       if (!note) {
          throw new Error(`Note ${noteId} not found`);
       }
