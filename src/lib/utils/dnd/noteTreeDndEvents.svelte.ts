@@ -2,6 +2,7 @@ import { isDescendant } from "../noteUtils";
 import { dndController } from "@controllers/dndController.svelte";
 import { noteController } from "@controllers/noteController.svelte";
 import { DragSource } from "@projectTypes/dndTypes";
+import { noteStore } from "@stores/noteStore.svelte";
 
 // Handlers para NoteTreeNode
 export function createNoteTreeNodeDndHandlers(params: {
@@ -171,7 +172,7 @@ export function checkDraggingBranch(noteId: string) {
       if (dragSourceId === noteId) {
          return true;
       } else {
-         return isDescendant(noteController.notes, noteId, dragSourceId);
+         return isDescendant(noteStore.getNotes(), noteId, dragSourceId);
       }
    }
    return false;

@@ -17,6 +17,7 @@ import InlineTitleEditor from "@components/utils/InlineTitleEditor.svelte";
 import { contextMenu } from "@directives/floatingMenuDirective.svelte";
 import type { Note } from "@projectTypes/noteTypes";
 import type { SvelteComponent } from "svelte";
+import { workspace } from "@controllers/workspaceController.svelte";
 
 let {
    note,
@@ -28,7 +29,7 @@ let {
    isExpanded: boolean;
 } = $props();
 
-let isActive = $derived(note.id === noteController.activeNoteId);
+let isActive = $derived(note.id === workspace.getActiveNoteId());
 let childrenCount = $derived(noteController.getChildrenCount(note.id));
 let hasChildren = $derived(childrenCount > 0);
 
@@ -38,7 +39,7 @@ const handleSelectTitle = (event: KeyboardEvent | MouseEvent) => {
    if (!isEditingTitle) {
       if (("key" in event && event.key === "Enter") || event.type === "click") {
          // Solo seleccionar la nota si no estamos en modo edición
-         noteController.setActiveNote(note.id);
+         workspace.setActiveNoteId(note.id);
       }
    }
 };

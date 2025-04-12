@@ -1,4 +1,3 @@
-// noteController.svelte.ts
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Note } from "@projectTypes/noteTypes";
 
@@ -10,137 +9,15 @@ import {
    sanitizeTitle,
    updateModifiedMetadata,
 } from "@utils/noteUtils";
-import { loadNotesFromStorage, saveNotesToStorage } from "@utils/storage";
 import { workspace } from "./workspaceController.svelte";
+import { noteStore } from "@stores/noteStore.svelte";
 
 class NoteController {
-   notes = $state<Note[]>([]);
-   isDataSaved = $state(true);
-   private contentSaveTimeout: ReturnType<typeof setTimeout> | null = null;
-   private pendingContentUpdates = new Map<string, string>();
-
-   constructor() {
-      this.notes = loadNotesFromStorage();
-      console.log("notas cargadas: ", $state.snapshot(this.notes));
-
-      // Configurar un efecto para guardar automáticamente al cerrar/refrescar la página
-      this.setupBeforeUnloadHandler();
-   }
-
-   private setupBeforeUnloadHandler() {
-      if (typeof window !== "undefined") {
-         window.addEventListener("beforeunload", () => {
-            this.forceSave();
-         });
-      }
-   }
-
-   saveNotes() {
-      saveNotesToStorage(this.notes);
-      this.isDataSaved = true;
-   }
-
-   saveContentForNote(noteId: string) {
-      // Si hay contenido pendiente para esta nota específica, guardarlo
-      if (this.pendingContentUpdates.has(noteId)) {
-         const pendingContent = this.pendingContentUpdates.get(noteId)!;
-
-         // Aplicar la actualización
-         this.updateNoteById(noteId, (note) => ({
-            ...note,
-            content: pendingContent,
-         }));
-
-         // Eliminar de pendientes
-         this.pendingContentUpdates.delete(noteId);
-
-         // Si no quedan más pendientes, actualizar estado
-         if (this.pendingContentUpdates.size === 0) {
-            this.isDataSaved = true;
-         }
-
-         // Guardar los cambios
-         saveNotesToStorage(this.notes);
-      }
-   }
-
-   private processPendingContentUpdates() {
-      if (this.pendingContentUpdates.size === 0) return;
-
-      // Aplicar todos los contenidos pendientes
-      this.pendingContentUpdates.forEach((content, noteId) => {
-         this.updateNoteById(noteId, (note) => ({
-            ...note,
-            content,
-         }));
-      });
-
-      // Limpiar pendientes y guardar
-      this.pendingContentUpdates.clear();
-      this.saveNotes();
-   }
-
-   // Método específico para actualizaciones de contenido con delay
-   updateNoteContentWithDelay(noteId: string, content: string): void {
-      this.requireNote(noteId);
-
-      // Si la nota no es la activa, guardar inmediatamente sin delay
-      if (noteId !== workspace.getActiveNoteId()) {
-         this.updateNoteById(noteId, (note) => ({
-            ...note,
-            content,
-         }));
-         this.saveNotes();
-         return;
-      }
-
-      // Marcar que hay datos pendientes de guardar
-      this.isDataSaved = false;
-
-      // Almacenar la actualización pendiente (siempre usar la más reciente)
-      this.pendingContentUpdates.set(noteId, content);
-
-      // Resetear el temporizador cada vez que se llama
-      if (this.contentSaveTimeout) {
-         clearTimeout(this.contentSaveTimeout);
-      }
-
-      // Configurar el nuevo temporizador
-      this.contentSaveTimeout = setTimeout(() => {
-         this.saveContentForNote(noteId);
-         this.contentSaveTimeout = null;
-      }, 5000);
-   }
-
-   // Actualiza una nota en el array por ID aplicando un updater
-   private updateNoteById = (
-      id: string,
-      updater: (note: Note) => Note,
-   ): void => {
-      const index = this.notes.findIndex((n) => n.id === id);
-      if (index !== -1) {
-         this.notes[index] = updateModifiedMetadata(updater(this.notes[index]));
-      }
-   };
-
-   private requireNote = (id: string, context: string = "Note"): Note => {
-      const note = this.getNoteById(id);
-      if (!note) throw new Error(`${context} ${id} not found`);
-      return note;
-   };
-
-   private wouldCreateCycle = (parentId: string, childId: string): boolean => {
-      let current = this.getNoteById(parentId);
-      while (current?.parentId) {
-         if (current.parentId === childId) return true;
-         current = this.getNoteById(current.parentId);
-      }
-      return false;
-   };
-
+   isDataSaved = $derived(noteStore.isDataSaved);
+   
    createNote = (parentId?: string | undefined, position?: number): void => {
       // Guardar cualquier contenido pendiente antes de crear una nueva nota
-      this.forceSave();
+      noteStore.forceSave();
 
       if (typeof parentId === "string") {
          this.requireNote(parentId, "Parent note");
@@ -148,7 +25,7 @@ class NoteController {
 
       const note: Note = {
          id: crypto.randomUUID(),
-         title: generateUniqueTitle(this.notes),
+         title: generateUniqueTitle(noteStore.getNotes()),
          children: [],
          content: "",
          metadata: createDefaultMetadata(),
@@ -156,23 +33,23 @@ class NoteController {
          parentId: typeof parentId === "string" ? parentId : undefined,
       };
 
-      this.notes = [...this.notes, note];
+      noteStore.addNote(note);
 
       if (typeof parentId === "string") {
          // Actualizamos el array de notas para agregar el ID de la nueva nota al padre
-         this.notes = this.notes.map((n) =>
-            n.id === parentId
-               ? { ...n, children: [...n.children, note.id] }
-               : n,
+         noteStore.updateNotes((notes) =>
+            notes.map((n) =>
+               n.id === parentId
+                  ? { ...n, children: [...n.children, note.id] }
+                  : n,
+            ),
          );
       }
 
       workspace.setActiveNoteId(note.id);
       focusController.requestFocus(FocusTarget.TITLE);
-      this.saveNotes();
    };
 
-   // Método para actualización general de notas (guardado inmediato)
    updateNote = (noteId: string, updates: Partial<Note>): void => {
       this.requireNote(noteId);
 
@@ -184,7 +61,11 @@ class NoteController {
          typeof updates.content === "string" &&
          noteId === workspace.getActiveNoteId()
       ) {
-         this.updateNoteContentWithDelay(noteId, updates.content);
+         noteStore.updateNoteContentWithDelay(
+            noteId,
+            updates.content,
+            noteId === workspace.getActiveNoteId(),
+         );
          return;
       }
 
@@ -206,45 +87,26 @@ class NoteController {
 
       if (Object.keys(validUpdates).length === 0) return;
 
-      // Eliminar cualquier actualización pendiente para esta nota si estamos
-      // sobrescribiendo el contenido con una actualización inmediata
-      if ("content" in validUpdates) {
-         this.pendingContentUpdates.delete(noteId);
-
-         // Cancelar el timeout si era para esta nota
-         if (
-            noteId === workspace.getActiveNoteId() &&
-            this.contentSaveTimeout
-         ) {
-            clearTimeout(this.contentSaveTimeout);
-            this.contentSaveTimeout = null;
-         }
-      }
-
       // Actualizar la nota inmediatamente
-      this.updateNoteById(noteId, (existing) => ({
+      noteStore.updateNoteById(noteId, (existing) => ({
          ...existing,
          ...validUpdates,
       }));
-
-      this.saveNotes();
    };
 
-   // Método para forzar el guardado inmediato incluyendo las actualizaciones de contenido pendientes
-   forceSave(): void {
-      // Cancelar cualquier temporizador pendiente
-      if (this.contentSaveTimeout) {
-         clearTimeout(this.contentSaveTimeout);
-         this.contentSaveTimeout = null;
-      }
+   updateNoteContent = (noteId: string, content: string): void => {
+      this.requireNote(noteId);
 
-      // Procesar las actualizaciones pendientes
-      this.processPendingContentUpdates();
-   }
+      // Determinar si es la nota activa
+      const isActiveNote = noteId === workspace.getActiveNoteId();
+
+      // Delegar al store
+      noteStore.updateNoteContentWithDelay(noteId, content, isActiveNote);
+   };
 
    deleteNote = (id: string): void => {
       // Guardar cualquier contenido pendiente antes de eliminar notas
-      this.forceSave();
+      noteStore.forceSave();
 
       // Nos aseguramos de que la nota existe.
       this.requireNote(id);
@@ -253,7 +115,7 @@ class NoteController {
       const idsToDelete = new Set<string>();
       const collectDescendants = (noteId: string) => {
          idsToDelete.add(noteId);
-         this.notes.forEach((note) => {
+         noteStore.getNotes().forEach((note) => {
             if (note.parentId === noteId) {
                collectDescendants(note.id);
             }
@@ -262,23 +124,25 @@ class NoteController {
       collectDescendants(id);
 
       // Eliminar cualquier actualización pendiente para estas notas
-      idsToDelete.forEach((noteId) => {
-         this.pendingContentUpdates.delete(noteId);
-      });
+      noteStore.clearPendingUpdates(idsToDelete);
 
       // Filtramos las notas eliminando las que están en idsToDelete.
-      this.notes = this.notes.filter((note) => !idsToDelete.has(note.id));
+      noteStore.updateNotes((notes) =>
+         notes.filter((note) => !idsToDelete.has(note.id)),
+      );
 
       // Actualizamos el array children de las notas restantes (por si algún padre referenciaba notas eliminadas)
-      this.notes = this.notes.map((n) =>
-         n.children.some((childId) => idsToDelete.has(childId))
-            ? updateModifiedMetadata({
-                 ...n,
-                 children: n.children.filter(
-                    (childId) => !idsToDelete.has(childId),
-                 ),
-              })
-            : n,
+      noteStore.updateNotes((notes) =>
+         notes.map((n) =>
+            n.children.some((childId) => idsToDelete.has(childId))
+               ? updateModifiedMetadata({
+                    ...n,
+                    children: n.children.filter(
+                       (childId) => !idsToDelete.has(childId),
+                    ),
+                 })
+               : n,
+         ),
       );
 
       // Si la nota activa fue borrada, se limpia la referencia.
@@ -286,8 +150,6 @@ class NoteController {
       if (activeNoteId && idsToDelete.has(activeNoteId)) {
          workspace.unsetActiveNoteId();
       }
-
-      this.saveNotes();
    };
 
    moveNoteToPosition = (
@@ -296,7 +158,7 @@ class NoteController {
       position: number,
    ): void => {
       // Guardar cualquier contenido pendiente antes de reorganizar notas
-      this.forceSave();
+      noteStore.forceSave();
 
       const note = this.requireNote(noteId);
 
@@ -318,11 +180,24 @@ class NoteController {
       } else {
          this.insertIntoRoot(updatedNote, position);
       }
-
-      this.saveNotes();
    };
 
    /* ----------------- Funciones auxiliares ----------------- */
+
+   private requireNote = (id: string, context: string = "Note"): Note => {
+      const note = this.getNoteById(id);
+      if (!note) throw new Error(`${context} ${id} not found`);
+      return note;
+   };
+
+   private wouldCreateCycle = (parentId: string, childId: string): boolean => {
+      let current = this.getNoteById(parentId);
+      while (current?.parentId) {
+         if (current.parentId === childId) return true;
+         current = this.getNoteById(current.parentId);
+      }
+      return false;
+   };
 
    private validateParentRelationship(
       newParentId: string,
@@ -349,10 +224,12 @@ class NoteController {
       noteId: string,
       newParentId: string | undefined,
    ): void {
-      this.notes = this.notes.map((n) =>
-         n.id === noteId
-            ? updateModifiedMetadata({ ...n, parentId: newParentId })
-            : n,
+      noteStore.updateNotes((notes) =>
+         notes.map((n) =>
+            n.id === noteId
+               ? updateModifiedMetadata({ ...n, parentId: newParentId })
+               : n,
+         ),
       );
    }
 
@@ -393,7 +270,8 @@ class NoteController {
          ...rootNotes.slice(adjustedPosition),
       ];
 
-      this.notes = [...newRootNotes, ...this.notes.filter((n) => n.parentId)];
+      const notesWithParents = noteStore.getNotes().filter((n) => n.parentId);
+      noteStore.setNotes([...newRootNotes, ...notesWithParents]);
    }
 
    private getAdjustedPosition(
@@ -412,23 +290,24 @@ class NoteController {
       parentId: string,
       updateFn: (children: string[]) => string[],
    ): void {
-      this.notes = this.notes.map((n) =>
-         n.id === parentId
-            ? updateModifiedMetadata({ ...n, children: updateFn(n.children) })
-            : n,
+      noteStore.updateNotes((notes) =>
+         notes.map((n) =>
+            n.id === parentId
+               ? updateModifiedMetadata({
+                    ...n,
+                    children: updateFn(n.children),
+                 })
+               : n,
+         ),
       );
    }
 
-   getNoteById = (id: string): Note | undefined =>
-      this.notes.find((note) => note.id === id);
+   // Métodos de acceso a datos delegados al store
+   getNoteById = (id: string): Note | undefined => noteStore.getNoteById(id);
 
    getTitleById = (id: string): string | undefined => {
       const note = this.getNoteById(id);
-      if (note) {
-         return note.title;
-      } else {
-         return undefined;
-      }
+      return note ? note.title : undefined;
    };
 
    getActiveNote = (): Note | undefined => {
@@ -436,7 +315,7 @@ class NoteController {
       return activeNoteId ? this.getNoteById(activeNoteId) : undefined;
    };
 
-   getRootNotes = (): Note[] => this.notes.filter((note) => !note.parentId);
+   getRootNotes = (): Note[] => noteStore.getRootNotes();
 
    getBreadcrumbPath(noteId: string): Array<{ id: string; title: string }> {
       const path = [];
@@ -450,12 +329,12 @@ class NoteController {
       return path;
    }
 
-   getNoteCount = (): number => this.notes.length;
+   getNoteCount = (): number => noteStore.getNotes().length;
 
    getChildrenCount = (noteId: string): number => {
       const note = this.getNoteById(noteId);
       if (!note) return 0;
-      const descendants = getDescendantsId(this.notes, noteId);
+      const descendants = getDescendantsId(noteStore.getNotes(), noteId);
       return descendants.length;
    };
 }

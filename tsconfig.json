@@ -16,6 +16,7 @@
          "@electron/*": ["electron/*"],
          "@utils/*": ["lib/utils/*"],
          "@controllers/*": ["controllers/*"],
+         "@stores/*": ["stores/*"],
          "@directives/*": ["directives/*"],
          "@fonts/*": ["fonts/*"],
          "@components/*": ["svelte/components/*"],

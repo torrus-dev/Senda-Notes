@@ -2,6 +2,7 @@ import { isDescendant } from "@utils/noteUtils";
 import { DragSource, DropTarget } from "@projectTypes/dndTypes";
 import { noteController } from "@controllers/noteController.svelte";
 import { propertyController } from "@controllers/propertyController.svelte";
+import { noteStore } from "@stores/noteStore.svelte";
 
 class DndController {
    isDragging = $state<boolean>(false);
@@ -138,7 +139,7 @@ class DndController {
             console.warn("No se puede soltar una nota sobre sí misma");
             return;
          }
-         if (isDescendant(noteController.notes, targetNoteId, draggedNoteId)) {
+         if (isDescendant(noteStore.getNotes(), targetNoteId, draggedNoteId)) {
             console.warn(
                "No se puede soltar una nota sobre un descendiente suyo",
             );
@@ -168,7 +169,7 @@ class DndController {
             targetParentId &&
             (targetParentId === draggedNoteId ||
                isDescendant(
-                  noteController.notes,
+                  noteStore.getNotes(),
                   targetParentId,
                   draggedNoteId,
                ))

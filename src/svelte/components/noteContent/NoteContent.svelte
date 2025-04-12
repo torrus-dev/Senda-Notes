@@ -16,7 +16,7 @@ let { note }: { note: Note } = $props();
    <div class="px-3">
       <Breadcrumbs noteId={note?.id} />
    </div>
-   <article class="py-12">
+   <article class="py-8">
       {#if note}
          <section class="mx-auto w-full max-w-2xl">
             <header>

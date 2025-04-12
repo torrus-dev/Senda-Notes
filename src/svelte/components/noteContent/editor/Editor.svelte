@@ -59,7 +59,7 @@ function initializeEditor(initialContent: string) {
       element: editorElement,
       content: initialContent,
       onUpdate: ({ editor }) => {
-         noteController.updateNoteContentWithDelay(noteId, editor.getHTML());
+         noteController.updateNoteContent(noteId, editor.getHTML());
       },
       onTransaction: () => {
          // Create a new object containing the editor to trigger reactivity

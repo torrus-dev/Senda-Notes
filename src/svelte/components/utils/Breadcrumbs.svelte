@@ -17,6 +17,7 @@ import { noteController } from "@controllers/noteController.svelte";
 import Button from "./Button.svelte";
 import InlineTitleEditor from "./InlineTitleEditor.svelte";
 import { HomeIcon } from "lucide-svelte";
+import { workspace } from "@controllers/workspaceController.svelte";
 
 let { noteId = undefined }: { noteId: string | undefined } = $props();
 
@@ -29,7 +30,12 @@ let isEditingLastCrumb: boolean = $state(false);
 <div aria-label="breadcrumb">
    <ul class="inline-flex items-center">
       <li class="text-base-content/60 flex items-center gap-1">
-         <Button shape="square" onclick={() => {noteController.unsetActiveNote()}} title="Open note">
+         <Button
+            shape="square"
+            onclick={() => {
+               workspace.unsetActiveNoteId();
+            }}
+            title="Open note">
             <HomeIcon size="1.125em" />
          </Button>
       </li>
@@ -52,7 +58,7 @@ let isEditingLastCrumb: boolean = $state(false);
                <li class="text-base-content/60 whitespace-nowrap">
                   <Button
                      size="small"
-                     onclick={() => noteController.setActiveNote(crumb.id)}
+                     onclick={() => workspace.setActiveNoteId(crumb.id)}
                      title="Open note">
                      {crumb.title}
                   </Button>

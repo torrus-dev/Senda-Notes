@@ -4,7 +4,7 @@ import type {
 } from "@projectTypes/workspaceTypes";
 import { loadWorkspaceState, saveWorkspaceState } from "@utils/storage";
 import { Component } from "svelte";
-import { noteController } from "./noteController.svelte";
+import { noteStore } from "@stores/noteStore.svelte";
 
 class WorkspaceController {
    // Estado global del workspace: incluye propiedades efímeras y la persistente.
@@ -56,9 +56,7 @@ class WorkspaceController {
                this.state.previousActiveNoteId &&
                this.state.previousActiveNoteId !== currentActiveId
             ) {
-               noteController.saveContentForNote(
-                  this.state.previousActiveNoteId,
-               );
+               noteStore.saveContentForNote(this.state.previousActiveNoteId);
             }
 
             // Actualizar el seguimiento de la nota activa
