@@ -19,7 +19,9 @@ class NoteQueryController {
 
    getRootNotes = (): Note[] => noteStore.getRootNotes();
 
-   getBreadcrumbPath(noteId: string): Array<{ id: string; title: string }> {
+   getBreadcrumbArrayFromNoteId(
+      noteId: string,
+   ): Array<{ id: string; title: string }> {
       const path = [];
       let currentNote = this.getNoteById(noteId);
       while (currentNote) {
@@ -29,6 +31,20 @@ class NoteQueryController {
             : undefined;
       }
       return path;
+   }
+
+   getPathFromNoteId(noteId: string): string {
+      const titles = [];
+      let currentNote = this.getNoteById(noteId);
+
+      while (currentNote) {
+         titles.unshift(currentNote.title);
+         currentNote = currentNote.parentId
+            ? this.getNoteById(currentNote.parentId)
+            : undefined;
+      }
+
+      return titles.join("/");
    }
 
    getNoteCount = (): number => noteStore.getNotes().length;

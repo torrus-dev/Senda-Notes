@@ -26,7 +26,7 @@ import { noteQueryController } from "@controllers/noteQueryController.svelte";
 let { noteId = undefined }: { noteId: string | undefined } = $props();
 
 let path: { id: string; title: string }[] = $derived(
-   noteId ? noteQueryController.getBreadcrumbPath(noteId) : [],
+   ngetBreadcrumbArrayFromNoteIdController.getBreadcrumbPath(noteId) : [],
 );
 let isEditingLastCrumb: boolean = $state(false);
 </script>

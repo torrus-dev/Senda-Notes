@@ -7,12 +7,9 @@ import Editor from "./editor/Editor.svelte";
 
 import { settingsController } from "@controllers/settingsController.svelte";
 import type { Note } from "@projectTypes/noteTypes";
-import NoteNavbar from "./navbar/NoteNavbar.svelte";
 
 let { note }: { note: Note } = $props();
 </script>
-
-<NoteNavbar noteId={note.id} />
 
 <div class="overflow-auto">
    <article class="py-4">
