@@ -13,8 +13,10 @@ let { note }: { note: Note } = $props();
 </script>
 
 <div class="overflow-auto">
-   <div class="px-3">
-      <Breadcrumbs noteId={note?.id} />
+   <div class="sticky top-0 z-40">
+      <div class="from-base-100 to-base-100/40 bg-linear-to-b px-2 py-1">
+         <Breadcrumbs noteId={note?.id} />
+      </div>
    </div>
    <article class="py-8">
       {#if note}

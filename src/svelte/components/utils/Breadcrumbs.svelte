@@ -8,6 +8,11 @@ ul {
          margin-right: var(--spacing);
       }
    }
+   li:first-child {
+      &:after {
+         margin-left: 0;
+      }
+   }
 }
 </style>
 
