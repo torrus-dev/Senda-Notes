@@ -13,11 +13,11 @@ let childrenCount = $derived(noteQueryController.getNoteCount());
 
 {#snippet headingContent()}
    <div class="group flex flex-row justify-between gap-2 pr-2">
-      <p>Notes</p>
+      <header>Notes</header>
       <div class="flex items-center">
          <Button
             onclick={() => noteController.createNote()}
-            class="p-1 opacity-0 group-hover:opacity-100"
+            class="text-base-content/70 p-1 opacity-0 group-hover:opacity-100"
             size="small"
             title="Add note">
             <PlusIcon size="1.125em"></PlusIcon>

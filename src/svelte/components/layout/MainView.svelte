@@ -4,7 +4,7 @@ import { settingsController } from "@controllers/settingsController.svelte";
 import Sidebar from "./sidebar/Sidebar.svelte";
 import NavBar from "./navbar/NavBar.svelte";
 import Modal from "./Modal.svelte";
-import NoteContent from "../noteContent/NoteContent.svelte";
+import NoteContent from "../noteView/NoteContent.svelte";
 import FloatingMenu from "../floatingMenu/FloatingMenu.svelte";
 
 import type { Note } from "@projectTypes/noteTypes";

@@ -2,23 +2,20 @@
 import Title from "./Title.svelte";
 import Metadata from "./Metadata.svelte";
 import Properties from "@components/properties/Properties.svelte";
-import Breadcrumbs from "@components/utils/Breadcrumbs.svelte";
 import ChildNotes from "./ChildNotes.svelte";
 import Editor from "./editor/Editor.svelte";
 
 import { settingsController } from "@controllers/settingsController.svelte";
 import type { Note } from "@projectTypes/noteTypes";
+import NoteNavbar from "./navbar/NoteNavbar.svelte";
 
 let { note }: { note: Note } = $props();
 </script>
 
+<NoteNavbar noteId={note.id} />
+
 <div class="overflow-auto">
-   <div class="sticky top-0 z-40">
-      <div class="from-base-100 to-base-100/40 bg-linear-to-b px-2 py-1">
-         <Breadcrumbs noteId={note?.id} />
-      </div>
-   </div>
-   <article class="py-8">
+   <article class="py-4">
       {#if note}
          <section class="mx-auto w-full max-w-2xl">
             <header>
