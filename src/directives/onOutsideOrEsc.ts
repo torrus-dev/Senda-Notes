@@ -1,9 +1,4 @@
-export interface CloseOptions {
-   action: () => void;
-   preventOnEsc?: boolean;
-   preventOnClickOutside?: boolean;
-   triggerElement?: HTMLElement;
-}
+import type { CloseOptions } from "@projectTypes/directivesTypes";
 
 export function onOutsideOrEsc(node: HTMLElement, options: CloseOptions) {
    let { action, preventOnEsc, preventOnClickOutside, triggerElement } =

@@ -14,7 +14,7 @@ import Button from "./Button.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { noteQueryController } from "@controllers/noteQueryController.svelte";
 
-let { noteId = undefined }: { noteId: string | undefined } = $props();
+let { noteId }: { noteId: string } = $props();
 
 let path: { id: string; title: string }[] = $derived(
    noteId ? noteQueryController.getPathAsArray(noteId) : [],
@@ -29,6 +29,7 @@ let path: { id: string; title: string }[] = $derived(
                <li class="text-base-content/60 whitespace-nowrap">
                   <Button
                      size="small"
+                     shape="rect"
                      onclick={(event: Event) => {
                         workspace.setActiveNoteId(crumb.id);
                         event.stopPropagation();
