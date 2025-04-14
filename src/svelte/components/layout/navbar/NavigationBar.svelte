@@ -4,19 +4,26 @@ import Breadcrumbs from "@components/utils/Breadcrumbs.svelte";
 import { noteQueryController } from "@controllers/noteQueryController.svelte";
 import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
 import type { Note } from "@projectTypes/noteTypes";
+import { tick } from "svelte";
 
 let { note }: { note: Note | undefined } = $props();
-let notePath: string = $state("");
 const getNotePath = () =>
    note?.id ? noteQueryController.getPathFromNoteId(note?.id) : "";
 let isSearching = $state(false);
-let searchInnerText: string = $state("");
+let searchValue: string = $state("");
+let searchElement: HTMLInputElement | undefined = $state(undefined);
 
-function activateSearch() {
+function startSearch() {
    isSearching = true;
-   searchInnerText = getNotePath();
+   searchValue = getNotePath();
+   // Esperar a que Svelte renderice el searchElement
+   tick().then(() => {
+      if (searchElement) {
+         searchElement.focus();
+      }
+   });
 }
-function closeSearch() {
+function endSearch() {
    isSearching = false;
 }
 </script>
@@ -24,16 +31,15 @@ function closeSearch() {
 <div class="bg-base-200 rounded-field flex h-10 w-full justify-between gap-2">
    <div class="flex w-full items-center">
       {#if isSearching}
-         <div
-            class="outline-interactive-accent-focus rounded-field flex-grow items-center p-1.5 font-mono outline-2"
-            contenteditable="true"
+         <input
+            type="text"
+            class="outline-interactive-accent-focus rounded-field flex-grow items-center p-1.5 outline-2"
+            bind:this={searchElement}
+            bind:value={searchValue}
+            placeholder="Search Notes..."
             use:onOutsideOrEsc={{
-               action: closeSearch,
-               preventOnClickOutside: true,
-            }}
-            bind:innerText={searchInnerText}>
-            {notePath}
-         </div>
+               action: endSearch,
+            }} />
       {:else}
          {#if note}
             <Breadcrumbs noteId={note.id} />
@@ -41,7 +47,7 @@ function closeSearch() {
          <button
             class="w-full p-2 text-left"
             onclick={() => {
-               activateSearch();
+               startSearch();
             }}>
             {#if note}
                {note?.title}
