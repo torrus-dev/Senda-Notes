@@ -19,7 +19,7 @@ class NoteQueryController {
 
    getRootNotes = (): Note[] => noteStore.getRootNotes();
 
-   getBreadcrumbArrayFromNoteId(
+   getPathAsArray(
       noteId: string,
    ): Array<{ id: string; title: string }> {
       const path = [];

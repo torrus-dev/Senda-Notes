@@ -18,7 +18,7 @@ let {
    ...htmlAttributes
 }: {
    class?: string;
-   onclick?: ((event?: Event) => void) | undefined;
+   onclick?: ((event: MouseEvent) => void) | undefined;
    title?: string;
    size?: "small" | "medium" | "large";
    shape?: "square" | "rect";

@@ -1,9 +1,8 @@
 <script lang="ts">
-import Navigation from "@components/utils/Navigation.svelte";
-
 import type { Note } from "@projectTypes/noteTypes";
-import SidebarToogle from "../sidebar/SidebarToogle.svelte";
-import NavigationModule from "./NavigationModule.svelte";
+import NavigationButtons from "@components/layout/navbar/NavigationButtons.svelte";
+import SidebarToogle from "@components/layout/sidebar/SidebarToogle.svelte";
+import NavigationBar from "@components/layout/navbar/NavigationBar.svelte";
 
 let { note }: { note: Note | undefined } = $props();
 </script>
@@ -12,8 +11,8 @@ let { note }: { note: Note | undefined } = $props();
    <div class="flex w-full items-center gap-0 p-2 md:gap-8">
       <div class="flex items-center gap-2">
          <SidebarToogle />
-         <Navigation />
+         <NavigationButtons />
       </div>
-      <NavigationModule noteId={note?.id} />
+      <NavigationBar note={note} />
    </div>
 </nav>
