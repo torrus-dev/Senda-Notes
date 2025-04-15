@@ -157,7 +157,10 @@ onDestroy(() => {
    <div
       bind:this={editorElement}
       role="document"
-      class="prose dark:prose-invert prose-neutral tiptap-editor w-full"
+      class="prose prose-neutral tiptap-editor w-full {settingsController.getTheme() ===
+      'dark'
+         ? 'prose-invert'
+         : ''}"
       oncontextmenu={handleContextMenu}>
    </div>
 </div>

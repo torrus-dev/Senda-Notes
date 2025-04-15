@@ -28,7 +28,7 @@ function endSearch() {
 }
 </script>
 
-<div class="bg-base-200 rounded-field flex h-10 w-full justify-between gap-2">
+<div class="bg-base-200 rounded-field flex h-10 w-full justify-between">
    <div class="flex w-full items-center">
       {#if isSearching}
          <input
