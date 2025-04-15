@@ -15,6 +15,7 @@ import {
    PlusIcon,
    PenLineIcon,
    Trash2Icon,
+   FilePlusIcon,
 } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
 import InlineTitleEditor from "@components/utils/InlineTitleEditor.svelte";
@@ -62,6 +63,14 @@ let editableElement: SvelteComponent;
    role="button"
    tabindex="0"
    use:contextMenu={[
+      {
+         type: "action",
+         label: "New Note",
+         icon: FilePlusIcon,
+         action: () => {
+            noteController.createNote(note.id);
+         },
+      },
       {
          type: "action",
          label: "Rename Note",

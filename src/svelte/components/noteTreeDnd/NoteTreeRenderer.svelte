@@ -4,15 +4,27 @@ import { noteQueryController } from "@controllers/noteQueryController.svelte";
 import Button from "@components/utils/Button.svelte";
 import NoteTreeLine from "./NoteTreeLine.svelte";
 import NoteTreeNode from "./NoteTreeNode.svelte";
-import { PlusIcon } from "lucide-svelte";
+import { FilePlusIcon, PlusIcon } from "lucide-svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";
+import { contextMenu } from "@directives/floatingMenuDirective.svelte";
 
 let rootNotes = $derived(noteQueryController.getRootNotes());
 let childrenCount = $derived(noteQueryController.getNoteCount());
 </script>
 
 {#snippet headingContent()}
-   <div class="group flex flex-row justify-between gap-2 pr-2">
+   <div
+      class="group flex flex-row justify-between gap-2 pr-2"
+      use:contextMenu={[
+         {
+            type: "action",
+            label: "New Note",
+            icon: FilePlusIcon,
+            action: () => {
+               noteController.createNote();
+            },
+         },
+      ]}>
       <header>Notes</header>
       <div class="flex items-center">
          <Button
