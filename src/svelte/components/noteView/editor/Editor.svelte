@@ -9,25 +9,24 @@
 <script lang="ts">
 import { onDestroy } from "svelte";
 import { Editor } from "@tiptap/core";
-
 import StarterKit from "@tiptap/starter-kit";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import Highlight from "@tiptap/extension-highlight";
 import Underline from "@tiptap/extension-underline";
+import { CheckIcon } from "lucide-svelte";
 
 import { noteController } from "@controllers/noteController.svelte";
 import { focusController } from "@controllers/focusController.svelte";
-
 import { floatingMenuController } from "@controllers/floatingMenuController.svelte.js";
 import { screenSizeController } from "@controllers/screenSizeController.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
-import Toolbar from "../Toolbar.svelte";
+
+import { getEditorContextMenuItems } from "@utils/editorMenuItems";
+import Toolbar from "@components/noteView/editor/Toolbar.svelte";
 
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Coordinates } from "@projectTypes/floatingMenuTypes";
-import { getEditorContextMenuItems } from "@utils/editorMenuItems";
-import { CheckIcon } from "lucide-svelte";
 
 // Props
 let { noteId, content = "" }: { noteId: string; content: string } = $props();

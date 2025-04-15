@@ -1,11 +1,11 @@
 <script lang="ts">
 import { settingsController } from "@controllers/settingsController.svelte";
 
-import Sidebar from "./sidebar/Sidebar.svelte";
-import NavBar from "./navbar/NavBar.svelte";
-import Modal from "./Modal.svelte";
-import NoteContent from "../noteView/NoteContent.svelte";
-import FloatingMenu from "../floatingMenu/FloatingMenu.svelte";
+import Sidebar from "@components/layout/sidebar/Sidebar.svelte";
+import NavBar from "@components/layout/navbar/NavBar.svelte";
+import Modal from "@components/modals/Modal.svelte";
+import NoteContent from "@components/noteView/NoteContent.svelte";
+import FloatingMenu from "@components/floatingMenu/FloatingMenu.svelte";
 
 import type { Note } from "@projectTypes/noteTypes";
 import { noteQueryController } from "@controllers/noteQueryController.svelte";
