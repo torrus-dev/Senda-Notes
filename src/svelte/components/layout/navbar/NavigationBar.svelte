@@ -89,12 +89,15 @@ function handleResultSelect(result: SearchResult) {
                title="Delete search"
                onclick={() => {
                   searchValue = "";
+                  searchElement?.focus();
                }}>
                <DeleteIcon size="1.25em" />
             </Button>
-            <Button title="End search" onclick={() => {
-               
-            }}>
+            <Button
+               title="End search"
+               onclick={() => {
+                  endSearch();
+               }}>
                <XIcon size="1.25em" />
             </Button>
          </div>
