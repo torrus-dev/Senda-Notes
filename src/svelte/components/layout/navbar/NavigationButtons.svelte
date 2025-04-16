@@ -4,7 +4,7 @@ import { workspace } from "@controllers/workspaceController.svelte";
 import { ArrowLeftIcon, ArrowRightIcon, HomeIcon } from "lucide-svelte";
 </script>
 
-<div class="flex gap-1">
+<div class="flex gap-0.5">
    <Button onclick={() => {}} title="Go back">
       <ArrowLeftIcon size="1.125em" />
    </Button>

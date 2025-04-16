@@ -8,11 +8,14 @@ let { note }: { note: Note | undefined } = $props();
 </script>
 
 <nav class="bg-base-100">
-   <div class="flex w-full items-center gap-0 p-2 md:gap-8">
-      <div class="flex items-center gap-2">
+   <div class="flex w-full items-center gap-0 p-2">
+      <div class="flex flex-1/6 items-center gap-1">
          <SidebarToogle />
          <NavigationButtons />
       </div>
-      <NavigationBar note={note} />
+      <div class="md:flex-3/6">
+         <NavigationBar note={note} />
+      </div>
+      <div class="md:flex-1/6"></div>
    </div>
 </nav>

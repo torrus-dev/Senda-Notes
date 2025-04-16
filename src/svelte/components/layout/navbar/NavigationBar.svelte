@@ -9,6 +9,8 @@ import type { Note } from "@projectTypes/noteTypes";
 import type { SearchResult } from "@controllers/searchController.svelte";
 import { tick } from "svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
+import { DeleteIcon, XIcon } from "lucide-svelte";
+import Button from "@components/utils/Button.svelte";
 
 let { note }: { note: Note | undefined } = $props();
 
@@ -60,28 +62,38 @@ function handleResultSelect(event: CustomEvent<SearchResult>) {
 </script>
 
 <div
-   class="bg-base-200 rounded-field relative flex h-10 w-full justify-between">
+   class="bg-base-200 rounded-field relative flex h-10 w-full justify-between {isSearching
+      ? 'outline-interactive-accent-focus outline-2'
+      : ''}">
    {#if isSearching}
       <div
-         class="outline-interactive-accent-focus rounded-field flex flex-grow px-2.5 outline-2">
+         class=" rounded-field flex flex-grow pl-2.5"
+         use:onOutsideOrEsc={{
+            action: endSearch,
+         }}>
          <input
             type="text"
             class=" w-full py-1.5 focus:outline-none"
             bind:this={searchElement}
             bind:value={searchValue}
-            placeholder="Search Notes..."
-            use:onOutsideOrEsc={{
-               action: endSearch,
-            }} />
+            placeholder="Search Notes..." />
 
          <!-- Componente de resultados de búsqueda -->
          <SearchResults
             results={searchResults}
             searchValue={searchValue}
             on:select={handleResultSelect} />
+         <div class="flex items-center">
+            <Button title="Delete search">
+               <DeleteIcon size="1.25em" />
+            </Button>
+            <Button title="End search">
+               <XIcon size="1.25em" />
+            </Button>
+         </div>
       </div>
    {:else}
-      <div class="rounded-field flex flex-grow items-center px-2">
+      <div class="rounded-field flex flex-grow items-center pl-2">
          {#if note}
             <Breadcrumbs noteId={note.id} />
          {/if}
@@ -96,11 +108,11 @@ function handleResultSelect(event: CustomEvent<SearchResult>) {
                Inicio
             {/if}
          </button>
+         <div class="flex items-center">
+            {#if note}
+               <MoreButton noteId={note.id} />
+            {/if}
+         </div>
       </div>
    {/if}
-   <div class="flex items-center">
-      {#if note}
-         <MoreButton noteId={note.id} />
-      {/if}
-   </div>
 </div>
