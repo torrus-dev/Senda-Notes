@@ -7,84 +7,74 @@ export interface SearchResult {
    matchType: "title" | "alias";
    matchedText: string;
    path: string;
-   relevanceScore: number; // Puntuación para determinar relevancia
 }
 
 class SearchController {
-   // Almacena los resultados actuales de búsqueda
-   private results: SearchResult[] = $state([]);
+   // Almacena los últimos resultados de búsqueda
+   private lastResults: SearchResult[] = $state([]);
 
-   // Estado de la búsqueda actual
-   private searchTerm: string = $state("");
-   private isSearching: boolean = $state(false);
-
-   // Configuración
-   private maxResults: number = $state(10);
-
-   // Getters para el estado actual
-   getResults(): SearchResult[] {
-      return this.results;
+   // Obtiene los resultados de la última búsqueda
+   getLastResults(): SearchResult[] {
+      return this.lastResults;
    }
 
-   getSearchTerm(): string {
-      return this.searchTerm;
-   }
-
-   isCurrentlySearching(): boolean {
-      return this.isSearching;
-   }
-
-   setMaxResults(max: number): void {
-      this.maxResults = max;
-   }
-
-   // Método principal para realizar una búsqueda
-   search(term: string): SearchResult[] {
-      this.searchTerm = term;
-
-      // Verificar caso vacío
-      if (!term.trim()) {
-         this.clearResults();
+   // Busca notas según un término de búsqueda
+   searchNotes(searchTerm: string, limit: number = 10): SearchResult[] {
+      // Limpiar término de búsqueda
+      const term = searchTerm.trim();
+      if (!term) {
+         this.lastResults = [];
          return [];
       }
 
-      this.isSearching = true;
-
       // Normalizar el término de búsqueda
-      const normalizedTerm = removeDiacritics(term.toLowerCase().trim());
+      const normalizedTerm = removeDiacritics(term.toLowerCase());
 
-      let searchResults: SearchResult[];
-
-      // Verificar si es búsqueda jerárquica
-      if (term.includes("/")) {
-         searchResults = this.hierarchicalSearch(normalizedTerm);
-      } else {
-         searchResults = this.simpleSearch(normalizedTerm);
-      }
+      // Seleccionar tipo de búsqueda
+      const results = term.includes("/")
+         ? this.hierarchicalSearch(normalizedTerm)
+         : this.simpleSearch(normalizedTerm);
 
       // Ordenar y limitar resultados
-      const sortedResults = this.sortResultsByRelevance(searchResults);
-      const limitedResults = sortedResults.slice(0, this.maxResults);
+      const sortedResults = this.sortResults(results);
+      const limitedResults = sortedResults.slice(0, limit);
 
-      this.results = limitedResults;
+      this.lastResults = limitedResults;
       return limitedResults;
-   }
-
-   // Limpiar resultados de búsqueda
-   clearResults(): void {
-      this.results = [];
-      this.isSearching = false;
    }
 
    // Búsqueda simple: encuentra notas cuyo título o alias contenga el término
    private simpleSearch(normalizedTerm: string): SearchResult[] {
-      // Usar el controlador para obtener todas las notas
-      const allNotes = noteQueryController.getAllNotes();
       const results: SearchResult[] = [];
+      const allNotes = noteQueryController.getAllNotes() || [];
 
       for (const note of allNotes) {
-         const matches = this.findMatches(note, normalizedTerm, "");
-         results.push(...matches);
+         // Buscar en título
+         const normalizedTitle = removeDiacritics(note.title.toLowerCase());
+         if (normalizedTitle.includes(normalizedTerm)) {
+            results.push({
+               note,
+               matchType: "title",
+               matchedText: note.title,
+               path: noteQueryController.getPathFromNoteId(note.id),
+            });
+            continue;
+         }
+
+         // Buscar en aliases
+         const aliases = note.metadata?.aliases || [];
+         for (const alias of aliases) {
+            const normalizedAlias = removeDiacritics(alias.toLowerCase());
+            if (normalizedAlias.includes(normalizedTerm)) {
+               results.push({
+                  note,
+                  matchType: "alias",
+                  matchedText: alias,
+                  path: noteQueryController.getPathFromNoteId(note.id),
+               });
+               break;
+            }
+         }
       }
 
       return results;
@@ -92,187 +82,99 @@ class SearchController {
 
    // Búsqueda jerárquica: encuentra notas dentro de una ruta específica
    private hierarchicalSearch(normalizedTerm: string): SearchResult[] {
-      // Manejar caso especial de solo "/"
-      if (normalizedTerm === "/") {
-         return this.getRootNotesAsResults();
-      }
-
-      // Dividir la búsqueda en segmentos de ruta
-      const segments = normalizedTerm.split("/");
-      const isExactPathSearch = normalizedTerm.endsWith("/");
-
-      let searchPath: string;
-      let searchFragment: string;
-
-      if (isExactPathSearch) {
-         searchPath = segments.slice(0, segments.length - 1).join("/");
-         searchFragment = ""; // Buscar todo en la ruta
-      } else {
-         searchPath = segments.slice(0, segments.length - 1).join("/");
-         searchFragment = segments[segments.length - 1];
-      }
-
-      // Obtener todas las notas
-      const allNotes = noteQueryController.getAllNotes();
       const results: SearchResult[] = [];
 
+      // Determinar si es búsqueda exacta de directorio
+      const isExactPathSearch = normalizedTerm.endsWith("/");
+
+      // Obtener ruta base y término de búsqueda
+      const lastSlashIndex = normalizedTerm.lastIndexOf("/");
+      const basePath = normalizedTerm.substring(0, lastSlashIndex);
+      const searchFragment = isExactPathSearch
+         ? ""
+         : normalizedTerm.substring(lastSlashIndex + 1);
+
+      // Obtener todas las notas
+      const allNotes = noteQueryController.getAllNotes() || [];
+
       for (const note of allNotes) {
+         // Obtener y normalizar la ruta de la nota
          const notePath = removeDiacritics(
             noteQueryController.getPathFromNoteId(note.id).toLowerCase(),
          );
 
-         // Verificar si la nota está en la ruta correcta
-         if (searchPath && !this.isNoteInPath(note, searchPath)) {
+         // Para búsqueda exacta de directorio
+         if (isExactPathSearch) {
+            const searchPath = normalizedTerm.slice(0, -1); // Quitar la barra final
+            if (
+               notePath === searchPath ||
+               notePath.startsWith(searchPath + "/")
+            ) {
+               results.push({
+                  note,
+                  matchType: "title",
+                  matchedText: note.title,
+                  path: noteQueryController.getPathFromNoteId(note.id),
+               });
+            }
             continue;
          }
 
-         // Si es búsqueda exacta de ruta, agregar todas las notas en la ruta
-         if (isExactPathSearch) {
+         // Para búsqueda con ruta parcial
+         if (
+            basePath &&
+            !notePath.startsWith(basePath + "/") &&
+            notePath !== basePath
+         ) {
+            continue; // No está en la ruta especificada
+         }
+
+         // Buscar en título
+         const normalizedTitle = removeDiacritics(note.title.toLowerCase());
+         if (normalizedTitle.includes(searchFragment)) {
             results.push({
                note,
                matchType: "title",
                matchedText: note.title,
                path: noteQueryController.getPathFromNoteId(note.id),
-               relevanceScore: this.calculateRelevanceScore(
-                  note.title,
-                  "",
-                  "title",
-               ),
             });
+            continue;
          }
-         // Si no, buscar el fragmento en el título y alias
-         else if (searchFragment) {
-            const matches = this.findMatches(note, searchFragment, searchPath);
-            results.push(...matches);
+
+         // Buscar en aliases
+         const aliases = note.metadata?.aliases || [];
+         for (const alias of aliases) {
+            const normalizedAlias = removeDiacritics(alias.toLowerCase());
+            if (normalizedAlias.includes(searchFragment)) {
+               results.push({
+                  note,
+                  matchType: "alias",
+                  matchedText: alias,
+                  path: noteQueryController.getPathFromNoteId(note.id),
+               });
+               break;
+            }
          }
       }
 
       return results;
    }
 
-   // Verifica si una nota está en una ruta específica
-   private isNoteInPath(note: Note, path: string): boolean {
-      const notePath = removeDiacritics(
-         noteQueryController.getPathFromNoteId(note.id).toLowerCase(),
-      );
-      return notePath === path || notePath.startsWith(path + "/");
-   }
-
-   // Obtiene las notas raíz como resultados de búsqueda
-   private getRootNotesAsResults(): SearchResult[] {
-      const rootNotes = noteQueryController.getRootNotes();
-      return rootNotes.map((note) => ({
-         note,
-         matchType: "title" as const,
-         matchedText: note.title,
-         path: note.title,
-         relevanceScore: 100, // Alta prioridad para notas raíz
-      }));
-   }
-
-   // Busca coincidencias en el título y alias de una nota
-   private findMatches(
-      note: Note,
-      searchTerm: string,
-      basePath: string,
-   ): SearchResult[] {
-      const matches: SearchResult[] = [];
-      const path = noteQueryController.getPathFromNoteId(note.id);
-
-      // Buscar en título
-      const normalizedTitle = removeDiacritics(note.title.toLowerCase());
-      if (normalizedTitle.includes(searchTerm)) {
-         matches.push({
-            note,
-            matchType: "title",
-            matchedText: note.title,
-            path,
-            relevanceScore: this.calculateRelevanceScore(
-               note.title,
-               searchTerm,
-               "title",
-            ),
-         });
-      }
-
-      // Buscar en aliases
-      const aliases = note.metadata.aliases || [];
-      for (const alias of aliases) {
-         const normalizedAlias = removeDiacritics(alias.toLowerCase());
-         if (normalizedAlias.includes(searchTerm)) {
-            matches.push({
-               note,
-               matchType: "alias",
-               matchedText: alias,
-               path,
-               relevanceScore: this.calculateRelevanceScore(
-                  alias,
-                  searchTerm,
-                  "alias",
-               ),
-            });
-         }
-      }
-
-      return matches;
-   }
-
-   // Calcula la puntuación de relevancia de un resultado
-   private calculateRelevanceScore(
-      text: string,
-      searchTerm: string,
-      matchType: "title" | "alias",
-   ): number {
-      let score = 0;
-
-      // Criterio 1: Tipo de coincidencia
-      if (matchType === "title") {
-         score += 50; // Prioridad para títulos
-      }
-
-      // Criterio 2: Coincidencia exacta o parcial
-      const normalizedText = removeDiacritics(text.toLowerCase());
-      const normalizedTerm = searchTerm.toLowerCase();
-
-      if (normalizedText === normalizedTerm) {
-         score += 100; // Coincidencia exacta
-      } else if (normalizedText.startsWith(normalizedTerm)) {
-         score += 75; // Coincidencia al inicio
-      } else if (normalizedText.includes(" " + normalizedTerm)) {
-         score += 50; // Coincidencia al inicio de palabra
-      }
-
-      // Criterio 3: Longitud del texto (preferencia por textos más cortos)
-      score += Math.max(0, 30 - text.length); // Máximo 30 puntos por brevedad
-
-      return score;
-   }
-
-   // Ordena los resultados por relevancia
-   private sortResultsByRelevance(results: SearchResult[]): SearchResult[] {
+   // Ordenar resultados por relevancia
+   private sortResults(results: SearchResult[]): SearchResult[] {
       return [...results].sort((a, b) => {
-         // Primero ordenar por puntuación de relevancia
-         if (a.relevanceScore !== b.relevanceScore) {
-            return b.relevanceScore - a.relevanceScore;
-         }
+         // Prioridad 1: Coincidencias de título sobre alias
+         if (a.matchType === "title" && b.matchType === "alias") return -1;
+         if (a.matchType === "alias" && b.matchType === "title") return 1;
 
-         // Luego por profundidad de ruta (menos profunda primero)
+         // Prioridad 2: Profundidad de ruta (menos profunda primero)
          const aDepth = a.path.split("/").length;
          const bDepth = b.path.split("/").length;
-         if (aDepth !== bDepth) {
-            return aDepth - bDepth;
-         }
+         if (aDepth !== bDepth) return aDepth - bDepth;
 
-         // Finalmente por orden alfabético
+         // Prioridad 3: Orden alfabético
          return a.matchedText.localeCompare(b.matchedText);
       });
-   }
-
-   // Navega al resultado seleccionado
-   navigateToResult(result: SearchResult): void {
-      // Aquí implementaremos la navegación a la nota seleccionada
-      // Esta funcionalidad se completará cuando integremos con el componente NavigationBar
-      console.log(`Navegando a: ${result.path}`);
    }
 }
 
