@@ -85,10 +85,16 @@ function handleResultSelect(result: SearchResult) {
             searchValue={searchValue}
             select={handleResultSelect} />
          <div class="flex items-center">
-            <Button title="Delete search">
+            <Button
+               title="Delete search"
+               onclick={() => {
+                  searchValue = "";
+               }}>
                <DeleteIcon size="1.25em" />
             </Button>
-            <Button title="End search">
+            <Button title="End search" onclick={() => {
+               
+            }}>
                <XIcon size="1.25em" />
             </Button>
          </div>

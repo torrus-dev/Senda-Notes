@@ -48,7 +48,6 @@ let childrenCount = $derived(noteQueryController.getNoteCount());
    <ul class="max-h-[50vh] w-full overflow-auto px-2">
       {#if rootNotes && rootNotes.length > 0}
          {#each rootNotes as note, index (note.id)}
-            {console.log("a")}
             <NoteTreeNode note={note} position={index} />
          {/each}
          <NoteTreeLine position={rootNotes.length} />

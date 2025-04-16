@@ -90,7 +90,7 @@ function highlightMatch(text: string, query: string): string {
 <svelte:window onkeydown={handleKeyDown} />
 
 <div
-   class="bg-base-100 rounded-box border-base-300 absolute top-full left-0 z-100 mt-2 max-h-[50vh] w-full overflow-y-auto border shadow-xl">
+   class="bg-base-100 rounded-box border-base-300 absolute top-full left-0 z-100 mt-2 max-h-96 w-full overflow-y-auto border shadow-xl">
    {#if results.length > 0}
       <ul class="scroll-auto p-0">
          {#each results as result, index}

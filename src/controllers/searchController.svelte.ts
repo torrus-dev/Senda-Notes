@@ -13,7 +13,7 @@ class SearchController {
    }
 
    // Busca notas según un término de búsqueda
-   searchNotes(searchTerm: string, limit: number = 10): SearchResult[] {
+   searchNotes(searchTerm: string, limit: number = -1): SearchResult[] {
       // Limpiar término de búsqueda
       const term = searchTerm.trim();
       if (!term) {
@@ -31,10 +31,17 @@ class SearchController {
 
       // Ordenar y limitar resultados
       const sortedResults = this.sortResults(results);
-      const limitedResults = sortedResults.slice(0, limit);
-
-      this.lastResults = limitedResults;
-      return limitedResults;
+      if (limit === -1) {
+         this.lastResults = sortedResults;
+         return sortedResults;
+      } else if (limit > 0) {
+         const limitedResults = sortedResults.slice(0, limit);
+         this.lastResults = limitedResults;
+         return limitedResults;
+      } else {
+         this.lastResults = [];
+         return [];
+      }
    }
 
    // Búsqueda simple: encuentra notas cuyo título o alias contenga el término
