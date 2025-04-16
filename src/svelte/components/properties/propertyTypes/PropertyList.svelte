@@ -58,7 +58,7 @@ function handleListInput(event: Event) {
          <span>{item}</span>
          {#if !isEditing}
             <Button
-               class="text-base-content/50 mr-[-0.25rem]"
+               class="text-faint-content mr-[-0.25rem]"
                onclick={() => removeListItem(index)}
                size="small"
                title="Remove item"

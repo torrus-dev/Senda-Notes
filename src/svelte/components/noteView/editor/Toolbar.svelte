@@ -42,7 +42,7 @@ let toolbarItems = $derived(getEditorToolbarMenuItems(editorBox));
    </li>
 {/snippet}
 {#snippet separatorMenuItem()}
-   <li class="text-base-content/50">|</li>
+   <li class="text-faint-content">|</li>
 {/snippet}
 
 {#if showToolbar && toolbarItems}

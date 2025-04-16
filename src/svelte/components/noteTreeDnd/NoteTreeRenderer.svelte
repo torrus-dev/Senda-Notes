@@ -29,13 +29,13 @@ let childrenCount = $derived(noteQueryController.getNoteCount());
       <div class="flex items-center">
          <Button
             onclick={() => noteController.createNote()}
-            class="text-base-content/70 p-1 opacity-0 group-hover:opacity-100"
+            class="text-muted-content p-1 opacity-0 group-hover:opacity-100"
             size="small"
             title="Add note">
             <PlusIcon size="1.125em"></PlusIcon>
          </Button>
          {#if childrenCount > 0}
-            <p class="text-base-content/50 ml-1">{childrenCount}</p>
+            <p class="text-faint-content ml-1">{childrenCount}</p>
          {/if}
       </div>
    </div>

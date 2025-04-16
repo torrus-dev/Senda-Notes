@@ -67,7 +67,7 @@ let widthStyle = $derived(isMobile ? "90%" : `${width}em`);
       <!-- Footer -->
       <div>
          <ul
-            class="text-base-content/70 border-border-normal bg-base-200 absolute bottom-0 left-0 flex w-full gap-0.5 border-t-2 p-2">
+            class="text-muted-content border-border-normal bg-base-200 absolute bottom-0 left-0 flex w-full gap-0.5 border-t-2 p-2">
             <li>
                <Button
                   onclick={() => {

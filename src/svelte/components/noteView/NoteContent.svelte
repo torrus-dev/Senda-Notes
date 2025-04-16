@@ -7,12 +7,19 @@ import Editor from "./editor/Editor.svelte";
 
 import { settingsController } from "@controllers/settingsController.svelte";
 import type { Note } from "@projectTypes/noteTypes";
+import { searchController } from "@controllers/searchController.svelte";
 
 let { note }: { note: Note } = $props();
 </script>
 
-<div class="overflow-auto">
-   <article class="py-4">
+<div
+   class="scroll overflow-auto
+   {searchController.isSearching ? 'overflow-hidden' : ''}">
+   <article class="relative py-4">
+      {#if searchController.isSearching}
+         <div class="bg-base-100/60 absolute top-0 left-0 z-90 h-full w-full">
+         </div>
+      {/if}
       {#if note}
          <section class="mx-auto w-full max-w-2xl">
             <header>

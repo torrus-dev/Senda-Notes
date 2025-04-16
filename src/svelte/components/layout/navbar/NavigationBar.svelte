@@ -17,10 +17,10 @@ let { note }: { note: Note | undefined } = $props();
 const getNotePath = () =>
    note?.id ? noteQueryController.getPathFromNoteId(note?.id) : "";
 
-let isSearching = $state(false);
 let searchValue: string = $state("");
 let searchElement: HTMLInputElement | undefined = $state(undefined);
 let searchResults: SearchResult[] = $state([]);
+let isSearching = $state(false);
 
 // Buscar cuando cambia el valor de búsqueda
 $effect(() => {
@@ -33,6 +33,7 @@ $effect(() => {
 
 function startSearch() {
    isSearching = true;
+   searchController.isSearching = true;
    searchValue = getNotePath();
    // Esperar a que Svelte renderice el searchElement
    tick().then(() => {
@@ -44,6 +45,7 @@ function startSearch() {
 
 function endSearch() {
    isSearching = false;
+   searchController.isSearching = false;
    searchValue = "";
    searchResults = [];
 }

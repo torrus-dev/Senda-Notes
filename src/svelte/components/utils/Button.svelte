@@ -58,7 +58,7 @@ const sizeClass = $derived(sizeStyle[size as "small" | "medium" | "large"]);
    <button
       {...htmlAttributes}
       class="
-         rounded-field bg-interactive hover:text-base-content/70 focus:text-base-content/70 inline-flex cursor-pointer items-center gap-2 whitespace-nowrap
+         rounded-field bg-interactive hover:text-muted-content focus:text-muted-content inline-flex cursor-pointer items-center gap-2 whitespace-nowrap
          {sizeClass} 
          {userClass}
       "
@@ -72,7 +72,7 @@ const sizeClass = $derived(sizeStyle[size as "small" | "medium" | "large"]);
    <button
       {...htmlAttributes}
       class="
-         rounded-field bg-interactive hover:text-base-content/70 focus:text-base-content/70 inline-flex cursor-pointer items-center gap-2 whitespace-nowrap
+         rounded-field bg-interactive hover:text-muted-content focus:text-muted-content inline-flex cursor-pointer items-center gap-2 whitespace-nowrap
          {sizeClass} 
          {userClass}
       "
@@ -85,7 +85,7 @@ const sizeClass = $derived(sizeStyle[size as "small" | "medium" | "large"]);
    <button
       {...htmlAttributes}
       class="
-         rounded-field bg-interactive hover:text-base-content/70 focus:text-base-content/70 inline-flex cursor-pointer items-center gap-2 whitespace-nowrap
+         rounded-field bg-interactive hover:text-muted-content focus:text-muted-content inline-flex cursor-pointer items-center gap-2 whitespace-nowrap
          {sizeClass} 
          {userClass}
       "
@@ -98,7 +98,7 @@ const sizeClass = $derived(sizeStyle[size as "small" | "medium" | "large"]);
    <button
       {...htmlAttributes}
       class="
-         rounded-field bg-interactive hover:text-base-content/70 focus:text-base-content/70 inline-flex cursor-pointer items-center gap-2 whitespace-nowrap
+         rounded-field bg-interactive hover:text-muted-content focus:text-muted-content inline-flex cursor-pointer items-center gap-2 whitespace-nowrap
          {sizeClass} 
          {userClass}
       "

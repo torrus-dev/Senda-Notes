@@ -109,7 +109,7 @@ let editableElement: SvelteComponent;
          noteId={note.id}
          noteTitle={note.title}
          isEditing={isEditingTitle}
-         class="truncate {!isExpanded ? 'text-base-content/70' : ''}"
+         class="truncate {!isExpanded ? 'text-muted-content' : ''}"
          onEditComplete={stopEditingLabel} />
    </div>
    <div class="flex items-center">
@@ -118,13 +118,13 @@ let editableElement: SvelteComponent;
             event?.stopPropagation();
             noteController.createNote(note.id);
          }}
-         class="text-base-content/70 p-1 opacity-0 group-hover:opacity-100"
+         class="text-muted-content p-1 opacity-0 group-hover:opacity-100"
          size="small"
          title="Add child note">
          <PlusIcon size="1.125em"></PlusIcon>
       </Button>
       {#if childrenCount > 0}
-         <p class="text-base-content/50 ml-1">
+         <p class="text-faint-content ml-1">
             {childrenCount}
          </p>
       {/if}

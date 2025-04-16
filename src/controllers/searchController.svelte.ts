@@ -12,6 +12,7 @@ export interface SearchResult {
 class SearchController {
    // Almacena los últimos resultados de búsqueda
    private lastResults: SearchResult[] = $state([]);
+   isSearching: boolean = $state(false);
 
    // Obtiene los resultados de la última búsqueda
    getLastResults(): SearchResult[] {

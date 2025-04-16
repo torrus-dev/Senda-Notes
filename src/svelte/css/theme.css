@@ -28,7 +28,7 @@
 
    --color-base-content: oklch(0% 0 0);
    --color-muted-content: oklch(30% 0 0);
-   --color-faint-content: oklch(50% 0 0);
+   --color-faint-content: oklch(45% 0 0);
 
    --color-error-bg: var(--color-rose-400);
    --color-error: var(--color-rose-800);
@@ -51,8 +51,8 @@
    --color-base-400: oklch(39% 0 0);
 
    --color-base-content: oklch(100% 0 0);
-   --color-muted-content: oklch(70% 0 0);
-   --color-faint-content: oklch(50% 0 0);
+   --color-muted-content: oklch(75% 0 0);
+   --color-faint-content: oklch(55% 0 0);
 
    --color-error-bg: var(--color-rose-800);
    --color-error: var(--color-rose-400);

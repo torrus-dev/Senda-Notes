@@ -15,7 +15,7 @@ let { noteId, metadata }: { noteId: string; metadata: NoteMetadata } = $props();
 {#if noteId && metadata}
    <Collapsible headingContent={headingContent} chevronPosition="floating-left">
       <div class="bg-base-200 rounded-field my-2 px-4 py-2.5">
-         <ul class="text-base-content/70 w-full gap-2">
+         <ul class="text-muted-content w-full gap-2">
             <li>
                #ID: {noteId}
             </li>

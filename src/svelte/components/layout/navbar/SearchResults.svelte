@@ -1,12 +1,4 @@
 <style>
-.search-results-container {
-   position: absolute;
-   width: 100%;
-   z-index: 50;
-   left: 0;
-   top: 100%;
-}
-
 .search-result-item:last-child {
    border-bottom: none;
 }
@@ -108,28 +100,29 @@ function highlightMatch(text: string, query: string): string {
 
 <svelte:window on:keydown={handleKeyDown} />
 
-{#if results.length > 0}
-   <div
-      class="search-results-container bg-base-100 rounded-box border-base-300 mt-1 max-h-96 overflow-y-auto border shadow-lg">
-      <ul class="menu p-0">
+<div
+   class="bg-base-100 rounded-box border-base-300 absolute top-full left-0 z-100 mt-2 max-h-96 w-full overflow-y-auto border shadow-xl">
+   {#if results.length > 0}
+      <ul class="p-0">
          {#each results as result, index}
             <li
                bind:this={resultElements[index]}
-               class="search-result-item {selectedIndex === index
-                  ? 'bg-base-200'
-                  : ''}">
+               class="search-result-item
+               {selectedIndex === index ? 'bg-base-200' : ''}">
                <button
-                  class="hover:bg-base-200 flex w-full flex-col items-start p-2 transition-colors"
+                  class="hover:bg-base-200 flex w-full cursor-pointer flex-col items-start p-2 transition-colors"
                   onclick={() => selectResult(result)}
                   onmouseenter={() => {
                      selectedIndex = index;
                   }}>
-                  <div class="flex w-full items-center gap-2">
-                     {#if result.note.icon}
-                        <result.note.icon size="1.125em" />
-                     {:else}
-                        <FileIcon size="1.125em" />
-                     {/if}
+                  <div class="flex w-full items-center gap-3">
+                     <div class="p-2">
+                        {#if result.note.icon}
+                           <result.note.icon size="1.125em" />
+                        {:else}
+                           <FileIcon size="1.125em" />
+                        {/if}
+                     </div>
                      <div class="flex-1 overflow-hidden text-left">
                         <!-- Título con destacado -->
                         <div
@@ -141,7 +134,7 @@ function highlightMatch(text: string, query: string): string {
                         </div>
                         <!-- Ruta del documento -->
                         <div
-                           class="overflow-hidden text-xs text-ellipsis whitespace-nowrap opacity-70">
+                           class="text-faint-content overflow-hidden text-sm text-ellipsis whitespace-nowrap">
                            {result.path}
                         </div>
                      </div>
@@ -153,5 +146,12 @@ function highlightMatch(text: string, query: string): string {
             </li>
          {/each}
       </ul>
-   </div>
-{/if}
+   {:else}
+      <div class="px-6 pt-6 pb-8 text-center">
+         <p class="mb-3 text-lg font-bold">No se han encontrado resultados</p>
+         <p class="text-muted-content">
+            No hay coincidencias para "{searchValue}"
+         </p>
+      </div>
+   {/if}
+</div>

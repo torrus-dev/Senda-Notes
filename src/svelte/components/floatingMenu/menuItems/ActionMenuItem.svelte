@@ -53,7 +53,7 @@ onMount(() => {
          {menuItem.label}
       </span>
       {#if menuItem.checked}
-         <span class="text-base-content/50">
+         <span class="text-faint-content">
             <CheckIcon size="1.0625rem" />
          </span>
       {/if}
