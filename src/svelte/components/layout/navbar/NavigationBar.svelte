@@ -61,11 +61,12 @@ function handleResultSelect(event: CustomEvent<SearchResult>) {
 
 <div
    class="bg-base-200 rounded-field relative flex h-10 w-full justify-between">
-   <div class="flex w-full items-center">
-      {#if isSearching}
+   {#if isSearching}
+      <div
+         class="outline-interactive-accent-focus rounded-field flex flex-grow px-2.5 outline-2">
          <input
             type="text"
-            class="outline-interactive-accent-focus rounded-field flex-grow items-center p-1.5 outline-2"
+            class=" w-full py-1.5 focus:outline-none"
             bind:this={searchElement}
             bind:value={searchValue}
             placeholder="Search Notes..."
@@ -78,12 +79,14 @@ function handleResultSelect(event: CustomEvent<SearchResult>) {
             results={searchResults}
             searchValue={searchValue}
             on:select={handleResultSelect} />
-      {:else}
+      </div>
+   {:else}
+      <div class="rounded-field flex flex-grow items-center px-2">
          {#if note}
             <Breadcrumbs noteId={note.id} />
          {/if}
          <button
-            class="w-full p-2 text-left"
+            class="flex-grow cursor-text p-2 text-left"
             onclick={() => {
                startSearch();
             }}>
@@ -93,9 +96,9 @@ function handleResultSelect(event: CustomEvent<SearchResult>) {
                Inicio
             {/if}
          </button>
-      {/if}
-   </div>
-   <div class="flex gap-1">
+      </div>
+   {/if}
+   <div class="flex items-center">
       {#if note}
          <MoreButton noteId={note.id} />
       {/if}
