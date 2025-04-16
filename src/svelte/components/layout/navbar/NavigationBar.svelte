@@ -2,15 +2,17 @@
 import MoreButton from "@components/layout/navbar/MoreButton.svelte";
 import Breadcrumbs from "@components/utils/Breadcrumbs.svelte";
 import SearchResults from "@components/layout/navbar/SearchResults.svelte";
+import Button from "@components/utils/Button.svelte";
 import { noteQueryController } from "@controllers/noteQueryController.svelte";
 import { searchController } from "@controllers/searchController.svelte";
-import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
-import type { Note } from "@projectTypes/noteTypes";
-import type { SearchResult } from "@controllers/searchController.svelte";
-import { tick } from "svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
+import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
+
+import type { Note } from "@projectTypes/noteTypes";
+import type { SearchResult } from "@projectTypes/searchTypes";
+
+import { tick } from "svelte";
 import { DeleteIcon, XIcon } from "lucide-svelte";
-import Button from "@components/utils/Button.svelte";
 
 let { note }: { note: Note | undefined } = $props();
 
@@ -51,12 +53,9 @@ function endSearch() {
 }
 
 // Maneja la selección de un resultado
-function handleResultSelect(event: CustomEvent<SearchResult>) {
-   const result = event.detail;
+function handleResultSelect(result: SearchResult) {
    // Navegar a la nota seleccionada
    if (result.note && result.note.id) {
-      // Aquí iría la navegación a la nota - implementación depende de tu router
-      console.log(`Navigating to note: ${result.note.id}`);
       workspace.setActiveNoteId(result.note.id);
       endSearch();
    }
@@ -84,7 +83,7 @@ function handleResultSelect(event: CustomEvent<SearchResult>) {
          <SearchResults
             results={searchResults}
             searchValue={searchValue}
-            on:select={handleResultSelect} />
+            select={handleResultSelect} />
          <div class="flex items-center">
             <Button title="Delete search">
                <DeleteIcon size="1.25em" />

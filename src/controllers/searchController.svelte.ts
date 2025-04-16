@@ -1,13 +1,6 @@
-import type { Note } from "@projectTypes/noteTypes";
 import { noteQueryController } from "@controllers/noteQueryController.svelte";
 import { removeDiacritics } from "@utils/noteUtils";
-
-export interface SearchResult {
-   note: Note;
-   matchType: "title" | "alias";
-   matchedText: string;
-   path: string;
-}
+import type { SearchResult } from "@projectTypes/searchTypes";
 
 class SearchController {
    // Almacena los últimos resultados de búsqueda

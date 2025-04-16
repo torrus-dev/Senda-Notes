@@ -44,10 +44,7 @@ let widthStyle = $derived(isMobile ? "90%" : `${width}em`);
       onResizeStart={handleResizeStart}
       onResizeEnd={handleResizeEnd} />
    <div class="p-2">
-      <!-- Contenido principal -->
-      <div class="overflow-auto">
-         <NoteTreeRenderer />
-      </div>
+      <NoteTreeRenderer />
       <div>
          <!-- notas en favoritos y en papelera  -->
          <ul class="my-4 flex w-full flex-col p-2">

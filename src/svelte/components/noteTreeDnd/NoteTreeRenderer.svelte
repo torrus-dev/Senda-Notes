@@ -28,7 +28,10 @@ let childrenCount = $derived(noteQueryController.getNoteCount());
       <header>Notes</header>
       <div class="flex items-center">
          <Button
-            onclick={() => noteController.createNote()}
+            onclick={(event: MouseEvent) => {
+               noteController.createNote();
+               event.stopPropagation();
+            }}
             class="text-muted-content p-1 opacity-0 group-hover:opacity-100"
             size="small"
             title="Add note">
@@ -42,9 +45,10 @@ let childrenCount = $derived(noteQueryController.getNoteCount());
 {/snippet}
 
 <Collapsible headingContent={headingContent} chevronPosition="left">
-   <ul class="w-full px-2">
+   <ul class="max-h-[50vh] w-full overflow-auto px-2">
       {#if rootNotes && rootNotes.length > 0}
          {#each rootNotes as note, index (note.id)}
+            {console.log("a")}
             <NoteTreeNode note={note} position={index} />
          {/each}
          <NoteTreeLine position={rootNotes.length} />

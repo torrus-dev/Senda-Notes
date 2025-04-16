@@ -1,29 +1,25 @@
 <style>
-.search-result-item:last-child {
-   border-bottom: none;
-}
 </style>
 
 <script lang="ts">
-import type { SearchResult } from "@controllers/searchController.svelte";
-import { FileIcon } from "lucide-svelte";
-import { createEventDispatcher, tick } from "svelte";
+import type { SearchResult } from "@projectTypes/searchTypes";
+import { FileIcon, type Icon } from "lucide-svelte";
+import { tick } from "svelte";
 
 // Props
-const { results = [], searchValue = "" } = $props<{
+const {
+   results = [],
+   searchValue = "",
+   select,
+}: {
    results: SearchResult[];
    searchValue: string;
-}>();
+   select: (result: SearchResult) => void;
+} = $props();
 
 // Estado
 let selectedIndex = $state(-1);
 let resultElements: HTMLElement[] = $state(Array(results.length).fill(null));
-
-// Event dispatcher para comunicar selecciones al componente padre
-const dispatch = createEventDispatcher<{
-   select: SearchResult;
-   navigate: { direction: "up" | "down" };
-}>();
 
 // Función para manejar la navegación por teclado
 function handleKeyDown(event: KeyboardEvent) {
@@ -35,22 +31,15 @@ function handleKeyDown(event: KeyboardEvent) {
       event.preventDefault();
       selectedIndex = (selectedIndex + 1) % results.length;
       scrollSelectedIntoView();
-      dispatch("navigate", { direction: "down" });
    } else if (key === "ArrowUp") {
       event.preventDefault();
       selectedIndex =
          selectedIndex <= 0 ? results.length - 1 : selectedIndex - 1;
       scrollSelectedIntoView();
-      dispatch("navigate", { direction: "up" });
    } else if (key === "Enter" && selectedIndex >= 0) {
       event.preventDefault();
-      selectResult(results[selectedIndex]);
+      select(results[selectedIndex]);
    }
-}
-
-// Función para seleccionar un resultado
-function selectResult(result: SearchResult) {
-   dispatch("select", result);
 }
 
 // Función para asegurar que el elemento seleccionado esté visible
@@ -98,12 +87,12 @@ function highlightMatch(text: string, query: string): string {
 }
 </script>
 
-<svelte:window on:keydown={handleKeyDown} />
+<svelte:window onkeydown={handleKeyDown} />
 
 <div
-   class="bg-base-100 rounded-box border-base-300 absolute top-full left-0 z-100 mt-2 max-h-96 w-full overflow-y-auto border shadow-xl">
+   class="bg-base-100 rounded-box border-base-300 absolute top-full left-0 z-100 mt-2 max-h-[50vh] w-full overflow-y-auto border shadow-xl">
    {#if results.length > 0}
-      <ul class="p-0">
+      <ul class="scroll-auto p-0">
          {#each results as result, index}
             <li
                bind:this={resultElements[index]}
@@ -111,14 +100,16 @@ function highlightMatch(text: string, query: string): string {
                {selectedIndex === index ? 'bg-base-200' : ''}">
                <button
                   class="hover:bg-base-200 flex w-full cursor-pointer flex-col items-start p-2 transition-colors"
-                  onclick={() => selectResult(result)}
+                  onclick={() => select(result)}
                   onmouseenter={() => {
                      selectedIndex = index;
                   }}>
-                  <div class="flex w-full items-center gap-3">
+                  <div class="flex w-full items-center gap-3 py-1">
                      <div class="p-2">
                         {#if result.note.icon}
-                           <result.note.icon size="1.125em" />
+                           <div class="text-lg">
+                              {result.note.icon}
+                           </div>
                         {:else}
                            <FileIcon size="1.125em" />
                         {/if}
@@ -126,7 +117,7 @@ function highlightMatch(text: string, query: string): string {
                      <div class="flex-1 overflow-hidden text-left">
                         <!-- Título con destacado -->
                         <div
-                           class="overflow-hidden font-medium text-ellipsis whitespace-nowrap">
+                           class="mb-1 overflow-hidden font-medium text-ellipsis whitespace-nowrap">
                            {@html highlightMatch(
                               result.matchedText,
                               searchValue,
