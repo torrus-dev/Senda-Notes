@@ -1,6 +1,13 @@
 import { DateTime } from "luxon";
 import { Note, NoteMetadata } from "@projectTypes/noteTypes";
 
+// utils
+export function removeDiacritics(text: string): string {
+   return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+// notes
+
 export function sanitizeTitle(title: string): string {
    return title
       .replace(/[\n\r]+/g, " ")
