@@ -114,17 +114,11 @@ class WorkspaceController {
          !workspaceStore.editor.childrenCollapsed;
    };
    isEditorPropertiesCollapsed = () => {
-      console.log(
-         "cargando props cola",
-         workspaceStore.editor.propertiesCollapsed,
-      );
       return workspaceStore.editor.propertiesCollapsed;
    };
    toggleEditorPropertiesCollapsed = () => {
       workspaceStore.editor.propertiesCollapsed =
          !workspaceStore.editor.propertiesCollapsed;
-
-      console.log("props cola", workspaceStore.editor.propertiesCollapsed);
    };
 }
 

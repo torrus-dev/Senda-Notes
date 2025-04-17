@@ -38,6 +38,7 @@ class WorkspaceStore {
          loadWorkspaceState() as PersistedWorkspaceState | null;
       if (loadedPersistedState && loadedPersistedState.sidebar) {
          this.data.sidebar = loadedPersistedState.sidebar;
+         this.data.editor = loadedPersistedState.editor;
       }
 
       // Guardamos únicamente la parte persistente (sidebar)
@@ -133,6 +134,5 @@ class WorkspaceStore {
    set editor(value) {
       this.data.editor = value;
    }
-   
 }
 export let workspaceStore = $state(new WorkspaceStore());
