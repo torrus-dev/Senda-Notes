@@ -59,12 +59,12 @@ class WorkspaceController {
       return workspaceStore.sidebar.isOpen;
    };
 
-   isNotesCollapsed = () => workspaceStore.sidebar.notesCollapsed;
-   setNotesCollapsed = () => workspaceStore.sidebar.notesCollapsed;
+   isNotesCollapsed = () => workspaceStore.collapsible.notesCollapsed;
+   setNotesCollapsed = () => workspaceStore.collapsible.notesCollapsed;
 
    toogleNotesCollapsed = () => {
-      workspaceStore.sidebar.notesCollapsed =
-         !workspaceStore.sidebar.notesCollapsed;
+      workspaceStore.collapsible.notesCollapsed =
+         !workspaceStore.collapsible.notesCollapsed;
    };
 
    // ---------- Property Editor ----------
@@ -100,25 +100,25 @@ class WorkspaceController {
 
    // Editor
    isEditorMetadataCollapsed = () => {
-      return workspaceStore.editor.metadataCollapsed;
+      return workspaceStore.collapsible.metadataCollapsed;
    };
    toggleEditorMetadataCollapsed = () => {
-      workspaceStore.editor.metadataCollapsed =
-         !workspaceStore.editor.metadataCollapsed;
+      workspaceStore.collapsible.metadataCollapsed =
+         !workspaceStore.collapsible.metadataCollapsed;
    };
    isEditorChildrenCollapsed = () => {
-      return workspaceStore.editor.childrenCollapsed;
+      return workspaceStore.collapsible.childrenCollapsed;
    };
    toggleEditorChildrenCollapsed = () => {
-      workspaceStore.editor.childrenCollapsed =
-         !workspaceStore.editor.childrenCollapsed;
+      workspaceStore.collapsible.childrenCollapsed =
+         !workspaceStore.collapsible.childrenCollapsed;
    };
    isEditorPropertiesCollapsed = () => {
-      return workspaceStore.editor.propertiesCollapsed;
+      return workspaceStore.collapsible.propertiesCollapsed;
    };
    toggleEditorPropertiesCollapsed = () => {
-      workspaceStore.editor.propertiesCollapsed =
-         !workspaceStore.editor.propertiesCollapsed;
+      workspaceStore.collapsible.propertiesCollapsed =
+         !workspaceStore.collapsible.propertiesCollapsed;
    };
 }
 

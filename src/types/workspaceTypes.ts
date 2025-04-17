@@ -34,9 +34,9 @@ export interface WorkspaceState {
    sidebar: {
       isOpen: boolean;
       width: number | null;
-      notesCollapsed: boolean;
    };
-   editor: {
+   collapsible: {
+      notesCollapsed: boolean;
       metadataCollapsed: boolean;
       propertiesCollapsed: boolean;
       childrenCollapsed: boolean;
@@ -45,5 +45,5 @@ export interface WorkspaceState {
 
 export interface PersistedWorkspaceState {
    sidebar: WorkspaceState["sidebar"];
-   editor: WorkspaceState["editor"];
+   collapsible: WorkspaceState["collapsible"];
 }

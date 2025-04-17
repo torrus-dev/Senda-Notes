@@ -23,12 +23,12 @@ class WorkspaceStore {
       sidebar: {
          isOpen: true,
          width: null,
-         notesCollapsed: false,
       },
-      editor: {
+      collapsible: {
+         notesCollapsed: false,
+         childrenCollapsed: false,
          metadataCollapsed: false,
          propertiesCollapsed: false,
-         childrenCollapsed: false,
       },
    });
 
@@ -38,7 +38,7 @@ class WorkspaceStore {
          loadWorkspaceState() as PersistedWorkspaceState | null;
       if (loadedPersistedState && loadedPersistedState.sidebar) {
          this.data.sidebar = loadedPersistedState.sidebar;
-         this.data.editor = loadedPersistedState.editor;
+         this.data.collapsible = loadedPersistedState.collapsible;
       }
 
       // Guardamos únicamente la parte persistente (sidebar)
@@ -46,7 +46,7 @@ class WorkspaceStore {
          $effect(() => {
             const persistableState: PersistedWorkspaceState = {
                sidebar: this.data.sidebar,
-               editor: this.data.editor,
+               collapsible: this.data.collapsible,
             };
             saveWorkspaceState(persistableState);
          });
@@ -127,12 +127,12 @@ class WorkspaceStore {
       this.data.previousActiveNoteId = value;
    }
 
-   get editor() {
-      return this.data.editor;
+   get collapsible() {
+      return this.data.collapsible;
    }
 
-   set editor(value) {
-      this.data.editor = value;
+   set collapsible(value) {
+      this.data.collapsible = value;
    }
 }
 export let workspaceStore = $state(new WorkspaceStore());
