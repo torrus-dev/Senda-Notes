@@ -25,7 +25,13 @@ let isAddPropertyOpen = $derived(workspace.isOpenPropertyEditor());
       </div>
    {/snippet}
 
-   <Collapsible headingContent={headingContent} chevronPosition="floating-left">
+   <Collapsible
+      headingContent={headingContent}
+      chevronPosition="floating-left"
+      startCollapsed={workspace.isEditorPropertiesCollapsed()}
+      oncollapse={() => {
+         workspace.toggleEditorPropertiesCollapsed();
+      }}>
       {#if properties.length > 0}
          <ul class="rounded-lg">
             {#each properties as property, index (property.id)}

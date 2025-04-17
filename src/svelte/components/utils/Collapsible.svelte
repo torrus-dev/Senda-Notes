@@ -6,14 +6,16 @@ import { type Snippet } from "svelte";
 import { ChevronDownIcon } from "lucide-svelte";
 
 interface CollapsibleProps {
-   collapsed?: boolean;
+   oncollapse?: () => void;
+   startCollapsed?: boolean;
    headingContent: Snippet;
    children?: Snippet;
    chevronPosition?: "floating-left" | "left" | "right";
 }
 
 let {
-   collapsed = false,
+   oncollapse,
+   startCollapsed: collapsed = false,
    headingContent,
    children,
    chevronPosition = "right",
@@ -22,6 +24,9 @@ let isCollapsed: boolean = $state(collapsed);
 
 function toggle(): void {
    isCollapsed = !isCollapsed;
+   if (oncollapse) {
+      oncollapse();
+   }
 }
 </script>
 

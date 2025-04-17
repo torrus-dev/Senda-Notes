@@ -7,6 +7,7 @@ import NoteTreeNode from "./NoteTreeNode.svelte";
 import { FilePlusIcon, PlusIcon } from "lucide-svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";
 import { contextMenu } from "@directives/floatingMenuDirective.svelte";
+import { workspace } from "@controllers/workspaceController.svelte";
 
 let rootNotes = $derived(noteQueryController.getRootNotes());
 let childrenCount = $derived(noteQueryController.getNoteCount());
@@ -44,7 +45,13 @@ let childrenCount = $derived(noteQueryController.getNoteCount());
    </div>
 {/snippet}
 
-<Collapsible headingContent={headingContent} chevronPosition="left">
+<Collapsible
+   headingContent={headingContent}
+   chevronPosition="left"
+   startCollapsed={workspace.isNotesCollapsed()}
+   oncollapse={() => {
+      workspace.toogleNotesCollapsed();
+   }}>
    <ul class="max-h-[50vh] w-full overflow-auto px-2">
       {#if rootNotes && rootNotes.length > 0}
          {#each rootNotes as note, index (note.id)}

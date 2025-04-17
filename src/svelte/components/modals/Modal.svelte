@@ -5,7 +5,7 @@ import Button from "@components/utils/Button.svelte";
 import { XIcon } from "lucide-svelte";
 
 let isOpen = $derived(workspace.isModalOpen());
-let content = $derived(workspace.state.modal.content);
+let content = $derived(workspace.getModalContent());
 
 function closeModal() {
    workspace.closeModal();

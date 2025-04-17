@@ -1,125 +1,70 @@
-import type {
-   WorkspaceState,
-   PersistedWorkspaceState,
-} from "@projectTypes/workspaceTypes";
-import { loadWorkspaceState, saveWorkspaceState } from "@utils/storage";
 import { Component } from "svelte";
-import { noteStore } from "@stores/noteStore.svelte";
+import { workspaceStore } from "@stores/workspaceStore.svelte";
 
 class WorkspaceController {
-   // Estado global del workspace: incluye propiedades efímeras y la persistente.
-   state = $state<WorkspaceState>({
-      propertyEditor: {
-         isOpen: false,
-         noteId: null,
-         propertyId: null,
-      },
-      windows: [],
-      activeWindowId: null,
-      modal: {
-         isOpen: false,
-         content: undefined,
-      },
-      sidebar: {
-         isOpen: true,
-         width: null,
-      },
-      activeNoteId: undefined,
-      previousActiveNoteId: undefined,
-   });
-
-   constructor() {
-      // Cargamos solo el estado persistente
-      const loadedPersistedState =
-         loadWorkspaceState() as PersistedWorkspaceState | null;
-      if (loadedPersistedState && loadedPersistedState.sidebar) {
-         this.state.sidebar = loadedPersistedState.sidebar;
-      }
-
-      // Guardamos únicamente la parte persistente (sidebar)
-      $effect.root(() => {
-         $effect(() => {
-            const persistableState: PersistedWorkspaceState = {
-               sidebar: this.state.sidebar,
-            };
-            saveWorkspaceState(persistableState);
-         });
-      });
-
-      // Configurar un efecto para monitorear cambios en activeNoteId
-      $effect.root(() => {
-         $effect(() => {
-            const currentActiveId = this.state.activeNoteId;
-
-            // Si había una nota activa anterior, guardar cualquier cambio pendiente
-            if (
-               this.state.previousActiveNoteId &&
-               this.state.previousActiveNoteId !== currentActiveId
-            ) {
-               noteStore.saveContentForNote(this.state.previousActiveNoteId);
-            }
-
-            // Actualizar el seguimiento de la nota activa
-            this.state.previousActiveNoteId = currentActiveId;
-         });
-      });
-   }
-
    // ---------- Sidebar ----------
-   getActiveNoteId = () => this.state.activeNoteId;
+   getActiveNoteId = () => workspaceStore.activeNoteId;
    setActiveNoteId = (newId: string) => {
-      this.state.previousActiveNoteId = this.state.activeNoteId;
-      this.state.activeNoteId = newId;
+      workspaceStore.previousActiveNoteId = workspaceStore.activeNoteId;
+      workspaceStore.activeNoteId = newId;
    };
    unsetActiveNoteId = () => {
-      this.state.previousActiveNoteId = this.state.activeNoteId;
-      this.state.activeNoteId = undefined;
+      workspaceStore.previousActiveNoteId = workspaceStore.activeNoteId;
+      workspaceStore.activeNoteId = undefined;
    };
 
    // ---------- Modal ----------
    openModal = (modalContent: Component | undefined = undefined) => {
-      this.state.modal = {
+      workspaceStore.modal = {
          isOpen: true,
          content: modalContent,
       };
    };
 
    closeModal = () => {
-      this.state.modal = {
+      workspaceStore.modal = {
          isOpen: false,
          content: undefined,
       };
    };
 
    isModalOpen = () => {
-      return this.state.modal.isOpen;
+      return workspaceStore.modal.isOpen;
    };
 
    getModalContent = () => {
-      return this.state.modal.content;
+      return workspaceStore.modal.content;
    };
 
    // ---------- Sidebar ----------
    setSidebarWidth = (newWidth: number) => {
       if (typeof newWidth === "number") {
-         this.state.sidebar.width = newWidth;
+         workspaceStore.sidebar.width = newWidth;
       }
    };
 
    getSidebarWidth = () => {
-      return this.state.sidebar.width;
+      return workspaceStore.sidebar.width;
    };
 
    toggleSidebar = () => {
-      this.state.sidebar.isOpen = !this.state.sidebar.isOpen;
+      workspaceStore.sidebar.isOpen = !workspaceStore.sidebar.isOpen;
    };
 
    closeSidebar = () => {
-      this.state.sidebar.isOpen = false;
+      workspaceStore.sidebar.isOpen = false;
    };
 
    isSidebarOpen = () => {
-      return this.state.sidebar.isOpen;
+      return workspaceStore.sidebar.isOpen;
+   };
+
+   isNotesCollapsed = () => workspaceStore.sidebar.notesCollapsed;
+   setNotesCollapsed = () => workspaceStore.sidebar.notesCollapsed;
+
+   toogleNotesCollapsed = () => {
+      workspaceStore.sidebar.notesCollapsed =
+         !workspaceStore.sidebar.notesCollapsed;
    };
 
    // ---------- Property Editor ----------
@@ -127,7 +72,7 @@ class WorkspaceController {
       noteId: string | null = null,
       propertyId: string | null = null,
    ) => {
-      this.state.propertyEditor = {
+      workspaceStore.propertyEditor = {
          isOpen: true,
          noteId: noteId,
          propertyId: propertyId,
@@ -135,7 +80,7 @@ class WorkspaceController {
    };
 
    closePropertyEditor = () => {
-      this.state.propertyEditor = {
+      workspaceStore.propertyEditor = {
          isOpen: false,
          noteId: null,
          propertyId: null,
@@ -147,10 +92,39 @@ class WorkspaceController {
       propertyId: string | null = null,
    ) => {
       return (
-         this.state.propertyEditor.isOpen &&
-         this.state.propertyEditor.noteId === noteId &&
-         this.state.propertyEditor.propertyId === propertyId
+         workspaceStore.propertyEditor.isOpen &&
+         workspaceStore.propertyEditor.noteId === noteId &&
+         workspaceStore.propertyEditor.propertyId === propertyId
       );
+   };
+
+   // Editor
+   isEditorMetadataCollapsed = () => {
+      return workspaceStore.editor.metadataCollapsed;
+   };
+   toggleEditorMetadataCollapsed = () => {
+      workspaceStore.editor.metadataCollapsed =
+         !workspaceStore.editor.metadataCollapsed;
+   };
+   isEditorChildrenCollapsed = () => {
+      return workspaceStore.editor.childrenCollapsed;
+   };
+   toggleEditorChildrenCollapsed = () => {
+      workspaceStore.editor.childrenCollapsed =
+         !workspaceStore.editor.childrenCollapsed;
+   };
+   isEditorPropertiesCollapsed = () => {
+      console.log(
+         "cargando props cola",
+         workspaceStore.editor.propertiesCollapsed,
+      );
+      return workspaceStore.editor.propertiesCollapsed;
+   };
+   toggleEditorPropertiesCollapsed = () => {
+      workspaceStore.editor.propertiesCollapsed =
+         !workspaceStore.editor.propertiesCollapsed;
+
+      console.log("props cola", workspaceStore.editor.propertiesCollapsed);
    };
 }
 

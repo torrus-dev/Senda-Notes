@@ -22,6 +22,8 @@ export interface Window {
 
 // Estado global del workspace
 export interface WorkspaceState {
+   activeNoteId: string | undefined;
+   previousActiveNoteId: string | undefined;
    propertyEditor: PropertyEditorState;
    windows: Window[];
    activeWindowId: string | null;
@@ -32,12 +34,16 @@ export interface WorkspaceState {
    sidebar: {
       isOpen: boolean;
       width: number | null;
+      notesCollapsed: boolean;
    };
-   activeNoteId: string | undefined;
-   previousActiveNoteId: string | undefined;
+   editor: {
+      metadataCollapsed: boolean;
+      propertiesCollapsed: boolean;
+      childrenCollapsed: boolean;
+   };
 }
 
 export interface PersistedWorkspaceState {
-   /** Estado persistente de la sidebar */
    sidebar: WorkspaceState["sidebar"];
+   editor: WorkspaceState["editor"];
 }

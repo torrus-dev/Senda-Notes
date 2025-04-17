@@ -137,7 +137,7 @@ onDestroy(() => {
 });
 </script>
 
-{#if editorBox.current && (isMobile || settingsController.state.showEditorToolbar)}
+{#if editorBox.current && (isMobile || settingsController.getShowEditorToolbar())}
    <div class="bg-base-100 sticky top-0">
       <div class="mx-auto w-full max-w-2xl">
          {#if noteController.isDataSaved}

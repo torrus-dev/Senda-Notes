@@ -16,7 +16,13 @@ let { children }: { children: string[] } = $props();
 {/snippet}
 
 {#if children && children.length > 0}
-   <Collapsible headingContent={headingContent} chevronPosition="floating-left">
+   <Collapsible
+      headingContent={headingContent}
+      chevronPosition="floating-left"
+      startCollapsed={workspace.isEditorChildrenCollapsed()}
+      oncollapse={() => {
+         workspace.toggleEditorChildrenCollapsed();
+      }}>
       <ul class="rounded-field mb-2">
          {#each children as childId}
             <li>
