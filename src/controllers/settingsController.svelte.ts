@@ -1,69 +1,33 @@
-import { loadSettingsState, saveSettingsState } from "@utils/storage";
-import { Settings } from "@projectTypes/settingsTypes";
+import { settingsStore } from "@stores/settingsStore.svelte";
 
 class SettingsController {
-   state = $state<Settings>({
-      theme: "dark",
-      sidebarIsLocked: false,
-      showMetadata: false,
-      showEditorToolbar: false,
-   });
 
-   constructor() {
-      const loadedState = loadSettingsState();
-      if (loadedState) {
-         this.state = loadedState;
-      }
-
-      $effect.root(() => {
-         $effect(() => {
-            saveSettingsState(this.state);
-         });
-      });
-   }
-
+   // theme
    toggleThemeMode = () => {
-      this.state = {
-         ...this.state,
-         theme: this.state.theme === "light" ? "dark" : "light",
-      };
+      settingsStore.theme = settingsStore.theme === "light" ? "dark" : "light";
    };
+   getTheme = (): "light" | "dark" => settingsStore.theme;
 
+
+   // lock sidebar
    toggleLockSidebar = () => {
-      this.state = {
-         ...this.state,
-         sidebarIsLocked: !this.state.sidebarIsLocked,
-      };
+      settingsStore.sidebarIsLocked = !settingsStore.sidebarIsLocked;
    };
-   getLockSidebar = () => this.state.sidebarIsLocked;
+   getLockSidebar = () => settingsStore.sidebarIsLocked;
 
-   /**
-    * @returns {"light" | "dark"} - Returns "light" or "dark" theme.
-    * @description Returns the current theme of the application.
-    */
-   getTheme = (): "light" | "dark" => this.state.theme;
 
-   /**
-    * @returns {void}
-    * @description Hides or shows the metadata information on notes.
-    */
+   // show metadata
    toggleShowMetadata = (): void => {
-      this.state.showMetadata = !this.state.showMetadata;
+      settingsStore.showMetadata = !settingsStore.showMetadata;
    };
+   getShowMetadata = () => settingsStore.showMetadata;
 
-   /**
-    *
-    * @returns {boolean} - Returns true if the metadata is shown, false otherwise
-    * @description This function is used to get the value of showMetadata from the state.
-    * It is used to determine whether the metadata should be shown or not.
-    */
-   getShowMetadata = (): boolean => this.state.showMetadata;
 
-   // --- EDITOR TOOLBAR ---
-   getShowEditorToolbar = (): boolean => this.state.showEditorToolbar;
-   toogleShowEditorToolbar = () => {
-      this.state.showEditorToolbar = !this.state.showEditorToolbar;
+   // show editor toolbar
+   toogleShowEditorToolbar = (): void => {
+      settingsStore.showEditorToolbar = !settingsStore.showEditorToolbar;
    };
+   getShowEditorToolbar = () => settingsStore.showEditorToolbar
 }
 
 export const settingsController = $state(new SettingsController());
