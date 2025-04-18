@@ -3,7 +3,7 @@
 
 <script lang="ts">
 import type { SearchResult } from "@projectTypes/searchTypes";
-import { FileIcon, type Icon } from "lucide-svelte";
+import { FileIcon } from "lucide-svelte";
 import { tick } from "svelte";
 
 // Props
@@ -90,8 +90,12 @@ function highlightMatch(text: string, query: string): string {
 <svelte:window onkeydown={handleKeyDown} />
 
 <div
-   class="bg-base-100 rounded-box border-base-300 absolute top-full left-0 z-100 mt-2 max-h-96 w-full overflow-y-auto border shadow-xl">
+   class="bg-base-100 rounded-box border-base-300 absolute top-full left-0 z-100 mt-2 max-h-[calc(95vh-3.5rem)] w-full overflow-y-auto border shadow-xl">
    {#if results.length > 0}
+      <div
+         class="text-muted-content border-base-300 bg-base-100 sticky top-0 border-b px-4 py-1.5 text-sm">
+         Resultados: {results.length}
+      </div>
       <ul class="scroll-auto p-0">
          {#each results as result, index}
             <li
@@ -139,10 +143,19 @@ function highlightMatch(text: string, query: string): string {
       </ul>
    {:else}
       <div class="px-6 pt-6 pb-8 text-center">
-         <p class="mb-3 text-lg font-bold">No se han encontrado resultados</p>
-         <p class="text-muted-content">
-            No hay coincidencias para "{searchValue}"
-         </p>
+         {#if searchValue !== ""}
+            <p class="mb-3 text-lg font-bold">
+               No se han encontrado resultados
+            </p>
+            <p class="text-muted-content">
+               No hay coincidencias para "{searchValue}"
+            </p>
+         {:else}
+            <p class="mb-3 text-lg font-bold">
+               Comienza a escribir para buscar
+            </p>
+            <p class="text-muted-content">La busqueda esta vacia</p>
+         {/if}
       </div>
    {/if}
 </div>
