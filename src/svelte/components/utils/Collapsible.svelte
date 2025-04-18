@@ -9,6 +9,8 @@ interface CollapsibleProps {
    oncollapse?: () => void;
    startCollapsed?: boolean;
    headingContent: Snippet;
+   headingClass?: string;
+   hasSeparator?: boolean;
    children?: Snippet;
    chevronPosition?: "floating-left" | "left" | "right";
 }
@@ -17,7 +19,9 @@ let {
    oncollapse,
    startCollapsed: collapsed = false,
    headingContent,
+   headingClass,
    children,
+   hasSeparator = false,
    chevronPosition = "right",
 }: CollapsibleProps = $props();
 let isCollapsed: boolean = $state(collapsed);
@@ -36,6 +40,7 @@ function toggle(): void {
          type="button"
          onclick={toggle}
          class="flex w-full cursor-pointer items-center px-0.5 py-2
+         {headingClass}
          {chevronPosition === 'floating-left' ? 'relative' : ''}"
          aria-expanded={!isCollapsed}>
          {#if chevronPosition === "left"}
@@ -70,6 +75,10 @@ function toggle(): void {
             </div>
          {/if}
       </button>
+   {/if}
+
+   {#if hasSeparator}
+      <hr class="border-base-400 mb-1" />
    {/if}
 
    {#if children}
