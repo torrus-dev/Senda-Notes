@@ -25,17 +25,19 @@ let {
    note,
    toggleExpansion,
    isExpanded,
+   isEditingTitle,
+   toggleEditTitleMode,
 }: {
    note: Note;
    toggleExpansion: (event: Event) => void;
    isExpanded: boolean;
+   isEditingTitle: boolean;
+   toggleEditTitleMode: () => void;
 } = $props();
 
 let isActive = $derived(note.id === workspace.getActiveNoteId());
 let childrenCount = $derived(noteQueryController.getChildrenCount(note.id));
 let hasChildren = $derived(childrenCount > 0);
-
-let isEditingTitle = $state(false);
 
 const handleSelectTitle = (event: KeyboardEvent | MouseEvent) => {
    if (!isEditingTitle) {
@@ -44,13 +46,6 @@ const handleSelectTitle = (event: KeyboardEvent | MouseEvent) => {
          workspace.setActiveNoteId(note.id);
       }
    }
-};
-
-const startEditingLabel = () => {
-   isEditingTitle = true;
-};
-const stopEditingLabel = () => {
-   isEditingTitle = false;
 };
 
 // Referencia al componente InlineTitleEditor para acceder a su elemento DOM
@@ -76,7 +71,9 @@ let editableElement: SvelteComponent;
          type: "action",
          label: "Rename Note",
          icon: PenLineIcon,
-         action: startEditingLabel,
+         action: () => {
+            toggleEditTitleMode();
+         },
       },
       {
          type: "action",
@@ -111,7 +108,9 @@ let editableElement: SvelteComponent;
          noteTitle={note.title}
          isEditing={isEditingTitle}
          class="truncate {!isExpanded ? 'text-muted-content' : ''}"
-         onEditComplete={stopEditingLabel} />
+         onEditComplete={() => {
+            toggleEditTitleMode();
+         }} />
    </div>
    <div class="flex items-center">
       <Button

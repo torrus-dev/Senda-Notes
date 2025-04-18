@@ -23,6 +23,7 @@ let isDragged = $derived(
       dndController.dragSource.id === note.id,
 );
 let branchDragging = $derived(checkDraggingBranch(note.id));
+let isEditingTitle: boolean = $state(false);
 
 // Setup drag and drop
 const {
@@ -43,6 +44,10 @@ const toggleExpansion = (event: Event) => {
    event.stopPropagation();
    isExpanded = !isExpanded;
 };
+
+function toggleEditTitleMode() {
+   isEditingTitle = !isEditingTitle;
+}
 </script>
 
 <NoteTreeLine position={position} parentId={note.parentId} />
@@ -51,7 +56,7 @@ const toggleExpansion = (event: Event) => {
    class="group/node rounded-field cursor-pointer bg-transparent transition-colors duration-300
     {isDragedOver ? 'highlight' : ''} 
     {isDragged ? 'opacity-50' : ''}"
-   draggable="true"
+   draggable={!isEditingTitle}
    ondragstart={handleDragStart}
    ondragover={handleDragOver}
    ondragend={handleDragEnd}
@@ -60,7 +65,9 @@ const toggleExpansion = (event: Event) => {
    <NoteTreeLabel
       note={note}
       toggleExpansion={toggleExpansion}
-      isExpanded={isExpanded} />
+      isExpanded={isExpanded}
+      isEditingTitle={isEditingTitle}
+      toggleEditTitleMode={toggleEditTitleMode} />
 
    {#if isExpanded && note.children && note.children.length > 0}
       <ul class="border-base-400/60 ml-2.5 border-l-2">
