@@ -1,6 +1,7 @@
 <script lang="ts">
 import { noteController } from "@controllers/noteController.svelte";
 import { sanitizeTitle } from "@utils/noteUtils";
+import { tick } from "svelte";
 
 // Props
 let {
@@ -9,91 +10,68 @@ let {
    class: userClass = "",
    isEditing = false,
    onEditComplete = () => {}, // Callback opcional cuando se completa la edición
-   onclick = () => {}, // Callback opcional para cuando se hace clic (para Breadcrumbs)
 }: {
    noteId: string;
    noteTitle: string;
    class?: string;
    isEditing: boolean;
    onEditComplete: () => void;
-   onclick?: (event?: MouseEvent) => void;
 } = $props();
 
-// Referencias
-let editableElement: HTMLElement;
+// Referencias y estado local
+let inputElement: HTMLInputElement | undefined = $state(undefined);
+let currentTitle = $state(noteTitle);
 
-// Eventos y manejadores
-function handleTitleChange() {
-   if (!editableElement || !isEditing) return;
-
-   const newTitle = sanitizeTitle(editableElement.innerText);
+// Manejadores de eventos
+function saveTitle() {
+   const newTitle = sanitizeTitle(currentTitle);
 
    if (newTitle && newTitle.trim() !== "") {
       noteController.updateNote(noteId, { title: newTitle });
-      onEditComplete();
    } else {
-      // Restaurar el título original en el elemento editable
-      editableElement.innerText = noteTitle;
+      // Restaurar el título original si está vacío
+      currentTitle = noteTitle;
    }
+
+   onEditComplete();
 }
 
 function handleKeydown(event: KeyboardEvent) {
    if (event.key === "Escape") {
       // Cancelar edición
-      editableElement.innerText = noteTitle; // Restaurar valor original
-      editableElement.blur();
+      currentTitle = noteTitle;
       onEditComplete();
    } else if (event.key === "Enter") {
-      event.preventDefault();
-      handleTitleChange();
-      editableElement.blur();
-      onEditComplete();
+      saveTitle();
    }
-}
-
-function handleClick(event: MouseEvent) {
-   if (onclick && !isEditing) {
-      onclick();
-   }
-   // Si ya está en edición, permitir que el evento prosiga normalmente
 }
 
 // Sincronizar el título cuando cambia externamente
 $effect(() => {
-   if (editableElement && noteTitle !== editableElement.innerText) {
-      editableElement.innerText = noteTitle;
-   }
+   currentTitle = noteTitle;
 });
 
-// Efecto para la selección de texto cuando entra en modo edición
 $effect(() => {
-   if (isEditing && editableElement) {
-      // Enfoque al elemento y selección de todo el texto
-      setTimeout(() => {
-         editableElement.focus();
-         const range = document.createRange();
-         range.selectNodeContents(editableElement);
-         const selection = window.getSelection();
-         if (selection) {
-            selection.removeAllRanges();
-            selection.addRange(range);
+   if (isEditing) {
+      tick().then(() => {
+         if (inputElement) {
+            inputElement.focus();
          }
-      }, 0);
+      });
    }
 });
-
-// Classes derivadas basadas en el estado de edición
-const editingClass = $derived(isEditing ? "cursor-text underline" : "");
 </script>
 
-<span
-   bind:this={editableElement}
-   class="inline-block {userClass} {editingClass}"
-   tabindex="0"
-   role="textbox"
-   contenteditable={isEditing}
-   onblur={handleTitleChange}
-   onclick={handleClick}
-   onkeydown={isEditing ? handleKeydown : null}>
-   {noteTitle}
-</span>
+{#if isEditing}
+   <input
+      bind:this={inputElement}
+      bind:value={currentTitle}
+      type="text"
+      class="{userClass} w-full underline outline-none"
+      onblur={saveTitle}
+      onkeydown={handleKeydown} />
+{:else}
+   <div class="{userClass} w-full text-left">
+      {noteTitle}
+   </div>
+{/if}

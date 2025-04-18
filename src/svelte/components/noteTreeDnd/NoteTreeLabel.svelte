@@ -58,8 +58,9 @@ let editableElement: SvelteComponent;
 </script>
 
 <div
-   class="group rounded-field flex min-w-fit flex-row justify-between px-2 py-1.5 pl-1 whitespace-nowrap transition-colors select-none hover:bg-(--color-bg-hover)
-      {isActive ? 'bg-(--color-bg-active)' : ''}"
+   class="group rounded-field bg-interactive flex min-w-fit flex-row justify-between px-2 py-1.5 pl-1 whitespace-nowrap select-none
+      {isActive ? 'bg-interactive-focus' : ''} 
+      {isEditingTitle ? 'outline-interactive-accent-focus outline-2' : ''}"
    role="button"
    tabindex="0"
    use:contextMenu={[
@@ -87,10 +88,10 @@ let editableElement: SvelteComponent;
    ]}
    onclick={handleSelectTitle}
    onkeydown={handleSelectTitle}>
-   <div class="flex gap-1">
+   <div class="flex flex-grow-1 gap-1">
       {#if hasChildren}
          <button
-            class="transition-color rounded-selector cursor-pointer items-center whitespace-nowrap duration-200 ease-in-out hover:bg-(--color-bg-hover)
+            class="transition-color rounded-selector hover:bg-interactive-hover cursor-pointer items-center whitespace-nowrap duration-200 ease-in-out
           {isExpanded ? 'isExpanded' : ''}"
             onclick={toggleExpansion}
             aria-expanded={isExpanded ? "true" : "false"}
