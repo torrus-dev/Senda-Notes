@@ -5,7 +5,7 @@ import { workspace } from "./workspaceController.svelte";
 
 class NoteQueryController {
    // Métodos de acceso a datos delegados al store
-   getAllNotes = () => noteStore.getNotes();
+   getAllNotes = () => noteStore.getAllNotes();
    getNoteById = (id: string): Note | undefined => noteStore.getNoteById(id);
 
    getTitleById = (id: string): string | undefined => {
@@ -46,12 +46,12 @@ class NoteQueryController {
       return titles.join("/");
    }
 
-   getNoteCount = (): number => noteStore.getNotes().length;
+   getNoteCount = (): number => noteStore.getAllNotes().length;
 
    getChildrenCount = (noteId: string): number => {
       const note = this.getNoteById(noteId);
       if (!note) return 0;
-      const descendants = getDescendantsId(noteStore.getNotes(), noteId);
+      const descendants = getDescendantsId(noteStore.getAllNotes(), noteId);
       return descendants.length;
    };
 

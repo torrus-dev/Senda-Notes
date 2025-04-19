@@ -38,7 +38,7 @@ class NoteTreeController {
       const idsToDelete = new Set<string>();
       const collectDescendants = (currNoteId: string) => {
          idsToDelete.add(currNoteId);
-         noteStore.getNotes().forEach((note) => {
+         noteStore.getAllNotes().forEach((note) => {
             if (note.parentId === currNoteId) {
                collectDescendants(note.id);
             }
@@ -47,7 +47,7 @@ class NoteTreeController {
 
       // Llamamos a la función recursiva pero no incluimos el ID inicial
       // ya que eso lo hace el método llamador cuando sea necesario
-      const notes = noteStore.getNotes();
+      const notes = noteStore.getAllNotes();
       notes.forEach((note) => {
          if (note.parentId === noteId) {
             collectDescendants(note.id);
@@ -133,7 +133,9 @@ class NoteTreeController {
          ...rootNotes.slice(adjustedPosition),
       ];
 
-      const notesWithParents = noteStore.getNotes().filter((n) => n.parentId);
+      const notesWithParents = noteStore
+         .getAllNotes()
+         .filter((n) => n.parentId);
       noteStore.setNotes([...newRootNotes, ...notesWithParents]);
    }
 
