@@ -13,7 +13,7 @@ let invalidPopover = $state({
    isOpen: true,
    message: 'Note title cannot contain "/"',
    styles: "",
-   placement: "top",
+   placement: "left",
 });
 
 // Referencias
@@ -89,6 +89,6 @@ $effect(() => {
    isOpen={invalidPopover.isOpen}
    styles={invalidPopover.styles}
    htmlElement={editableElement}
-   placement="top">
+   placement="left">
    {invalidPopover.message}
 </Popover>

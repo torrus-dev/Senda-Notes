@@ -1,16 +1,3 @@
-<style>
-.popover {
-   position: absolute;
-   z-index: 1000;
-   background-color: white;
-   border-radius: 4px;
-   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-   max-width: 300px;
-   padding: 8px;
-   box-sizing: border-box;
-}
-</style>
-
 <script lang="ts">
 import { type Snippet, tick } from "svelte";
 import { calculateFloatingPosition } from "@utils/floatingPositionUtils";
@@ -46,7 +33,7 @@ async function positionPopover() {
    const floatingPlacement =
       placement === "top" || placement === "bottom"
          ? `${placement}`
-         : `${placement}-start`;
+         : `${placement}-center`;
 
    const { x, y } = await calculateFloatingPosition(
       htmlElement,
@@ -149,7 +136,7 @@ $effect.root(() => {
    <div
       bind:this={popoverElement}
       role="tooltip"
-      class=" bg-base-300 {'popover ' + (styles || '')}"
+      class="bg-base-400 rounded-field absolute z-90 p-2 shadow {styles}"
       onmouseenter={handlePopoverMouseEnter}
       onmouseleave={handlePopoverMouseLeave}>
       {@render children()}
