@@ -1,17 +1,18 @@
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Note } from "@projectTypes/noteTypes";
 
-import { focusController } from "@controllers/focusController.svelte";
+import { noteStore } from "@stores/noteStore.svelte";
 import {
    createDefaultMetadata,
    generateUniqueTitle,
    sanitizeTitle,
    updateModifiedMetadata,
 } from "@utils/noteUtils";
-import { workspace } from "./workspaceController.svelte";
-import { noteStore } from "@stores/noteStore.svelte";
-import { noteTreeController } from "./noteTreeController.svelte";
-import { noteQueryController } from "./noteQueryController.svelte";
+
+import { focusController } from "@controllers/focusController.svelte";
+import { noteTreeController } from "@controllers//noteTreeController.svelte";
+import { noteQueryController } from "@controllers//noteQueryController.svelte";
+import { workspace } from "@controllers/workspaceController.svelte";
 
 class NoteController {
    isDataSaved = $derived(noteStore.isDataSaved);

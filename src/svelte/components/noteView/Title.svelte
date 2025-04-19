@@ -15,9 +15,7 @@ let editableElement: HTMLElement | undefined = $state();
 // Eventos y manejadores
 function handleTitleChange() {
    if (!editableElement) return;
-
    const newTitle = sanitizeTitle(editableElement.innerText);
-
    if (newTitle && newTitle.trim() !== "") {
       noteController.updateNote(noteId, { title: newTitle });
    } else {
@@ -76,11 +74,11 @@ $effect(() => {
    onkeydown={handleKeydown}>
    <!-- El contennoteIdo visible lo controla directamente el campo contenteditable -->
 </h1>
-<!-- 
+
 <Popover
    isOpen={true}
    styles="bg-error-bg"
    htmlElement={editableElement}
    placement="top">
    Note title cannot contain "/"
-</Popover> -->
+</Popover>
