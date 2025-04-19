@@ -10,13 +10,14 @@ import Popover from "@components/floating/popover/Popover.svelte";
 let { noteId, noteTitle }: { noteId: string; noteTitle: string } = $props();
 
 let invalidPopover = $state({
-   isOpen: false,
+   isOpen: true,
    message: 'Note title cannot contain "/"',
    styles: "",
+   placement: "top",
 });
 
 // Referencias
-let editableElement: HTMLElement;
+let editableElement: HTMLElement | undefined = $state();
 
 // Eventos y manejadores
 function handleTitleChange() {
@@ -33,6 +34,7 @@ function handleTitleChange() {
 }
 
 function handleKeydown(event: KeyboardEvent) {
+   if (!editableElement) return;
    if (event.key === "Escape") {
       // Cancelar edición
       editableElement.innerText = noteTitle; // Restaurar valor original
@@ -76,7 +78,7 @@ $effect(() => {
 <h1
    id="title"
    bind:this={editableElement}
-   class="overflow-hnoteIdden mt-16 font-bold"
+   class="overflow-h mt-16 w-fit font-bold"
    contenteditable="true"
    onblur={handleTitleChange}
    onkeydown={handleKeydown}>
@@ -86,6 +88,7 @@ $effect(() => {
 <Popover
    isOpen={invalidPopover.isOpen}
    styles={invalidPopover.styles}
-   htmlElement={editableElement}>
+   htmlElement={editableElement}
+   placement="top">
    {invalidPopover.message}
 </Popover>
