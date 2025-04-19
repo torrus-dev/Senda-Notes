@@ -137,22 +137,6 @@ onDestroy(() => {
 });
 </script>
 
-{#if editorBox.current && (isMobile || settingsController.getShowEditorToolbar())}
-   <div class="bg-base-100 sticky top-0">
-      <div class="mx-auto w-full max-w-2xl">
-         {#if noteController.isDataSaved}
-            <div class="flex items-center gap-2 text-emerald-500">
-               <CheckIcon size="1.0625em" /> Guardado
-            </div>
-         {:else}
-            <div>Sin Guardar</div>
-         {/if}
-         {noteController.isDataSaved ? "" : ""}
-         <Toolbar editorBox={{ current: editorBox.current }} />
-      </div>
-   </div>
-{/if}
-
 <div class="mx-auto my-4 w-full max-w-2xl">
    <div
       bind:this={editorElement}

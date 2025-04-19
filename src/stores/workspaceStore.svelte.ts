@@ -51,24 +51,6 @@ class WorkspaceStore {
             saveWorkspaceState(persistableState);
          });
       });
-
-      // Configurar un efecto para monitorear cambios en activeNoteId
-      $effect.root(() => {
-         $effect(() => {
-            const currentActiveId = this.data.activeNoteId;
-
-            // Si había una nota activa anterior, guardar cualquier cambio pendiente
-            if (
-               this.data.previousActiveNoteId &&
-               this.data.previousActiveNoteId !== currentActiveId
-            ) {
-               noteStore.saveContentForNote(this.data.previousActiveNoteId);
-            }
-
-            // Actualizar el seguimiento de la nota activa
-            this.data.previousActiveNoteId = currentActiveId;
-         });
-      });
    }
 
    get propertyEditor() {
