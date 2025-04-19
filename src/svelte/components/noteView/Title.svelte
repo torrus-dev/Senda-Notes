@@ -33,8 +33,8 @@ function handleKeydown(event: KeyboardEvent) {
    } else if (event.key === "Enter") {
       event.preventDefault();
       handleTitleChange();
-      editableElement.blur();
-      focusController.requestFocus(FocusTarget.EDITOR);
+      // investigar porque da problemas el poner esta linea
+      // focusController.requestFocus(FocusTarget.EDITOR);
    }
 }
 
