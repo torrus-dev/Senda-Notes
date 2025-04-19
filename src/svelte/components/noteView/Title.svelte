@@ -9,13 +9,6 @@ import Popover from "@components/floating/popover/Popover.svelte";
 // Props
 let { noteId, noteTitle }: { noteId: string; noteTitle: string } = $props();
 
-let invalidPopover = $state({
-   isOpen: true,
-   message: 'Note title cannot contain "/"',
-   styles: "",
-   placement: "left",
-});
-
 // Referencias
 let editableElement: HTMLElement | undefined = $state();
 
@@ -86,9 +79,9 @@ $effect(() => {
 </h1>
 
 <Popover
-   isOpen={invalidPopover.isOpen}
-   styles={invalidPopover.styles}
+   isOpen={true}
+   styles="bg-error-bg"
    htmlElement={editableElement}
-   placement="left">
-   {invalidPopover.message}
+   placement="top">
+   Note title cannot contain "/"
 </Popover>

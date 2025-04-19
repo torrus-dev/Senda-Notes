@@ -2,10 +2,11 @@
 import { type Snippet, tick } from "svelte";
 import { calculateFloatingPosition } from "@utils/floatingPositionUtils";
 
+// Props con valores por defecto
 let {
    isOpen,
    children,
-   styles,
+   styles = "",
    htmlElement,
    placement = "bottom",
    showOnHover = false,
@@ -20,20 +21,32 @@ let {
    hoverDelay?: number;
 } = $props();
 
+// Estado del componente
 let popoverElement: HTMLElement | undefined = $state();
+let popoverPosition = $state({ x: 0, y: 0 });
+let hovered = $state(false);
 let timerId: ReturnType<typeof setTimeout> | null = null;
-let popoverPosition = { x: 0, y: 0 };
-let hovered = false;
+let resizeObserver: ResizeObserver | null = null;
 
-// Función para posicionar el popover
-async function positionPopover() {
+// Mapa de posiciones opuestas para fallbacks
+const OPPOSITE_POSITIONS = {
+   top: "bottom",
+   right: "left",
+   bottom: "top",
+   left: "right",
+} as const;
+
+// Función para posicionar el popover mejorada
+async function updatePopoverPosition() {
    if (!popoverElement || !htmlElement) return;
 
-   // Transformar el placement simple a la notación de FloatingUI
+   // Convertir placement simple a notación de FloatingUI
    const floatingPlacement =
       placement === "top" || placement === "bottom"
-         ? `${placement}`
+         ? placement
          : `${placement}-center`;
+
+   const fallbackPlacement = OPPOSITE_POSITIONS[placement] as any;
 
    const { x, y } = await calculateFloatingPosition(
       htmlElement,
@@ -42,93 +55,97 @@ async function positionPopover() {
          placement: floatingPlacement as any,
          offsetValue: 10,
          padding: 5,
-         fallbackPlacements: [getOppositePosition(placement) as any],
+         fallbackPlacements: [fallbackPlacement],
       },
    );
 
    popoverPosition = { x, y };
 
-   // Aplicar la posición calculada
-   popoverElement.style.left = `${x}px`;
-   popoverElement.style.top = `${y}px`;
+   // Aplicar posición
+   if (popoverElement) {
+      popoverElement.style.left = `${x}px`;
+      popoverElement.style.top = `${y}px`;
+   }
 }
 
-// Función para obtener la posición opuesta para el fallback
-function getOppositePosition(pos: string): string {
-   const opposites: { [key: string]: string } = {
-      top: "bottom",
-      right: "left",
-      bottom: "top",
-      left: "right",
-   };
-   return opposites[pos] || "bottom";
-}
-
-// Gestionar eventos de ratón si showOnHover está activo
-function handleMouseEnter() {
-   if (!showOnHover) return;
-
-   hovered = true;
+// Funciones simplificadas para manejo de hover
+function startOpenTimer() {
    if (timerId) clearTimeout(timerId);
-
-   timerId = setTimeout(() => {
-      isOpen = true;
-   }, hoverDelay);
+   timerId = setTimeout(() => (isOpen = true), hoverDelay);
 }
 
-function handleMouseLeave() {
-   if (!showOnHover) return;
+function scheduleClose(delay = 200) {
+   setTimeout(() => {
+      if (!hovered) isOpen = false;
+   }, delay);
+}
 
+// Gestores de eventos
+function handleTargetMouseEnter() {
+   if (!showOnHover) return;
+   hovered = true;
+   startOpenTimer();
+}
+
+function handleTargetMouseLeave() {
+   if (!showOnHover) return;
    hovered = false;
    if (timerId) {
       clearTimeout(timerId);
       timerId = null;
    }
-
-   // Dar un pequeño tiempo antes de cerrar para permitir
-   // que el usuario mueva el cursor al popover
-   setTimeout(() => {
-      if (!hovered) isOpen = false;
-   }, 200);
+   scheduleClose();
 }
 
-// Manejar el evento de mouse enter en el popover
 function handlePopoverMouseEnter() {
    if (showOnHover) hovered = true;
 }
 
-// Manejar el evento de mouse leave en el popover
 function handlePopoverMouseLeave() {
    if (showOnHover) {
       hovered = false;
-      setTimeout(() => {
-         if (!hovered) isOpen = false;
-      }, 100);
+      scheduleClose(100);
    }
 }
 
-// Añadir/eliminar eventos según sea necesario
+// Configuración y limpieza de eventos hover
 $effect.root(() => {
-   if (showOnHover && htmlElement) {
-      htmlElement.addEventListener("mouseenter", handleMouseEnter);
-      htmlElement.addEventListener("mouseleave", handleMouseLeave);
+   if (!showOnHover || !htmlElement) return;
 
-      return () => {
-         htmlElement.removeEventListener("mouseenter", handleMouseEnter);
-         htmlElement.removeEventListener("mouseleave", handleMouseLeave);
-         if (timerId) clearTimeout(timerId);
-      };
-   }
+   htmlElement.addEventListener("mouseenter", handleTargetMouseEnter);
+   htmlElement.addEventListener("mouseleave", handleTargetMouseLeave);
+
+   return () => {
+      htmlElement.removeEventListener("mouseenter", handleTargetMouseEnter);
+      htmlElement.removeEventListener("mouseleave", handleTargetMouseLeave);
+      if (timerId) clearTimeout(timerId);
+   };
 });
 
+// Configuración del ResizeObserver
 $effect.root(() => {
-   $effect(() => {
-      if (isOpen) {
-         tick().then(() => {
-            positionPopover();
-         });
-      }
+   if (!htmlElement) return;
+
+   // Crear un observer para detectar cambios en el tamaño del elemento referencia
+   resizeObserver = new ResizeObserver(() => {
+      if (isOpen) updatePopoverPosition();
    });
+
+   resizeObserver.observe(htmlElement);
+
+   return () => {
+      if (resizeObserver) {
+         resizeObserver.disconnect();
+         resizeObserver = null;
+      }
+   };
+});
+
+// Efecto para posicionar el popover cuando se abre
+$effect(() => {
+   if (isOpen) {
+      tick().then(updatePopoverPosition);
+   }
 });
 </script>
 
