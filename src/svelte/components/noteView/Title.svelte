@@ -58,11 +58,10 @@ $effect(() => {
    }
 });
 
+// Enfocar titulo cuando se mande desde focusController
 $effect(() => {
-   // Register title in focus controller
    const { targetId, timestamp } = focusController.focus;
    if (targetId === FocusTarget.TITLE && timestamp > 0 && editableElement) {
-      console.log("title element", editableElement);
       focusController.selectAllText(FocusTarget.TITLE);
    }
 });
@@ -71,17 +70,17 @@ $effect(() => {
 <h1
    id="title"
    bind:this={editableElement}
-   class="overflow-h mt-16 w-fit font-bold"
+   class="overflow-h mt-16 font-bold"
    contenteditable="true"
    onblur={handleTitleChange}
    onkeydown={handleKeydown}>
    <!-- El contennoteIdo visible lo controla directamente el campo contenteditable -->
 </h1>
-
+<!-- 
 <Popover
    isOpen={true}
    styles="bg-error-bg"
    htmlElement={editableElement}
    placement="top">
    Note title cannot contain "/"
-</Popover>
+</Popover> -->
