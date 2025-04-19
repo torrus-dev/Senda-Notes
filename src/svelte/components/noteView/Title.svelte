@@ -5,9 +5,14 @@ import { noteController } from "@controllers/noteController.svelte";
 import { focusController } from "@controllers/focusController.svelte";
 import { FocusTarget } from "@projectTypes/focusTypes";
 import Popover from "@components/floating/popover/Popover.svelte";
+import { noteQueryController } from "@controllers/noteQueryController.svelte";
 
 // Props
-let { noteId, noteTitle }: { noteId: string; noteTitle: string } = $props();
+let { noteId }: { noteId: string } = $props();
+
+let savedNoteTitle: string | undefined = $derived(
+   noteQueryController.getTitleById(noteId),
+);
 
 // Referencias
 let editableElement: HTMLElement | undefined = $state();
@@ -18,9 +23,6 @@ function handleTitleChange() {
    const newTitle = sanitizeTitle(editableElement.innerText);
    if (newTitle && newTitle.trim() !== "") {
       noteController.updateNote(noteId, { title: newTitle });
-   } else {
-      // Restaurar el título original en el elemento editable
-      editableElement.innerText = noteTitle;
    }
 }
 
@@ -28,20 +30,19 @@ function handleKeydown(event: KeyboardEvent) {
    if (!editableElement) return;
    if (event.key === "Escape") {
       // Cancelar edición
-      editableElement.innerText = noteTitle; // Restaurar valor original
+      editableElement.innerText = savedNoteTitle ?? ""; // Restaurar valor original
       editableElement.blur();
    } else if (event.key === "Enter") {
       event.preventDefault();
       handleTitleChange();
-      editableElement.blur();
-      focusController.requestFocus(FocusTarget.EDITOR);
+      // focusController.requestFocus(FocusTarget.EDITOR);
    }
 }
 
 // Sincronizar el título cuando cambia externamente
 $effect(() => {
-   if (editableElement && noteTitle !== editableElement.innerText) {
-      editableElement.innerText = noteTitle;
+   if (editableElement && savedNoteTitle) {
+      editableElement.innerText = savedNoteTitle;
    }
 });
 

@@ -140,7 +140,9 @@ class DndController {
             console.warn("No se puede soltar una nota sobre sí misma");
             return;
          }
-         if (isDescendant(noteStore.getNotes(), targetNoteId, draggedNoteId)) {
+         if (
+            isDescendant(noteStore.getAllNotes(), targetNoteId, draggedNoteId)
+         ) {
             console.warn(
                "No se puede soltar una nota sobre un descendiente suyo",
             );
@@ -170,7 +172,7 @@ class DndController {
             targetParentId &&
             (targetParentId === draggedNoteId ||
                isDescendant(
-                  noteStore.getNotes(),
+                  noteStore.getAllNotes(),
                   targetParentId,
                   draggedNoteId,
                ))

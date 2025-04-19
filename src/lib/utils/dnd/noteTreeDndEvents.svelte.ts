@@ -171,7 +171,7 @@ export function checkDraggingBranch(noteId: string) {
       if (dragSourceId === noteId) {
          return true;
       } else {
-         return isDescendant(noteStore.getNotes(), noteId, dragSourceId);
+         return isDescendant(noteStore.getAllNotes(), noteId, dragSourceId);
       }
    }
    return false;
