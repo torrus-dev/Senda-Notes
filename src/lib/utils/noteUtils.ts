@@ -10,9 +10,10 @@ export function removeDiacritics(text: string): string {
 
 export function sanitizeTitle(title: string): string {
    return title
-      .replace(/[\n\r]+/g, " ")
-      .trim()
-      .slice(0, 100);
+      .replace(/[\/]/g, "") // Eliminar barras diagonales "/"
+      .replace(/[\n\r]+/g, " ") // Reemplazar saltos de línea por espacios
+      .trim() // Eliminar espacios al inicio y final
+      .slice(0, 100); // Limitar a 100 caracteres
 }
 
 export function generateUniqueTitle(notes: Note[]): string {
