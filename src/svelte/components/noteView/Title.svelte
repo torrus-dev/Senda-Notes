@@ -4,9 +4,16 @@ import { sanitizeTitle } from "@utils/noteUtils";
 import { noteController } from "@controllers/noteController.svelte";
 import { focusController } from "@controllers/focusController.svelte";
 import { FocusTarget } from "@projectTypes/focusTypes";
+import Popover from "@components/floating/popover/Popover.svelte";
 
 // Props
 let { noteId, noteTitle }: { noteId: string; noteTitle: string } = $props();
+
+let invalidPopover = $state({
+   isOpen: false,
+   message: 'Note title cannot contain "/"',
+   styles: "",
+});
 
 // Referencias
 let editableElement: HTMLElement;
@@ -75,3 +82,10 @@ $effect(() => {
    onkeydown={handleKeydown}>
    <!-- El contennoteIdo visible lo controla directamente el campo contenteditable -->
 </h1>
+
+<Popover
+   isOpen={invalidPopover.isOpen}
+   styles={invalidPopover.styles}
+   htmlElement={editableElement}>
+   {invalidPopover.message}
+</Popover>
