@@ -1,4 +1,4 @@
-import type { RenderItem } from "@projectTypes/floatingMenuTypes";
+import type { RenderItem } from "@projectTypes/floatingTypes";
 import { floatingMenuController } from "@controllers/floatingMenuController.svelte";
 
 // Obtiene la lista actual de elementos interactivos según el estado del menú.

@@ -1,8 +1,8 @@
 <script lang="ts">
 import type { Note } from "@projectTypes/noteTypes";
-import NavigationButtons from "@components/layout/navbar/NavigationButtons.svelte";
-import SidebarToogle from "@components/layout/sidebar/SidebarToogle.svelte";
-import NavigationBar from "@components/layout/navbar/NavigationBar.svelte";
+import NavigationButtons from "@components/navbar/NavigationButtons.svelte";
+import SidebarToogle from "@components/sidebar/SidebarToogle.svelte";
+import NavigationBar from "@components/navbar/NavigationBar.svelte";
 
 let { note }: { note: Note | undefined } = $props();
 </script>

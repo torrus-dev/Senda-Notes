@@ -2,11 +2,11 @@
 import { SettingsIcon, InfoIcon, StarIcon, Trash2Icon } from "lucide-svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 
-import NoteTreeRenderer from "../../noteTreeDnd/NoteTreeRenderer.svelte";
-import SettingsModal from "../../modals/SettingsModal.svelte";
-import AboutModal from "../../modals/AboutModal.svelte";
+import NoteTreeRenderer from "@components/sidebar/noteTreeDnd/NoteTreeRenderer.svelte";
+import SettingsModal from "@components/modals/SettingsModal.svelte";
+import AboutModal from "@components/modals/AboutModal.svelte";
 import Button from "@components/utils/Button.svelte";
-import ResizableHandler from "./ResizableHandler.svelte";
+import ResizableHandler from "@components/sidebar/ResizableHandler.svelte";
 
 import { screenSizeController } from "@controllers/screenSizeController.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";

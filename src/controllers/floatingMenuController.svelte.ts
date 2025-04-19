@@ -5,7 +5,7 @@ import type {
    FloatingMenuData,
    RenderItem,
    EmptyMenuData,
-} from "@projectTypes/floatingMenuTypes";
+} from "@projectTypes/floatingTypes";
 import type { MenuItem, GroupMenuItem } from "@projectTypes/editorMenuTypes";
 
 class FloatingMenuController {

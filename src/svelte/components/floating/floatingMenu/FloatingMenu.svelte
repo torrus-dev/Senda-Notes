@@ -3,7 +3,7 @@ import type {
    ContextMenuData,
    DropdownMenuData,
    FloatingMenuData,
-} from "@projectTypes/floatingMenuTypes";
+} from "@projectTypes/floatingTypes";
 
 import { floatingMenuController } from "@controllers/floatingMenuController.svelte";
 import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
@@ -12,7 +12,7 @@ import { setupKeyboardNavigation } from "./keyboardNavigation";
 import {
    createCoordinateReference,
    calculateFloatingPosition,
-} from "./floatingPositionUtils";
+} from "@utils/floatingPositionUtils";
 
 import { tick } from "svelte";
 import ActionMenuItem from "./menuItems/ActionMenuItem.svelte";

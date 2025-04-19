@@ -26,7 +26,7 @@ import { getEditorContextMenuItems } from "@utils/editorMenuItems";
 import Toolbar from "@components/noteView/editor/Toolbar.svelte";
 
 import { FocusTarget } from "@projectTypes/focusTypes";
-import type { Coordinates } from "@projectTypes/floatingMenuTypes";
+import type { Coordinates } from "@projectTypes/floatingTypes";
 
 // Props
 let { noteId, content = "" }: { noteId: string; content: string } = $props();

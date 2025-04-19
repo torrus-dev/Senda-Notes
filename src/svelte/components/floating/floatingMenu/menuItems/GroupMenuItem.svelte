@@ -1,20 +1,21 @@
 <script lang="ts">
-import type { RenderItem } from "@projectTypes/floatingMenuTypes";
-
-import type { ActionMenuItem } from "@projectTypes/editorMenuTypes";
-
-import { CheckIcon } from "lucide-svelte";
-
-import { floatingMenuController } from "@controllers/floatingMenuController.svelte";
 import Button from "@components/utils/Button.svelte";
+import { floatingMenuController } from "@controllers/floatingMenuController.svelte";
+import type { GroupMenuItem } from "@projectTypes/editorMenuTypes";
+import type { RenderItem } from "@projectTypes/floatingTypes";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-svelte";
 import { onMount } from "svelte";
 
 let {
    menuItem,
+   isReturn: arrowLeft = false,
    inSubMenu,
+   onclick,
 }: {
-   menuItem: ActionMenuItem;
+   menuItem: GroupMenuItem;
+   isReturn: boolean;
    inSubMenu: boolean;
+   onclick: () => void;
 } = $props();
 
 let renderId = crypto.randomUUID();
@@ -43,19 +44,22 @@ onMount(() => {
    <Button
       bind:buttonElement={itemElement}
       size="small"
-      class="w-full justify-between outline-none {menuItem.class}"
-      onclick={() => {
-         menuItem.action?.();
-         floatingMenuController.closeMenu();
-      }}>
-      <span class="flex items-center gap-2">
-         <menuItem.icon size="1.0625rem" />
+      class="w-full  outline-none {menuItem.class}"
+      onclick={onclick}>
+      {#if arrowLeft}
+         <ChevronLeftIcon size="1.0625rem" class="absolute left-2" />
+      {/if}
+      <span
+         class="flex flex-1 items-center gap-2 {arrowLeft
+            ? 'justify-center'
+            : ''}">
+         {#if menuItem.icon}
+            <menuItem.icon size="1.0625rem" />
+         {/if}
          {menuItem.label}
       </span>
-      {#if menuItem.checked}
-         <span class="text-faint-content">
-            <CheckIcon size="1.0625rem" />
-         </span>
+      {#if !arrowLeft}
+         <ChevronRightIcon size="1.0625rem" />
       {/if}
    </Button>
 </li>

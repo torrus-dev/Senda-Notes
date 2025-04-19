@@ -1,6 +1,5 @@
-import { isDescendant } from "../noteUtils";
+import { isDescendant } from "@utils/noteUtils";
 import { dndController } from "@controllers/dndController.svelte";
-import { noteController } from "@controllers/noteController.svelte";
 import { DragSource } from "@projectTypes/dndTypes";
 import { noteStore } from "@stores/noteStore.svelte";
 

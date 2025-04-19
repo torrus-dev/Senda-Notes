@@ -2,7 +2,7 @@
 </style>
 
 <script lang="ts">
-import MainView from "./components/layout/MainView.svelte";
+import MainView from "./components/MainView.svelte";
 import { Settings } from "luxon";
 
 Settings.defaultLocale = "es-ES";
