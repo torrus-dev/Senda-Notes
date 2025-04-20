@@ -2,6 +2,7 @@
 import { noteController } from "@controllers/noteController.svelte";
 import { sanitizeTitle } from "@utils/noteUtils";
 import { tick } from "svelte";
+import Popover from "@components/floating/popover/Popover.svelte";
 
 // Props
 let {
@@ -21,6 +22,7 @@ let {
 // Referencias y estado local
 let inputElement: HTMLInputElement | undefined = $state(undefined);
 let currentTitle = $state(noteTitle);
+let hasForbiddenChar = $state(false);
 
 // Manejadores de eventos
 function saveTitle() {
@@ -46,6 +48,11 @@ function handleKeydown(event: KeyboardEvent) {
    }
 }
 
+// Verificar caracteres prohibidos cuando cambia el valor
+$effect(() => {
+   hasForbiddenChar = currentTitle.includes("/");
+});
+
 // Sincronizar el título cuando cambia externamente
 $effect(() => {
    currentTitle = noteTitle;
@@ -70,6 +77,16 @@ $effect(() => {
       class="{userClass} w-full underline outline-none"
       onblur={saveTitle}
       onkeydown={handleKeydown} />
+
+   {#if inputElement}
+      <Popover
+         isOpen={hasForbiddenChar}
+         styles="bg-error-bg"
+         htmlElement={inputElement}
+         placement="bottom">
+         Note title cannot contain "/"
+      </Popover>
+   {/if}
 {:else}
    <div class="{userClass} w-full text-left">
       {noteTitle}

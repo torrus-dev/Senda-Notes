@@ -9,8 +9,15 @@ import Popover from "@components/floating/popover/Popover.svelte";
 // Props
 let { noteId, noteTitle }: { noteId: string; noteTitle: string } = $props();
 
-// Referencias
+// Referencias y estado
 let editableElement: HTMLElement | undefined = $state();
+let containsSlash = $state(false);
+
+// Función para verificar si el texto contiene caracteres prohibidos
+function checkForbiddenChars() {
+   if (!editableElement) return;
+   containsSlash = editableElement.innerText.includes("/");
+}
 
 // Eventos y manejadores
 function handleTitleChange() {
@@ -22,6 +29,8 @@ function handleTitleChange() {
       // Restaurar el título original en el elemento editable
       editableElement.innerText = noteTitle;
    }
+   // Actualizar el estado después de procesar el cambio
+   checkForbiddenChars();
 }
 
 function handleKeydown(event: KeyboardEvent) {
@@ -30,12 +39,17 @@ function handleKeydown(event: KeyboardEvent) {
       // Cancelar edición
       editableElement.innerText = noteTitle; // Restaurar valor original
       editableElement.blur();
+      containsSlash = false;
    } else if (event.key === "Enter") {
       event.preventDefault();
       handleTitleChange();
-      // investigar porque da problemas el poner esta linea
+      // investigar porque crea loop de $effect el poner esta linea
       // focusController.requestFocus(FocusTarget.EDITOR);
    }
+}
+
+function handleInput() {
+   checkForbiddenChars();
 }
 
 // Sincronizar el título cuando cambia externamente
@@ -71,14 +85,17 @@ $effect(() => {
    class="overflow-h mt-16 font-bold"
    contenteditable="true"
    onblur={handleTitleChange}
-   onkeydown={handleKeydown}>
-   <!-- El contennoteIdo visible lo controla directamente el campo contenteditable -->
+   onkeydown={handleKeydown}
+   oninput={handleInput}>
+   <!-- El contenido visible lo controla directamente el campo contenteditable -->
 </h1>
 
-<Popover
-   isOpen={true}
-   styles="bg-error-bg"
-   htmlElement={editableElement}
-   placement="top">
-   Note title cannot contain "/"
-</Popover>
+{#if editableElement}
+   <Popover
+      isOpen={containsSlash}
+      styles="bg-error-bg"
+      htmlElement={editableElement}
+      placement="top">
+      Note title cannot contain "/"
+   </Popover>
+{/if}
