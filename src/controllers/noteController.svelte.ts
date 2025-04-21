@@ -13,6 +13,7 @@ import { focusController } from "@controllers/focusController.svelte";
 import { noteTreeController } from "@controllers//noteTreeController.svelte";
 import { noteQueryController } from "@controllers//noteQueryController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
+import { notificationController } from "./notificationController.svelte";
 
 class NoteController {
    createNote = (parentId?: string | undefined): void => {
@@ -76,7 +77,8 @@ class NoteController {
 
    deleteNote = (id: string): void => {
       // Nos aseguramos de que la nota existe.
-      noteQueryController.requireNote(id);
+      const noteToDelete = noteQueryController.getNoteById(id);
+      if (!noteToDelete) return;
 
       // Recopilamos recursivamente los IDs de la nota y todos sus descendientes usando parentId.
       const idsToDelete = noteTreeController.getDescendantIds(id);
@@ -106,6 +108,11 @@ class NoteController {
       if (activeNoteId && idsToDelete.has(activeNoteId)) {
          workspace.unsetActiveNoteId();
       }
+
+      notificationController.addNotification({
+         message: `Deleted note ${noteToDelete.title}.`,
+         type: "base",
+      });
    };
 }
 
