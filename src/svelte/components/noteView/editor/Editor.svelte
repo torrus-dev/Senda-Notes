@@ -1,9 +1,4 @@
 <style>
-.tiptap-editor {
-   width: 100%;
-   height: 100%;
-   color: inherit;
-}
 </style>
 
 <script lang="ts">
@@ -14,7 +9,6 @@ import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import Highlight from "@tiptap/extension-highlight";
 import Underline from "@tiptap/extension-underline";
-import { CheckIcon } from "lucide-svelte";
 
 import { noteController } from "@controllers/noteController.svelte";
 import { focusController } from "@controllers/focusController.svelte";
@@ -134,14 +128,22 @@ $effect(() => {
 onDestroy(() => {
    focusController.unregisterElement(FocusTarget.EDITOR);
    destroyEditor();
+   // guardar cambios del contenido pendientes
 });
 </script>
 
-<div class="mx-auto my-4 w-full max-w-2xl">
+{#if editorBox && editorBox.current}
+   <div class="bg-base-100 sticky top-0">
+      <div class="mx-auto w-full max-w-2xl">
+         <Toolbar editorBox={{ current: editorBox.current }} />
+      </div>
+   </div>
+{/if}
+<div class="mx-auto my-4 w-full max-w-2xl overflow-auto">
    <div
       bind:this={editorElement}
       role="document"
-      class="prose prose-neutral tiptap-editor w-full
+      class="prose prose-neutral tiptap-editor h-full w-full break-words
       {settingsController.getTheme() === 'dark' ? 'prose-invert' : ''}"
       oncontextmenu={handleContextMenu}>
    </div>

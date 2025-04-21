@@ -8,4 +8,4 @@ import { Settings } from "luxon";
 Settings.defaultLocale = "es-ES";
 </script>
 
-<MainView></MainView>
+<MainView />

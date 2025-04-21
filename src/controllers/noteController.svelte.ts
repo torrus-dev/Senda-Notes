@@ -15,7 +15,7 @@ import { noteQueryController } from "@controllers//noteQueryController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 
 class NoteController {
-   createNote = (parentId?: string | undefined, position?: number): void => {
+   createNote = (parentId?: string | undefined): void => {
       if (typeof parentId === "string") {
          noteQueryController.requireNote(parentId, "Parent note");
       }
@@ -61,6 +61,9 @@ class NoteController {
 
    updateNoteContent = (noteId: string, content: string): void => {
       this.updateNote(noteId, { content: content });
+   };
+   updateNoteTitle = (noteId: string, title: string): void => {
+      this.updateNote(noteId, { title: sanitizeTitle(title) });
    };
 
    deleteNote = (id: string): void => {

@@ -29,7 +29,7 @@ function saveTitle() {
    const newTitle = sanitizeTitle(currentTitle);
 
    if (newTitle && newTitle.trim() !== "") {
-      noteController.updateNote(noteId, { title: newTitle });
+      noteController.updateNoteTitle(noteId, newTitle);
    } else {
       // Restaurar el título original si está vacío
       currentTitle = noteTitle;

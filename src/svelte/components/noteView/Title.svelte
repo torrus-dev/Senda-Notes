@@ -24,7 +24,7 @@ function handleTitleChange() {
    if (!editableElement) return;
    const newTitle = sanitizeTitle(editableElement.innerText);
    if (newTitle && newTitle.trim() !== "") {
-      noteController.updateNote(noteId, { title: newTitle });
+      noteController.updateNoteTitle(noteId, newTitle);
    } else {
       // Restaurar el título original en el elemento editable
       editableElement.innerText = noteTitle;
