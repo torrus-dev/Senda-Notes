@@ -27,6 +27,7 @@ let { noteId, content = "" }: { noteId: string; content: string } = $props();
 
 // Estado derivado
 let isMobile: boolean = $derived(screenSizeController.isMobile);
+let useDarkMode: boolean = $derived(settingsController.getTheme() === "dark");
 
 // Referencias DOM y estado
 let editorElement: HTMLElement;
@@ -35,6 +36,15 @@ let editorBox: { current: Editor | undefined } = $state.raw({
 });
 
 let currentNoteId: string | undefined = undefined;
+
+function saveContentChanges() {
+   if (editorBox.current && currentNoteId) {
+      noteController.updateNoteContent(
+         currentNoteId,
+         editorBox.current.getHTML(),
+      );
+   }
+}
 
 function initializeEditor(initialContent: string) {
    destroyEditor();
@@ -51,8 +61,8 @@ function initializeEditor(initialContent: string) {
       injectCSS: false,
       element: editorElement,
       content: initialContent,
-      onUpdate: ({ editor }) => {
-         noteController.updateNoteContent(noteId, editor.getHTML());
+      onUpdate: () => {
+         saveContentChanges();
       },
       onTransaction: () => {
          // Create a new object containing the editor to trigger reactivity
@@ -128,7 +138,7 @@ $effect(() => {
 onDestroy(() => {
    focusController.unregisterElement(FocusTarget.EDITOR);
    destroyEditor();
-   // guardar cambios del contenido pendientes
+   saveContentChanges();
 });
 </script>
 
@@ -144,7 +154,7 @@ onDestroy(() => {
       bind:this={editorElement}
       role="document"
       class="prose prose-neutral tiptap-editor h-full w-full break-words
-      {settingsController.getTheme() === 'dark' ? 'prose-invert' : ''}"
+      {useDarkMode ? 'prose-invert' : ''}"
       oncontextmenu={handleContextMenu}>
    </div>
 </div>
