@@ -1,25 +1,43 @@
 import type { Property } from "@projectTypes/noteTypes";
-import { noteController } from "@controllers/noteController.svelte";
+import { noteStore } from "@stores/noteStore.svelte";
 import { getDefaultTypeValue } from "@utils/propertyUtils";
-import { noteQueryController } from "./noteQueryController.svelte";
 
 class PropertyController {
    constructor() {}
 
-   /**
-    * Crea una nueva propiedad para una nota
-    * @param noteId ID de la nota a la que se añadirá la propiedad
-    * @param property La propiedad a crear (sin ID)
-    * @returns El ID de la propiedad creada
-    */
+   // Funciones auxiliares privadas
+   private getNoteOrThrowError = (noteId: string) => {
+      const note = noteStore.getNoteById(noteId);
+      if (!note) {
+         throw new Error(`Note ${noteId} not found`);
+      }
+      return note;
+   };
+
+   private getPropertyOrThrowError = (noteId: string, propertyId: string) => {
+      const note = this.getNoteOrThrowError(noteId);
+      const property = note.properties.find((p) => p.id === propertyId);
+      if (!property) {
+         throw new Error(`Property ${propertyId} not found in note ${noteId}`);
+      }
+      return { note, property };
+   };
+
+   private updateNoteProperties = (
+      noteId: string,
+      newProperties: Property[],
+   ) => {
+      noteStore.updateNoteById(noteId, (note) => ({
+         ...note,
+         properties: newProperties,
+      }));
+   };
+
    createProperty = (
       noteId: string,
       property: Omit<Property, "id">,
    ): string => {
-      const note = noteQueryController.getNoteById(noteId);
-      if (!note) {
-         throw new Error(`Note ${noteId} not found`);
-      }
+      const note = this.getNoteOrThrowError(noteId);
 
       const newProperty: Property = {
          ...property,
@@ -27,35 +45,18 @@ class PropertyController {
          value: property.value ?? getDefaultTypeValue(property.type),
       };
 
-      // Crear una copia de la nota con la nueva propiedad
       const updatedProperties = [...note.properties, newProperty];
-
-      // Usar el noteController para actualizar la nota
-      noteController.updateNote(noteId, { properties: updatedProperties });
+      this.updateNoteProperties(noteId, updatedProperties);
 
       return newProperty.id;
    };
 
-   /**
-    * Actualiza una propiedad existente
-    * @param noteId ID de la nota que contiene la propiedad
-    * @param propertyId ID de la propiedad a actualizar
-    * @param updates Cambios parciales a aplicar a la propiedad
-    */
    updateProperty = (
       noteId: string,
       propertyId: string,
       updates: Partial<Omit<Property, "id">>,
    ): void => {
-      const note = noteQueryController.getNoteById(noteId);
-      if (!note) {
-         throw new Error(`Note ${noteId} not found`);
-      }
-
-      const property = note.properties.find((p) => p.id === propertyId);
-      if (!property) {
-         throw new Error(`Property ${propertyId} not found in note ${noteId}`);
-      }
+      const { note } = this.getPropertyOrThrowError(noteId, propertyId);
 
       const updatedProperties = note.properties.map((prop) => {
          if (prop.id === propertyId) {
@@ -74,55 +75,32 @@ class PropertyController {
          return prop;
       });
 
-      // Usar el noteController para actualizar la nota
-      noteController.updateNote(noteId, { properties: updatedProperties });
+      this.updateNoteProperties(noteId, updatedProperties);
    };
 
-   /**
-    * Elimina una propiedad de una nota
-    * @param noteId ID de la nota que contiene la propiedad
-    * @param propertyId ID de la propiedad a eliminar
-    */
    deleteProperty = (noteId: string, propertyId: string): void => {
-      const note = noteQueryController.getNoteById(noteId);
-      if (!note) {
-         throw new Error(`Note ${noteId} not found`);
-      }
+      // Verificamos que la propiedad exista antes de intentar eliminarla
+      this.getPropertyOrThrowError(noteId, propertyId);
 
-      if (!note.properties.some((p) => p.id === propertyId)) {
-         throw new Error(`Property ${propertyId} not found in note ${noteId}`);
-      }
-
+      // Obtenemos la nota de nuevo para asegurarnos de tener la versión más reciente
+      const note = this.getNoteOrThrowError(noteId);
       const updatedProperties = note.properties.filter(
          (p) => p.id !== propertyId,
       );
 
-      // Usar el noteController para actualizar la nota
-      noteController.updateNote(noteId, { properties: updatedProperties });
+      this.updateNoteProperties(noteId, updatedProperties);
    };
 
-   /**
-    * Reordena una propiedad a una nueva posición dentro de la lista de propiedades de una nota
-    * @param noteId ID de la nota que contiene la propiedad
-    * @param propertyId ID de la propiedad a reordenar
-    * @param newPosition Nueva posición de la propiedad (índice basado en 0)
-    */
    reorderProperty = (
       noteId: string,
       propertyId: string,
       newPosition: number,
    ): void => {
-      const note = noteQueryController.getNoteById(noteId);
-      if (!note) {
-         throw new Error(`Note ${noteId} not found`);
-      }
-
+      // Verificamos que la propiedad exista
+      const { note } = this.getPropertyOrThrowError(noteId, propertyId);
       const properties = [...note.properties];
-      const currentIndex = properties.findIndex((p) => p.id === propertyId);
 
-      if (currentIndex === -1) {
-         throw new Error(`Property ${propertyId} not found in note ${noteId}`);
-      }
+      const currentIndex = properties.findIndex((p) => p.id === propertyId);
 
       // Validar que la nueva posición no sea negativa
       if (newPosition < 0) {
@@ -147,40 +125,75 @@ class PropertyController {
       // Insertar la propiedad en la nueva posición
       properties.splice(newPosition, 0, propertyToMove);
 
-      // Actualizar la nota con las propiedades reordenadas
-      noteController.updateNote(noteId, { properties });
+      this.updateNoteProperties(noteId, properties);
    };
 
-   /**
-    * Obtiene todas las propiedades de una nota
-    * @param noteId ID de la nota
-    * @returns Array con todas las propiedades de la nota
-    */
-   getNoteProperties = (noteId: string): Property[] => {
-      const note = noteQueryController.getNoteById(noteId);
-      if (!note) {
-         throw new Error(`Note ${noteId} not found`);
-      }
+   updatePropertyValue = (
+      noteId: string,
+      propertyId: string,
+      value: Property["value"],
+   ): void => {
+      this.updateProperty(noteId, propertyId, { value });
+   };
 
+   updatePropertyName = (
+      noteId: string,
+      propertyId: string,
+      name: string,
+   ): void => {
+      this.updateProperty(noteId, propertyId, { name });
+   };
+
+   changePropertyType = (
+      noteId: string,
+      propertyId: string,
+      type: Property["type"],
+   ): void => {
+      this.updateProperty(noteId, propertyId, { type });
+   };
+
+   getNoteProperties = (noteId: string): Property[] => {
+      const note = this.getNoteOrThrowError(noteId);
       return [...note.properties];
    };
 
-   /**
-    * Obtiene una propiedad específica por su ID
-    * @param noteId ID de la nota
-    * @param propertyId ID de la propiedad
-    * @returns La propiedad solicitada o undefined si no existe
-    */
    getPropertyById = (
       noteId: string,
       propertyId: string,
    ): Property | undefined => {
-      const note = noteQueryController.getNoteById(noteId);
-      if (!note) {
-         throw new Error(`Note ${noteId} not found`);
+      try {
+         const { property } = this.getPropertyOrThrowError(noteId, propertyId);
+         return property;
+      } catch (error) {
+         return undefined;
       }
+   };
 
-      return note.properties.find((p) => p.id === propertyId);
+   batchCreateProperties = (
+      noteId: string,
+      properties: Array<Omit<Property, "id">>,
+   ): string[] => {
+      const note = this.getNoteOrThrowError(noteId);
+
+      const newProperties = properties.map((prop) => ({
+         ...prop,
+         id: crypto.randomUUID(),
+         value: prop.value ?? getDefaultTypeValue(prop.type),
+      }));
+
+      const updatedProperties = [...note.properties, ...newProperties];
+      this.updateNoteProperties(noteId, updatedProperties);
+
+      return newProperties.map((prop) => prop.id);
+   };
+
+   hasPropertyWithName = (noteId: string, propertyName: string): boolean => {
+      try {
+         const note = this.getNoteOrThrowError(noteId);
+         return note.properties.some((p) => p.name === propertyName);
+      } catch (error) {
+         return false;
+      }
    };
 }
 
