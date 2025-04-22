@@ -15,7 +15,7 @@ import { focusController } from "@controllers/focusController.svelte";
 import { floatingMenuController } from "@controllers/floatingMenuController.svelte.js";
 import { screenSizeController } from "@controllers/screenSizeController.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
-import { workspace } from "@controllers/workspaceController.svelte";
+import { CleanPasteExtension } from "@lib/editorExtensions/cleanPasteExtension";
 
 import { getEditorContextMenuItems } from "@utils/editorMenuItems";
 import Toolbar from "@components/noteView/editor/Toolbar.svelte";
@@ -107,6 +107,7 @@ function initializeEditor(initialContent: string) {
          TaskItem.configure({ nested: true }),
          Highlight.configure({ multicolor: false }),
          Underline,
+         CleanPasteExtension,
       ],
       editable: true,
       injectCSS: false,

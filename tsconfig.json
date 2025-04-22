@@ -15,6 +15,7 @@
          "@projectTypes/*": ["types/*"],
          "@electron/*": ["electron/*"],
          "@utils/*": ["lib/utils/*"],
+         "@lib/*": ["lib/*"],
          "@controllers/*": ["controllers/*"],
          "@stores/*": ["stores/*"],
          "@directives/*": ["directives/*"],

@@ -8,6 +8,7 @@ export default defineConfig({
          "@projectTypes": path.resolve(__dirname, "src/types"),
          "@electron": path.resolve(__dirname, "src/electron"),
          "@utils": path.resolve(__dirname, "src/lib/utils"),
+         "@lib": path.resolve(__dirname, "src/lib"),
          "@controllers": path.resolve(__dirname, "src/controllers"),
          "@stores": path.resolve(__dirname, "src/stores"),
          "@directives": path.resolve(__dirname, "src/directives"),
