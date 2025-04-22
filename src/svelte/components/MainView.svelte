@@ -9,6 +9,7 @@ import FloatingMenu from "@components/floating/floatingMenu/FloatingMenu.svelte"
 
 import type { Note } from "@projectTypes/noteTypes";
 import { noteQueryController } from "@controllers/noteQueryController.svelte";
+import Notifications from "./floating/notifications/Notifications.svelte";
 
 const activeNote: Note | undefined = $derived(
    noteQueryController.getActiveNote(),
@@ -20,6 +21,7 @@ const activeNote: Note | undefined = $derived(
   {settingsController.getTheme() === 'dark' ? 'theme-dark' : 'theme-light'}">
    <Modal />
    <FloatingMenu />
+   <Notifications />
    <div
       class="text-base-content bg-base-100 grid h-screen grid-flow-col grid-cols-[min-content_1fr]">
       <Sidebar />

@@ -10,7 +10,7 @@ let searchQuery = $state("");
    <h2 class="mb-8 py-2 text-2xl font-bold">Settings</h2>
    <div class="flex w-full flex-col gap-4">
       <div class="flex items-center justify-between py-2">
-         <span>Toggle Dark/Light theme</span>
+         <span>Toggle Dark mode</span>
          <Slider
             value={settingsController.getTheme() === "dark"}
             onChange={() => settingsController.toggleThemeMode()} />

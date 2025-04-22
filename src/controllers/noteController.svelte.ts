@@ -13,6 +13,7 @@ import { focusController } from "@controllers/focusController.svelte";
 import { noteTreeController } from "@controllers//noteTreeController.svelte";
 import { noteQueryController } from "@controllers//noteQueryController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
+import { notificationController } from "./notificationController.svelte";
 
 class NoteController {
    createNote = (parentId?: string | undefined): void => {
@@ -50,7 +51,6 @@ class NoteController {
    updateNote = (noteId: string, updates: Partial<Note>): void => {
       const note = noteQueryController.getNoteById(noteId);
       if (!note) return;
-      console.log("updating note in crontroller");
 
       // Actualizar la nota inmediatamente
       noteStore.updateNoteById(noteId, (existingNote) => ({
@@ -59,16 +59,26 @@ class NoteController {
       }));
    };
 
+   updateNoteTitle = (noteId: string, title: string): void => {
+      const sanitizedTitle = sanitizeTitle(title);
+      const note = noteQueryController.getNoteById(noteId);
+
+      // Solo actualizar si el título ha cambiado
+      if (note && note.title !== sanitizedTitle) {
+         this.updateNote(noteId, { title: sanitizedTitle });
+      }
+   };
+   updateNoteIcon = (noteId: string, icon: string | undefined): void => {
+      this.updateNote(noteId, { icon });
+   };
    updateNoteContent = (noteId: string, content: string): void => {
       this.updateNote(noteId, { content: content });
-   };
-   updateNoteTitle = (noteId: string, title: string): void => {
-      this.updateNote(noteId, { title: sanitizeTitle(title) });
    };
 
    deleteNote = (id: string): void => {
       // Nos aseguramos de que la nota existe.
-      noteQueryController.requireNote(id);
+      const noteToDelete = noteQueryController.getNoteById(id);
+      if (!noteToDelete) return;
 
       // Recopilamos recursivamente los IDs de la nota y todos sus descendientes usando parentId.
       const idsToDelete = noteTreeController.getDescendantIds(id);
@@ -98,6 +108,11 @@ class NoteController {
       if (activeNoteId && idsToDelete.has(activeNoteId)) {
          workspace.unsetActiveNoteId();
       }
+
+      notificationController.addNotification({
+         message: `Deleted note ${noteToDelete.title}.`,
+         type: "base",
+      });
    };
 }
 
