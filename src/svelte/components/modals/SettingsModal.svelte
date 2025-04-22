@@ -16,19 +16,19 @@ let searchQuery = $state("");
             onChange={() => settingsController.toggleThemeMode()} />
       </div>
       <div class="flex items-center justify-between py-2">
-         <span>Toggle Lock Sidebar</span>
+         <span>Lock Sidebar on large screens</span>
          <Slider
             value={settingsController.getLockSidebar()}
             onChange={() => settingsController.toggleLockSidebar()} />
       </div>
       <div class="flex items-center justify-between py-2">
-         <span>Toggle Show Metadata</span>
+         <span>Show note metadata on the editor</span>
          <Slider
             value={settingsController.getShowMetadata()}
             onChange={() => settingsController.toggleShowMetadata()} />
       </div>
       <div class="flex items-center justify-between py-2">
-         <span>Toggle Editor Toolbar</span>
+         <span>Enable Editor Toolbar</span>
          <Slider
             value={settingsController.getShowEditorToolbar()}
             onChange={() => settingsController.toogleShowEditorToolbar()} />
