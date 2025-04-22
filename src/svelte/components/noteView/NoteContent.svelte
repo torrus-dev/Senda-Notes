@@ -9,13 +9,13 @@ import { settingsController } from "@controllers/settingsController.svelte";
 import type { Note } from "@projectTypes/noteTypes";
 import { searchController } from "@controllers/searchController.svelte";
 
-let { note }: { note: Note } = $props();
+let { note }: { note: Note | undefined } = $props();
 </script>
 
 <div
    class="scroll h-full overflow-auto
    {searchController.isSearching ? 'overflow-hidden' : ''}">
-   <article class="relative py-4">
+   <article class="relative h-full py-4">
       {#if searchController.isSearching}
          <div class="bg-base-100/60 absolute top-0 left-0 z-90 h-full w-full">
          </div>
@@ -40,9 +40,17 @@ let { note }: { note: Note } = $props();
             <Editor noteId={note.id} content={note.content} />
          </section>
       {:else}
-         <header>
-            <h1>Create or select a new note</h1>
-         </header>
+         <section class="flex h-full w-full content-center">
+            <div class="m-auto text-center">
+               <header class="">
+                  <h1 class="my-4 text-center text-xl">No note is open</h1>
+               </header>
+               <ul>
+                  <li>Create new note</li>
+                  <li>Search note</li>
+               </ul>
+            </div>
+         </section>
       {/if}
    </article>
 </div>
