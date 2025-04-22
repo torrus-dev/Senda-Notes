@@ -3,7 +3,6 @@ import type {
    PersistedWorkspaceState,
 } from "@projectTypes/workspaceTypes";
 import { loadWorkspaceState, saveWorkspaceState } from "@utils/storage";
-import { noteStore } from "@stores/noteStore.svelte";
 
 class WorkspaceStore {
    data: WorkspaceState = $state({
@@ -29,6 +28,9 @@ class WorkspaceStore {
          childrenCollapsed: false,
          metadataCollapsed: false,
          propertiesCollapsed: false,
+      },
+      editor: {
+         contentSaved: true,
       },
    });
 
@@ -115,6 +117,14 @@ class WorkspaceStore {
 
    set collapsible(value) {
       this.data.collapsible = value;
+   }
+
+   get contentSaved(): boolean {
+      return this.data.editor.contentSaved;
+   }
+
+   set contentSaved(value: boolean) {
+      this.data.editor.contentSaved = value;
    }
 }
 export let workspaceStore = $state(new WorkspaceStore());

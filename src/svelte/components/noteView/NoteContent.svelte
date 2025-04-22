@@ -8,6 +8,7 @@ import Editor from "./editor/Editor.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
 import type { Note } from "@projectTypes/noteTypes";
 import { searchController } from "@controllers/searchController.svelte";
+import StatusBar from "@components/noteView/StatusBar.svelte";
 
 let { note }: { note: Note } = $props();
 </script>
@@ -45,4 +46,5 @@ let { note }: { note: Note } = $props();
          </header>
       {/if}
    </article>
+   <StatusBar />
 </div>

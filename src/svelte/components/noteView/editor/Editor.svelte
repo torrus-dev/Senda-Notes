@@ -15,6 +15,7 @@ import { focusController } from "@controllers/focusController.svelte";
 import { floatingMenuController } from "@controllers/floatingMenuController.svelte.js";
 import { screenSizeController } from "@controllers/screenSizeController.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
+import { workspace } from "@controllers/workspaceController.svelte";
 
 import { getEditorContextMenuItems } from "@utils/editorMenuItems";
 import Toolbar from "@components/noteView/editor/Toolbar.svelte";
@@ -36,6 +37,8 @@ let editorBox: { current: Editor | undefined } = $state.raw({
 });
 
 let currentNoteId: string | undefined = undefined;
+let saveTimer: ReturnType<typeof setTimeout> | null = null;
+const SAVE_DELAY = 5000; // 5 segundos de retraso
 
 function saveContentChanges() {
    if (editorBox.current && currentNoteId) {
@@ -43,7 +46,35 @@ function saveContentChanges() {
          currentNoteId,
          editorBox.current.getHTML(),
       );
+      // Indicar que el contenido está guardado
+      workspace.setContentSaved(true);
    }
+}
+
+// Función para manejar el guardado con retraso
+function debouncedSave() {
+   // Indicar que hay cambios sin guardar
+   workspace.setContentSaved(false);
+
+   // Limpia el temporizador existente si hay uno
+   if (saveTimer !== null) {
+      clearTimeout(saveTimer);
+   }
+
+   // Configura un nuevo temporizador
+   saveTimer = setTimeout(() => {
+      saveContentChanges();
+      saveTimer = null;
+   }, SAVE_DELAY);
+}
+
+// Función para forzar el guardado inmediato (usado al destruir)
+function forceSave() {
+   if (saveTimer !== null) {
+      clearTimeout(saveTimer);
+      saveTimer = null;
+   }
+   saveContentChanges();
 }
 
 function initializeEditor(initialContent: string) {
@@ -62,7 +93,8 @@ function initializeEditor(initialContent: string) {
       element: editorElement,
       content: initialContent,
       onUpdate: () => {
-         saveContentChanges();
+         // Reemplazamos el guardado inmediato con el guardado diferido
+         debouncedSave();
       },
       onTransaction: () => {
          // Create a new object containing the editor to trigger reactivity
@@ -72,6 +104,9 @@ function initializeEditor(initialContent: string) {
    // Initialize the editor box
    editorBox = { current: editor };
    registerEditorWithFocusController();
+
+   // Indicar que el contenido inicialmente está guardado
+   workspace.setContentSaved(true);
 }
 
 function registerEditorWithFocusController() {
@@ -119,6 +154,10 @@ function handleContextMenu(event: MouseEvent) {
 // Inicializar editor cuando cambia la nota activa
 $effect(() => {
    if (noteId !== currentNoteId) {
+      // Guardar contenido anterior si existe
+      if (currentNoteId && editorBox.current) {
+         forceSave();
+      }
       currentNoteId = noteId;
       initializeEditor(content);
    }
@@ -138,7 +177,8 @@ $effect(() => {
 onDestroy(() => {
    focusController.unregisterElement(FocusTarget.EDITOR);
    destroyEditor();
-   saveContentChanges();
+   // Forzar guardado al destruir para asegurar que nada se pierda
+   forceSave();
 });
 </script>
 
@@ -149,7 +189,7 @@ onDestroy(() => {
       </div>
    </div>
 {/if}
-<div class="mx-auto my-4 w-full max-w-2xl overflow-auto">
+<div class="mx-auto my-4 w-full max-w-2xl">
    <div
       bind:this={editorElement}
       role="document"
