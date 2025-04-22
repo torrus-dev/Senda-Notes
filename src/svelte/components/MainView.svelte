@@ -9,7 +9,9 @@ import FloatingMenu from "@components/floating/floatingMenu/FloatingMenu.svelte"
 
 import type { Note } from "@projectTypes/noteTypes";
 import { noteQueryController } from "@controllers/noteQueryController.svelte";
-import Notifications from "./floating/notifications/Notifications.svelte";
+import Notifications from "@components/floating/notifications/Notifications.svelte";
+
+import StatusBar from "@components/noteView/StatusBar.svelte";
 
 const activeNote: Note | undefined = $derived(
    noteQueryController.getActiveNote(),
@@ -32,6 +34,7 @@ const activeNote: Note | undefined = $derived(
             {#if activeNote}
                <NoteContent note={activeNote} />
             {/if}
+            <StatusBar />
          </div>
       </main>
    </div>

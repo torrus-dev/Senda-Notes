@@ -36,7 +36,7 @@ class NotificationController {
       };
 
       // Limitar a 5 notificaciones simultáneas para mejor UX
-      if (this.notifications.length >= 5) {
+      if (this.notifications.length >= 2) {
          // Eliminar la más antigua
          this.notifications = this.notifications.slice(1);
       }

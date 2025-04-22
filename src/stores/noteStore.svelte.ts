@@ -1,18 +1,23 @@
 import type { Note } from "@projectTypes/noteTypes";
 import { loadNotesFromStorage, saveNotesToStorage } from "@utils/storage";
 import { updateModifiedMetadata } from "@utils/noteUtils";
+import { settingsStore } from "./settingsStore.svelte";
 
 class NoteStore {
    private notes = $state<Note[]>([]);
 
    constructor() {
       this.notes = loadNotesFromStorage();
-      console.log("notas cargadas: ", $state.snapshot(this.notes));
+      if (settingsStore.debugLevel > 0) {
+         console.log("notas cargadas: ", $state.snapshot(this.notes));
+      }
    }
 
    saveNotes() {
       saveNotesToStorage(this.notes);
-      console.log("guardando notas");
+      if (settingsStore.debugLevel > 0) {
+         console.log("guardando notas", $state.snapshot(this.notes));
+      }
    }
 
    // Métodos básicos de acceso a datos

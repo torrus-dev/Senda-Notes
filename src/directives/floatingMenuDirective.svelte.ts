@@ -80,7 +80,6 @@ export function dropdownMenu(
       event.stopPropagation();
 
       const triggerElement = floatingMenuController.getTriggerElement();
-      console.log(triggerElement);
 
       if (menuItems && !(triggerElement === node)) {
          floatingMenuController.openDropdownMenu(node, menuItems);

@@ -85,14 +85,6 @@ $effect(() => {
          tick().then(updateMenuPosition);
          if (menuElement) {
             removeKeyboardNavigation = setupKeyboardNavigation(menuElement);
-            console.log(
-               "renderedMainMenu",
-               floatingMenuController.renderedMainMenu,
-            );
-            console.log(
-               "renderedSubMenu",
-               floatingMenuController.renderedSubMenu,
-            );
          }
       }
    } else if (removeKeyboardNavigation) {

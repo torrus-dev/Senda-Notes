@@ -8,13 +8,12 @@ import Editor from "./editor/Editor.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
 import type { Note } from "@projectTypes/noteTypes";
 import { searchController } from "@controllers/searchController.svelte";
-import StatusBar from "@components/noteView/StatusBar.svelte";
 
 let { note }: { note: Note } = $props();
 </script>
 
 <div
-   class="scroll overflow-auto
+   class="scroll h-full overflow-auto
    {searchController.isSearching ? 'overflow-hidden' : ''}">
    <article class="relative py-4">
       {#if searchController.isSearching}
@@ -46,5 +45,4 @@ let { note }: { note: Note } = $props();
          </header>
       {/if}
    </article>
-   <StatusBar />
 </div>

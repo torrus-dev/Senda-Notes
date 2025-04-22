@@ -20,7 +20,7 @@ const getSnackbarStyle = () => {
       case "info":
          return "bg-blue-500/50";
       default:
-         return "bg-base-400";
+         return "bg-base-300";
    }
 };
 

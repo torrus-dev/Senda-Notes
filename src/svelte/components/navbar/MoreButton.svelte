@@ -19,7 +19,6 @@ const noteOptionsItems: MenuItem[] = [
       label: "Rename Note",
       icon: PenLineIcon,
       action: () => {
-         console.log("fire");
          focusController.requestFocus(FocusTarget.TITLE);
       },
    },

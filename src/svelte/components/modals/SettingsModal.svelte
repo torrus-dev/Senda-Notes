@@ -33,5 +33,19 @@ let searchQuery = $state("");
             value={settingsController.getShowEditorToolbar()}
             onChange={() => settingsController.toogleShowEditorToolbar()} />
       </div>
+      <div class="flex items-center justify-between py-2">
+         <span>Debug Level: 0 none, 1 errors, 2 all</span>
+         <input
+            type="number"
+            value={settingsController.getDebugLevel()}
+            min="0"
+            max="2"
+            oninput={(event) => {
+               const target = event.target as HTMLInputElement;
+               if (target?.value) {
+                  settingsController.setDebugLevel(Number(target.value));
+               }
+            }} />
+      </div>
    </div>
 </aside>
