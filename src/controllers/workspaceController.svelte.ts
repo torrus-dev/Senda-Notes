@@ -98,12 +98,6 @@ class WorkspaceController {
       );
    };
 
-   // Editor
-   setContentSaved = (newValue: boolean) => {
-      workspaceStore.contentSaved = newValue
-   }
-   getContentSaved = () => workspaceStore.contentSaved;
-   
    isEditorMetadataCollapsed = () => {
       return workspaceStore.collapsible.metadataCollapsed;
    };

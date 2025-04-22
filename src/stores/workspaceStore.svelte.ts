@@ -29,9 +29,6 @@ class WorkspaceStore {
          metadataCollapsed: false,
          propertiesCollapsed: false,
       },
-      editor: {
-         contentSaved: true,
-      },
    });
 
    constructor() {
@@ -117,14 +114,6 @@ class WorkspaceStore {
 
    set collapsible(value) {
       this.data.collapsible = value;
-   }
-
-   get contentSaved(): boolean {
-      return this.data.editor.contentSaved;
-   }
-
-   set contentSaved(value: boolean) {
-      this.data.editor.contentSaved = value;
    }
 }
 export let workspaceStore = $state(new WorkspaceStore());

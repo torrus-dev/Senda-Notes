@@ -29,9 +29,11 @@ let snackbarStyle = $derived(getSnackbarStyle());
 </script>
 
 <div
-   class="rounded-field flex items-center justify-between px-4 py-2.5 shadow {snackbarStyle}"
+   class="rounded-field flex items-center justify-between p-1 shadow {snackbarStyle}"
    id={id}>
-   {message}
+   <div class="px-2.5">
+      {message}
+   </div>
    <div>
       {#if action}
          <Button size="small" class="bordered" onclick={action.onClick}>

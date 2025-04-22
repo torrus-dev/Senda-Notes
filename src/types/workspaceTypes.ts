@@ -41,9 +41,6 @@ export interface WorkspaceState {
       propertiesCollapsed: boolean;
       childrenCollapsed: boolean;
    };
-   editor: {
-      contentSaved: boolean
-   }
 }
 
 export interface PersistedWorkspaceState {

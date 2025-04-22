@@ -1,6 +1,9 @@
 <script lang="ts">
-import { workspace } from "@controllers/workspaceController.svelte";
-let contentSaved = $derived(workspace.getContentSaved());
+import { editorController } from "@controllers/editorController.svelte";
+let contentSaved = $derived(editorController.contentSaved);
+let chararecterCount = $derived(editorController.chararecterCount);
+let wordCount = $derived(editorController.wordCount);
+let lineCount = $derived(editorController.lineCount);
 </script>
 
 <div
@@ -9,4 +12,8 @@ let contentSaved = $derived(workspace.getContentSaved());
    <p class={contentSaved ? "text-emerald-500" : "text-error"}>
       {contentSaved}
    </p>
+   -
+   <p>Characters: {chararecterCount}</p>
+   <p>wordCount: {wordCount}</p>
+   <p>lineCount: {lineCount}</p>
 </div>

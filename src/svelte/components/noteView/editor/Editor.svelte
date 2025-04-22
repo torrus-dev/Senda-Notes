@@ -22,6 +22,7 @@ import Toolbar from "@components/noteView/editor/Toolbar.svelte";
 
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Coordinates } from "@projectTypes/floatingTypes";
+import { editorController } from "@controllers/editorController.svelte";
 
 // Props
 let { noteId, content = "" }: { noteId: string; content: string } = $props();
@@ -47,14 +48,14 @@ function saveContentChanges() {
          editorBox.current.getHTML(),
       );
       // Indicar que el contenido está guardado
-      workspace.setContentSaved(true);
+      editorController.contentSaved = true;
    }
 }
 
 // Función para manejar el guardado con retraso
 function debouncedSave() {
    // Indicar que hay cambios sin guardar
-   workspace.setContentSaved(false);
+   editorController.contentSaved = false;
 
    // Limpia el temporizador existente si hay uno
    if (saveTimer !== null) {
@@ -75,6 +76,25 @@ function forceSave() {
       saveTimer = null;
    }
    saveContentChanges();
+}
+
+function getEditorStatistics(editor: Editor) {
+   // Corregido: llamar a getText() como función
+   const text = editor.getText();
+
+   // Conteo de caracteres (excluir espacios en blanco al principio y final)
+   editorController.chararecterCount = text.trim().length;
+
+   // Conteo de líneas (filtrar líneas vacías)
+   editorController.lineCount = text
+      .split("\n")
+      .filter((line) => line.trim().length > 0).length;
+
+   // Conteo de palabras (parece estar funcionando correctamente)
+   editorController.wordCount = text
+      .trim()
+      .split(/\s+/)
+      .filter((word) => word.length > 0).length;
 }
 
 function initializeEditor(initialContent: string) {
@@ -99,6 +119,7 @@ function initializeEditor(initialContent: string) {
       onTransaction: () => {
          // Create a new object containing the editor to trigger reactivity
          editorBox = { current: editor };
+         getEditorStatistics(editor);
       },
    });
    // Initialize the editor box
@@ -106,7 +127,7 @@ function initializeEditor(initialContent: string) {
    registerEditorWithFocusController();
 
    // Indicar que el contenido inicialmente está guardado
-   workspace.setContentSaved(true);
+   editorController.contentSaved = true;
 }
 
 function registerEditorWithFocusController() {
