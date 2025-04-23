@@ -1,11 +1,5 @@
+import type { Property } from "@projectTypes/propertyTypes";
 import type { DateTime } from "luxon";
-
-export interface Property {
-   id: string;
-   name: string;
-   value: string | string[] | number | boolean | Date | DateTime;
-   type: "text" | "list" | "number" | "check" | "date" | "datetime";
-}
 
 export interface Reference {
    id: string;

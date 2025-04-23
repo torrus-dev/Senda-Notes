@@ -45,11 +45,11 @@ let { note }: { note: Note | undefined } = $props();
          <section class="flex h-full w-full content-center">
             <div class="m-auto text-center">
                <header class="">
-                  <h1 class="my-4 text-center text-2xl font-bold">
+                  <h1 class="my-4 text-center text-3xl font-bold">
                      No note is open
                   </h1>
                </header>
-               <ul>
+               <ul class="flex flex-col gap-0.5">
                   <li>
                      <Button onclick={() => noteController.createNote()}>
                         Create new note

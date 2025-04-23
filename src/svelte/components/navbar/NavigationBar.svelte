@@ -22,7 +22,7 @@ const getNotePath = () =>
 let searchValue: string = $state("");
 let searchElement: HTMLInputElement | undefined = $state(undefined);
 let searchResults: SearchResult[] = $state([]);
-let isSearching = $state(false);
+let isSearching = $derived(searchController.isSearching);
 
 // Buscar cuando cambia el valor de búsqueda
 $effect(() => {
@@ -33,31 +33,28 @@ $effect(() => {
    }
 });
 
-function startSearch() {
-   isSearching = true;
-   searchController.isSearching = true;
-   searchValue = getNotePath();
-   // Esperar a que Svelte renderice el searchElement
-   tick().then(() => {
-      if (searchElement) {
-         searchElement.focus();
-      }
-   });
-}
-
-function endSearch() {
-   isSearching = false;
-   searchController.isSearching = false;
-   searchValue = "";
-   searchResults = [];
-}
+// Comenzar o terminar de buscar segun el estado de isSearching en el controlador de busquedas
+$effect(() => {
+   if (isSearching) {
+      searchValue = getNotePath();
+      // Esperar a que Svelte renderice el searchElement tras un condicional para enfocarlo
+      tick().then(() => {
+         if (searchElement) {
+            searchElement.focus();
+         }
+      });
+   } else {
+      searchValue = "";
+      searchResults = [];
+   }
+});
 
 // Maneja la selección de un resultado
 function handleResultSelect(result: SearchResult) {
    // Navegar a la nota seleccionada
    if (result.note && result.note.id) {
       workspace.setActiveNoteId(result.note.id);
-      endSearch();
+      searchController.isSearching = false;
    }
 }
 </script>
@@ -69,7 +66,9 @@ function handleResultSelect(result: SearchResult) {
       <div
          class=" rounded-field flex flex-grow pl-2.5"
          use:onOutsideOrEsc={{
-            action: endSearch,
+            action: () => {
+               searchController.isSearching = false;
+            },
          }}>
          <input
             type="text"
@@ -95,7 +94,7 @@ function handleResultSelect(result: SearchResult) {
             <Button
                title="End search"
                onclick={() => {
-                  endSearch();
+                  searchController.isSearching = false;
                }}>
                <XIcon size="1.25em" />
             </Button>
@@ -109,7 +108,7 @@ function handleResultSelect(result: SearchResult) {
          <button
             class="flex-grow cursor-text p-2 text-left"
             onclick={() => {
-               startSearch();
+               searchController.isSearching = true;
             }}>
             {#if note}
                {note?.title}

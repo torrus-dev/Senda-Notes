@@ -7,7 +7,7 @@ import {
    CalendarClockIcon,
 } from "lucide-svelte";
 import { DateTime } from "luxon";
-import { Property } from "@projectTypes/noteTypes";
+import { Property } from "@projectTypes/propertyTypes";
 
 // Seleccionar el icono según el tipo de propiedad
 export function getIconComponent(type: string) {
@@ -29,12 +29,8 @@ export function getIconComponent(type: string) {
    }
 }
 
-/**
- * Devuelve el valor por defecto según el tipo de propiedad
- * @param type Tipo de la propiedad
- * @returns Valor por defecto para ese tipo
- */
-export function getDefaultTypeValue(type: Property["type"]) {
+// Definimos una función auxiliar específica para cada tipo de propiedad
+export function getDefaultTypeValue(type: Property["type"]): any {
    switch (type) {
       case "text":
          return "";
@@ -45,10 +41,11 @@ export function getDefaultTypeValue(type: Property["type"]) {
       case "check":
          return false;
       case "date":
-         return DateTime.now();
+         return new Date();
       case "datetime":
          return DateTime.now();
       default:
-         return ""; // Valor seguro por defecto
+         const exhaustiveCheck: never = type;
+         throw new Error(`Tipo de propiedad no soportado: ${exhaustiveCheck}`);
    }
 }

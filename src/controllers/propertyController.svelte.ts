@@ -1,6 +1,15 @@
-import type { Property } from "@projectTypes/noteTypes";
+import type {
+   TextProperty,
+   ListProperty,
+   CheckProperty,
+   NumberProperty,
+   DateProperty,
+   DateTimeProperty,
+   Property,
+} from "@projectTypes/propertyTypes";
 import { noteStore } from "@stores/noteStore.svelte";
 import { getDefaultTypeValue } from "@utils/propertyUtils";
+import { DateTime } from "luxon";
 
 class PropertyController {
    constructor() {}
@@ -39,11 +48,52 @@ class PropertyController {
    ): string => {
       const note = this.getNoteOrThrowError(noteId);
 
-      const newProperty: Property = {
+      // Preparamos la base de la nueva propiedad
+      const baseProperty = {
          ...property,
          id: crypto.randomUUID(),
-         value: property.value ?? getDefaultTypeValue(property.type),
       };
+
+      // Si no tiene valor, asignamos el valor por defecto según el tipo
+      let newProperty: Property;
+
+      if (property.value !== undefined) {
+         // Si ya tiene valor, simplemente convertimos al tipo correcto
+         newProperty = baseProperty as Property;
+      } else {
+         // Si no tiene valor, creamos la propiedad con el valor por defecto
+         switch (property.type) {
+            case "text":
+               newProperty = { ...baseProperty, value: "" } as TextProperty;
+               break;
+            case "list":
+               newProperty = { ...baseProperty, value: [] } as ListProperty;
+               break;
+            case "number":
+               newProperty = { ...baseProperty, value: 0 } as NumberProperty;
+               break;
+            case "check":
+               newProperty = { ...baseProperty, value: false } as CheckProperty;
+               break;
+            case "date":
+               newProperty = {
+                  ...baseProperty,
+                  value: new Date(),
+               } as DateProperty;
+               break;
+            case "datetime":
+               newProperty = {
+                  ...baseProperty,
+                  value: DateTime.now(),
+               } as DateTimeProperty;
+               break;
+            default:
+               const exhaustiveCheck: never = property.type;
+               throw new Error(
+                  `Tipo de propiedad no soportado: ${exhaustiveCheck}`,
+               );
+         }
+      }
 
       const updatedProperties = [...note.properties, newProperty];
       this.updateNoteProperties(noteId, updatedProperties);
@@ -175,11 +225,43 @@ class PropertyController {
    ): string[] => {
       const note = this.getNoteOrThrowError(noteId);
 
-      const newProperties = properties.map((prop) => ({
-         ...prop,
-         id: crypto.randomUUID(),
-         value: prop.value ?? getDefaultTypeValue(prop.type),
-      }));
+      const newProperties: Property[] = properties.map((prop) => {
+         // Preparamos la base de la nueva propiedad
+         const baseProperty = {
+            ...prop,
+            id: crypto.randomUUID(),
+         };
+
+         // Si no tiene valor, asignamos el valor por defecto según el tipo
+         if (prop.value !== undefined) {
+            // Si ya tiene valor, simplemente convertimos al tipo correcto
+            return baseProperty as Property;
+         }
+
+         // Si no tiene valor, creamos la propiedad con el valor por defecto
+         switch (prop.type) {
+            case "text":
+               return { ...baseProperty, value: "" } as TextProperty;
+            case "list":
+               return { ...baseProperty, value: [] } as ListProperty;
+            case "number":
+               return { ...baseProperty, value: 0 } as NumberProperty;
+            case "check":
+               return { ...baseProperty, value: false } as CheckProperty;
+            case "date":
+               return { ...baseProperty, value: new Date() } as DateProperty;
+            case "datetime":
+               return {
+                  ...baseProperty,
+                  value: DateTime.now(),
+               } as DateTimeProperty;
+            default:
+               const exhaustiveCheck: never = prop.type;
+               throw new Error(
+                  `Tipo de propiedad no soportado: ${exhaustiveCheck}`,
+               );
+         }
+      });
 
       const updatedProperties = [...note.properties, ...newProperties];
       this.updateNoteProperties(noteId, updatedProperties);
