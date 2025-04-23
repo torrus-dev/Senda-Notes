@@ -8,6 +8,8 @@ import Editor from "./editor/Editor.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
 import type { Note } from "@projectTypes/noteTypes";
 import { searchController } from "@controllers/searchController.svelte";
+import Button from "@components/utils/Button.svelte";
+import { noteController } from "@controllers/noteController.svelte";
 
 let { note }: { note: Note | undefined } = $props();
 </script>
@@ -43,11 +45,22 @@ let { note }: { note: Note | undefined } = $props();
          <section class="flex h-full w-full content-center">
             <div class="m-auto text-center">
                <header class="">
-                  <h1 class="my-4 text-center text-xl">No note is open</h1>
+                  <h1 class="my-4 text-center text-2xl font-bold">
+                     No note is open
+                  </h1>
                </header>
                <ul>
-                  <li>Create new note</li>
-                  <li>Search note</li>
+                  <li>
+                     <Button onclick={() => noteController.createNote()}>
+                        Create new note
+                     </Button>
+                  </li>
+                  <li>
+                     <Button
+                        onclick={() => (searchController.isSearching = true)}>
+                        Search note
+                     </Button>
+                  </li>
                </ul>
             </div>
          </section>

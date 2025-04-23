@@ -32,8 +32,6 @@ const activeNote: Note | undefined = $derived(
          <div class="flex h-screen flex-col">
             <NavBar note={activeNote} />
             <NoteContent note={activeNote} />
-            {#if activeNote}
-            {/if}
             <StatusBar />
          </div>
       </main>

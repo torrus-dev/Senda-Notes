@@ -63,9 +63,8 @@ function handleResultSelect(result: SearchResult) {
 </script>
 
 <div
-   class="bg-base-200 rounded-field relative flex h-10 w-full justify-between {isSearching
-      ? 'outline-interactive-accent-focus outline-2'
-      : ''}">
+   class="bg-base-200 rounded-field relative flex h-10 w-full justify-between
+   {isSearching ? 'outline-interactive-accent-focus outline-2' : ''}">
    {#if isSearching}
       <div
          class=" rounded-field flex flex-grow pl-2.5"
