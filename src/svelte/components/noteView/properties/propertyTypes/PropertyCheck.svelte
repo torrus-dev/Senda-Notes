@@ -13,4 +13,4 @@ let newValue: CheckProperty["value"] = $state(property.value);
    type="checkbox"
    bind:checked={newValue}
    onchange={() => onUpdate(newValue)}
-   class="w-5" />
+   class="mx-2 w-5 focus:outline-none" />

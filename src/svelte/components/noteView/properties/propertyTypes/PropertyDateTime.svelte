@@ -16,4 +16,5 @@ let newValue: DateTimeProperty["value"] = $state(property.value);
    name={property.name}
    type="datetime-local"
    bind:value={newValue}
-   onchange={() => onUpdate(newValue)} />
+   onchange={() => onUpdate(newValue)}
+   class="bg-interactive rounded-field px-2 focus:outline-none" />

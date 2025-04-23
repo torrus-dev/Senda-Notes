@@ -20,4 +20,5 @@ let newValue: NumberProperty["value"] = $state(property.value);
       if (value && !isNaN(value)) {
          onUpdate(newValue);
       }
-   }} />
+   }}
+   class="bg-interactive rounded-field px-2 focus:outline-none" />

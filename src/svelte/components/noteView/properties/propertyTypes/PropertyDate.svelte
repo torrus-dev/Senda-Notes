@@ -19,4 +19,5 @@ let newValue: DateProperty["value"] = $state(property.value);
    onchange={() => {
       const fechaDateTime = newValue;
       onUpdate(fechaDateTime);
-   }} />
+   }}
+   class="bg-interactive rounded-field px-2 focus:outline-none" />
