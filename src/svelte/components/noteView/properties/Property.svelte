@@ -9,11 +9,11 @@ import { propertyController } from "@controllers/propertyController.svelte";
 import { getIconComponent } from "@utils/propertyUtils";
 import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";
 
-import PropertyValue from "./propertyTypes/PropertyValue.svelte";
-import PropertyEditor from "./PropertyEditor.svelte";
+import PropertyValue from "@components/noteView/properties/propertyTypes/PropertyValue.svelte";
+import PropertyEditor from "@components/noteView/properties/PropertyEditor.svelte";
 import Button from "@components/utils/Button.svelte";
 
-import type { Property } from "@projectTypes/noteTypes";
+import type { Property } from "@projectTypes/propertyTypes";
 
 let {
    noteId,

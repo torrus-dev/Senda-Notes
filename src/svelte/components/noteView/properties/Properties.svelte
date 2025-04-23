@@ -10,7 +10,7 @@ import { PlusIcon, TablePropertiesIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";
 
-import type { Property as PropertyType } from "@projectTypes/noteTypes";
+import type { Property as PropertyType } from "@projectTypes/propertyTypes";
 
 let { noteId, properties }: { noteId: string; properties: PropertyType[] } =
    $props();
