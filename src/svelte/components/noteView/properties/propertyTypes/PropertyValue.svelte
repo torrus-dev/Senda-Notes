@@ -1,7 +1,7 @@
 <script lang="ts">
 import { propertyController } from "@controllers/propertyController.svelte";
 
-import type { Property } from "@projectTypes/noteTypes";
+import type { Property } from "@projectTypes/propertyTypes";
 
 import PropertyText from "./PropertyText.svelte";
 import PropertyList from "./PropertyList.svelte";

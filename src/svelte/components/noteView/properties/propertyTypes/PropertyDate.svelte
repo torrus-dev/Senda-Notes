@@ -1,21 +1,22 @@
 <script lang="ts">
-import { DateTime } from "luxon";
+import type { DateProperty } from "@projectTypes/propertyTypes";
 
-let { property, onUpdate } = $props();
+let {
+   property,
+   onUpdate,
+}: {
+   property: DateProperty;
+   onUpdate: (newValue: any) => void;
+} = $props();
 
-// Convertir DateTime a formato 'YYYY-MM-DD' para el input
-let newValue = $state(
-  DateTime.isDateTime(property.value)
-    ? property.value.toFormat("yyyy-MM-dd")
-    : property.value,
-);
+let newValue: DateProperty["value"] = $state(property.value);
 </script>
 
 <input
-  name={property.name}
-  type="date"
-  bind:value={newValue}
-  onchange={() => {
-    const fechaDateTime = DateTime.fromFormat(newValue, "yyyy-MM-dd");
-    onUpdate(fechaDateTime);
-  }} />
+   name={property.name}
+   type="date"
+   bind:value={newValue}
+   onchange={() => {
+      const fechaDateTime = newValue;
+      onUpdate(fechaDateTime);
+   }} />

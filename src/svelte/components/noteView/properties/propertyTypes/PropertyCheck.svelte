@@ -1,11 +1,11 @@
 <script lang="ts">
-import type { Property } from "@projectTypes/noteTypes";
+import type { CheckProperty } from "@projectTypes/propertyTypes";
 
 let {
    property,
    onUpdate,
-}: { property: Property; onUpdate: (newValue: any) => void } = $props();
-let newValue: any = $state(property.value);
+}: { property: CheckProperty; onUpdate: (newValue: any) => void } = $props();
+let newValue: CheckProperty["value"] = $state(property.value);
 </script>
 
 <input

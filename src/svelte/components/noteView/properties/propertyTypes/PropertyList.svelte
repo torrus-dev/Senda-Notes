@@ -1,18 +1,13 @@
 <script lang="ts">
 import { XIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
-import type { Property } from "@projectTypes/noteTypes";
+import type { ListProperty } from "@projectTypes/propertyTypes";
 
 let {
    property,
    onUpdate,
 }: {
-   property: {
-      id: string;
-      name: string;
-      value: string[];
-      type: "list";
-   };
+   property: ListProperty;
    onUpdate: (newValue?: any) => void;
 } = $props();
 

@@ -1,13 +1,13 @@
 <script lang="ts">
-import type { Property } from "@projectTypes/noteTypes";
+import type { TextProperty } from "@projectTypes/propertyTypes";
 let {
    property,
    onUpdate,
 }: {
-   property: Property;
+   property: TextProperty;
    onUpdate: (newValue: any) => void;
 } = $props();
-let newValue = $state(property.value);
+let newValue: TextProperty["value"] = $state(property.value);
 </script>
 
 <input
