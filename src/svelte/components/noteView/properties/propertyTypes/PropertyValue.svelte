@@ -10,24 +10,24 @@ import PropertyCheck from "./PropertyCheck.svelte";
 import PropertyDate from "./PropertyDate.svelte";
 import PropertyDatetime from "./PropertyDateTime.svelte";
 
-const components = {
-   text: PropertyText,
-   list: PropertyList,
-   number: PropertyNumber,
-   check: PropertyCheck,
-   date: PropertyDate,
-   datetime: PropertyDatetime,
-};
-
 let { property, noteId }: { property: Property; noteId: string } = $props();
 
 function handlePropertyUpdateValue(newValue: Property["value"]) {
    if (!noteId) return;
    propertyController.updateProperty(noteId, property.id, { value: newValue });
 }
-
-let PropertyComponent = $derived(components[property.type]);
 </script>
 
-<PropertyComponent property={property} onUpdate={handlePropertyUpdateValue}
-></PropertyComponent>
+{#if property.type === "text"}
+   <PropertyText property={property} onUpdate={handlePropertyUpdateValue} />
+{:else if property.type === "number"}
+   <PropertyNumber property={property} onUpdate={handlePropertyUpdateValue} />
+{:else if property.type === "list"}
+   <PropertyList property={property} onUpdate={handlePropertyUpdateValue} />
+{:else if property.type === "check"}
+   <PropertyCheck property={property} onUpdate={handlePropertyUpdateValue} />
+{:else if property.type === "date"}
+   <PropertyDate property={property} onUpdate={handlePropertyUpdateValue} />
+{:else if property.type === "datetime"}
+   <PropertyDatetime property={property} onUpdate={handlePropertyUpdateValue} />
+{/if}
