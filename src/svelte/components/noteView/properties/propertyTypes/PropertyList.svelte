@@ -13,7 +13,6 @@ let {
 
 // Estado de referencia para el input (en caso de list)
 let inputElement: HTMLInputElement | undefined = $state(undefined);
-let isEditing = false;
 
 // Función para eliminar un elemento de la lista
 function removeListItem(index: number) {
@@ -51,16 +50,14 @@ function handleListInput(event: Event) {
       <div
          class="rounded-selector bg-base-200 inline-flex items-center p-1 text-sm hover:bg-(--color-bg-hover)">
          <span>{item}</span>
-         {#if !isEditing}
-            <Button
-               class="text-faint-content mr-[-0.25rem]"
-               onclick={() => removeListItem(index)}
-               size="small"
-               title="Remove item"
-               shape="square">
-               <XIcon size="14" />
-            </Button>
-         {/if}
+         <Button
+            class="text-faint-content mr-[-0.25rem]"
+            onclick={() => removeListItem(index)}
+            size="small"
+            title="Remove item"
+            shape="square">
+            <XIcon size="14" />
+         </Button>
       </div>
    {/each}
    <input
