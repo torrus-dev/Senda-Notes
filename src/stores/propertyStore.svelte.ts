@@ -6,6 +6,7 @@ import {
 import { settingsStore } from "./settingsStore.svelte";
 
 class PropertyStore {
+   private propertyLabels = $state<Property["name"][]>([]);
    private properties = $state<Property[]>([]);
 
    constructor() {
