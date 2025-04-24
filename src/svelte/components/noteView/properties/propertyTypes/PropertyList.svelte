@@ -17,10 +17,16 @@
    background-color: var(--color-bg-hover, #e2e8f0);
 }
 
-/* Esconder botón de borrar cuando no está enfocado o en hover */
-.item-badge:hover .opacity-0,
-.item-badge[data-focused="true"] .opacity-0 {
-   opacity: 1;
+/* Solución para el input que se adapta automáticamente */
+.flex-input-container {
+   flex: 1;
+   min-width: 20px;
+   display: flex;
+}
+
+.flexible-input {
+   width: 100%;
+   min-width: 1px;
 }
 </style>
 
@@ -43,32 +49,6 @@ let inputElement: HTMLInputElement | undefined = $state(undefined);
 let containerElement: HTMLDivElement | undefined = $state(undefined);
 let isFocused: boolean = $state(false);
 let focusedItemIndex: number | null = $state(null);
-
-// Estado para controlar el ancho del input
-let inputWidth: number = $state(1);
-
-// Actualizar el ancho del input cuando cambia el container
-function updateInputWidth() {
-   if (containerElement && inputElement) {
-      // Calcula el espacio disponible en el contenedor
-      const containerWidth = containerElement.clientWidth;
-      const usedWidth = Array.from(containerElement.children)
-         .filter((child) => child !== inputElement)
-         .reduce((acc, child) => acc + child.clientWidth + 4, 0); // 4px para el gap
-
-      // Espacio mínimo para el input (evita que sea demasiado pequeño)
-      const minInputWidth = 50;
-
-      // Calcula el ancho disponible para el input
-      const availableWidth = Math.max(
-         containerWidth - usedWidth - 10,
-         minInputWidth,
-      );
-
-      // Actualiza el ancho del input
-      inputElement.style.width = `${availableWidth}px`;
-   }
-}
 
 // Función para eliminar un elemento de la lista
 function removeListItem(index: number) {
@@ -96,9 +76,6 @@ function removeListItem(index: number) {
          focusedItemIndex--;
       }
    }
-
-   // Actualiza el ancho del input después de eliminar un elemento
-   setTimeout(updateInputWidth, 0);
 }
 
 // Manejo de entrada en lista
@@ -114,14 +91,17 @@ function handleListInput(event: Event) {
             const newValue = [...property.value, inputValue];
             onUpdate(newValue);
             inputElement.value = "";
-            setTimeout(updateInputWidth, 0);
          } else if (
             keyEvent.key === "Backspace" &&
             !inputValue &&
             property.value.length > 0
          ) {
-            // Si no hay texto y presionamos Backspace, eliminamos el último elemento
-            removeListItem(property.value.length - 1);
+            // Cambio: En lugar de borrar directamente, primero enfocamos
+            // el último elemento si no hay ninguno enfocado
+            if (focusedItemIndex === null) {
+               focusedItemIndex = property.value.length - 1;
+               keyEvent.preventDefault();
+            }
          } else if (
             keyEvent.key === "ArrowLeft" &&
             inputElement.selectionStart === 0 &&
@@ -136,7 +116,6 @@ function handleListInput(event: Event) {
          const newValue = [...property.value, inputValue];
          onUpdate(newValue);
          inputElement.value = "";
-         setTimeout(updateInputWidth, 0);
       }
    }
 }
@@ -148,17 +127,14 @@ function handleItemKeyDown(event: KeyboardEvent, index: number) {
       event.preventDefault();
    } else if (event.key === "ArrowRight") {
       if (index === property.value.length - 1) {
-         // Si es el último elemento, moverse al input
          focusedItemIndex = null;
          setTimeout(() => inputElement?.focus(), 0);
       } else {
-         // Moverse al siguiente elemento
          focusedItemIndex = index + 1;
       }
       event.preventDefault();
    } else if (event.key === "ArrowLeft") {
       if (index > 0) {
-         // Moverse al elemento anterior
          focusedItemIndex = index - 1;
       }
       event.preventDefault();
@@ -183,32 +159,6 @@ function handleContainerBlur(event: FocusEvent) {
    }
 }
 
-// Efecto para actualizar el ancho del input cuando cambia el contenido
-$effect(() => {
-   if (property.value.length >= 0) {
-      setTimeout(updateInputWidth, 0);
-   }
-});
-
-// Configurar observador de tamaño después de montar el componente
-onMount(() => {
-   if (containerElement) {
-      // Observer para detectar cambios en el tamaño del contenedor
-      const resizeObserver = new ResizeObserver(() => {
-         updateInputWidth();
-      });
-
-      resizeObserver.observe(containerElement);
-
-      // Actualizar ancho inicial
-      updateInputWidth();
-
-      return () => {
-         resizeObserver.disconnect();
-      };
-   }
-});
-
 // Efecto para actualizar el enfoque cuando cambia focusedItemIndex
 $effect(() => {
    if (focusedItemIndex !== null) {
@@ -228,8 +178,7 @@ $effect(() => {
    bind:this={containerElement}>
    {#each property.value as item, index}
       <div
-         class="item-badge rounded-selector bg-base-300 focus:ring-primary-500 text-muted-content inline-flex items-center px-2 py-0.5 text-sm focus:ring-1 focus:outline-none
-         {isFocused ? 'pr-0' : ''}"
+         class="item-badge rounded-selector bg-base-300 focus:ring-primary-500 text-muted-content inline-flex items-center px-2 py-0.5 text-sm focus:ring-1 focus:outline-none"
          tabindex="0"
          onkeydown={(e) => handleItemKeyDown(e, index)}
          onclick={() => focusItem(index)}
@@ -249,12 +198,14 @@ $effect(() => {
       </div>
    {/each}
 
-   <input
-      name={property.name}
-      type="text"
-      class="flex min-w-[50px] shrink grow-0 border-0 bg-transparent focus:ring-0 focus:outline-none"
-      placeholder={property.value.length === 0 ? "Type to add items..." : ""}
-      onkeydown={handleListInput}
-      onblur={handleListInput}
-      bind:this={inputElement} />
+   <div class="flex-input-container">
+      <input
+         name={property.name}
+         type="text"
+         class="flexible-input border-0 bg-transparent focus:ring-0 focus:outline-none"
+         placeholder={property.value.length === 0 ? "Type to add items..." : ""}
+         onkeydown={handleListInput}
+         onblur={handleListInput}
+         bind:this={inputElement} />
+   </div>
 </div>
