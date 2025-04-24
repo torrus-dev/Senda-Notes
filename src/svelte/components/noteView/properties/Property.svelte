@@ -77,7 +77,10 @@ const IconComponent = $derived(getIconComponent(property.type));
                   label: "Delete Property",
                   icon: Trash2Icon,
                   action: () => {
-                     propertyController.deleteProperty(property.id);
+                     propertyController.deletePropertyFromNote(
+                        property.id,
+                        noteId,
+                     );
                      // close
                   },
                   class: "text-error",
@@ -91,7 +94,7 @@ const IconComponent = $derived(getIconComponent(property.type));
             </p>
          </Button>
       </div>
-      <PropertyValue noteId={noteId} property={property}></PropertyValue>
+      <PropertyValue property={property}></PropertyValue>
    </div>
    {#if isEditorOpen}
       <PropertyEditor noteId={noteId} property={property} />

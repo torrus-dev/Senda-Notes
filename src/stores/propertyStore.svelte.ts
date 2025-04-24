@@ -22,8 +22,13 @@ class PropertyStore {
       }
    }
 
-   getPropertyById(id: string): Property | undefined {
+   getPropertyById(id: Property["id"]): Property | undefined {
       return this.properties.find((properties) => properties.id === id);
+   }
+   getPropertyByName(propertyName: Property["name"]): Property | undefined {
+      return this.properties.find(
+         (properties) => properties.name === propertyName,
+      );
    }
 
    getPropertiesFromIDs(id: Property["id"][]): Property[] {

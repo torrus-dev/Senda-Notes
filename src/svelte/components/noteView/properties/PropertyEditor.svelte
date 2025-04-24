@@ -30,19 +30,26 @@ const propertyTypes = [
 ];
 
 function handleSave() {
-   if (
-      noteId &&
-      (newPropertyName !== propertyName || newPropertyType !== propertyType)
-   ) {
+   if (newPropertyName !== propertyName || newPropertyType !== propertyType) {
       if (propertyId) {
+         // Actualizar propiedad existente
          propertyController.updateProperty(propertyId, {
             name: newPropertyName,
             type: newPropertyType,
          } as Property);
       } else {
-         propertyController.createNewProperty(newPropertyName, noteId);
+         // Comprobar si existe ya la propiedad con ese nombre y agregarla a la nota con el tipo existente
+         const existingProperty =
+            propertyController.getPropertyByName(newPropertyName);
+         // CORREGIR, SOLO DEBES CREAR UNA PROPERTY CON EL MISMO NOMBRE Y LABEL, SI PONES LA MISMA TAMBIEN SE COMPARTE EL VALUE, HABRIA QUE CREAR UN ARRAY DE LABELS EN PROPERTYCONTROLLER / STORE PARA CONTROLAR ESTO Y ADAPTAR FUNCIONES COMO getPropertyByName
+         console.log("existingProperty", existingProperty);
+         if (existingProperty) {
+            propertyController.addPropertyToNote(existingProperty.id, noteId);
+         } else if (noteId) {
+            // Si no hay id, ni propiedad con ese nombre, entonces crear nueva propiedad
+            propertyController.createNewProperty(newPropertyName, noteId);
+         }
       }
-      console.log("saved");
    }
 }
 

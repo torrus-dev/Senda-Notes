@@ -34,7 +34,6 @@
 import { XIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
 import type { ListProperty } from "@projectTypes/propertyTypes";
-import { onMount } from "svelte";
 
 let {
    property,

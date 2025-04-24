@@ -10,11 +10,10 @@ import PropertyCheck from "./PropertyCheck.svelte";
 import PropertyDate from "./PropertyDate.svelte";
 import PropertyDatetime from "./PropertyDateTime.svelte";
 
-let { property, noteId }: { property: Property; noteId: string } = $props();
+let { property }: { property: Property } = $props();
 
 function handlePropertyUpdateValue(newValue: Property["value"]) {
-   if (!noteId) return;
-   propertyController.updateProperty(noteId, property.id, { value: newValue });
+   propertyController.updateProperty(property.id, { value: newValue });
 }
 </script>
 

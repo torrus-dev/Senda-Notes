@@ -6,10 +6,8 @@ import { getDefaultTypeValue } from "@utils/propertyUtils";
 
 class PropertyController {
    // API Pública
-   createNewProperty(
-      name: Property["name"],
-      noteId?: Note["id"],
-   ): Property["id"] {
+   createNewProperty(name: Property["name"], noteId?: Note["id"]) {
+      if (this.getPropertyByName(name)) return;
       const newProperty: Property = {
          id: crypto.randomUUID(),
          name: name,
@@ -41,7 +39,38 @@ class PropertyController {
    };
 
    deleteProperty(propertyId: string): void {
-      noteStore.removeNote(propertyId);
+      propertyStore.removeProperty(propertyId);
+   }
+
+   deletePropertyFromNote(propertyId: string, noteId: string): void {
+      const note = noteStore.getNoteById(noteId);
+      if (!note) return;
+
+      if (note.propertiesIDs.includes(propertyId)) {
+         noteStore.updateNoteById(
+            noteId,
+            (currentNote) =>
+               ({
+                  ...currentNote,
+                  propertiesIDs: currentNote.propertiesIDs.filter(
+                     (id) => id !== propertyId,
+                  ),
+               }) as Note,
+         );
+      }
+      // Verificamos si la propiedad ya no está en uso en ninguna nota
+      this.deletePropertyIfUnused(propertyId);
+   }
+   private deletePropertyIfUnused(propertyId: string): void {
+      const allNotes = noteStore.getAllNotes();
+      const isPropertyUsed = allNotes.some((note) =>
+         note.propertiesIDs.includes(propertyId),
+      );
+
+      // Si no está en uso en ninguna nota, la eliminamos
+      if (!isPropertyUsed) {
+         propertyStore.removeProperty(propertyId);
+      }
    }
 
    addPropertyToNote(propertyId: Property["id"], noteId: Note["id"]) {
@@ -79,9 +108,9 @@ class PropertyController {
          return undefined;
       }
    }
-   getPropertyByName(propertyId: Property["name"]): Property | undefined {
+   getPropertyByName(propertyName: Property["name"]): Property | undefined {
       try {
-         return propertyStore.getPropertyById(propertyId);
+         return propertyStore.getPropertyByName(propertyName);
       } catch {
          return undefined;
       }
