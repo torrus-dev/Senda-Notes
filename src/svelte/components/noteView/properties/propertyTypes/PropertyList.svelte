@@ -87,7 +87,6 @@ function handleListInput(event: Event) {
          const keyEvent = event as KeyboardEvent;
 
          if (keyEvent.key === "Enter" && inputValue) {
-            // Añadir nuevo elemento
             const newValue = [...property.value, inputValue];
             onUpdate(newValue);
             inputElement.value = "";
@@ -96,8 +95,6 @@ function handleListInput(event: Event) {
             !inputValue &&
             property.value.length > 0
          ) {
-            // Cambio: En lugar de borrar directamente, primero enfocamos
-            // el último elemento si no hay ninguno enfocado
             if (focusedItemIndex === null) {
                focusedItemIndex = property.value.length - 1;
                keyEvent.preventDefault();
@@ -107,7 +104,6 @@ function handleListInput(event: Event) {
             inputElement.selectionStart === 0 &&
             property.value.length > 0
          ) {
-            // Mover hacia la izquierda si el cursor está al inicio del input
             focusedItemIndex = property.value.length - 1;
             keyEvent.preventDefault();
          }
@@ -171,7 +167,7 @@ $effect(() => {
 </script>
 
 <div
-   class="property-list-container rounded-field bordered bg-interactive flex min-h-[30px] flex-wrap items-center gap-1 px-1 py-1"
+   class="property-list-container rounded-field bordered bg-interactive flex min-h-[30px] flex-wrap items-center gap-0.5 px-1 py-1"
    onfocusin={handleContainerFocus}
    onfocusout={handleContainerBlur}
    tabindex="-1"
