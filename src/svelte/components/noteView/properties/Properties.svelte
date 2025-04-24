@@ -11,14 +11,18 @@ import Button from "@components/utils/Button.svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";
 
 import type { Property as PropertyType } from "@projectTypes/propertyTypes";
+import { noteController } from "@controllers/noteController.svelte";
 
-let { noteId, properties }: { noteId: string; properties: PropertyType[] } =
-   $props();
+let { noteId }: { noteId: string } = $props();
+
+let properties: PropertyType[] = $derived(
+   noteController.getNoteProperties(noteId),
+);
 
 let isAddPropertyOpen = $derived(workspace.isOpenPropertyEditor());
 </script>
 
-{#if noteId && properties}
+{#if noteId}
    {#snippet headingContent()}
       <div class="flex items-center gap-2">
          <TablePropertiesIcon size="1.125rem" /> Properties
@@ -32,6 +36,7 @@ let isAddPropertyOpen = $derived(workspace.isOpenPropertyEditor());
       oncollapse={() => {
          workspace.toggleEditorPropertiesCollapsed();
       }}>
+      {console.log(properties)}
       {#if properties.length > 0}
          <ul class="rounded-lg">
             {#each properties as property, index (property.id)}

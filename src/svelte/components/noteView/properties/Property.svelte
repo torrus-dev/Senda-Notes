@@ -77,7 +77,7 @@ const IconComponent = $derived(getIconComponent(property.type));
                   label: "Delete Property",
                   icon: Trash2Icon,
                   action: () => {
-                     propertyController.deleteProperty(noteId, property.id);
+                     propertyController.deleteProperty(property.id);
                      // close
                   },
                   class: "text-error",

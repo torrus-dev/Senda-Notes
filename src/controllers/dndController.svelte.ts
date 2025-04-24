@@ -4,6 +4,7 @@ import { propertyController } from "@controllers/propertyController.svelte";
 import { noteStore } from "@stores/noteStore.svelte";
 import { noteTreeController } from "./noteTreeController.svelte";
 import { noteQueryController } from "./noteQueryController.svelte";
+import { noteController } from "./noteController.svelte";
 
 class DndController {
    isDragging = $state<boolean>(false);
@@ -117,7 +118,7 @@ class DndController {
          return;
       }
 
-      propertyController.reorderProperty(noteId, propertyId, newPosition);
+      noteController.reorderNoteProperties(noteId, propertyId, newPosition);
    };
 
    // Note Tree

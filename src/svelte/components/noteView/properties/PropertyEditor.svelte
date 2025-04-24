@@ -2,7 +2,7 @@
 </style>
 
 <script lang="ts">
-import type { Property } from "@projectTypes/noteTypes";
+import type { Property } from "@projectTypes/propertyTypes";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { propertyController } from "@controllers/propertyController.svelte";
 import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
@@ -34,16 +34,15 @@ function handleSave() {
       noteId &&
       (newPropertyName !== propertyName || newPropertyType !== propertyType)
    ) {
-      const newProperty = {
-         name: newPropertyName,
-         type: newPropertyType,
-         value: "",
-      };
       if (propertyId) {
-         propertyController.updateProperty(noteId, propertyId, newProperty);
+         propertyController.updateProperty(propertyId, {
+            name: newPropertyName,
+            type: newPropertyType,
+         } as Property);
       } else {
-         propertyController.createProperty(noteId, newProperty);
+         propertyController.createNewProperty(newPropertyName, noteId);
       }
+      console.log("saved");
    }
 }
 

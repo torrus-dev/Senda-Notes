@@ -1,9 +1,11 @@
 import { DateTime } from "luxon";
 import type { Note } from "@projectTypes/noteTypes";
 import type { PersistedWorkspaceState } from "@projectTypes/workspaceTypes";
-import { Settings } from "@projectTypes/settingsTypes";
+import type { Settings } from "@projectTypes/settingsTypes";
+import type { Property } from "@projectTypes/propertyTypes";
 
 const NOTES_STORAGE_KEY = "NoteList";
+const PROPERTIES_STORAGE_KEY = "Properties";
 const WORKSPACE_STORAGE_KEY = "workspaceState";
 const SETTINGS_STORAGE_KEY = "settingsState";
 
@@ -51,6 +53,38 @@ export function saveNotesToStorage(notes: Note[]): void {
       console.error(
          "Error al guardar",
          NOTES_STORAGE_KEY,
+         "en localStorage:",
+         error,
+      );
+   }
+}
+
+// PROPERTIES
+export function loadPropertiesFromStorage(): Property[] {
+   const stored = localStorage.getItem(PROPERTIES_STORAGE_KEY);
+   if (stored) {
+      try {
+         return JSON.parse(stored);
+      } catch (error) {
+         console.error(
+            "Error al parsear",
+            PROPERTIES_STORAGE_KEY,
+            "desde localStorage:",
+            error,
+         );
+         return [];
+      }
+   }
+   return [];
+}
+
+export function savePropertiesToStorage(properties: Property[]): void {
+   try {
+      localStorage.setItem(PROPERTIES_STORAGE_KEY, JSON.stringify(properties));
+   } catch (error) {
+      console.error(
+         "Error al guardar",
+         PROPERTIES_STORAGE_KEY,
          "en localStorage:",
          error,
       );
@@ -110,5 +144,6 @@ function getDefaultSettingsState(): Settings {
       theme: "dark",
       sidebarIsLocked: false,
       showMetadata: false,
+      debugLevel: 0,
    };
 }

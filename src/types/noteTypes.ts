@@ -15,7 +15,7 @@ export interface Note {
    children: string[];
    parentId?: string;
    metadata: NoteMetadata;
-   properties: Property[];
+   propertiesIDs: Property["id"][];
 }
 
 export interface NoteMetadata {

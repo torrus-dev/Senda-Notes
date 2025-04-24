@@ -14,6 +14,8 @@ import { noteTreeController } from "@controllers//noteTreeController.svelte";
 import { noteQueryController } from "@controllers//noteQueryController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { notificationController } from "./notificationController.svelte";
+import { Property } from "@projectTypes/propertyTypes";
+import { propertyStore } from "@stores/propertyStore.svelte";
 
 class NoteController {
    createNote = (parentId?: string | undefined): void => {
@@ -27,7 +29,7 @@ class NoteController {
          children: [],
          content: "",
          metadata: createDefaultMetadata(),
-         properties: [],
+         propertiesIDs: [],
          parentId: typeof parentId === "string" ? parentId : undefined,
       };
 
@@ -52,11 +54,14 @@ class NoteController {
       const note = noteQueryController.getNoteById(noteId);
       if (!note) return;
 
-      // Actualizar la nota inmediatamente
-      noteStore.updateNoteById(noteId, (existingNote) => ({
-         ...existingNote,
-         ...updates,
-      }));
+      noteStore.updateNoteById(
+         noteId,
+         (existingNote) =>
+            ({
+               ...existingNote,
+               ...updates,
+            }) as Note,
+      );
    };
 
    updateNoteTitle = (noteId: string, title: string): void => {
@@ -114,6 +119,42 @@ class NoteController {
          type: "base",
       });
    };
+
+   getNoteProperties(noteId: string): Property[] {
+      const note = noteStore.getNoteById(noteId);
+      if (!note) return [];
+      return propertyStore.getPropertiesFromIDs(note.propertiesIDs);
+   }
+
+   reorderNoteProperties(
+      noteId: string,
+      propertyId: string,
+      newPosition: number,
+   ): void {
+      const note = noteStore.getNoteById(noteId);
+      if (!note) return;
+
+      // Validaciones de posición
+      if (newPosition < 0) {
+         throw new Error(`Invalid position: ${newPosition}. Must be >= 0`);
+      }
+      const propertiesIDs = note.propertiesIDs;
+      const currentIndex = propertiesIDs.findIndex(
+         (property) => property === propertyId,
+      );
+
+      // Ajustar posición si es mayor que el límite
+      const adjustedPosition = Math.min(newPosition, propertiesIDs.length - 1);
+
+      // No hacer nada si la posición es la misma
+      if (currentIndex === adjustedPosition) return;
+
+      // Reordenar
+      const [propertyToMove] = propertiesIDs.splice(currentIndex, 1);
+      propertiesIDs.splice(adjustedPosition, 0, propertyToMove);
+
+      this.updateNote(noteId, { propertiesIDs });
+   }
 }
 
 export let noteController = $state(new NoteController());

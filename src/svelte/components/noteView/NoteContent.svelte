@@ -33,7 +33,7 @@ let { note }: { note: Note | undefined } = $props();
                {#if settingsController.getShowMetadata()}
                   <Metadata noteId={note.id} metadata={note.metadata} />
                {/if}
-               <Properties noteId={note.id} properties={note.properties} />
+               <Properties noteId={note.id} />
                <ChildNotes children={note.children} />
             </div>
          </section>
