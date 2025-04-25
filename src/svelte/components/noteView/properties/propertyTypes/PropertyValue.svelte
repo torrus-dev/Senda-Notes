@@ -13,7 +13,7 @@ import PropertyDatetime from "./PropertyDateTime.svelte";
 let { property }: { property: Property } = $props();
 
 function handlePropertyUpdateValue(newValue: Property["value"]) {
-   propertyController.updateProperty(property.id, { value: newValue });
+   propertyController.updatePropertyValue(property.id, newValue);
 }
 </script>
 

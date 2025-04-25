@@ -6,34 +6,33 @@ import { getDefaultTypeValue } from "@utils/propertyUtils";
 
 class PropertyController {
    // API Pública
-   createNewProperty(name: Property["name"], noteId?: Note["id"]) {
-      if (this.getPropertyByName(name)) return;
+   createProperty(name: Property["name"], noteId?: Note["id"]): void {
+      const existingLabel = propertyStore.getPropertyLabel(name);
+
+      const propertyType = existingLabel ? existingLabel.type : "text";
+
       const newProperty: Property = {
          id: crypto.randomUUID(),
          name: name,
-         type: "text",
-         value: getDefaultTypeValue("text"),
+         type: propertyType,
+         value: getDefaultTypeValue(propertyType),
       };
-      propertyStore.createProperty(newProperty);
 
+      propertyStore.createProperty(newProperty);
       if (noteId) {
          this.addPropertyToNote(newProperty.id, noteId);
       }
 
-      if (!propertyStore.getPropertyLabel(name)) {
-         propertyStore.registerPropertyLabel(
-            newProperty.name,
-            newProperty.type,
-         );
+      // Registrar el label si no existe ninguno con ese nombre
+      if (!existingLabel) {
+         propertyStore.registerPropertyLabel(name, propertyType);
       }
-      return newProperty.id;
    }
 
-   updateProperty = (propertyId: string, updates: Partial<Property>): void => {
-      const property = propertyStore.getPropertyById(propertyId);
-
-      if (!property) return;
-
+   updatePropertyById = (
+      propertyId: Property["id"],
+      updates: Partial<Property>,
+   ) => {
       propertyStore.updatePropertyById(
          propertyId,
          (property) =>
@@ -42,9 +41,76 @@ class PropertyController {
                ...updates,
             }) as Property,
       );
-
-      
    };
+
+   updateProperty = (
+      propertyId: Property["id"],
+      updates: Partial<Property>,
+   ): void => {
+      const property = propertyStore.getPropertyById(propertyId);
+      if (!property) return;
+
+      // Caso especial para cambio de nombre
+      if (updates.name && updates.name !== property.name) {
+         // Si cambia el nombre, tratarlo como eliminación + creación
+         const noteIds = this.findNotesWithProperty(propertyId);
+
+         // Para cada nota que tiene esta propiedad
+         noteIds.forEach((noteId) => {
+            // Eliminar la propiedad con el nombre antiguo
+            this.deletePropertyFromNote(propertyId, noteId);
+
+            // Crear/añadir una nueva propiedad con el nuevo nombre
+            // Aquí usamos el método createNewProperty que ya maneja los labels
+            this.createProperty(updates.name!, noteId);
+         });
+
+         return; // No seguimos con la actualización normal
+      }
+
+      // Caso especial para cambio de tipo (solo actualizar el label si no hay cambio de nombre)
+      if (updates.type && updates.type !== property.type && !updates.name) {
+         const existingLabel = propertyStore.getPropertyLabel(property.name);
+         if (existingLabel) {
+            // Actualizar el tipo en el label
+            propertyStore.updatePropertyLabel(property.name, updates.type);
+         }
+      }
+
+      // Actualización normal de la propiedad
+      this.updatePropertyById(propertyId, updates);
+   };
+
+   updatePropertyLabel(
+      propertyId: Property["id"],
+      updates: Partial<Property>,
+   ): void {
+      const property = propertyController.getPropertyById(propertyId);
+      if (!property) return;
+      //
+      this.updatePropertyById(propertyId, updates);
+   }
+
+   updatePropertyValue(propertyId: string, value: Property["value"]): void {
+      this.updateProperty(propertyId, { value });
+   }
+
+   updatePropertyName(propertyId: string, name: string): void {
+      this.updateProperty(propertyId, { name });
+   }
+
+   changePropertyType(propertyId: string, type: Property["type"]): void {
+      // lamar a función que intente transformar el value de la property
+      this.updateProperty(propertyId, { type });
+   }
+
+   // Método auxiliar para encontrar todas las notas que usan una propiedad
+   private findNotesWithProperty(propertyId: string): string[] {
+      const allNotes = noteStore.getAllNotes();
+      return allNotes
+         .filter((note) => note.propertiesIDs.includes(propertyId))
+         .map((note) => note.id);
+   }
 
    deleteProperty(propertyId: string): void {
       propertyStore.removeProperty(propertyId);
@@ -93,20 +159,6 @@ class PropertyController {
                propertiesIDs: [...currentNote.propertiesIDs, propertyId],
             }) as Note,
       );
-   }
-
-   // Métodos de conveniencia
-   updatePropertyValue(propertyId: string, value: Property["value"]): void {
-      this.updateProperty(propertyId, { value });
-   }
-
-   updatePropertyName(propertyId: string, name: string): void {
-      this.updateProperty(propertyId, { name });
-   }
-
-   changePropertyType(propertyId: string, type: Property["type"]): void {
-      // lamar a función que intente transformar el value de la property
-      this.updateProperty(propertyId, { type });
    }
 
    getPropertyById(propertyId: Property["id"]): Property | undefined {
