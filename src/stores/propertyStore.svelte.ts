@@ -1,14 +1,9 @@
-import type { Property } from "@projectTypes/propertyTypes";
+import type { Property, PropertyLabel } from "@projectTypes/propertyTypes";
 import {
    loadPropertiesFromStorage,
    savePropertiesToStorage,
 } from "@utils/storage";
 import { settingsStore } from "./settingsStore.svelte";
-
-interface PropertyLabel {
-   name: Property["name"];
-   type: Property["type"];
-}
 
 class PropertyStore {
    private propertyLabels = $state<PropertyLabel[]>([]);
@@ -85,9 +80,14 @@ class PropertyStore {
       propertyName: Property["name"],
       newPropertyType: Property["type"],
    ): void {
-      const index = this.propertyLabels.findIndex((label) => label.name === propertyName);
+      const index = this.propertyLabels.findIndex(
+         (label) => label.name === propertyName,
+      );
       if (index !== -1) {
-         this.propertyLabels[index] = { name: propertyName, type: newPropertyType };
+         this.propertyLabels[index] = {
+            name: propertyName,
+            type: newPropertyType,
+         };
       }
    }
 

@@ -49,3 +49,8 @@ export type Property =
    | CheckProperty
    | DateProperty
    | DateTimeProperty;
+
+export interface PropertyLabel {
+   name: Property["name"];
+   type: Property["type"];
+}
