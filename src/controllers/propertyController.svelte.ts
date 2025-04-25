@@ -20,6 +20,12 @@ class PropertyController {
          this.addPropertyToNote(newProperty.id, noteId);
       }
 
+      if (!propertyStore.getPropertyLabel(name)) {
+         propertyStore.registerPropertyLabel(
+            newProperty.name,
+            newProperty.type,
+         );
+      }
       return newProperty.id;
    }
 
@@ -36,6 +42,8 @@ class PropertyController {
                ...updates,
             }) as Property,
       );
+
+      
    };
 
    deleteProperty(propertyId: string): void {

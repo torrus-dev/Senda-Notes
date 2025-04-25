@@ -5,8 +5,13 @@ import {
 } from "@utils/storage";
 import { settingsStore } from "./settingsStore.svelte";
 
+interface PropertyLabel {
+   name: Property["name"];
+   type: Property["type"];
+}
+
 class PropertyStore {
-   private propertyLabels = $state<Property["name"][]>([]);
+   private propertyLabels = $state<PropertyLabel[]>([]);
    private properties = $state<Property[]>([]);
 
    constructor() {
@@ -67,6 +72,33 @@ class PropertyStore {
          (property) => property.id !== id,
       );
       this.saveProperties();
+   }
+
+   registerPropertyLabel(
+      propertyName: Property["name"],
+      propertyType: Property["type"],
+   ): void {
+      this.propertyLabels.push({ name: propertyName, type: propertyType });
+   }
+
+   updatePropertyLabel(
+      propertyName: Property["name"],
+      newPropertyType: Property["type"],
+   ): void {
+      const index = this.propertyLabels.findIndex((label) => label.name === propertyName);
+      if (index !== -1) {
+         this.propertyLabels[index] = { name: propertyName, type: newPropertyType };
+      }
+   }
+
+   unregisterPropertyLabel(propertyName: Property["name"]) {
+      this.propertyLabels = this.propertyLabels.filter(
+         (label) => label.name !== propertyName,
+      );
+   }
+
+   getPropertyLabel(propertyName: Property["name"]): PropertyLabel | undefined {
+      return this.propertyLabels.find((label) => label.name === propertyName);
    }
 }
 
