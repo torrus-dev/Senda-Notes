@@ -4,13 +4,13 @@
 <script lang="ts">
 import { SlidersHorizontalIcon, Trash2Icon } from "lucide-svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
-import { notePropertyController } from "@controllers/note/notePropertyController.svelte";
+import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 
 import { getPropertyIcon } from "@utils/propertyUtils";
 import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";
 
-import PropertyValue from "@components/noteView/properties/propertyTypes/PropertyValue.svelte";
-import PropertyEditor from "@components/noteView/properties/PropertyEditor.svelte";
+import PropertyValue from "@components/note/properties/propertyTypes/PropertyValue.svelte";
+import PropertyEditor from "@components/note/properties/PropertyEditor.svelte";
 import Button from "@components/utils/Button.svelte";
 
 import type { Property } from "@projectTypes/propertyTypes";
@@ -77,10 +77,7 @@ const IconComponent = $derived(getPropertyIcon(property.type));
                   label: "Delete Property",
                   icon: Trash2Icon,
                   action: () => {
-                     notePropertyController.deletePropertyFromNote(
-                        property.id,
-                        noteId,
-                     );
+                     notePropertyController.deleteProperty(property.id, noteId);
                      // close
                   },
                   class: "text-error",
@@ -94,7 +91,7 @@ const IconComponent = $derived(getPropertyIcon(property.type));
             </p>
          </Button>
       </div>
-      <PropertyValue property={property}></PropertyValue>
+      <PropertyValue noteId={noteId} property={property} />
    </div>
    {#if isEditorOpen}
       <PropertyEditor noteId={noteId} property={property} />

@@ -4,14 +4,14 @@ import { settingsController } from "@controllers/settingsController.svelte";
 import Sidebar from "@components/sidebar/Sidebar.svelte";
 import NavBar from "@components/navbar/NavBar.svelte";
 import Modal from "@components/modals/Modal.svelte";
-import NoteContent from "@components/noteView/NoteContent.svelte";
+import NoteContent from "@components/note/NoteContent.svelte";
 import FloatingMenu from "@components/floating/floatingMenu/FloatingMenu.svelte";
 
 import type { Note } from "@projectTypes/noteTypes";
 import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 import Notifications from "@components/floating/notifications/Notifications.svelte";
 
-import StatusBar from "@components/noteView/StatusBar.svelte";
+import StatusBar from "@components/note/StatusBar.svelte";
 
 const activeNote: Note | undefined = $derived(
    noteQueryController.getActiveNote(),

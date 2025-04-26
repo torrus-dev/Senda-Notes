@@ -2,7 +2,7 @@ import type { Property } from "@projectTypes/propertyTypes";
 import type { Note } from "@projectTypes/noteTypes";
 import { convertPropertyValue, generateProperty } from "@utils/propertyUtils";
 import { noteStore } from "@stores/noteStore.svelte";
-import { globalPropertyController } from "@controllers/note/property/globalPropertyController";
+import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
 import { noteController } from "@controllers/note/noteController.svelte";
 
 class NotePropertyController {
@@ -144,7 +144,7 @@ class NotePropertyController {
       this.deletePropertyFromNote(noteId, propertyId);
    };
 
-   reorderNoteProperty = (
+   reorderNoteProperties = (
       noteId: string,
       propertyId: string,
       newPosition: number,

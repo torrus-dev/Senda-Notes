@@ -1,7 +1,7 @@
 <script lang="ts">
 import Title from "./Title.svelte";
 import Metadata from "./Metadata.svelte";
-import Properties from "@components/noteView/properties/Properties.svelte";
+import Properties from "@components/note/properties/Properties.svelte";
 import ChildNotes from "./ChildNotes.svelte";
 import Editor from "./editor/Editor.svelte";
 

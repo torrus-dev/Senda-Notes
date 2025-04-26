@@ -119,36 +119,6 @@ class NoteController {
          type: "base",
       });
    };
-
-   reorderNoteProperties(
-      noteId: string,
-      propertyId: string,
-      newPosition: number,
-   ): void {
-      const note = noteStore.getNoteById(noteId);
-      if (!note) return;
-
-      // Validaciones de posición
-      if (newPosition < 0) {
-         throw new Error(`Invalid position: ${newPosition}. Must be >= 0`);
-      }
-      const propertiesIDs = note.properties;
-      const currentIndex = propertiesIDs.findIndex(
-         (property) => property === propertyId,
-      );
-
-      // Ajustar posición si es mayor que el límite
-      const adjustedPosition = Math.min(newPosition, propertiesIDs.length - 1);
-
-      // No hacer nada si la posición es la misma
-      if (currentIndex === adjustedPosition) return;
-
-      // Reordenar
-      const [propertyToMove] = propertiesIDs.splice(currentIndex, 1);
-      propertiesIDs.splice(adjustedPosition, 0, propertyToMove);
-
-      this.updateNote(noteId, { properties: propertiesIDs });
-   }
 }
 
 export let noteController = $state(new NoteController());

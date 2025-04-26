@@ -18,7 +18,7 @@ import { settingsController } from "@controllers/settingsController.svelte";
 import { CleanPasteExtension } from "@lib/editorExtensions/cleanPasteExtension";
 
 import { getEditorContextMenuItems } from "@utils/editorMenuItems";
-import Toolbar from "@components/noteView/editor/Toolbar.svelte";
+import Toolbar from "@components/note/editor/Toolbar.svelte";
 
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Coordinates } from "@projectTypes/floatingTypes";

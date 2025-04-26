@@ -1,7 +1,8 @@
 <script lang="ts">
-import { notePropertyController } from "@controllers/note/notePropertyController.svelte";
+import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 
 import type { Property } from "@projectTypes/propertyTypes";
+import type { Note } from "@projectTypes/noteTypes";
 
 import PropertyText from "./PropertyText.svelte";
 import PropertyList from "./PropertyList.svelte";
@@ -10,10 +11,14 @@ import PropertyCheck from "./PropertyCheck.svelte";
 import PropertyDate from "./PropertyDate.svelte";
 import PropertyDatetime from "./PropertyDateTime.svelte";
 
-let { property }: { property: Property } = $props();
+let { noteId, property }: { noteId: Note["id"]; property: Property } = $props();
 
 function handlePropertyUpdateValue(newValue: Property["value"]) {
-   notePropertyController.updateNotePropertyValue(property.id, newValue);
+   notePropertyController.updateNotePropertyValue(
+      noteId,
+      property.id,
+      newValue,
+   );
 }
 </script>
 
