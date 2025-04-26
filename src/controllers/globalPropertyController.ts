@@ -1,8 +1,7 @@
-import type { Note } from "@projectTypes/noteTypes";
 import type { Property, GlobalProperty } from "@projectTypes/propertyTypes";
 import { noteStore } from "@stores/noteStore.svelte";
 import { propertyStore } from "@stores/propertyStore.svelte";
-import { DateTime } from "luxon";
+import { generateGlobalProperty } from "@utils/propertyUtils";
 
 class GlobalPropertyController {
    get globalProperties() {
@@ -13,14 +12,7 @@ class GlobalPropertyController {
       name: GlobalProperty["name"],
       type: GlobalProperty["type"],
    ) {
-      const newProperty: GlobalProperty = {
-         id: crypto.randomUUID(),
-         name: name,
-         type: type,
-         createdAt: DateTime.now(),
-         updatedAt: DateTime.now(),
-         linkedProperties: [],
-      };
+      const newProperty = generateGlobalProperty(name, type);
       propertyStore.createGlobalProperty(newProperty);
    }
 
