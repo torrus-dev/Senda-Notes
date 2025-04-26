@@ -50,7 +50,11 @@ export type Property =
    | DateProperty
    | DateTimeProperty;
 
-export interface PropertyLabel {
+export interface GlobalProperty {
+   id: Property["name"];
    name: Property["name"];
    type: Property["type"];
+   linkedProperties: Property["id"][];
+   createdAt: DateTime;
+   updatedAt: DateTime;
 }

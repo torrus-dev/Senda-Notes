@@ -5,12 +5,13 @@ import {
    CheckSquareIcon,
    CalendarIcon,
    CalendarClockIcon,
+   type Icon,
 } from "lucide-svelte";
+import type { GlobalProperty, Property } from "@projectTypes/propertyTypes";
 import { DateTime } from "luxon";
-import { Property } from "@projectTypes/propertyTypes";
 
 // Seleccionar el icono según el tipo de propiedad
-export function getIconComponent(type: string) {
+export function getPropertyIcon(type: string) {
    switch (type) {
       case "text":
          return TextIcon;
@@ -25,12 +26,12 @@ export function getIconComponent(type: string) {
       case "datetime":
          return CalendarClockIcon;
       default:
-         return null;
+         return undefined;
    }
 }
 
 // Definimos una función auxiliar específica para cada tipo de propiedad
-export function getDefaultTypeValue(type: Property["type"]): any {
+function getDefaultTypeValue(type: Property["type"]): Property["value"] {
    switch (type) {
       case "text":
          return "";
@@ -45,7 +46,42 @@ export function getDefaultTypeValue(type: Property["type"]): any {
       case "datetime":
          return DateTime.now();
       default:
-         const exhaustiveCheck: never = type;
-         throw new Error(`Tipo de propiedad no soportado: ${exhaustiveCheck}`);
+         throw new Error(`Tipo de propiedad no soportado: ${type}`);
    }
+}
+
+export function generateProperty(
+   name: Property["name"],
+   type: Property["type"],
+): Property {
+   const newProperty = {
+      id: crypto.randomUUID(),
+      name: name,
+      type: type,
+      value: getDefaultTypeValue(type),
+   };
+   return newProperty as Property;
+}
+
+export function convertPropertyValue(
+   oldType: Property["type"],
+   newtype: Property["type"],
+) {
+   // completar
+   return getDefaultTypeValue(newtype);
+}
+
+export function generateGlobalProperty(
+   name: GlobalProperty["name"],
+   type: GlobalProperty["type"],
+): GlobalProperty {
+   const newGlobalProperty: GlobalProperty = {
+      id: crypto.randomUUID(),
+      name: name,
+      type: type,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      linkedProperties: [],
+   };
+   return newGlobalProperty;
 }

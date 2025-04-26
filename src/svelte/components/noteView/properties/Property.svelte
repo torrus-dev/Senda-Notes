@@ -4,9 +4,9 @@
 <script lang="ts">
 import { SlidersHorizontalIcon, Trash2Icon } from "lucide-svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
-import { propertyController } from "@controllers/propertyController.svelte";
+import { notePropertyController } from "@controllers/notePropertyController.svelte";
 
-import { getIconComponent } from "@utils/propertyUtils";
+import { getPropertyIcon } from "@utils/propertyUtils";
 import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";
 
 import PropertyValue from "@components/noteView/properties/propertyTypes/PropertyValue.svelte";
@@ -45,7 +45,7 @@ const {
 });
 
 // Obtener el componente de icono actual (derivado)
-const IconComponent = $derived(getIconComponent(property.type));
+const IconComponent = $derived(getPropertyIcon(property.type));
 </script>
 
 <li
@@ -77,7 +77,7 @@ const IconComponent = $derived(getIconComponent(property.type));
                   label: "Delete Property",
                   icon: Trash2Icon,
                   action: () => {
-                     propertyController.deletePropertyFromNote(
+                     notePropertyController.deletePropertyFromNote(
                         property.id,
                         noteId,
                      );

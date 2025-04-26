@@ -1,5 +1,5 @@
 <script lang="ts">
-import { propertyController } from "@controllers/propertyController.svelte";
+import { notePropertyController } from "@controllers/notePropertyController.svelte";
 
 import type { Property } from "@projectTypes/propertyTypes";
 
@@ -13,7 +13,7 @@ import PropertyDatetime from "./PropertyDateTime.svelte";
 let { property }: { property: Property } = $props();
 
 function handlePropertyUpdateValue(newValue: Property["value"]) {
-   propertyController.updatePropertyValue(property.id, newValue);
+   notePropertyController.updateNotePropertyValue(property.id, newValue);
 }
 </script>
 

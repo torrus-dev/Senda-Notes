@@ -4,7 +4,7 @@
 <script lang="ts">
 import type { Property } from "@projectTypes/propertyTypes";
 import { workspace } from "@controllers/workspaceController.svelte";
-import { propertyController } from "@controllers/propertyController.svelte";
+import { notePropertyController } from "@controllers/notePropertyController.svelte";
 import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
 
 let {
@@ -30,19 +30,29 @@ const propertyTypes = [
 ];
 
 function handleSave() {
-   if (newPropertyName !== propertyName || newPropertyType !== propertyType) {
-      if (propertyId) {
-         // Al actualizar una propiedad existente, el controller se encargará
-         // de manejar correctamente el cambio según si es de nombre o tipo
-         propertyController.updatePropertyLabel(propertyId, {
-            name: newPropertyName,
-            type: newPropertyType,
-         } as Property);
-      } else {
-         // Para una nueva propiedad, simplemente usamos createNewProperty
-         // que ya maneja correctamente los labels
-         propertyController.createProperty(newPropertyName, noteId);
+   if (propertyId) {
+      // update note property
+      if (newPropertyName !== propertyName) {
+         notePropertyController.renameNoteProperty(
+            noteId,
+            propertyId,
+            newPropertyName,
+         );
       }
+      if (newPropertyType !== propertyType) {
+         notePropertyController.changeNotePropertyType(
+            noteId,
+            propertyId,
+            newPropertyType,
+         );
+      }
+   } else {
+      // create note property
+      notePropertyController.createProperty(
+         noteId,
+         newPropertyName,
+         newPropertyType,
+      );
    }
 }
 
@@ -68,7 +78,6 @@ function closeEditor() {
       <label class="inline-block w-[5rem]" for="name">Name</label>
       <input
          name="name"
-         autofocus
          type="text"
          class="bg-base-100 p-1"
          bind:value={newPropertyName}
@@ -79,6 +88,7 @@ function closeEditor() {
       <select
          class="bg-base-100 rounded-field p-1"
          name="type"
+         oninput={() => handleSave()}
          bind:value={newPropertyType}>
          {#each propertyTypes as { value, label }}
             <option class="" value={value}>{label}</option>

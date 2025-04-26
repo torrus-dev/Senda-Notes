@@ -1,4 +1,4 @@
-import type { Property, PropertyLabel } from "@projectTypes/propertyTypes";
+import type { Property, GlobalProperty } from "@projectTypes/propertyTypes";
 import {
    loadPropertiesFromStorage,
    savePropertiesToStorage,
@@ -6,99 +6,97 @@ import {
 import { settingsStore } from "./settingsStore.svelte";
 
 class PropertyStore {
-   private propertyLabels = $state<PropertyLabel[]>([]);
-   private properties = $state<Property[]>([]);
+   // registro de propiedades (nombre, tipo) para saber que propiedades hay creadas globalmente en la aplicación
+   private globalProperties = $state<GlobalProperty[]>([]);
+   // array con todas las propiedades de todas las notas con id unico
+   private noteProperties = $state<Property[]>([]);
 
    constructor() {
-      this.properties = loadPropertiesFromStorage();
+      this.noteProperties = loadPropertiesFromStorage();
       if (settingsStore.debugLevel > 0) {
-         console.log("properties cargadas: ", $state.snapshot(this.properties));
+         console.log(
+            "properties cargadas: ",
+            $state.snapshot(this.noteProperties),
+         );
       }
    }
 
    saveProperties() {
-      savePropertiesToStorage(this.properties);
+      savePropertiesToStorage(this.noteProperties);
       if (settingsStore.debugLevel > 0) {
-         console.log("guardando notas", $state.snapshot(this.properties));
+         console.log("guardando notas", $state.snapshot(this.noteProperties));
       }
    }
 
    getPropertyById(id: Property["id"]): Property | undefined {
-      return this.properties.find((properties) => properties.id === id);
+      return this.noteProperties.find((properties) => properties.id === id);
    }
    getPropertyByName(propertyName: Property["name"]): Property | undefined {
-      return this.properties.find(
+      return this.noteProperties.find(
          (properties) => properties.name === propertyName,
       );
    }
 
-   getPropertiesFromIDs(id: Property["id"][]): Property[] {
-      return this.properties.filter((property) => id.includes(property.id));
-   }
-
-   getAllProperties(): Property[] {
-      return this.properties;
-   }
-
-   setProperties(newNotes: Property[]) {
-      this.properties = newNotes;
-      this.saveProperties();
-   }
-
    createProperty(property: Property): void {
-      this.properties = [...this.properties, property];
+      this.noteProperties = [...this.noteProperties, property];
       this.saveProperties();
    }
 
    // Actualiza una nota en el array por ID aplicando un updater
    updatePropertyById(
-      id: string,
+      id: Property["id"],
       updater: (property: Property) => Property,
    ): void {
-      const index = this.properties.findIndex((n) => n.id === id);
+      const index = this.noteProperties.findIndex((n) => n.id === id);
       if (index !== -1) {
-         this.properties[index] = updater(this.properties[index]);
+         this.noteProperties[index] = updater(this.noteProperties[index]);
       }
       this.saveProperties();
    }
 
    removeProperty(id: string): void {
-      this.properties = this.properties.filter(
+      this.noteProperties = this.noteProperties.filter(
          (property) => property.id !== id,
       );
       this.saveProperties();
    }
 
-   registerPropertyLabel(
-      propertyName: Property["name"],
-      propertyType: Property["type"],
-   ): void {
-      this.propertyLabels.push({ name: propertyName, type: propertyType });
+   // GLOBAL PROPERTIES
+
+   createGlobalProperty(globalProperty: GlobalProperty): void {
+      this.globalProperties.push(globalProperty);
    }
 
-   updatePropertyLabel(
-      propertyName: Property["name"],
-      newPropertyType: Property["type"],
-   ): void {
-      const index = this.propertyLabels.findIndex(
-         (label) => label.name === propertyName,
+   deleteGlobalProperty(id: GlobalProperty["id"]) {
+      this.globalProperties = this.globalProperties.filter(
+         (globalProperty) => globalProperty.id !== id,
       );
+   }
+
+   updateGlobalPropertyById(
+      id: GlobalProperty["id"],
+      updater: (globalProperty: GlobalProperty) => GlobalProperty,
+   ) {
+      const index = this.globalProperties.findIndex((n) => n.id === id);
       if (index !== -1) {
-         this.propertyLabels[index] = {
-            name: propertyName,
-            type: newPropertyType,
-         };
+         this.globalProperties[index] = updater(this.globalProperties[index]);
       }
+      this.saveProperties();
    }
 
-   unregisterPropertyLabel(propertyName: Property["name"]) {
-      this.propertyLabels = this.propertyLabels.filter(
-         (label) => label.name !== propertyName,
+   getGlobalProperties() {
+      return this.globalProperties;
+   }
+
+   getGlobalPropertyById(id: Property["id"]): GlobalProperty | undefined {
+      return this.globalProperties.find(
+         (globalProperty) => globalProperty.id === id,
       );
    }
-
-   getPropertyLabel(propertyName: Property["name"]): PropertyLabel | undefined {
-      return this.propertyLabels.find((label) => label.name === propertyName);
+   getGlobalPropertyByName(name: Property["name"]): GlobalProperty | undefined {
+      return this.globalProperties.find(
+         (globalProperty) => globalProperty.name === name,
+      );
    }
 }
 

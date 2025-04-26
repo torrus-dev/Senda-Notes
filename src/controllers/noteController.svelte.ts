@@ -29,7 +29,7 @@ class NoteController {
          children: [],
          content: "",
          metadata: createDefaultMetadata(),
-         propertiesIDs: [],
+         properties: [],
          parentId: typeof parentId === "string" ? parentId : undefined,
       };
 
@@ -123,7 +123,7 @@ class NoteController {
    getNoteProperties(noteId: string): Property[] {
       const note = noteStore.getNoteById(noteId);
       if (!note) return [];
-      return propertyStore.getPropertiesFromIDs(note.propertiesIDs);
+      return propertyStore.getPropertiesFromIDs(note.properties);
    }
 
    reorderNoteProperties(
@@ -138,7 +138,7 @@ class NoteController {
       if (newPosition < 0) {
          throw new Error(`Invalid position: ${newPosition}. Must be >= 0`);
       }
-      const propertiesIDs = note.propertiesIDs;
+      const propertiesIDs = note.properties;
       const currentIndex = propertiesIDs.findIndex(
          (property) => property === propertyId,
       );
@@ -153,7 +153,7 @@ class NoteController {
       const [propertyToMove] = propertiesIDs.splice(currentIndex, 1);
       propertiesIDs.splice(adjustedPosition, 0, propertyToMove);
 
-      this.updateNote(noteId, { propertiesIDs });
+      this.updateNote(noteId, { properties: propertiesIDs });
    }
 }
 
