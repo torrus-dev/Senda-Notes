@@ -1,7 +1,7 @@
 import type { Note } from "@projectTypes/noteTypes";
 import { noteStore } from "@stores/noteStore.svelte";
 import { getDescendantsId } from "@utils/noteUtils";
-import { workspace } from "./workspaceController.svelte";
+import { workspace } from "@controllers/workspaceController.svelte";
 
 class NoteQueryController {
    // Métodos de acceso a datos delegados al store

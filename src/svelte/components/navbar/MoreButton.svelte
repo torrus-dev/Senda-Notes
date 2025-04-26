@@ -1,6 +1,6 @@
 <script lang="ts">
 import { focusController } from "@controllers/focusController.svelte";
-import { noteController } from "@controllers/noteController.svelte";
+import { noteController } from "@controllers/note/noteController.svelte";
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { MenuItem } from "@projectTypes/editorMenuTypes";
 import {

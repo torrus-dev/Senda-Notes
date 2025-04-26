@@ -11,7 +11,7 @@ import {
 import NoteTreeNode from "./NoteTreeNode.svelte";
 import NoteTreeLine from "./NoteTreeLine.svelte";
 import NoteTreeLabel from "./NoteTreeLabel.svelte";
-import { noteQueryController } from "@controllers/noteQueryController.svelte";
+import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 
 let { note, position } = $props();
 

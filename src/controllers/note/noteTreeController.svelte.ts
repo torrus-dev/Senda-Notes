@@ -1,7 +1,7 @@
 import type { Note } from "@projectTypes/noteTypes";
-import { noteStore } from "@stores/noteStore.svelte";
 import { updateModifiedMetadata } from "@utils/noteUtils";
-import { noteQueryController } from "./noteQueryController.svelte";
+import { noteStore } from "@stores/noteStore.svelte";
+import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 
 class NoteTreeController {
    moveNoteToPosition = (

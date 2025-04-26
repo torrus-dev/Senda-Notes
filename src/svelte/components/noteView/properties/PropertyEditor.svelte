@@ -4,7 +4,7 @@
 <script lang="ts">
 import type { Property } from "@projectTypes/propertyTypes";
 import { workspace } from "@controllers/workspaceController.svelte";
-import { notePropertyController } from "@controllers/notePropertyController.svelte";
+import { notePropertyController } from "@controllers/note/notePropertyController.svelte";
 import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
 
 let {

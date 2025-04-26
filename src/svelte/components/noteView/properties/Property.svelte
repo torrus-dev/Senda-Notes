@@ -4,7 +4,7 @@
 <script lang="ts">
 import { SlidersHorizontalIcon, Trash2Icon } from "lucide-svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
-import { notePropertyController } from "@controllers/notePropertyController.svelte";
+import { notePropertyController } from "@controllers/note/notePropertyController.svelte";
 
 import { getPropertyIcon } from "@utils/propertyUtils";
 import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";

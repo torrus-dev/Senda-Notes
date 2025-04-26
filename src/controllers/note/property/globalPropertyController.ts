@@ -1,11 +1,14 @@
-import type { Property, GlobalProperty } from "@projectTypes/propertyTypes";
-import { noteStore } from "@stores/noteStore.svelte";
+import type { GlobalProperty } from "@projectTypes/propertyTypes";
 import { propertyStore } from "@stores/propertyStore.svelte";
 import { generateGlobalProperty } from "@utils/propertyUtils";
 
 class GlobalPropertyController {
-   get globalProperties() {
-      return propertyStore.getGlobalProperties();
+   getGlobalPropertyById(id: GlobalProperty["id"]) {
+      return propertyStore.getGlobalPropertyById(id);
+   }
+
+   getGlobalPropertyByName(name: GlobalProperty["name"]) {
+      return propertyStore.getGlobalPropertyByName(name);
    }
 
    createGlobalProperty(
@@ -14,13 +17,6 @@ class GlobalPropertyController {
    ) {
       const newProperty = generateGlobalProperty(name, type);
       propertyStore.createGlobalProperty(newProperty);
-   }
-
-   getGlobalPropertyById(id: GlobalProperty["id"]) {
-      return propertyStore.getGlobalPropertyById(id);
-   }
-   getGlobalPropertyByName(name: GlobalProperty["name"]) {
-      return propertyStore.getGlobalPropertyByName(name);
    }
 
    updateGlobalPropertyById(
@@ -35,12 +31,13 @@ class GlobalPropertyController {
       }));
    }
 
-   changeGlobalPropertyType(
+   updateGlobalPropertyType(
       id: GlobalProperty["id"],
       type: GlobalProperty["type"],
    ) {
       this.updateGlobalPropertyById(id, { type: type });
    }
+
    renameGlobalProperty(
       id: GlobalProperty["id"],
       name: GlobalProperty["name"],

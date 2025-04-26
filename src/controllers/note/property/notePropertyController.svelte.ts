@@ -1,10 +1,9 @@
 import type { Property } from "@projectTypes/propertyTypes";
 import type { Note } from "@projectTypes/noteTypes";
-import { noteStore } from "@stores/noteStore.svelte";
 import { convertPropertyValue, generateProperty } from "@utils/propertyUtils";
-import { globalPropertyController } from "./globalPropertyController";
-import { noteController } from "./noteController.svelte";
-import { propertyStore } from "@stores/propertyStore.svelte";
+import { noteStore } from "@stores/noteStore.svelte";
+import { globalPropertyController } from "@controllers/note/property/globalPropertyController";
+import { noteController } from "@controllers/note/noteController.svelte";
 
 class NotePropertyController {
    private addPropertyToNote = (noteId: Note["id"], newProperty: Property) => {
@@ -14,7 +13,7 @@ class NotePropertyController {
       noteController.updateNote(noteId, { properties: updatedProperties });
    };
 
-   private removePropertyFromNote = (
+   private deletePropertyFromNote = (
       noteId: Note["id"],
       propertyToDeleteId: Property["id"],
    ) => {
@@ -45,6 +44,15 @@ class NotePropertyController {
       });
 
       noteController.updateNote(noteId, { properties: updatedProperties });
+   };
+
+   getPropertyById = (
+      noteId: string,
+      propertyId: string,
+   ): Property | undefined => {
+      const note = noteStore.getNoteById(noteId);
+      if (!note) return undefined;
+      return note.properties.find((property) => property.id === propertyId);
    };
 
    createProperty = (
@@ -110,10 +118,30 @@ class NotePropertyController {
       noteId: Note["id"],
       propertyId: Property["id"],
       newPropertyType: Property["type"],
-   ) {}
+   ) {
+      const property = this.getPropertyById(noteId, propertyId);
+      if (!property) return;
+
+      // Comprobamos si hay una propiedad global con ese nombre
+      const existingGlobalProperty =
+         globalPropertyController.getGlobalPropertyByName(property.name);
+
+      // Actualizamos la propiedad
+      this.updatePropertyFromNote(noteId, propertyId, {
+         type: newPropertyType,
+      });
+
+      // Si existe cambiamos el tipo de la propiedad global
+      if (existingGlobalProperty) {
+         globalPropertyController.updateGlobalPropertyType(
+            existingGlobalProperty.id,
+            newPropertyType,
+         );
+      }
+   }
 
    deleteProperty = (noteId: string, propertyId: string): void => {
-      this.removePropertyFromNote(noteId, propertyId);
+      this.deletePropertyFromNote(noteId, propertyId);
    };
 
    reorderNoteProperty = (
@@ -122,7 +150,8 @@ class NotePropertyController {
       newPosition: number,
    ): void => {
       // Verificamos que la propiedad exista
-      const { note } = this.getPropertyOrThrowError(noteId, propertyId);
+      const note = noteStore.getNoteById(noteId);
+      if (!note) return;
       const properties = [...note.properties];
 
       const currentIndex = properties.findIndex((p) => p.id === propertyId);
@@ -150,48 +179,20 @@ class NotePropertyController {
       // Insertar la propiedad en la nueva posición
       properties.splice(newPosition, 0, propertyToMove);
 
-      this.updateNoteProperties(noteId, properties);
+      noteController.updateNote(noteId, { properties: properties });
    };
 
    updateNotePropertyValue = (
       noteId: string,
       propertyId: string,
-      value: Property["value"],
+      newValue: Property["value"],
    ): void => {
-      this.updateProperty(noteId, propertyId, { value });
-   };
-
-   renameNoteProperty = (
-      noteId: string,
-      propertyId: string,
-      name: string,
-   ): void => {
-      this.updateProperty(noteId, propertyId, { name });
-   };
-
-   changeNotePropertyType = (
-      noteId: string,
-      propertyId: string,
-      type: Property["type"],
-   ): void => {
-      this.updateProperty(noteId, propertyId, { type });
+      this.updatePropertyFromNote(noteId, propertyId, { value: newValue });
    };
 
    getNoteProperties = (noteId: string): Property[] => {
-      const note = this.getNoteOrThrowError(noteId);
-      return [...note.properties];
-   };
-
-   getPropertyById = (
-      noteId: string,
-      propertyId: string,
-   ): Property | undefined => {
-      try {
-         const { property } = this.getPropertyOrThrowError(noteId, propertyId);
-         return property;
-      } catch (error) {
-         return undefined;
-      }
+      const note = noteStore.getNoteById(noteId);
+      return note ? note.properties : [];
    };
 }
 

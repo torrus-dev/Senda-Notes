@@ -1,5 +1,5 @@
 <script lang="ts">
-import { noteQueryController } from "@controllers/noteQueryController.svelte";
+import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 
 import NoteTreeLine from "./NoteTreeLine.svelte";
 import NoteTreeNode from "./NoteTreeNode.svelte";

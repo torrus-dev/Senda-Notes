@@ -12,7 +12,7 @@ ul {
 <script lang="ts">
 import Button from "./Button.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
-import { noteQueryController } from "@controllers/noteQueryController.svelte";
+import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 
 let { noteId }: { noteId: string } = $props();
 

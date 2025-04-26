@@ -4,7 +4,7 @@ import Collapsible from "@components/utils/Collapsible.svelte";
 
 import { NetworkIcon, PlusIcon } from "lucide-svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
-import { noteQueryController } from "@controllers/noteQueryController.svelte";
+import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 
 let { children }: { children: string[] } = $props();
 </script>

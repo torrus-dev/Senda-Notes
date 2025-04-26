@@ -1,6 +1,6 @@
 <script lang="ts">
-import { noteController } from "@controllers/noteController.svelte";
-import { noteQueryController } from "@controllers/noteQueryController.svelte";
+import { noteController } from "@controllers/note/noteController.svelte";
+import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 import { FilePlusIcon, PlusIcon } from "lucide-svelte";
 import { contextMenu } from "@directives/floatingMenuDirective.svelte";
 import Button from "@components/utils/Button.svelte";

@@ -9,7 +9,7 @@ import { settingsController } from "@controllers/settingsController.svelte";
 import type { Note } from "@projectTypes/noteTypes";
 import { searchController } from "@controllers/searchController.svelte";
 import Button from "@components/utils/Button.svelte";
-import { noteController } from "@controllers/noteController.svelte";
+import { noteController } from "@controllers/note/noteController.svelte";
 
 let { note }: { note: Note | undefined } = $props();
 </script>

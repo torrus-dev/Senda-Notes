@@ -1,10 +1,10 @@
 import { isDescendant } from "@utils/noteUtils";
 import { DragSource, DropTarget } from "@projectTypes/dndTypes";
-import { notePropertyController } from "@controllers/notePropertyController.svelte";
+import { notePropertyController } from "@controllers/note/notePropertyController.svelte";
 import { noteStore } from "@stores/noteStore.svelte";
 import { noteTreeController } from "./noteTreeController.svelte";
-import { noteQueryController } from "./noteQueryController.svelte";
-import { noteController } from "./noteController.svelte";
+import { noteQueryController } from "./note/noteQueryController.svelte";
+import { noteController } from "./note/noteController.svelte";
 
 class DndController {
    isDragging = $state<boolean>(false);

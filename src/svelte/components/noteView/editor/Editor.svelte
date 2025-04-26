@@ -10,7 +10,7 @@ import TaskItem from "@tiptap/extension-task-item";
 import Highlight from "@tiptap/extension-highlight";
 import Underline from "@tiptap/extension-underline";
 
-import { noteController } from "@controllers/noteController.svelte";
+import { noteController } from "@controllers/note/noteController.svelte";
 import { focusController } from "@controllers/focusController.svelte";
 import { floatingMenuController } from "@controllers/floatingMenuController.svelte.js";
 import { screenSizeController } from "@controllers/screenSizeController.svelte";

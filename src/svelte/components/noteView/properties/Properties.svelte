@@ -11,12 +11,12 @@ import Button from "@components/utils/Button.svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";
 
 import type { Property as PropertyType } from "@projectTypes/propertyTypes";
-import { noteController } from "@controllers/noteController.svelte";
+import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 
 let { noteId }: { noteId: string } = $props();
 
 let properties: PropertyType[] = $derived(
-   noteController.getNoteProperties(noteId),
+   notePropertyController.getNoteProperties(noteId),
 );
 
 let isAddPropertyOpen = $derived(workspace.isOpenPropertyEditor());

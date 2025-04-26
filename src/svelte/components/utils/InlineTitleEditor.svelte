@@ -1,5 +1,5 @@
 <script lang="ts">
-import { noteController } from "@controllers/noteController.svelte";
+import { noteController } from "@controllers/note/noteController.svelte";
 import { sanitizeTitle } from "@utils/noteUtils";
 import { tick } from "svelte";
 import Popover from "@components/floating/popover/Popover.svelte";

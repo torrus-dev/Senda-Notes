@@ -1,5 +1,6 @@
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Note } from "@projectTypes/noteTypes";
+import type { Property } from "@projectTypes/propertyTypes";
 
 import { noteStore } from "@stores/noteStore.svelte";
 import {
@@ -9,13 +10,12 @@ import {
    updateModifiedMetadata,
 } from "@utils/noteUtils";
 
-import { focusController } from "@controllers/focusController.svelte";
-import { noteTreeController } from "@controllers//noteTreeController.svelte";
-import { noteQueryController } from "@controllers//noteQueryController.svelte";
-import { workspace } from "@controllers/workspaceController.svelte";
-import { notificationController } from "./notificationController.svelte";
-import { Property } from "@projectTypes/propertyTypes";
 import { propertyStore } from "@stores/propertyStore.svelte";
+import { focusController } from "@controllers/focusController.svelte";
+import { noteTreeController } from "@controllers/note/noteTreeController.svelte";
+import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
+import { workspace } from "@controllers/workspaceController.svelte";
+import { notificationController } from "@controllers/notificationController.svelte";
 
 class NoteController {
    createNote = (parentId?: string | undefined): void => {
@@ -119,12 +119,6 @@ class NoteController {
          type: "base",
       });
    };
-
-   getNoteProperties(noteId: string): Property[] {
-      const note = noteStore.getNoteById(noteId);
-      if (!note) return [];
-      return propertyStore.getPropertiesFromIDs(note.properties);
-   }
 
    reorderNoteProperties(
       noteId: string,

@@ -1,4 +1,4 @@
-import { noteQueryController } from "@controllers/noteQueryController.svelte";
+import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 import { removeDiacritics } from "@utils/noteUtils";
 import type { SearchResult } from "@projectTypes/searchTypes";
 

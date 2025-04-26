@@ -7,8 +7,8 @@
 <script lang="ts">
 import type { SvelteComponent } from "svelte";
 import type { Note } from "@projectTypes/noteTypes";
-import { noteController } from "@controllers/noteController.svelte";
-import { noteQueryController } from "@controllers/noteQueryController.svelte";
+import { noteController } from "@controllers/note/noteController.svelte";
+import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 import {
    ChevronRightIcon,
