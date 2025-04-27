@@ -9,7 +9,7 @@ import { notePropertyController } from "@controllers/note/property/notePropertyC
 import { getPropertyIcon } from "@utils/propertyUtils";
 import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";
 
-import PropertyValue from "@components/note/properties/propertyTypes/PropertyValue.svelte";
+import PropertyValue from "@components/note/properties/PropertyValue.svelte";
 import PropertyEditor from "@components/note/properties/PropertyEditor.svelte";
 import Button from "@components/utils/Button.svelte";
 
@@ -63,6 +63,7 @@ const IconComponent = $derived(getPropertyIcon(property.type));
          ondragend={handleDragEnd}>
          <Button
             size="small"
+            
             contextMenuItems={[
                {
                   type: "action",

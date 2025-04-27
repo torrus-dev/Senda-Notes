@@ -6,6 +6,7 @@ import type { Property } from "@projectTypes/propertyTypes";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
+import Popover from "@components/floating/popover/Popover.svelte";
 
 let {
    property = undefined,
@@ -18,6 +19,7 @@ const propertyType = property ? property.type : "text";
 
 let newPropertyName: string = $state(propertyName);
 let newPropertyType: Property["type"] = $state(propertyType);
+let isWriting: boolean = $state(false);
 
 // Opciones de tipos de propiedades
 const propertyTypes = [
@@ -28,6 +30,7 @@ const propertyTypes = [
    { value: "date", label: "Date" },
    { value: "datetime", label: "Datetime" },
 ];
+let propertyNameElement: HTMLInputElement | undefined = $state(undefined);
 
 function handleSave() {
    if (propertyId) {
@@ -81,7 +84,13 @@ function closeEditor() {
          type="text"
          class="bg-base-100 p-1"
          bind:value={newPropertyName}
+         bind:this={propertyNameElement}
          placeholder="Enter property name" />
+      <Popover htmlElement={propertyNameElement} isOpen={isWriting}>
+         <ul>
+            {#each as}{/each}
+         </ul>
+      </Popover>
    </div>
    <div>
       <label for="type" class="inline-block w-[5rem]">Type</label>
