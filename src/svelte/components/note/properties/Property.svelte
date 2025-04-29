@@ -2,18 +2,15 @@
 </style>
 
 <script lang="ts">
-import { SlidersHorizontalIcon, Trash2Icon } from "lucide-svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
-import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 
-import { getPropertyIcon } from "@utils/propertyUtils";
 import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";
 
 import PropertyValue from "@components/note/properties/PropertyValue.svelte";
 import PropertyEditor from "@components/note/properties/PropertyEditor.svelte";
-import Button from "@components/utils/Button.svelte";
 
 import type { Property } from "@projectTypes/propertyTypes";
+import PropertyLabel from "@components/note/properties/PropertyLabel.svelte";
 
 let {
    noteId,
@@ -43,9 +40,6 @@ const {
    getPosition: () => position,
    setIsDraggedOver: (val) => (isDragedOver = val),
 });
-
-// Obtener el componente de icono actual (derivado)
-const IconComponent = $derived(getPropertyIcon(property.type));
 </script>
 
 <li
@@ -56,42 +50,11 @@ const IconComponent = $derived(getPropertyIcon(property.type));
    ondragleave={handleDragLeave}
    ondrop={handleDrop}>
    <div class="grid grid-cols-[12rem_auto]">
-      <div
-         draggable="true"
-         role="listitem"
-         ondragstart={handleDragStart}
-         ondragend={handleDragEnd}>
-         <Button
-            size="small"
-            
-            contextMenuItems={[
-               {
-                  type: "action",
-                  label: "Edit Property",
-                  icon: SlidersHorizontalIcon,
-                  action: () => {
-                     workspace.openPropertyEditor(noteId, property.id);
-                  },
-               },
-               {
-                  type: "action",
-                  label: "Delete Property",
-                  icon: Trash2Icon,
-                  action: () => {
-                     notePropertyController.deleteProperty(property.id, noteId);
-                     // close
-                  },
-                  class: "text-error",
-               },
-            ]}>
-            {#if IconComponent}
-               <span class=""><IconComponent size="1.0625em" /></span>
-            {/if}
-            <p class="w-[9rem] overflow-clip text-left">
-               {property.name}
-            </p>
-         </Button>
-      </div>
+      <PropertyLabel
+         noteId={noteId}
+         property={property}
+         handleDragStart={handleDragStart}
+         handleDragEnd={handleDragEnd} />
       <PropertyValue noteId={noteId} property={property} />
    </div>
    {#if isEditorOpen}
