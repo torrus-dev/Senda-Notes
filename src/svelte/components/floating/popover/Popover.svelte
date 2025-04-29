@@ -1,11 +1,14 @@
 <script lang="ts">
 import { type Snippet, tick } from "svelte";
-import { calculateFloatingPosition } from "@utils/floatingPositionUtils";
+import {
+   calculateFloatingPosition,
+   type PositioningOptions,
+} from "@utils/floatingPositionUtils";
+import type { Placement } from "@floating-ui/dom";
 
 // Definimos los tipos para el posicionamiento
 type MainPlacement = "top" | "right" | "bottom" | "left";
 type Alignment = "start" | "center" | "end";
-type ComplexPlacement = `${MainPlacement}` | `${MainPlacement}-${Alignment}`;
 
 // Props con valores por defecto
 let {
@@ -43,22 +46,12 @@ const OPPOSITE_POSITIONS = {
    left: "right",
 } as const;
 
-// Función para obtener el placement completo
-function getFullPlacement(): ComplexPlacement {
-   if (
-      placement === "top" ||
-      placement === "bottom" ||
-      placement === "left" ||
-      placement === "right"
-   ) {
-      if (alignment === "center") {
-         return placement;
-      }
-      return `${placement}-${alignment}` as ComplexPlacement;
+// Función para obtener el placement completo para FloatingUI
+function getPlacement(): Placement {
+   if (alignment === "center") {
+      return placement;
    }
-
-   // Si ya viene con formato completo (retrocompatibilidad)
-   return placement as ComplexPlacement;
+   return `${placement}-${alignment}` as Placement;
 }
 
 // Función para posicionar el popover mejorada
@@ -66,28 +59,30 @@ async function updatePopoverPosition() {
    if (!popoverElement || !htmlElement) return;
 
    // Obtener el placement completo
-   const fullPlacement = getFullPlacement();
+   const placement = getPlacement();
 
    // Crear fallbacks basados en la posición principal y alineación
-   const mainPlacement = placement as MainPlacement;
-   const oppositePlacement = OPPOSITE_POSITIONS[mainPlacement] as MainPlacement;
+   const oppositePlacement = OPPOSITE_POSITIONS[
+      placement as MainPlacement
+   ] as MainPlacement;
 
-   // Crear array de fallbacks que mantenga la alineación pero cambie el eje principal
-   const fallbackPlacements = [
+   // Crear fallback que mantiene la alineación pero cambia el eje principal
+   const fallbackPlacement =
       alignment === "center"
          ? oppositePlacement
-         : `${oppositePlacement}-${alignment}`,
-   ];
+         : (`${oppositePlacement}-${alignment}` as Placement);
+
+   const positioningOptions: PositioningOptions = {
+      placement,
+      offsetValue: 4,
+      padding: 2,
+      fallbackPlacements: [fallbackPlacement],
+   };
 
    const { x, y } = await calculateFloatingPosition(
       htmlElement,
       popoverElement,
-      {
-         placement: fullPlacement as any,
-         offsetValue: 10,
-         padding: 5,
-         fallbackPlacements: fallbackPlacements as any[],
-      },
+      positioningOptions,
    );
 
    popoverPosition = { x, y };

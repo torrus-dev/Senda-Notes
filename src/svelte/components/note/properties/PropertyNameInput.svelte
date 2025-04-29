@@ -55,12 +55,14 @@ let showSuggestedGlobalProps = $derived(
 <Popover
    isOpen={showSuggestedGlobalProps}
    htmlElement={inputElement}
-   placement="bottom">
-   <ul class="bg-base-200 p-1">
+   placement="bottom"
+   alignment="start"
+   class="bg-base-200 ">
+   <ul class="flex-col p-1">
       {#each suggestedGlobalProperties as globalProperty}
          {@const TypeIcon = getPropertyIcon(globalProperty.type)}
          <li>
-            <Button>
+            <Button class="w-full">
                <TypeIcon size="1.125em" />
                {globalProperty.name}
             </Button>

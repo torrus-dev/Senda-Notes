@@ -95,7 +95,8 @@ $effect(() => {
       isOpen={containsSlash}
       class="bg-error-bg p-2"
       htmlElement={editableElement}
-      placement="top">
+      placement="top"
+      alignment="center">
       Note title cannot contain "/"
    </Popover>
 {/if}

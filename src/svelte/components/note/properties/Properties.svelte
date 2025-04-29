@@ -12,6 +12,7 @@ import Button from "@components/utils/Button.svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";
 
 import type { Property as PropertyType } from "@projectTypes/propertyTypes";
+import { SlidersHorizontalIcon } from "lucide-svelte";
 
 let { noteId }: { noteId: string } = $props();
 
@@ -24,8 +25,16 @@ let isAddPropertyOpen = $derived(workspace.isOpenPropertyEditor());
 
 {#if noteId}
    {#snippet headingContent()}
-      <div class="flex items-center gap-2">
-         <TablePropertiesIcon size="1.125rem" /> Properties
+      <div class="flex items-center justify-between">
+         <div class="flex items-center gap-2">
+            <TablePropertiesIcon size="1.125rem" /> Properties
+         </div>
+         <div>
+            <Button class="text-muted-content">
+               <SlidersHorizontalIcon size="1.125rem" />
+               Manage Properties
+            </Button>
+         </div>
       </div>
    {/snippet}
 

@@ -83,7 +83,8 @@ $effect(() => {
          isOpen={hasForbiddenChar}
          class="bg-error-bg p-1"
          htmlElement={inputElement}
-         placement="bottom">
+         placement="bottom"
+         alignment="center">
          Note title cannot contain "/"
       </Popover>
    {/if}
