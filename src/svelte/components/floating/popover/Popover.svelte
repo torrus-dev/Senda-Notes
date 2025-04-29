@@ -2,21 +2,28 @@
 import { type Snippet, tick } from "svelte";
 import { calculateFloatingPosition } from "@utils/floatingPositionUtils";
 
+// Definimos los tipos para el posicionamiento
+type MainPlacement = "top" | "right" | "bottom" | "left";
+type Alignment = "start" | "center" | "end";
+type ComplexPlacement = `${MainPlacement}` | `${MainPlacement}-${Alignment}`;
+
 // Props con valores por defecto
 let {
    isOpen,
    children,
-   styles = "",
+   class: styles = "",
    htmlElement,
    placement = "bottom",
+   alignment = "center",
    showOnHover = false,
    hoverDelay = 500,
 }: {
    isOpen: boolean;
    children: Snippet;
-   styles?: string;
+   class?: string;
    htmlElement: HTMLElement;
-   placement?: "top" | "right" | "bottom" | "left";
+   placement?: MainPlacement;
+   alignment?: Alignment;
    showOnHover?: boolean;
    hoverDelay?: number;
 } = $props();
@@ -36,26 +43,50 @@ const OPPOSITE_POSITIONS = {
    left: "right",
 } as const;
 
+// Función para obtener el placement completo
+function getFullPlacement(): ComplexPlacement {
+   if (
+      placement === "top" ||
+      placement === "bottom" ||
+      placement === "left" ||
+      placement === "right"
+   ) {
+      if (alignment === "center") {
+         return placement;
+      }
+      return `${placement}-${alignment}` as ComplexPlacement;
+   }
+
+   // Si ya viene con formato completo (retrocompatibilidad)
+   return placement as ComplexPlacement;
+}
+
 // Función para posicionar el popover mejorada
 async function updatePopoverPosition() {
    if (!popoverElement || !htmlElement) return;
 
-   // Convertir placement simple a notación de FloatingUI
-   const floatingPlacement =
-      placement === "top" || placement === "bottom"
-         ? placement
-         : `${placement}-center`;
+   // Obtener el placement completo
+   const fullPlacement = getFullPlacement();
 
-   const fallbackPlacement = OPPOSITE_POSITIONS[placement] as any;
+   // Crear fallbacks basados en la posición principal y alineación
+   const mainPlacement = placement as MainPlacement;
+   const oppositePlacement = OPPOSITE_POSITIONS[mainPlacement] as MainPlacement;
+
+   // Crear array de fallbacks que mantenga la alineación pero cambie el eje principal
+   const fallbackPlacements = [
+      alignment === "center"
+         ? oppositePlacement
+         : `${oppositePlacement}-${alignment}`,
+   ];
 
    const { x, y } = await calculateFloatingPosition(
       htmlElement,
       popoverElement,
       {
-         placement: floatingPlacement as any,
+         placement: fullPlacement as any,
          offsetValue: 10,
          padding: 5,
-         fallbackPlacements: [fallbackPlacement],
+         fallbackPlacements: fallbackPlacements as any[],
       },
    );
 
@@ -153,7 +184,7 @@ $effect(() => {
    <div
       bind:this={popoverElement}
       role="tooltip"
-      class="bg-base-400 rounded-field absolute z-90 p-2 shadow {styles}"
+      class="rounded-field absolute z-90 shadow {styles}"
       onmouseenter={handlePopoverMouseEnter}
       onmouseleave={handlePopoverMouseLeave}>
       {@render children()}

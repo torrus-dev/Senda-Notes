@@ -86,11 +86,6 @@ function closeEditor() {
          bind:value={newPropertyName}
          bind:this={propertyNameElement}
          placeholder="Enter property name" />
-      <Popover htmlElement={propertyNameElement} isOpen={isWriting}>
-         <ul>
-            {#each as}{/each}
-         </ul>
-      </Popover>
    </div>
    <div>
       <label for="type" class="inline-block w-[5rem]">Type</label>

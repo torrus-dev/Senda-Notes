@@ -8,6 +8,7 @@ import { SlidersHorizontalIcon, Trash2Icon } from "lucide-svelte";
 import type { Note } from "@projectTypes/noteTypes";
 import type { Property } from "@projectTypes/propertyTypes";
 import type { MenuItem } from "@projectTypes/editorMenuTypes";
+import PropertyNameInput from "./PropertyNameInput.svelte";
 
 let {
    noteId,
@@ -61,12 +62,10 @@ const IconComponent = $derived(getPropertyIcon(property.type));
          <span class=""><IconComponent size="1.0625em" /></span>
       {/if}
    </Button>
-   <input
-      type="text"
-      value={property.name}
-      ondragstart={(event) => {
-         event.preventDefault();
-         event.stopPropagation();
-      }}
-      class="w-full overflow-clip p-0.5 text-left focus:outline-none" />
+   <PropertyNameInput
+      savedPropertyName={property.name}
+      onselectGlobalProperty={() => {}}
+      onnameChange={() => {
+         console.log("cambiando nombre");
+      }} />
 </div>

@@ -1,9 +1,10 @@
 import type { GlobalProperty } from "@projectTypes/propertyTypes";
 import { propertyStore } from "@stores/propertyStore.svelte";
 import { generateGlobalProperty } from "@utils/propertyUtils";
+import { removeDiacritics } from "@utils/searchUtils";
 
 class GlobalPropertyController {
-   getGlobalPropertyById(id: GlobalProperty["id"]) {
+   getGlobalPropertyById(id: GlobalProperty["id"]): GlobalProperty | undefined {
       return propertyStore.getGlobalPropertyById(id);
    }
 
@@ -47,6 +48,24 @@ class GlobalPropertyController {
 
    deleteGlobalPropertyById(id: GlobalProperty["id"]) {
       propertyStore.removeProperty(id);
+   }
+
+   searchGlobalProperties(name: string): GlobalProperty[] {
+      const allProperties = propertyStore.getGlobalProperties();
+      
+      // Si no hay texto de búsqueda, retornar todas las propiedades
+      if (!name || name.trim() === '') {
+         return allProperties;
+      }
+      
+      // Convertir a minúsculas y normalizar para una búsqueda más flexible
+      const searchTerm = removeDiacritics(name.toLowerCase());
+      
+      // Filtrar propiedades cuyo nombre normalizado contiene el término de búsqueda
+      return allProperties.filter(property => {
+         const normalizedPropertyName = removeDiacritics(property.name.toLowerCase());
+         return normalizedPropertyName.includes(searchTerm);
+      });
    }
 }
 

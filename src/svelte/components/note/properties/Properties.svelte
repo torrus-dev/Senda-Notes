@@ -2,16 +2,16 @@
 </style>
 
 <script lang="ts">
-import Property from "./Property.svelte";
-import PropertyEditor from "./PropertyEditor.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
-
+import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 import { PlusIcon, TablePropertiesIcon } from "lucide-svelte";
+
+import PropertyEditor from "@components/note/properties/PropertyEditor.svelte";
+import Property from "@components/note/properties/Property.svelte";
 import Button from "@components/utils/Button.svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";
 
 import type { Property as PropertyType } from "@projectTypes/propertyTypes";
-import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 
 let { noteId }: { noteId: string } = $props();
 
