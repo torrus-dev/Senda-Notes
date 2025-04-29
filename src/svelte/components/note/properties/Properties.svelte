@@ -36,9 +36,8 @@ let isAddPropertyOpen = $derived(workspace.isOpenPropertyEditor());
       oncollapse={() => {
          workspace.toggleEditorPropertiesCollapsed();
       }}>
-      {console.log(properties)}
       {#if properties.length > 0}
-         <ul class="rounded-lg">
+         <ul class="gap-1 rounded-lg">
             {#each properties as property, index (property.id)}
                <Property noteId={noteId} property={property} position={index} />
             {/each}

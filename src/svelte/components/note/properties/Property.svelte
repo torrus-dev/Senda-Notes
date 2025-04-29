@@ -43,13 +43,13 @@ const {
 </script>
 
 <li
-   class="bg-transaprent rounded-field relative transition-colors duration-300 {isDragedOver
+   class="bg-transaprent rounded-field relative transition-colors duration-300{isDragedOver
       ? 'highlight'
       : ''}"
    ondragover={handleDragOver}
    ondragleave={handleDragLeave}
    ondrop={handleDrop}>
-   <div class="grid grid-cols-[12rem_auto]">
+   <div class="grid grid-cols-[12rem_auto] gap-0.5">
       <PropertyLabel
          noteId={noteId}
          property={property}

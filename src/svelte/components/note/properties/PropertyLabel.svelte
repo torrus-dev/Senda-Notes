@@ -7,6 +7,7 @@ import { SlidersHorizontalIcon, Trash2Icon } from "lucide-svelte";
 
 import type { Note } from "@projectTypes/noteTypes";
 import type { Property } from "@projectTypes/propertyTypes";
+import type { MenuItem } from "@projectTypes/editorMenuTypes";
 
 let {
    noteId,
@@ -19,6 +20,28 @@ let {
    handleDragStart: (event: DragEvent) => void;
    handleDragEnd: (event: DragEvent) => void;
 } = $props();
+
+const labelMenuItems: MenuItem[] = [
+   {
+      type: "action",
+      label: "Edit Property",
+      icon: SlidersHorizontalIcon,
+      action: () => {
+         workspace.openPropertyEditor(noteId, property.id);
+      },
+   },
+   {
+      type: "action",
+      label: "Delete Property",
+      icon: Trash2Icon,
+      action: () => {
+         notePropertyController.deleteProperty(noteId, property.id);
+         // close
+      },
+      class: "text-error",
+   },
+];
+
 // Obtener el componente de icono actual (derivado)
 const IconComponent = $derived(getPropertyIcon(property.type));
 </script>
@@ -26,35 +49,24 @@ const IconComponent = $derived(getPropertyIcon(property.type));
 <div
    draggable="true"
    role="listitem"
+   class="flex w-full items-center"
    ondragstart={handleDragStart}
    ondragend={handleDragEnd}>
    <Button
       size="small"
-      contextMenuItems={[
-         {
-            type: "action",
-            label: "Edit Property",
-            icon: SlidersHorizontalIcon,
-            action: () => {
-               workspace.openPropertyEditor(noteId, property.id);
-            },
-         },
-         {
-            type: "action",
-            label: "Delete Property",
-            icon: Trash2Icon,
-            action: () => {
-               notePropertyController.deleteProperty(property.id, noteId);
-               // close
-            },
-            class: "text-error",
-         },
-      ]}>
+      shape="square"
+      contextMenuItems={labelMenuItems}
+      dropdownMenuItems={labelMenuItems}>
       {#if IconComponent}
          <span class=""><IconComponent size="1.0625em" /></span>
       {/if}
-      <p class="w-[9rem] overflow-clip text-left">
-         {property.name}
-      </p>
    </Button>
+   <input
+      type="text"
+      value={property.name}
+      ondragstart={(event) => {
+         event.preventDefault();
+         event.stopPropagation();
+      }}
+      class="w-full overflow-clip p-0.5 text-left focus:outline-none" />
 </div>
