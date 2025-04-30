@@ -3,7 +3,7 @@ import {
    loadPropertiesFromStorage,
    savePropertiesToStorage,
 } from "@utils/storage";
-import { settingsStore } from "./settingsStore.svelte";
+import { settingsStore } from "@stores/settingsStore.svelte";
 
 class PropertyStore {
    // registro de propiedades (nombre, tipo) para saber que propiedades hay creadas globalmente en la aplicación

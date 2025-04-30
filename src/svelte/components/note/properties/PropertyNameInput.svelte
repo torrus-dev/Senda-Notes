@@ -11,28 +11,30 @@ let {
    onnameChange,
 }: {
    savedPropertyName?: Property["name"];
-   onselectGlobalProperty: () => void;
+   onselectGlobalProperty: (globalProperty: GlobalProperty) => void;
    onnameChange: () => void;
 } = $props();
 
-let newTitle: Property["name"] = $state(savedPropertyName);
+let newName: Property["name"] = $state(savedPropertyName);
 let inputElement: HTMLInputElement | undefined = $state(undefined);
 
 let isFocused: boolean = $state(false);
 let suggestedGlobalProperties: GlobalProperty[] = $derived(
-   globalPropertyController.searchGlobalProperties(newTitle),
+   globalPropertyController.searchGlobalProperties(newName),
 );
 let showSuggestedGlobalProps = $derived(
    isFocused && suggestedGlobalProperties.length > 0,
 );
+
+
 </script>
 
 <input
    type="text"
-   bind:value={newTitle}
+   bind:value={newName}
    bind:this={inputElement}
    onblur={() => {
-      if (newTitle.trim() !== "") {
+      if (newName.trim() !== "") {
          onnameChange();
       }
       isFocused = false;
@@ -43,11 +45,16 @@ let showSuggestedGlobalProps = $derived(
    onkeydown={(event: KeyboardEvent) => {
       if (event.key === "Enter") {
          // check for global property with that name first, and trigger "onselectGlobalProperty" instead of "onnameChange"
-         (event.target as HTMLInputElement).blur();
+         const globalProperty =
+            globalPropertyController.getGlobalPropertyByName(newName);
+         if (globalProperty) {
+            onselectGlobalProperty(globalProperty);
+         } else {
+            (event.target as HTMLInputElement).blur();
+         }
       }
       if (event.key === "Escape") {
-         // Cancelamos y restauramos el titulo guardado
-         newTitle = savedPropertyName;
+         newName = savedPropertyName;
       }
    }}
    class="w-full overflow-clip p-0.5 text-left focus:outline-none" />

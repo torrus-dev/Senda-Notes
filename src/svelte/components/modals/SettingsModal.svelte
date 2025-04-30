@@ -1,6 +1,6 @@
 <script lang="ts">
-import { SearchIcon } from "lucide-svelte";
 import Slider from "@components/utils/Slider.svelte";
+import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
 
 let searchQuery = $state("");
@@ -46,6 +46,13 @@ let searchQuery = $state("");
                   settingsController.setDebugLevel(Number(target.value));
                }
             }} />
+      </div>
+
+      <div>
+         <h2>Global Properties</h2>
+         {#each globalPropertyController.getGlobalProperties() as globalProperty}
+            {globalProperty.name}
+         {/each}
       </div>
    </div>
 </aside>

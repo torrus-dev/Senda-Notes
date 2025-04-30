@@ -1,7 +1,9 @@
+import type { Note } from "@projectTypes/noteTypes";
 import type { GlobalProperty } from "@projectTypes/propertyTypes";
 import { propertyStore } from "@stores/propertyStore.svelte";
 import { generateGlobalProperty } from "@utils/propertyUtils";
 import { removeDiacritics } from "@utils/searchUtils";
+import { noteStore } from "@stores/noteStore.svelte";
 
 class GlobalPropertyController {
    getGlobalPropertyById(id: GlobalProperty["id"]): GlobalProperty | undefined {
@@ -50,24 +52,44 @@ class GlobalPropertyController {
       propertyStore.removeProperty(id);
    }
 
-   searchGlobalProperties(name: string): GlobalProperty[] {
+   getGlobalProperties() {
+      return propertyStore.getGlobalProperties();
+   }
+
+   searchGlobalProperties(name: string, noteId?: Note["id"]): GlobalProperty[] {
       const allProperties = propertyStore.getGlobalProperties();
+      const note = noteId ? noteStore.getNoteById(noteId) : undefined;
 
-      // Si no hay texto de búsqueda, retornar todas las propiedades
-      if (!name || name.trim() === "") {
-         console.log("busqueda vacia");
-         return allProperties;
-      }
+      // Crear un conjunto con los nombres normalizados de propiedades de la nota (si existe)
+      const notePropertyNames = note
+         ? new Set(
+              note.properties.map((prop) =>
+                 removeDiacritics(prop.name.toLowerCase()),
+              ),
+           )
+         : new Set<string>();
 
-      // Convertir a minúsculas y normalizar para una búsqueda más flexible
-      const searchTerm = removeDiacritics(name.toLowerCase());
-      console.log("search term", searchTerm);
+      // Preparar el término de búsqueda normalizado (si existe)
+      const searchTerm =
+         name && name.trim() !== ""
+            ? removeDiacritics(name.toLowerCase())
+            : null;
 
-      // Filtrar propiedades cuyo nombre normalizado contiene el término de búsqueda
+      console.log("allProperties", allProperties);
+      // Un solo filtro que combina ambas condiciones
       return allProperties.filter((property) => {
+         // Normalizar el nombre de la propiedad una sola vez
          const normalizedPropertyName = removeDiacritics(
             property.name.toLowerCase(),
          );
+
+         // Verificar que la propiedad no existe ya en la nota
+         if (notePropertyNames.has(normalizedPropertyName)) return false;
+
+         // Si no hay término de búsqueda, incluir la propiedad
+         if (!searchTerm) return true;
+
+         // Verificar si el nombre de la propiedad coincide con el término de búsqueda
          return normalizedPropertyName.includes(searchTerm);
       });
    }
