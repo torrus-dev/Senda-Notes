@@ -49,10 +49,14 @@ let searchQuery = $state("");
       </div>
 
       <div>
-         <h2>Global Properties</h2>
-         {#each globalPropertyController.getGlobalProperties() as globalProperty}
-            {globalProperty.name}
-         {/each}
+         <h2 class="py-2 text-2xl font-bold">Global Properties:</h2>
+         <ul class="list-disc pl-4">
+            {#each globalPropertyController.getGlobalProperties() as globalProperty}
+               <li>
+                  {globalProperty.name}
+               </li>
+            {/each}
+         </ul>
       </div>
    </div>
 </aside>
