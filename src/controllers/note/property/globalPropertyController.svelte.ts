@@ -1,17 +1,17 @@
 import type { Note } from "@projectTypes/noteTypes";
 import type { GlobalProperty } from "@projectTypes/propertyTypes";
-import { propertyStore } from "@stores/propertyStore.svelte";
+import { globalPropertiesStore } from "@stores/globalPropertiesStore.svelte";
 import { generateGlobalProperty } from "@utils/propertyUtils";
 import { removeDiacritics } from "@utils/searchUtils";
 import { noteStore } from "@stores/noteStore.svelte";
 
 class GlobalPropertyController {
    getGlobalPropertyById(id: GlobalProperty["id"]): GlobalProperty | undefined {
-      return propertyStore.getGlobalPropertyById(id);
+      return globalPropertiesStore.getGlobalPropertyById(id);
    }
 
    getGlobalPropertyByName(name: GlobalProperty["name"]) {
-      return propertyStore.getGlobalPropertyByName(name);
+      return globalPropertiesStore.getGlobalPropertyByName(name);
    }
 
    createGlobalProperty(
@@ -19,16 +19,16 @@ class GlobalPropertyController {
       type: GlobalProperty["type"],
    ) {
       const newProperty = generateGlobalProperty(name, type);
-      propertyStore.createGlobalProperty(newProperty);
+      globalPropertiesStore.createGlobalProperty(newProperty);
    }
 
    updateGlobalPropertyById(
       id: GlobalProperty["id"],
       updates: Partial<GlobalProperty>,
    ) {
-      const globalProperty = propertyStore.getGlobalPropertyById(id);
+      const globalProperty = globalPropertiesStore.getGlobalPropertyById(id);
       if (!globalProperty) return;
-      propertyStore.updateGlobalPropertyById(id, (globalProperty) => ({
+      globalPropertiesStore.updateGlobalPropertyById(id, (globalProperty) => ({
          ...globalProperty,
          ...updates,
       }));
@@ -49,15 +49,15 @@ class GlobalPropertyController {
    }
 
    deleteGlobalPropertyById(id: GlobalProperty["id"]) {
-      propertyStore.removeProperty(id);
+      globalPropertiesStore.deleteGlobalProperty(id);
    }
 
    getGlobalProperties() {
-      return propertyStore.getGlobalProperties();
+      return globalPropertiesStore.getGlobalProperties();
    }
 
    searchGlobalProperties(name: string, noteId?: Note["id"]): GlobalProperty[] {
-      const allProperties = propertyStore.getGlobalProperties();
+      const allProperties = globalPropertiesStore.getGlobalProperties();
       const note = noteId ? noteStore.getNoteById(noteId) : undefined;
 
       // Crear un conjunto con los nombres normalizados de propiedades de la nota (si existe)

@@ -10,7 +10,7 @@ import {
    updateModifiedMetadata,
 } from "@utils/noteUtils";
 
-import { propertyStore } from "@stores/propertyStore.svelte";
+import { globalPropertiesStore } from "@stores/globalPropertiesStore.svelte";
 import { focusController } from "@controllers/focusController.svelte";
 import { noteTreeController } from "@controllers/note/noteTreeController.svelte";
 import { noteQueryController } from "@controllers/note/noteQueryController.svelte";

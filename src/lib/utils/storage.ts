@@ -2,12 +2,12 @@ import { DateTime } from "luxon";
 import type { Note } from "@projectTypes/noteTypes";
 import type { PersistedWorkspaceState } from "@projectTypes/workspaceTypes";
 import type { Settings } from "@projectTypes/settingsTypes";
-import type { Property } from "@projectTypes/propertyTypes";
+import type { GlobalProperty, Property } from "@projectTypes/propertyTypes";
 
 const NOTES_STORAGE_KEY = "NoteList";
-const PROPERTIES_STORAGE_KEY = "Properties";
-const WORKSPACE_STORAGE_KEY = "workspaceState";
-const SETTINGS_STORAGE_KEY = "settingsState";
+const GLOBAL_PROPERTIES_STORAGE_KEY = "GlobalProperties";
+const WORKSPACE_STORAGE_KEY = "WorkspaceState";
+const SETTINGS_STORAGE_KEY = "SettingsState";
 
 // NOTES
 export function loadNotesFromStorage(): Note[] {
@@ -59,35 +59,27 @@ export function saveNotesToStorage(notes: Note[]): void {
    }
 }
 
-// PROPERTIES
-export function loadPropertiesFromStorage(): Property[] {
-   const stored = localStorage.getItem(PROPERTIES_STORAGE_KEY);
-   if (stored) {
-      try {
-         return JSON.parse(stored);
-      } catch (error) {
-         console.error(
-            "Error al parsear",
-            PROPERTIES_STORAGE_KEY,
-            "desde localStorage:",
-            error,
-         );
-         return [];
-      }
+// GLOBAL PROPERTIES
+export function loadGlobalPropertiesFromStorage(): GlobalProperty[] {
+   try {
+      const stored = localStorage.getItem(GLOBAL_PROPERTIES_STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+   } catch (error) {
+      console.error("Error al cargar propiedades globales:", error);
+      return [];
    }
-   return [];
 }
 
-export function savePropertiesToStorage(properties: Property[]): void {
+export function saveGlobalPropertiesToStorage(
+   globalProperties: GlobalProperty[],
+): void {
    try {
-      localStorage.setItem(PROPERTIES_STORAGE_KEY, JSON.stringify(properties));
-   } catch (error) {
-      console.error(
-         "Error al guardar",
-         PROPERTIES_STORAGE_KEY,
-         "en localStorage:",
-         error,
+      localStorage.setItem(
+         GLOBAL_PROPERTIES_STORAGE_KEY,
+         JSON.stringify(globalProperties),
       );
+   } catch (error) {
+      console.error("Error al guardar propiedades globales:", error);
    }
 }
 
