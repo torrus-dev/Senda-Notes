@@ -43,7 +43,7 @@ const {
 </script>
 
 <li
-   class="bg-transaprent rounded-field relative transition-colors duration-300{isDragedOver
+   class="rounded-field relative transition-colors duration-300 {isDragedOver
       ? 'highlight'
       : ''}"
    ondragover={handleDragOver}

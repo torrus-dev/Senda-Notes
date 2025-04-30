@@ -52,18 +52,22 @@ class GlobalPropertyController {
 
    searchGlobalProperties(name: string): GlobalProperty[] {
       const allProperties = propertyStore.getGlobalProperties();
-      
+
       // Si no hay texto de búsqueda, retornar todas las propiedades
-      if (!name || name.trim() === '') {
+      if (!name || name.trim() === "") {
+         console.log("busqueda vacia");
          return allProperties;
       }
-      
+
       // Convertir a minúsculas y normalizar para una búsqueda más flexible
       const searchTerm = removeDiacritics(name.toLowerCase());
-      
+      console.log("search term", searchTerm);
+
       // Filtrar propiedades cuyo nombre normalizado contiene el término de búsqueda
-      return allProperties.filter(property => {
-         const normalizedPropertyName = removeDiacritics(property.name.toLowerCase());
+      return allProperties.filter((property) => {
+         const normalizedPropertyName = removeDiacritics(
+            property.name.toLowerCase(),
+         );
          return normalizedPropertyName.includes(searchTerm);
       });
    }
