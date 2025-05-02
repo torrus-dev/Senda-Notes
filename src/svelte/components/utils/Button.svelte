@@ -19,6 +19,8 @@ let {
 }: {
    class?: string;
    onclick?: ((event: MouseEvent) => void) | undefined;
+   onmouseenter?: ((event: MouseEvent) => void) | undefined;
+   onmouseleave?: ((event: MouseEvent) => void) | undefined;
    title?: string;
    size?: "small" | "medium" | "large";
    shape?: "square" | "rect";

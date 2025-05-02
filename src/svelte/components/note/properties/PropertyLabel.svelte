@@ -3,7 +3,7 @@ import { workspace } from "@controllers/workspaceController.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 import { getPropertyIcon } from "@utils/propertyUtils";
 import Button from "@components/utils/Button.svelte";
-import PropertyNameInput from "@components/note/properties/PropertyNameInput.svelte";
+import PropertyNameInput from "@components/note/properties/existingPropertyParts/existingPropertyNameInput.svelte";
 import { SlidersHorizontalIcon, Trash2Icon } from "lucide-svelte";
 
 import type { Note } from "@projectTypes/noteTypes";
@@ -43,7 +43,13 @@ const labelMenuItems: MenuItem[] = [
    },
 ];
 
-function selectGlobalProperty(globalProperty: GlobalProperty) {}
+function selectGlobalProperty(globalProperty: GlobalProperty) {
+   console.log("ejecutando selectGlobalProperty");
+}
+
+function nameChange() {
+   console.log("ejecutando nameChange");
+}
 
 // Obtener el componente de icono actual (derivado)
 const IconComponent = $derived(getPropertyIcon(property.type));
@@ -67,7 +73,5 @@ const IconComponent = $derived(getPropertyIcon(property.type));
    <PropertyNameInput
       savedPropertyName={property.name}
       onselectGlobalProperty={selectGlobalProperty}
-      onnameChange={() => {
-         console.log("cambiando nombre");
-      }} />
+      onnameChange={nameChange} />
 </div>

@@ -75,7 +75,6 @@ class GlobalPropertyController {
             ? removeDiacritics(name.toLowerCase())
             : null;
 
-      console.log("allProperties", allProperties);
       // Un solo filtro que combina ambas condiciones
       return allProperties.filter((property) => {
          // Normalizar el nombre de la propiedad una sola vez
