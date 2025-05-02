@@ -3,7 +3,7 @@ import { workspace } from "@controllers/workspaceController.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 import { getPropertyIcon } from "@utils/propertyUtils";
 import Button from "@components/utils/Button.svelte";
-import PropertyNameInput from "@components/note/properties/existingPropertyParts/existingPropertyNameInput.svelte";
+import ExistingPropertyName from "@components/note/properties/existingPropertyParts/ExistingPropertyName.svelte";
 import { SlidersHorizontalIcon, Trash2Icon } from "lucide-svelte";
 
 import type { Note } from "@projectTypes/noteTypes";
@@ -70,7 +70,7 @@ const IconComponent = $derived(getPropertyIcon(property.type));
          <span class=""><IconComponent size="1.0625em" /></span>
       {/if}
    </Button>
-   <PropertyNameInput
+   <ExistingPropertyName
       savedPropertyName={property.name}
       onselectGlobalProperty={selectGlobalProperty}
       onnameChange={nameChange} />

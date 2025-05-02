@@ -6,16 +6,16 @@ import type { GlobalProperty, Property } from "@projectTypes/propertyTypes";
 import { getPropertyIcon } from "@utils/propertyUtils";
 
 let {
+   savedPropertyName,
    onselectGlobalProperty,
-   onRename,
-   cancelProperty,
+   onnameChange,
 }: {
+   savedPropertyName: Property["name"];
    onselectGlobalProperty: (globalProperty: GlobalProperty) => void;
-   onRename: () => void;
-   cancelProperty: () => void;
+   onnameChange: () => void;
 } = $props();
 
-let newName: Property["name"] = $state("");
+let newName: Property["name"] = $state(savedPropertyName);
 let inputElement: HTMLInputElement | undefined = $state(undefined);
 
 let isFocused: boolean = $state(false);
@@ -47,7 +47,7 @@ function selectGlobalProperty(property: GlobalProperty) {
 
 function handleNameChange() {
    if (newName.trim() !== "") {
-      onRename();
+      onnameChange();
    }
 }
 
@@ -91,11 +91,7 @@ function handleKeyDown(event: KeyboardEvent) {
          selectedIndex = -1;
       }
       // Restauramos el nombre original
-      if (savedPropertyName) {
-         newName = savedPropertyName;
-      } else {
-         cancelAddProperty();
-      }
+      newName = savedPropertyName;
    }
 }
 </script>
