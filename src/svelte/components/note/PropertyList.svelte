@@ -13,6 +13,7 @@ import Collapsible from "@components/utils/Collapsible.svelte";
 
 import type { Property as PropertyType } from "@projectTypes/propertyTypes";
 import { SlidersHorizontalIcon } from "lucide-svelte";
+import NewProperty from "./properties/NewProperty.svelte";
 
 let { noteId }: { noteId: string } = $props();
 
@@ -20,7 +21,7 @@ let properties: PropertyType[] = $derived(
    notePropertyController.getNoteProperties(noteId),
 );
 
-let isAddPropertyOpen = $derived(workspace.isOpenPropertyEditor());
+let addingProperty = $derived(workspace.isOpenPropertyEditor());
 </script>
 
 {#if noteId}
@@ -46,17 +47,19 @@ let isAddPropertyOpen = $derived(workspace.isOpenPropertyEditor());
          workspace.toggleEditorPropertiesCollapsed();
       }}>
       {#if properties.length > 0}
-         <ul class="gap-1 rounded-lg">
+         <!-- Listar propiedades de la nota -->
+         <ul class="gap-1">
             {#each properties as property, index (property.id)}
                <Property noteId={noteId} property={property} position={index} />
             {/each}
          </ul>
       {/if}
 
-      {#if isAddPropertyOpen}
-         <div class="relative">
+      {#if addingProperty}
+         <NewProperty noteId={noteId}/>
+         <!-- <div class="relative">
             <PropertyEditor noteId={noteId} />
-         </div>
+         </div> -->
       {:else}
          <Button
             size="small"

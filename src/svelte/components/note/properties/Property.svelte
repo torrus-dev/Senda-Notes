@@ -7,10 +7,10 @@ import { workspace } from "@controllers/workspaceController.svelte";
 import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";
 
 import PropertyValue from "@components/note/properties/PropertyValue.svelte";
+import PropertyLabel from "@components/note/properties/PropertyLabel.svelte";
 import PropertyEditor from "@components/note/properties/PropertyEditor.svelte";
 
 import type { Property } from "@projectTypes/propertyTypes";
-import PropertyLabel from "@components/note/properties/existingPropertyParts/PropertyLabel.svelte";
 
 let {
    noteId,

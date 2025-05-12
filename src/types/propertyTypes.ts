@@ -1,4 +1,5 @@
 import type { DateTime } from "luxon";
+import type { Note } from "./noteTypes";
 
 interface BaseProperty {
    id: string; // con crypto.randomUUID()
@@ -54,7 +55,7 @@ export interface GlobalProperty {
    id: Property["name"];
    name: Property["name"];
    type: Property["type"];
-   linkedProperties: Property["id"][];
+   linkedProperties: { noteId: Note["id"]; propertyId: Property["id"] }[];
    createdAt: DateTime;
    updatedAt: DateTime;
 }

@@ -55,21 +55,18 @@ function nameChange() {
 const IconComponent = $derived(getPropertyIcon(property.type));
 </script>
 
-<div
-   draggable="true"
-   role="listitem"
-   class="flex w-full items-center"
-   ondragstart={handleDragStart}
-   ondragend={handleDragEnd}>
-   <Button
-      size="small"
-      shape="square"
-      contextMenuItems={labelMenuItems}
-      dropdownMenuItems={labelMenuItems}>
-      {#if IconComponent}
-         <span class=""><IconComponent size="1.0625em" /></span>
-      {/if}
-   </Button>
+<div draggable="true" role="listitem" class="flex w-full items-center">
+   {#if IconComponent}
+      <button ondragstart={handleDragStart} ondragend={handleDragEnd}>
+         <Button
+            size="small"
+            shape="square"
+            contextMenuItems={labelMenuItems}
+            dropdownMenuItems={labelMenuItems}>
+            <span class=""><IconComponent size="1.0625em" /></span>
+         </Button>
+      </button>
+   {/if}
    <ExistingPropertyName
       savedPropertyName={property.name}
       onselectGlobalProperty={selectGlobalProperty}

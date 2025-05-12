@@ -1,8 +1,8 @@
 <script lang="ts">
 import Title from "./Title.svelte";
-import Metadata from "./Metadata.svelte";
-import Properties from "@components/note/properties/Properties.svelte";
-import ChildNotes from "./ChildNotes.svelte";
+import Metadata from "./widgets/Metadata.svelte";
+import PropertyList from "@components/note/PropertyList.svelte";
+import ChildNotes from "./widgets/ChildNotes.svelte";
 import Editor from "./editor/Editor.svelte";
 
 import { settingsController } from "@controllers/settingsController.svelte";
@@ -33,7 +33,7 @@ let { note }: { note: Note | undefined } = $props();
                {#if settingsController.getShowMetadata()}
                   <Metadata noteId={note.id} metadata={note.metadata} />
                {/if}
-               <Properties noteId={note.id} />
+               <PropertyList noteId={note.id} />
                <ChildNotes children={note.children} />
             </div>
          </section>
