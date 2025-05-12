@@ -1,14 +1,18 @@
 <script lang="ts">
-import { workspace } from "@controllers/workspaceController.svelte";
+import PropertyName from "@components/note/properties/PropertyName.svelte";
+import PropertyIcon from "./PropertyIcon.svelte";
+
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
-import { getPropertyIcon } from "@utils/propertyUtils";
-import Button from "@components/utils/Button.svelte";
-import ExistingPropertyName from "@components/note/properties/existingPropertyParts/ExistingPropertyName.svelte";
-import { SlidersHorizontalIcon, Trash2Icon } from "lucide-svelte";
+
+import { TextCursorInputIcon, Trash2Icon } from "lucide-svelte";
 
 import type { Note } from "@projectTypes/noteTypes";
 import type { GlobalProperty, Property } from "@projectTypes/propertyTypes";
 import type { MenuItem } from "@projectTypes/editorMenuTypes";
+import {
+   contextMenu,
+   dropdownMenu,
+} from "@directives/floatingMenuDirective.svelte";
 
 let {
    noteId,
@@ -25,10 +29,10 @@ let {
 const labelMenuItems: MenuItem[] = [
    {
       type: "action",
-      label: "Edit Property",
-      icon: SlidersHorizontalIcon,
+      label: "Rename Property",
+      icon: TextCursorInputIcon,
       action: () => {
-         workspace.openPropertyEditor(noteId, property.id);
+         // rename
       },
    },
    {
@@ -50,24 +54,19 @@ function selectGlobalProperty(globalProperty: GlobalProperty) {
 function nameChange() {
    console.log("ejecutando nameChange");
 }
-
-// Obtener el componente de icono actual (derivado)
-const IconComponent = $derived(getPropertyIcon(property.type));
 </script>
 
-<div draggable="true" role="listitem" class="flex w-full items-center">
-   {#if IconComponent}
-      <button ondragstart={handleDragStart} ondragend={handleDragEnd}>
-         <Button
-            size="small"
-            shape="square"
-            contextMenuItems={labelMenuItems}
-            dropdownMenuItems={labelMenuItems}>
-            <span class=""><IconComponent size="1.0625em" /></span>
-         </Button>
-      </button>
-   {/if}
-   <ExistingPropertyName
+<div
+   draggable="true"
+   role="listitem"
+   class="flex w-full items-center"
+   ondragstart={handleDragStart}
+   ondragend={handleDragEnd}
+   use:contextMenu={labelMenuItems}
+   use:dropdownMenu={labelMenuItems}>
+   <PropertyIcon propertyType={property.type} />
+
+   <PropertyName
       savedPropertyName={property.name}
       onselectGlobalProperty={selectGlobalProperty}
       onnameChange={nameChange} />
