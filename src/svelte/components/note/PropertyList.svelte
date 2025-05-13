@@ -2,18 +2,19 @@
 </style>
 
 <script lang="ts">
+import {
+   SlidersHorizontalIcon,
+   PlusIcon,
+   TablePropertiesIcon,
+} from "lucide-svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
-import { PlusIcon, TablePropertiesIcon } from "lucide-svelte";
-
 import PropertyEditor from "@components/note/properties/PropertyEditor.svelte";
 import Property from "@components/note/properties/Property.svelte";
 import Button from "@components/utils/Button.svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";
 
 import type { Property as PropertyType } from "@projectTypes/propertyTypes";
-import { SlidersHorizontalIcon } from "lucide-svelte";
-import NewProperty from "./properties/NewProperty.svelte";
 
 let { noteId }: { noteId: string } = $props();
 
@@ -56,7 +57,9 @@ let addingProperty = $derived(workspace.isOpenPropertyEditor());
       {/if}
 
       {#if addingProperty}
-         <NewProperty noteId={noteId} />
+         <div class="relative">
+            <PropertyEditor noteId={noteId} />
+         </div>
       {:else}
          <Button
             class="text-base-content/80"

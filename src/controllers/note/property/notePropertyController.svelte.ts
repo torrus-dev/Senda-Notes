@@ -4,6 +4,7 @@ import { convertPropertyValue, generateProperty } from "@utils/propertyUtils";
 import { noteStore } from "@stores/noteStore.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
 import { noteController } from "@controllers/note/noteController.svelte";
+import { noteQueryController } from "../noteQueryController.svelte";
 
 class NotePropertyController {
    private addPropertyToNote = (noteId: Note["id"], newProperty: Property) => {

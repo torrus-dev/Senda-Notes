@@ -62,11 +62,17 @@ export function contextMenu(
    };
 }
 
-// Directiva para abrir el menú como dropdown (con clic normal)
+// Directiva para abrir el menú como dropdown (anclado a un elemento)
 export function dropdownMenu(
    node: HTMLElement,
-   menuItems: MenuItem[] | undefined,
+   params: {
+      menuItems: MenuItem[] | undefined;
+      rightClickEnabled?: boolean;
+   },
 ) {
+   let menuItems = params.menuItems;
+   let rightClickEnabled = params.rightClickEnabled || false;
+
    // Si no hay menuItems, devolver un objeto de directiva "noop"
    if (!checkValid(menuItems)) {
       return {
@@ -88,24 +94,49 @@ export function dropdownMenu(
       }
    }
 
-   // Añadir el event listener
+   function handleContextMenu(event: MouseEvent) {
+      if (!rightClickEnabled) return; // Solo procesar si está habilitado el clic derecho
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const triggerElement = floatingMenuController.getTriggerElement();
+
+      if (menuItems && !(triggerElement === node)) {
+         floatingMenuController.openDropdownMenu(node, menuItems);
+      } else {
+         floatingMenuController.closeMenu();
+      }
+   }
+
+   // Añadir los event listeners
    node.addEventListener("click", handleClick);
+   node.addEventListener("contextmenu", handleContextMenu);
 
    return {
       // Actualizar las opciones si cambian
-      update(newMenuItems: MenuItem[] | undefined) {
+      update(newParams: {
+         menuItems: MenuItem[] | undefined;
+         rightClickEnabled?: boolean;
+      }) {
+         const newMenuItems = newParams.menuItems;
+         rightClickEnabled = newParams.rightClickEnabled || false;
+
          const wasValid = checkValid(menuItems);
          const isValid = checkValid(newMenuItems);
          menuItems = newMenuItems;
 
          if (wasValid && !isValid) {
             node.removeEventListener("click", handleClick);
+            node.removeEventListener("contextmenu", handleContextMenu);
          } else if (!wasValid && isValid) {
             node.addEventListener("click", handleClick);
+            node.addEventListener("contextmenu", handleContextMenu);
          }
       },
       destroy() {
          node.removeEventListener("click", handleClick);
+         node.removeEventListener("contextmenu", handleContextMenu);
       },
    };
 }

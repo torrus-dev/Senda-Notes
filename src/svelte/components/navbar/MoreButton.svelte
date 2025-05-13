@@ -45,9 +45,6 @@ const noteOptionsItems: MenuItem[] = [
 ];
 </script>
 
-<Button
-   dropdownMenuItems={noteOptionsItems}
-   contextMenuItems={noteOptionsItems}
-   title="More options">
+<Button dropdownMenuItems={noteOptionsItems} title="More options">
    <MoreVerticalIcon size="1.25em" />
 </Button>

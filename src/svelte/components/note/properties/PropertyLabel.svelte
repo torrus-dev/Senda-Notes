@@ -65,10 +65,7 @@ let isRenamingLabel = $state(false);
    class="flex w-full items-center"
    ondragstart={handleDragStart}
    ondragend={handleDragEnd}>
-   <Button
-      contextMenuItems={labelMenuItems}
-      dropdownMenuItems={labelMenuItems}
-      class="w-full">
+   <Button dropdownMenuItems={labelMenuItems} class="w-full">
       <PropertyIcon propertyType={property.type} />
 
       {#if isRenamingLabel}

@@ -63,6 +63,17 @@ export function generateProperty(
    return newProperty as Property;
 }
 
+export function getPropertyTypes(): { value: string; label: string }[] {
+   return [
+      { value: "text", label: "Text" },
+      { value: "list", label: "List" },
+      { value: "number", label: "Number" },
+      { value: "check", label: "Check" },
+      { value: "date", label: "Date" },
+      { value: "datetime", label: "Datetime" },
+   ];
+}
+
 export function convertPropertyValue(
    oldType: Property["type"],
    newtype: Property["type"],

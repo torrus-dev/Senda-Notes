@@ -13,7 +13,6 @@ let {
    shape = "square",
    children,
    dropdownMenuItems = undefined,
-   contextMenuItems = undefined,
    buttonElement = $bindable(),
    ...htmlAttributes
 }: {
@@ -26,7 +25,6 @@ let {
    shape?: "square" | "rect";
    children: Snippet;
    dropdownMenuItems?: MenuItem[] | undefined;
-   contextMenuItems?: MenuItem[] | undefined;
    buttonElement?: HTMLElement;
 } = $props();
 
@@ -56,7 +54,7 @@ if (shape === "rect") {
 const sizeClass = $derived(sizeStyle[size as "small" | "medium" | "large"]);
 </script>
 
-{#if dropdownMenuItems && contextMenuItems}
+{#if dropdownMenuItems}
    <button
       {...htmlAttributes}
       class="
@@ -65,34 +63,10 @@ const sizeClass = $derived(sizeStyle[size as "small" | "medium" | "large"]);
          {userClass}
       "
       onclick={onclick}
-      use:dropdownMenu={dropdownMenuItems}
-      use:contextMenu={contextMenuItems}
-      bind:this={buttonElement}>
-      {@render children()}
-   </button>
-{:else if dropdownMenuItems}
-   <button
-      {...htmlAttributes}
-      class="
-         rounded-field bg-interactive hover:text-muted-content focus:text-muted-content inline-flex cursor-pointer items-center gap-2 whitespace-nowrap
-         {sizeClass} 
-         {userClass}
-      "
-      onclick={onclick}
-      use:dropdownMenu={dropdownMenuItems}
-      bind:this={buttonElement}>
-      {@render children()}
-   </button>
-{:else if contextMenuItems}
-   <button
-      {...htmlAttributes}
-      class="
-         rounded-field bg-interactive hover:text-muted-content focus:text-muted-content inline-flex cursor-pointer items-center gap-2 whitespace-nowrap
-         {sizeClass} 
-         {userClass}
-      "
-      onclick={onclick}
-      use:contextMenu={contextMenuItems}
+      use:dropdownMenu={{
+         menuItems: dropdownMenuItems,
+         rightClickEnabled: true,
+      }}
       bind:this={buttonElement}>
       {@render children()}
    </button>

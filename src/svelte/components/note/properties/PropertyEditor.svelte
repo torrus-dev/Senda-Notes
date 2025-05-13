@@ -6,33 +6,27 @@ import type { Property } from "@projectTypes/propertyTypes";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
-import Popover from "@components/floating/popover/Popover.svelte";
+import { getPropertyIcon, getPropertyTypes } from "@utils/propertyUtils";
 
 let {
    property = undefined,
    noteId,
 }: { property?: Property | undefined; noteId: string } = $props();
 
-const propertyId = property ? property.id : null;
+const propertyId = property ? property.id : undefined;
 const propertyName = property ? property.name : "";
 const propertyType = property ? property.type : "text";
 
-let newPropertyName: string = $state(propertyName);
-let newPropertyType: Property["type"] = $state(propertyType);
-let isWriting: boolean = $state(false);
-
-// Opciones de tipos de propiedades
-const propertyTypes = [
-   { value: "text", label: "Text" },
-   { value: "list", label: "List" },
-   { value: "number", label: "Number" },
-   { value: "check", label: "Check" },
-   { value: "date", label: "Date" },
-   { value: "datetime", label: "Datetime" },
-];
+const propertyTypes = getPropertyTypes();
 let propertyNameElement: HTMLInputElement | undefined = $state(undefined);
 
+let newPropertyName: string = $state(propertyName);
+let newPropertyType: Property["type"] = $state(propertyType);
+
 function handleSave() {
+   if (newPropertyName.trim() === "") return;
+   console.log("newPropertyName", newPropertyName);
+
    if (propertyId) {
       // update note property
       if (newPropertyName !== propertyName) {
@@ -78,7 +72,7 @@ function closeEditor() {
    role="menu"
    tabindex="-1">
    <div class="form-group">
-      <label class="inline-block w-[5rem]" for="name">Name</label>
+      <label class="inline-block w-[5rem]" for="name"> Name </label>
       <input
          name="name"
          type="text"
@@ -95,7 +89,11 @@ function closeEditor() {
          oninput={() => handleSave()}
          bind:value={newPropertyType}>
          {#each propertyTypes as { value, label }}
-            <option class="" value={value}>{label}</option>
+            {@const TypeIcon = getPropertyIcon(value)}
+            <option value={value}>
+               <TypeIcon size="1.0625em" />
+               {label}
+            </option>
          {/each}
       </select>
    </div>
