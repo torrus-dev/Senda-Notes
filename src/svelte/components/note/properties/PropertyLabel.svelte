@@ -1,5 +1,5 @@
 <script lang="ts">
-import PropertyRenameInput from "@components/note/properties/PropertyRenameInput.svelte";
+import PropertyNameInput from "@components/note/properties/PropertyNameInput.svelte";
 import PropertyIcon from "./PropertyIcon.svelte";
 
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
@@ -9,10 +9,6 @@ import { TextCursorInputIcon, Trash2Icon } from "lucide-svelte";
 import type { Note } from "@projectTypes/noteTypes";
 import type { GlobalProperty, Property } from "@projectTypes/propertyTypes";
 import type { MenuItem } from "@projectTypes/editorMenuTypes";
-import {
-   contextMenu,
-   dropdownMenu,
-} from "@directives/floatingMenuDirective.svelte";
 import Button from "@components/utils/Button.svelte";
 
 let {
@@ -69,7 +65,7 @@ let isRenamingLabel = $state(false);
       <PropertyIcon propertyType={property.type} />
 
       {#if isRenamingLabel}
-         <PropertyRenameInput
+         <PropertyNameInput
             savedPropertyName={property.name}
             onselectGlobalProperty={selectGlobalProperty}
             onnameChange={nameChange} />
