@@ -9,7 +9,7 @@ const IconComponent = $derived(getPropertyIcon(propertyType));
 </script>
 
 {#if IconComponent}
-   <span class="p-1">
+   <span>
       <IconComponent size="1.0625em" />
    </span>
 {/if}

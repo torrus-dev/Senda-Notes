@@ -56,19 +56,15 @@ let addingProperty = $derived(workspace.isOpenPropertyEditor());
       {/if}
 
       {#if addingProperty}
-         <NewProperty noteId={noteId}/>
-         <!-- <div class="relative">
-            <PropertyEditor noteId={noteId} />
-         </div> -->
+         <NewProperty noteId={noteId} />
       {:else}
          <Button
-            size="small"
             class="text-base-content/80"
             onclick={() => {
                workspace.openPropertyEditor();
             }}
             title="Add property">
-            <PlusIcon size="1.125em" />Add Property
+            <PlusIcon size="1.0625em" />Add Property
          </Button>
       {/if}
    </Collapsible>

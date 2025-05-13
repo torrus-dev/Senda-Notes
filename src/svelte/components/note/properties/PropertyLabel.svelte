@@ -1,5 +1,5 @@
 <script lang="ts">
-import PropertyName from "@components/note/properties/PropertyName.svelte";
+import PropertyRenameInput from "@components/note/properties/PropertyRenameInput.svelte";
 import PropertyIcon from "./PropertyIcon.svelte";
 
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
@@ -13,6 +13,7 @@ import {
    contextMenu,
    dropdownMenu,
 } from "@directives/floatingMenuDirective.svelte";
+import Button from "@components/utils/Button.svelte";
 
 let {
    noteId,
@@ -54,6 +55,8 @@ function selectGlobalProperty(globalProperty: GlobalProperty) {
 function nameChange() {
    console.log("ejecutando nameChange");
 }
+
+let isRenamingLabel = $state(false);
 </script>
 
 <div
@@ -61,13 +64,20 @@ function nameChange() {
    role="listitem"
    class="flex w-full items-center"
    ondragstart={handleDragStart}
-   ondragend={handleDragEnd}
-   use:contextMenu={labelMenuItems}
-   use:dropdownMenu={labelMenuItems}>
-   <PropertyIcon propertyType={property.type} />
+   ondragend={handleDragEnd}>
+   <Button
+      contextMenuItems={labelMenuItems}
+      dropdownMenuItems={labelMenuItems}
+      class="w-full">
+      <PropertyIcon propertyType={property.type} />
 
-   <PropertyName
-      savedPropertyName={property.name}
-      onselectGlobalProperty={selectGlobalProperty}
-      onnameChange={nameChange} />
+      {#if isRenamingLabel}
+         <PropertyRenameInput
+            savedPropertyName={property.name}
+            onselectGlobalProperty={selectGlobalProperty}
+            onnameChange={nameChange} />
+      {:else}
+         {property.name}
+      {/if}
+   </Button>
 </div>
