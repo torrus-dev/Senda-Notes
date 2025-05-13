@@ -6,23 +6,29 @@ import type { GlobalProperty, Property } from "@projectTypes/propertyTypes";
 import { getPropertyIcon } from "@utils/propertyUtils";
 
 let {
-   savedPropertyName,
-   onselectGlobalProperty,
-   onnameChange,
+   value = "",
+   onchange,
+   onSelectGlobalProperty,
 }: {
-   savedPropertyName: Property["name"];
-   onselectGlobalProperty: (globalProperty: GlobalProperty) => void;
-   onnameChange: () => void;
+   value: Property["name"];
+   onchange: (newName: string) => void;
+   onSelectGlobalProperty: (globalProperty: GlobalProperty) => void;
 } = $props();
 
-let newName: Property["name"] = $state(savedPropertyName);
+let newName: Property["name"] = $state(value);
 let inputElement: HTMLInputElement | undefined = $state(undefined);
-
 let isFocused: boolean = $state(false);
 let isSelectingFromSuggestions: boolean = $state(false);
+
+// Actualizamos el valor interno cuando cambia el prop externo
+$effect(() => {
+   newName = value;
+});
+
 let suggestedGlobalProperties: GlobalProperty[] = $derived(
    globalPropertyController.searchGlobalProperties(newName),
 );
+
 let showSuggestedGlobalProps = $derived(
    isFocused && suggestedGlobalProperties.length > 0,
 );
@@ -39,7 +45,7 @@ $effect(() => {
 
 // Función para seleccionar una propiedad global
 function selectGlobalProperty(property: GlobalProperty) {
-   onselectGlobalProperty(property);
+   onSelectGlobalProperty(property);
    newName = property.name;
    // Mantener el foco en el input
    inputElement?.focus();
@@ -47,9 +53,16 @@ function selectGlobalProperty(property: GlobalProperty) {
 
 function handleNameChange() {
    if (newName.trim() !== "") {
-      onnameChange();
+      onchange(newName);
    }
 }
+
+// Manejamos el cambio de valor interno para actualizar el prop externo
+$effect(() => {
+   if (newName !== value && newName.trim() !== "") {
+      onchange(newName);
+   }
+});
 
 // Manejar la navegación con teclado
 function handleKeyDown(event: KeyboardEvent) {
@@ -91,55 +104,60 @@ function handleKeyDown(event: KeyboardEvent) {
          selectedIndex = -1;
       }
       // Restauramos el nombre original
-      newName = savedPropertyName;
+      newName = value;
    }
 }
 </script>
 
-<input
-   type="text"
-   bind:value={newName}
-   bind:this={inputElement}
-   onblur={() => {
-      if (!isSelectingFromSuggestions) {
-         handleNameChange();
-         isFocused = false;
-      }
-   }}
-   onfocus={() => {
-      isFocused = true;
-   }}
-   onkeydown={handleKeyDown}
-   class="w-full overflow-clip p-0.5 text-left focus:outline-none" />
-
-<Popover
-   isOpen={showSuggestedGlobalProps}
-   htmlElement={inputElement}
-   placement="bottom"
-   alignment="start"
-   class="bg-base-200 max-h-48 overflow-y-auto">
-   <ul
-      class="flex-col p-1"
-      onmouseenter={() => {
-         isSelectingFromSuggestions = true;
+<div class="property-name-input">
+   <input
+      type="text"
+      bind:value={newName}
+      bind:this={inputElement}
+      onblur={() => {
+         if (!isSelectingFromSuggestions) {
+            handleNameChange();
+            isFocused = false;
+         }
       }}
-      onmouseleave={() => {
-         isSelectingFromSuggestions = false;
-      }}>
-      {#each suggestedGlobalProperties as globalProperty, index}
-         {@const TypeIcon = getPropertyIcon(globalProperty.type)}
-         <li>
-            <Button
-               class="w-full justify-start 
-                  {selectedIndex === index ? 'bg-interactive-focus' : ''}"
-               onclick={(event) => {
-                  event.preventDefault();
-                  selectGlobalProperty(globalProperty);
-               }}>
-               <TypeIcon size="1.125em" class="mr-2" />
-               <span>{globalProperty.name}</span>
-            </Button>
-         </li>
-      {/each}
-   </ul>
-</Popover>
+      onfocus={() => {
+         isFocused = true;
+      }}
+      onkeydown={handleKeyDown}
+      class="w-full overflow-clip p-0.5 text-left focus:outline-none"
+      placeholder="Enter property name" />
+
+   <Popover
+      isOpen={showSuggestedGlobalProps}
+      htmlElement={inputElement}
+      placement="bottom"
+      alignment="start"
+      class="bg-base-200 z-40 max-h-48 overflow-y-auto">
+      <ul
+         class="flex-col p-1"
+         onmouseenter={() => {
+            isSelectingFromSuggestions = true;
+         }}
+         onmouseleave={() => {
+            isSelectingFromSuggestions = false;
+         }}>
+         {#each suggestedGlobalProperties as globalProperty, index}
+            {@const TypeIcon = getPropertyIcon(globalProperty.type)}
+            <li>
+               <Button
+                  class="w-full justify-start
+                               {selectedIndex === index
+                     ? 'bg-interactive-focus'
+                     : ''}"
+                  onclick={(event) => {
+                     event.preventDefault();
+                     selectGlobalProperty(globalProperty);
+                  }}>
+                  <TypeIcon size="1.125em" class="mr-2" />
+                  <span>{globalProperty.name}</span>
+               </Button>
+            </li>
+         {/each}
+      </ul>
+   </Popover>
+</div>

@@ -10,6 +10,7 @@ import type { Note } from "@projectTypes/noteTypes";
 import type { GlobalProperty, Property } from "@projectTypes/propertyTypes";
 import type { MenuItem } from "@projectTypes/editorMenuTypes";
 import Button from "@components/utils/Button.svelte";
+import { workspace } from "@controllers/workspaceController.svelte";
 
 let {
    noteId,
@@ -26,10 +27,10 @@ let {
 const labelMenuItems: MenuItem[] = [
    {
       type: "action",
-      label: "Rename Property",
+      label: "Edit Property",
       icon: TextCursorInputIcon,
       action: () => {
-         // rename
+         workspace.openPropertyEditor(noteId, property.id);
       },
    },
    {
@@ -51,8 +52,6 @@ function selectGlobalProperty(globalProperty: GlobalProperty) {
 function nameChange() {
    console.log("ejecutando nameChange");
 }
-
-let isRenamingLabel = $state(false);
 </script>
 
 <div
@@ -63,14 +62,6 @@ let isRenamingLabel = $state(false);
    ondragend={handleDragEnd}>
    <Button dropdownMenuItems={labelMenuItems} class="w-full">
       <PropertyIcon propertyType={property.type} />
-
-      {#if isRenamingLabel}
-         <PropertyNameInput
-            savedPropertyName={property.name}
-            onselectGlobalProperty={selectGlobalProperty}
-            onnameChange={nameChange} />
-      {:else}
-         {property.name}
-      {/if}
+      {property.name}
    </Button>
 </div>
