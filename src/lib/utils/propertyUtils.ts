@@ -63,7 +63,7 @@ export function generateProperty(
    return newProperty as Property;
 }
 
-export function getPropertyTypes(): { value: string; label: string }[] {
+export function getPropertyTypesList(): { value: string; label: string }[] {
    return [
       { value: "text", label: "Text" },
       { value: "list", label: "List" },

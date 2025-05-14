@@ -2,10 +2,12 @@
 import type { Property } from "@projectTypes/propertyTypes";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
-import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
-import { getPropertyIcon, getPropertyTypes } from "@utils/propertyUtils";
-import PropertyNameInput from "./PropertyNameInput.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
+
+import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
+import { getPropertyIcon, getPropertyTypesList } from "@utils/propertyUtils";
+import PropertyNameInput from "@components/note/properties/PropertyNameInput.svelte";
+
 import type { GlobalProperty } from "@projectTypes/propertyTypes";
 
 let {
@@ -20,10 +22,6 @@ let newPropertyType: Property["type"] = $state(
    property ? property.type : "text",
 );
 let isGlobalPropertySelected: boolean = $state(false);
-let propertyNameElement: HTMLInputElement | undefined = $state(undefined);
-
-// Lista de tipos de propiedades disponibles
-const propertyTypes = getPropertyTypes();
 
 // Verificamos si ya existe una propiedad global con este nombre al cargar
 $effect(() => {
@@ -134,7 +132,7 @@ function closeEditor() {
          oninput={() => handleSave()}
          bind:value={newPropertyType}
          disabled={isGlobalPropertySelected}>
-         {#each propertyTypes as { value, label }}
+         {#each getPropertyTypesList() as { value, label }}
             {@const TypeIcon = getPropertyIcon(value)}
             <option value={value}>
                {label}
