@@ -4,22 +4,22 @@ import { workspace } from "@controllers/workspaceController.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
 import { getPropertyIcon, getPropertyTypesList } from "@utils/propertyUtils";
-import PropertyNameInput from "./PropertyNameInput.svelte";
+import PropertyNameInput from "@components/note/properties/PropertyNameInput.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
 import type { GlobalProperty } from "@projectTypes/propertyTypes";
 
 let {
-   property = undefined,
+   property,
    noteId,
 }: {
-   property?: Property | undefined;
+   property: Property;
    noteId: string;
 } = $props();
 
 // Estado interno del editor
-const propertyId = property ? property.id : undefined;
-const originalName = property ? property.name : "";
-const originalType = property ? property.type : "text";
+const propertyId = property.id;
+const originalName = property.name;
+const originalType = property.type;
 let newPropertyName: string = $state(originalName);
 let newPropertyType: Property["type"] = $state(originalType);
 let wasNameChanged: boolean = $derived(newPropertyName !== originalName);
@@ -80,47 +80,38 @@ function handleNameChange(name: string) {
 function handleSave() {
    if (newPropertyName.trim() === "") return;
 
-   if (propertyId) {
-      if (wasNameChanged) {
-         // Si cambió el nombre, es una desvinculación o cambio a otra propiedad global
-         notePropertyController.renameNoteProperty(
-            noteId,
-            propertyId,
-            newPropertyName,
-         );
+   if (wasNameChanged) {
+      // Si cambió el nombre, es una desvinculación o cambio a otra propiedad global
+      notePropertyController.renameNoteProperty(
+         noteId,
+         propertyId,
+         newPropertyName,
+      );
 
-         // También actualizamos el tipo si es necesario
-         if (newPropertyType !== originalType) {
-            notePropertyController.changeNotePropertyType(
-               noteId,
-               propertyId,
-               newPropertyType,
-            );
-         }
-      } else if (newPropertyType !== originalType) {
-         // Si solo cambió el tipo (nombre igual), es un cambio global
-         // Este cambio afectará a todas las notas con esta propiedad
+      // También actualizamos el tipo si es necesario
+      if (newPropertyType !== originalType) {
          notePropertyController.changeNotePropertyType(
             noteId,
             propertyId,
             newPropertyType,
          );
-
-         // Actualizar también la propiedad global si existe
-         if (originalGlobalProperty) {
-            globalPropertyController.updateGlobalPropertyType(
-               originalGlobalProperty.id,
-               newPropertyType,
-            );
-         }
       }
-   } else {
-      // Crear nueva propiedad
-      notePropertyController.createProperty(
+   } else if (newPropertyType !== originalType) {
+      // Si solo cambió el tipo (nombre igual), es un cambio global
+      // Este cambio afectará a todas las notas con esta propiedad
+      notePropertyController.changeNotePropertyType(
          noteId,
-         newPropertyName,
+         propertyId,
          newPropertyType,
       );
+
+      // Actualizar también la propiedad global si existe
+      if (originalGlobalProperty) {
+         globalPropertyController.updateGlobalPropertyType(
+            originalGlobalProperty.id,
+            newPropertyType,
+         );
+      }
    }
 }
 

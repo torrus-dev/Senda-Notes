@@ -1,8 +1,5 @@
 <script lang="ts">
-import {
-   contextMenu,
-   dropdownMenu,
-} from "@directives/floatingMenuDirective.svelte";
+import { dropdownMenu } from "@directives/floatingMenuDirective.svelte";
 import type { MenuItem } from "@projectTypes/editorMenuTypes";
 import type { Snippet } from "svelte";
 
@@ -14,6 +11,7 @@ let {
    children,
    dropdownMenuItems = undefined,
    buttonElement = $bindable(),
+   disabled = false,
    ...htmlAttributes
 }: {
    class?: string;
@@ -26,10 +24,11 @@ let {
    children: Snippet;
    dropdownMenuItems?: MenuItem[] | undefined;
    buttonElement?: HTMLElement;
+   disabled?: boolean;
 } = $props();
 
 if (onclick && dropdownMenuItems) {
-   console.warn("Se esta pasando 'onclick' a un elemento con dropdown");
+   console.warn("Se esta pasando 'onclick' a un boton con dropdown");
    onclick = () => {};
 }
 
@@ -52,6 +51,11 @@ if (shape === "rect") {
 
 // Estilo de tamaño basado en las props - usando la runa $derived correctamente
 const sizeClass = $derived(sizeStyle[size as "small" | "medium" | "large"]);
+
+// Clase adicional para el estado disabled
+const disabledClass = $derived(
+   disabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "",
+);
 </script>
 
 {#if dropdownMenuItems}
@@ -60,9 +64,11 @@ const sizeClass = $derived(sizeStyle[size as "small" | "medium" | "large"]);
       class="
          rounded-field bg-interactive hover:text-muted-content focus:text-muted-content inline-flex cursor-pointer items-center gap-2 whitespace-nowrap
          {sizeClass} 
-         {userClass}
+         {userClass} 
+         {disabledClass} 
       "
       onclick={onclick}
+      disabled={disabled}
       use:dropdownMenu={{
          menuItems: dropdownMenuItems,
          rightClickEnabled: true,
@@ -78,6 +84,7 @@ const sizeClass = $derived(sizeStyle[size as "small" | "medium" | "large"]);
          {sizeClass} 
          {userClass}
       "
+      disabled={disabled}
       onclick={onclick}
       bind:this={buttonElement}>
       {@render children()}
