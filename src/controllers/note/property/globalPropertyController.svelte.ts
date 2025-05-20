@@ -122,17 +122,73 @@ class GlobalPropertyController {
       noteProperty: NoteProperty,
       globalProperty: GlobalProperty,
    ) {
-      // completar
+      // 1) Actualizar la global: añadir el enlace
+      const newLink = {
+         noteId: noteProperty.noteId,
+         propertyId: noteProperty.id,
+      };
+      this.updateGlobalPropertyById(globalProperty.id, {
+         linkedProperties: [...globalProperty.linkedProperties, newLink],
+      });
+
+      // 2) Actualizar la propiedad local (en la nota) para fijar globalPropertyId
+      noteProperty.globalPropertyId = globalProperty.id;
+      noteProperty.name = globalProperty.name;
+      noteProperty.type = globalProperty.type;
+      notePropertyController.updatePropertyFromNote(
+         noteProperty.noteId,
+         noteProperty.id,
+         {
+            globalPropertyId: globalProperty.id,
+            name: globalProperty.name,
+            type: globalProperty.type,
+         },
+      );
    }
+
    unlinkFromGlobalProperty(noteProperty: NoteProperty) {
-      // completar
+      if (!noteProperty.globalPropertyId) return;
+
+      const globalId = noteProperty.globalPropertyId;
+      const global = this.getGlobalPropertyById(globalId);
+      if (!global) return;
+
+      // 1) Filtrar el enlace de la global
+      const filteredLinks = global.linkedProperties.filter(
+         (link) =>
+            !(
+               link.noteId === noteProperty.noteId &&
+               link.propertyId === noteProperty.id
+            ),
+      );
+      this.updateGlobalPropertyById(globalId, {
+         linkedProperties: filteredLinks,
+      });
+
+      // 2) Quitar la referencia en la nota
+      noteProperty.globalPropertyId = undefined;
+      notePropertyController.updatePropertyFromNote(
+         noteProperty.noteId,
+         noteProperty.id,
+         { globalPropertyId: undefined },
+      );
    }
 
    updateGlobalType(
       globalProperty: GlobalProperty,
       newType: NoteProperty["type"],
    ) {
-      // completar
+      // 1) Actualizar el type en la global
+      this.updateGlobalPropertyType(globalProperty.id, newType);
+
+      // 2) Para cada nota enlazada, actualizar solo el campo `type`
+      for (const link of globalProperty.linkedProperties) {
+         notePropertyController.updatePropertyFromNote(
+            link.noteId,
+            link.propertyId,
+            { type: newType },
+         );
+      }
    }
 }
 
