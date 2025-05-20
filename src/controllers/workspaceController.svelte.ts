@@ -68,10 +68,7 @@ class WorkspaceController {
    };
 
    // ---------- Property Editor ----------
-   openPropertyEditor = (
-      noteId: string | null = null,
-      propertyId: string | null = null,
-   ) => {
+   openPropertyEditor = (noteId: string, propertyId: string) => {
       workspaceStore.propertyEditor = {
          isOpen: true,
          noteId: noteId,
@@ -82,14 +79,14 @@ class WorkspaceController {
    closePropertyEditor = () => {
       workspaceStore.propertyEditor = {
          isOpen: false,
-         noteId: null,
-         propertyId: null,
+         noteId: undefined,
+         propertyId: undefined,
       };
    };
 
    isOpenPropertyEditor = (
-      noteId: string | null = null,
-      propertyId: string | null = null,
+      noteId: string | undefined = undefined,
+      propertyId: string | undefined = undefined,
    ) => {
       return (
          workspaceStore.propertyEditor.isOpen &&

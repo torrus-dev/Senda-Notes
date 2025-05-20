@@ -3,8 +3,8 @@ import type { Property } from "@projectTypes/propertyTypes";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
-import { getPropertyIcon, getPropertyTypesList } from "@utils/propertyUtils";
-import PropertyNameInput from "@components/note/properties/PropertyNameInput.svelte";
+import PropertyNameInput from "./PropertyNameInput.svelte";
+import PropertyTypeSelect from "./PropertyTypeSelect.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
 import type { GlobalProperty } from "@projectTypes/propertyTypes";
 
@@ -123,7 +123,7 @@ function closeEditor() {
 </script>
 
 <div
-   class="property-editor rounded-box bordered absolute top-full left-0 z-30 mt-1 flex flex-col gap-2 bg-(--color-base-200) px-4 py-2 shadow-lg"
+   class="property-editor rounded-box bordered bg-base-200 absolute top-full left-0 z-30 mt-1 flex flex-col gap-2 px-4 py-2 shadow-lg"
    use:onOutsideOrEsc={{
       action: closeEditor,
    }}
@@ -150,18 +150,11 @@ function closeEditor() {
    </div>
    <div>
       <label for="type" class="inline-block w-[5rem]">Type</label>
-      <select
-         class="bg-base-100 rounded-field w-[16rem] p-1"
-         name="type"
-         bind:value={newPropertyType}
-         disabled={isGlobalProperty && wasNameChanged === false}>
-         {#each getPropertyTypesList() as { value, label }}
-            {@const TypeIcon = getPropertyIcon(value)}
-            <option value={value}>
-               {label}
-            </option>
-         {/each}
-      </select>
+      <div class="inline-block w-[16rem]">
+         <PropertyTypeSelect
+            bind:selectedValue={newPropertyType}
+            disabled={isGlobalProperty && wasNameChanged === false} />
+      </div>
       {#if isGlobalProperty && !wasNameChanged}
          <div class="text-base-content/70 mt-1 text-xs">
             Type changes will affect all notes with this property

@@ -9,7 +9,7 @@ import {
 } from "lucide-svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
-import PropertyEditor from "@components/note/properties/PropertyEditor.svelte";
+import AddPropertyEditor from "@components/note/properties/AddPropertyEditor.svelte";
 import Property from "@components/note/properties/Property.svelte";
 import Button from "@components/utils/Button.svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";
@@ -22,7 +22,11 @@ let properties: PropertyType[] = $derived(
    notePropertyController.getNoteProperties(noteId),
 );
 
-let addingProperty = $derived(workspace.isOpenPropertyEditor());
+let addingProperty = $state(false);
+
+function toggleAddProperty() {
+   addingProperty = !addingProperty;
+}
 </script>
 
 {#if noteId}
@@ -58,13 +62,13 @@ let addingProperty = $derived(workspace.isOpenPropertyEditor());
 
       {#if addingProperty}
          <div class="relative">
-            <PropertyEditor noteId={noteId} />
+            <AddPropertyEditor noteId={noteId} />
          </div>
       {:else}
          <Button
             class="text-base-content/80"
             onclick={() => {
-               workspace.openPropertyEditor();
+               toggleAddProperty();
             }}
             title="Add property">
             <PlusIcon size="1.0625em" />Add Property

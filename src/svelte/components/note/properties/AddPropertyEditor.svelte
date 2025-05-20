@@ -3,8 +3,8 @@ import type { Property } from "@projectTypes/propertyTypes";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
-import { getPropertyIcon, getPropertyTypesList } from "@utils/propertyUtils";
-import PropertyNameInput from "@components/note/properties/PropertyNameInput.svelte";
+import PropertyNameInput from "./PropertyNameInput.svelte";
+import PropertyTypeSelect from "./PropertyTypeSelect.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
 import type { GlobalProperty } from "@projectTypes/propertyTypes";
 
@@ -13,9 +13,9 @@ let { noteId }: { noteId: string } = $props();
 // Estado interno del editor
 let newPropertyName: string = $state("");
 let newPropertyType: Property["type"] = $state("text");
-let selectGlobalProperty: boolean = $state(false);
+let isGlobalProperty: boolean = $state(false);
 
-// Verificamos si el nombre coincide con otra propiedad global cuando cambia en el input
+// Verificamos si coincide con otra propiedad global cuando cambia el nombre
 $effect(() => {
    if (newPropertyName) {
       const globalProperty =
@@ -23,10 +23,10 @@ $effect(() => {
       if (globalProperty) {
          // Si coincide con una propiedad global, adoptamos su tipo
          newPropertyType = globalProperty.type;
-         selectGlobalProperty = true;
+         isGlobalProperty = true;
       } else {
          // Si no coincide con ninguna global
-         selectGlobalProperty = false;
+         isGlobalProperty = false;
       }
    }
 });
@@ -35,7 +35,7 @@ $effect(() => {
 function handleSelectGlobalProperty(globalProperty: GlobalProperty) {
    newPropertyName = globalProperty.name;
    newPropertyType = globalProperty.type;
-   selectGlobalProperty = true;
+   isGlobalProperty = true;
 }
 
 // Manejador para cuando cambia el nombre manualmente
@@ -47,9 +47,9 @@ function handleNameChange(name: string) {
       globalPropertyController.getGlobalPropertyByName(name);
    if (globalProperty) {
       newPropertyType = globalProperty.type;
-      selectGlobalProperty = true;
+      isGlobalProperty = true;
    } else {
-      selectGlobalProperty = false;
+      isGlobalProperty = false;
    }
 }
 
@@ -73,7 +73,7 @@ function closeEditor() {
 </script>
 
 <div
-   class="property-editor rounded-box bordered absolute top-full left-0 z-30 mt-1 flex flex-col gap-2 bg-(--color-base-200) px-4 py-2 shadow-lg"
+   class="property-editor rounded-box bordered absolute top-full left-0 z-30 mt-1 flex flex-col gap-2 bg-base-200 px-4 py-2 shadow-lg"
    use:onOutsideOrEsc={{
       action: closeEditor,
    }}
@@ -95,19 +95,12 @@ function closeEditor() {
    </div>
    <div>
       <label for="type" class="inline-block w-[5rem]">Type</label>
-      <select
-         class="bg-base-100 rounded-field w-[16rem] p-1"
-         name="type"
-         bind:value={newPropertyType}
-         disabled={selectGlobalProperty}>
-         {#each getPropertyTypesList() as { value, label }}
-            {@const TypeIcon = getPropertyIcon(value)}
-            <option value={value}>
-               {label}
-            </option>
-         {/each}
-      </select>
-      {#if selectGlobalProperty}
+      <div class="inline-block w-[16rem]">
+         <PropertyTypeSelect
+            bind:selectedValue={newPropertyType}
+            disabled={isGlobalProperty} />
+      </div>
+      {#if isGlobalProperty}
          <div class="text-base-content/70 mt-1 text-xs">
             Using an existing global property type
          </div>

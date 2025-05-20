@@ -3,8 +3,8 @@ import { Editor } from "@tiptap/core";
 // Estado y tipos para el Property Editor
 export interface PropertyEditorState {
    isOpen: boolean;
-   noteId: string | null;
-   propertyId: string | null;
+   noteId: string | undefined;
+   propertyId: string | undefined;
 }
 
 // Tipos para pestañas (tabs) y ventanas

@@ -10,8 +10,8 @@ class WorkspaceStore {
       previousActiveNoteId: undefined,
       propertyEditor: {
          isOpen: false,
-         noteId: null,
-         propertyId: null,
+         noteId: undefined,
+         propertyId: undefined,
       },
       windows: [],
       activeWindowId: null,
