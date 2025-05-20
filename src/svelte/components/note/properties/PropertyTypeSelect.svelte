@@ -58,10 +58,7 @@ function handleKeydown(event: KeyboardEvent) {
    aria-controls="dropdown-list"
    tabindex="0"
    aria-haspopup="listbox">
-   <Button
-      class="bg-base-100 rounded-field flex w-full items-center gap-2 p-1 text-left"
-      onclick={toggleDropdown}
-      disabled={disabled}>
+   <Button class="w-full" onclick={toggleDropdown} disabled={disabled}>
       {@const TypeIcon = getPropertyIcon(selectedValue)}
       <TypeIcon size="1.0625em" />
       {selectedOption.label}
@@ -70,7 +67,7 @@ function handleKeydown(event: KeyboardEvent) {
    {#if isOpen}
       <ul
          id="dropdown-list"
-         class="rounded-box bg-base-100 absolute z-40 mt-1 w-full overflow-hidden shadow-lg"
+         class="rounded-box bg-base-200 bordered absolute z-40 mt-1 w-full overflow-hidden shadow-lg"
          use:onOutsideOrEsc={{ action: () => (isOpen = false) }}
          role="listbox">
          {#each options as option (option.value)}

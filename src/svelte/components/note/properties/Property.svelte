@@ -8,7 +8,7 @@ import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";
 
 import PropertyValue from "@components/note/properties/PropertyValue.svelte";
 import PropertyLabel from "@components/note/properties/PropertyLabel.svelte";
-import PropertyEditor from "@components/note/properties/PropertyEditor.svelte";
+import EditPropertyEditor from "@components/note/properties/EditPropertyEditor.svelte";
 
 import type { Property } from "@projectTypes/propertyTypes";
 
@@ -58,6 +58,6 @@ const {
       <PropertyValue noteId={noteId} property={property} />
    </div>
    {#if isEditorOpen}
-      <PropertyEditor noteId={noteId} property={property} />
+      <EditPropertyEditor noteId={noteId} property={property} />
    {/if}
 </li>

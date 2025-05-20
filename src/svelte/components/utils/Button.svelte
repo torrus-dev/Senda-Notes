@@ -54,7 +54,9 @@ const sizeClass = $derived(sizeStyle[size as "small" | "medium" | "large"]);
 
 // Clase adicional para el estado disabled
 const disabledClass = $derived(
-   disabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "",
+   disabled
+      ? "pointer-events-none cursor-not-allowed opacity-50"
+      : "bg-interactive cursor-pointer",
 );
 </script>
 
@@ -62,10 +64,10 @@ const disabledClass = $derived(
    <button
       {...htmlAttributes}
       class="
-         rounded-field bg-interactive hover:text-muted-content focus:text-muted-content inline-flex cursor-pointer items-center gap-2 whitespace-nowrap
+         rounded-field hover:text-muted-content focus:text-muted-content inline-flex items-center gap-2 whitespace-nowrap
+         {disabledClass} 
          {sizeClass} 
          {userClass} 
-         {disabledClass} 
       "
       onclick={onclick}
       disabled={disabled}
@@ -81,6 +83,7 @@ const disabledClass = $derived(
       {...htmlAttributes}
       class="
          rounded-field bg-interactive hover:text-muted-content focus:text-muted-content inline-flex cursor-pointer items-center gap-2 whitespace-nowrap
+         {disabledClass} 
          {sizeClass} 
          {userClass}
       "

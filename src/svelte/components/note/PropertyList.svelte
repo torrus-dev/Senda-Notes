@@ -62,7 +62,11 @@ function toggleAddProperty() {
 
       {#if addingProperty}
          <div class="relative">
-            <AddPropertyEditor noteId={noteId} />
+            <AddPropertyEditor
+               noteId={noteId}
+               onClose={() => {
+                  toggleAddProperty();
+               }} />
          </div>
       {:else}
          <Button

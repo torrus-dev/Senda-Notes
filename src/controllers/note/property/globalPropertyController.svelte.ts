@@ -3,7 +3,6 @@ import type { GlobalProperty } from "@projectTypes/propertyTypes";
 import { globalPropertiesStore } from "@stores/globalPropertiesStore.svelte";
 import { generateGlobalProperty } from "@utils/propertyUtils";
 import { removeDiacritics } from "@utils/searchUtils";
-import { noteStore } from "@stores/noteStore.svelte";
 
 class GlobalPropertyController {
    getGlobalPropertyById(id: GlobalProperty["id"]): GlobalProperty | undefined {
@@ -56,34 +55,32 @@ class GlobalPropertyController {
       return globalPropertiesStore.getGlobalProperties();
    }
 
-   searchGlobalProperties(name: string, noteId?: Note["id"]): GlobalProperty[] {
-      const allProperties = globalPropertiesStore.getGlobalProperties();
-      const note = noteId ? noteStore.getNoteById(noteId) : undefined;
-
-      // Crear un conjunto con los nombres normalizados de propiedades de la nota (si existe)
-      const notePropertyNames = note
-         ? new Set(
-              note.properties.map((prop) =>
-                 removeDiacritics(prop.name.toLowerCase()),
-              ),
-           )
-         : new Set<string>();
+   getGlobalPropertiesSuggestions(
+      name: string,
+      noteId?: Note["id"],
+   ): GlobalProperty[] {
+      const allGlobalProperties = globalPropertiesStore.getGlobalProperties();
 
       // Preparar el término de búsqueda normalizado (si existe)
       const searchTerm =
          name && name.trim() !== ""
             ? removeDiacritics(name.toLowerCase())
-            : null;
+            : undefined;
 
-      // Un solo filtro que combina ambas condiciones
-      return allProperties.filter((property) => {
+      // Recorrer las propiedades globales y filtrarlas
+      return allGlobalProperties.filter((property) => {
          // Normalizar el nombre de la propiedad una sola vez
          const normalizedPropertyName = removeDiacritics(
             property.name.toLowerCase(),
          );
 
-         // Verificar que la propiedad no existe ya en la nota
-         if (notePropertyNames.has(normalizedPropertyName)) return false;
+         // Si hay un noteId, verificar si esta propiedad ya está vinculada a la nota
+         if (noteId) {
+            const isAlreadyLinked = property.linkedProperties.some(
+               (link) => link.noteId === noteId,
+            );
+            if (isAlreadyLinked) return false;
+         }
 
          // Si no hay término de búsqueda, incluir la propiedad
          if (!searchTerm) return true;

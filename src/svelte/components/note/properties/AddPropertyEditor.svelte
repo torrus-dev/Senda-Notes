@@ -8,7 +8,13 @@ import PropertyTypeSelect from "./PropertyTypeSelect.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
 import type { GlobalProperty } from "@projectTypes/propertyTypes";
 
-let { noteId }: { noteId: string } = $props();
+let {
+   noteId,
+   onClose,
+}: {
+   noteId: string;
+   onClose: () => void;
+} = $props();
 
 // Estado interno del editor
 let newPropertyName: string = $state("");
@@ -68,12 +74,12 @@ function handleSave() {
 // Cerrar el editor guardando los cambios
 function closeEditor() {
    handleSave();
-   workspace.closePropertyEditor();
+   onClose();
 }
 </script>
 
 <div
-   class="property-editor rounded-box bordered absolute top-full left-0 z-30 mt-1 flex flex-col gap-2 bg-base-200 px-4 py-2 shadow-lg"
+   class="property-editor rounded-box bordered bg-base-200 absolute top-full left-0 z-30 mt-1 flex flex-col gap-2 px-5 py-4 shadow-lg"
    use:onOutsideOrEsc={{
       action: closeEditor,
    }}
@@ -84,8 +90,9 @@ function closeEditor() {
    }}
    role="menu"
    tabindex="-1">
+   <div class="text-muted-content mb-2 text-center">Add Property</div>
    <div class="form-group">
-      <label class="inline-block w-[5rem]" for="name">Name</label>
+      <label class="inline-block w-[3rem]" for="name">Name</label>
       <div class="inline-block w-[16rem]">
          <PropertyNameInput
             value={newPropertyName}
@@ -94,7 +101,10 @@ function closeEditor() {
       </div>
    </div>
    <div>
-      <label for="type" class="inline-block w-[5rem]">Type</label>
+      <label
+         for="type"
+         class="{isGlobalProperty ? 'text-muted-content' : ''} 
+            inline-block w-[3rem]">Type</label>
       <div class="inline-block w-[16rem]">
          <PropertyTypeSelect
             bind:selectedValue={newPropertyType}

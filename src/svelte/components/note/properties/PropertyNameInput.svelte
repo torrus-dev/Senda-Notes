@@ -2,6 +2,7 @@
 import Popover from "@components/floating/popover/Popover.svelte";
 import Button from "@components/utils/Button.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
+import type { Note } from "@projectTypes/noteTypes";
 import type { GlobalProperty, Property } from "@projectTypes/propertyTypes";
 import { getPropertyIcon } from "@utils/propertyUtils";
 
@@ -9,10 +10,12 @@ let {
    value = "",
    onchange,
    onSelectGlobalProperty,
+   noteId = undefined,
 }: {
    value: Property["name"];
    onchange: (newName: string) => void;
    onSelectGlobalProperty: (globalProperty: GlobalProperty) => void;
+   noteId?: Note["id"];
 } = $props();
 
 let newName: Property["name"] = $state(value);
@@ -26,7 +29,7 @@ $effect(() => {
 });
 
 let suggestedGlobalProperties: GlobalProperty[] = $derived(
-   globalPropertyController.searchGlobalProperties(newName),
+   globalPropertyController.getGlobalPropertiesSuggestions(newName, noteId),
 );
 
 let showSuggestedGlobalProps = $derived(
@@ -124,7 +127,7 @@ function handleKeyDown(event: KeyboardEvent) {
          isFocused = true;
       }}
       onkeydown={handleKeyDown}
-      class="w-full overflow-clip p-0.5 text-left focus:outline-none"
+      class="rounded-field bg-interactive-accent w-full overflow-clip px-2 py-1 text-left focus:outline-none"
       placeholder="Enter property name" />
 
    <Popover
@@ -132,7 +135,7 @@ function handleKeyDown(event: KeyboardEvent) {
       htmlElement={inputElement}
       placement="bottom"
       alignment="start"
-      class="bg-base-200 z-40 max-h-48 overflow-y-auto">
+      class="bg-base-200 bordered z-40 max-h-48 overflow-y-auto shadow-xl">
       <ul
          class="flex-col p-1"
          onmouseenter={() => {

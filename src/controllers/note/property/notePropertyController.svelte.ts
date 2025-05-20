@@ -1,10 +1,9 @@
 import type { Property } from "@projectTypes/propertyTypes";
 import type { Note } from "@projectTypes/noteTypes";
-import { convertPropertyValue, generateProperty } from "@utils/propertyUtils";
+import { generateProperty } from "@utils/propertyUtils";
 import { noteStore } from "@stores/noteStore.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
 import { noteController } from "@controllers/note/noteController.svelte";
-import { noteQueryController } from "../noteQueryController.svelte";
 
 class NotePropertyController {
    private addPropertyToNote = (noteId: Note["id"], newProperty: Property) => {
@@ -72,6 +71,7 @@ class NotePropertyController {
 
       // generamos la nueva propiedad
       const newProperty: Property = generateProperty(name, propertyType);
+
 
       // Agregamos la nueva propiedad a la nota
       this.addPropertyToNote(noteId, newProperty);
