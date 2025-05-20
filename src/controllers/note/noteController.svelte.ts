@@ -1,6 +1,6 @@
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Note } from "@projectTypes/noteTypes";
-import type { Property } from "@projectTypes/propertyTypes";
+import type { NoteProperty } from "@projectTypes/propertyTypes";
 
 import { noteStore } from "@stores/noteStore.svelte";
 import {

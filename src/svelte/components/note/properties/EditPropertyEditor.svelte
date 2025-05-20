@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { Property } from "@projectTypes/propertyTypes";
+import type { NoteProperty } from "@projectTypes/propertyTypes";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
@@ -12,7 +12,7 @@ let {
    property,
    noteId,
 }: {
-   property: Property;
+   property: NoteProperty;
    noteId: string;
 } = $props();
 
@@ -21,7 +21,7 @@ const propertyId = property.id;
 const originalName = property.name;
 const originalType = property.type;
 let newPropertyName: string = $state(originalName);
-let newPropertyType: Property["type"] = $state(originalType);
+let newPropertyType: NoteProperty["type"] = $state(originalType);
 let wasNameChanged: boolean = $derived(newPropertyName !== originalName);
 let originalGlobalProperty = $state<GlobalProperty | undefined>(undefined);
 let isGlobalProperty: boolean = $state(false);
@@ -82,7 +82,7 @@ function handleSave() {
 
    if (wasNameChanged) {
       // Si cambió el nombre, es una desvinculación o cambio a otra propiedad global
-      notePropertyController.renameNoteProperty(
+      notePropertyController.localPropertyRename(
          noteId,
          propertyId,
          newPropertyName,

@@ -14,7 +14,7 @@ import Property from "@components/note/properties/Property.svelte";
 import Button from "@components/utils/Button.svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";
 
-import type { Property as PropertyType } from "@projectTypes/propertyTypes";
+import type { NoteProperty as PropertyType } from "@projectTypes/propertyTypes";
 
 let { noteId }: { noteId: string } = $props();
 

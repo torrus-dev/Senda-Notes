@@ -10,7 +10,7 @@ import PropertyValue from "@components/note/properties/PropertyValue.svelte";
 import PropertyLabel from "@components/note/properties/PropertyLabel.svelte";
 import EditPropertyEditor from "@components/note/properties/EditPropertyEditor.svelte";
 
-import type { Property } from "@projectTypes/propertyTypes";
+import type { NoteProperty } from "@projectTypes/propertyTypes";
 
 let {
    noteId,
@@ -19,7 +19,7 @@ let {
 }: {
    noteId: string;
    position: number;
-   property: Property;
+   property: NoteProperty;
 } = $props();
 
 let isEditorOpen = $derived(

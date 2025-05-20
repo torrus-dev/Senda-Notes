@@ -1,8 +1,9 @@
 import type { Note } from "@projectTypes/noteTypes";
-import type { GlobalProperty } from "@projectTypes/propertyTypes";
+import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
 import { globalPropertiesStore } from "@stores/globalPropertiesStore.svelte";
 import { generateGlobalProperty } from "@utils/propertyUtils";
 import { removeDiacritics } from "@utils/searchUtils";
+import { notePropertyController } from "./notePropertyController.svelte";
 
 class GlobalPropertyController {
    getGlobalPropertyById(id: GlobalProperty["id"]): GlobalProperty | undefined {
@@ -16,12 +17,13 @@ class GlobalPropertyController {
    createGlobalProperty(
       name: GlobalProperty["name"],
       type: GlobalProperty["type"],
+      property: NoteProperty,
    ) {
-      const newProperty = generateGlobalProperty(name, type);
-      globalPropertiesStore.createGlobalProperty(newProperty);
+      const newGlobalProperty = generateGlobalProperty(name, type, property);
+      globalPropertiesStore.createGlobalProperty(newGlobalProperty);
    }
 
-   updateGlobalPropertyById(
+   private updateGlobalPropertyById(
       id: GlobalProperty["id"],
       updates: Partial<GlobalProperty>,
    ) {
@@ -42,13 +44,39 @@ class GlobalPropertyController {
 
    renameGlobalProperty(
       id: GlobalProperty["id"],
-      name: GlobalProperty["name"],
+      newName: GlobalProperty["name"],
    ) {
-      this.updateGlobalPropertyById(id, { name: name });
+      const globalProperty = this.getGlobalPropertyById(id);
+      if (!globalProperty) return;
+      this.updateGlobalPropertyById(id, { name: newName });
+      for (const linkedProperty of globalProperty.linkedProperties) {
+         const { noteId, propertyId } = linkedProperty;
+         const property = notePropertyController.getPropertyById(
+            noteId,
+            propertyId,
+         );
+         if (!property) return;
+
+         let updatedProperty: Partial<NoteProperty> = {
+            name: newName,
+         };
+
+         notePropertyController.updatePropertyFromNote(
+            noteId,
+            propertyId,
+            updatedProperty,
+         );
+      }
    }
 
    deleteGlobalPropertyById(id: GlobalProperty["id"]) {
-      globalPropertiesStore.deleteGlobalProperty(id);
+      const globalProperty = this.getGlobalPropertyById(id);
+      if (!globalProperty) return;
+      if (globalProperty.linkedProperties.length > 0) {
+         console.warn("Cannot delete global property in use!");
+      } else {
+         globalPropertiesStore.deleteGlobalProperty(id);
+      }
    }
 
    getGlobalProperties() {
@@ -88,6 +116,23 @@ class GlobalPropertyController {
          // Verificar si el nombre de la propiedad coincide con el término de búsqueda
          return normalizedPropertyName.includes(searchTerm);
       });
+   }
+
+   linkToGlobalProperty(
+      noteProperty: NoteProperty,
+      globalProperty: GlobalProperty,
+   ) {
+      // completar
+   }
+   unlinkFromGlobalProperty(noteProperty: NoteProperty) {
+      // completar
+   }
+
+   updateGlobalType(
+      globalProperty: GlobalProperty,
+      newType: NoteProperty["type"],
+   ) {
+      // completar
    }
 }
 

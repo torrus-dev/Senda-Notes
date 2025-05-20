@@ -1,4 +1,4 @@
-import type { Property } from "@projectTypes/propertyTypes";
+import type { NoteProperty } from "@projectTypes/propertyTypes";
 import type { Note } from "@projectTypes/noteTypes";
 import { generateProperty } from "@utils/propertyUtils";
 import { noteStore } from "@stores/noteStore.svelte";
@@ -6,39 +6,52 @@ import { globalPropertyController } from "@controllers/note/property/globalPrope
 import { noteController } from "@controllers/note/noteController.svelte";
 
 class NotePropertyController {
-   private addPropertyToNote = (noteId: Note["id"], newProperty: Property) => {
+   private addPropertyToNote = (
+      noteId: Note["id"],
+      newProperty: NoteProperty,
+   ) => {
       const note = noteStore.getNoteById(noteId);
       if (!note) return;
       const updatedProperties = [...note.properties, newProperty];
       noteController.updateNote(noteId, { properties: updatedProperties });
    };
 
-   private deletePropertyFromNote = (
+   deletePropertyFromNote = (
       noteId: Note["id"],
-      propertyToDeleteId: Property["id"],
+      propertyToDeleteId: NoteProperty["id"],
    ) => {
+      const propertyToDelete = this.getPropertyById(noteId, propertyToDeleteId);
+      if (!propertyToDelete) return;
       const note = noteStore.getNoteById(noteId);
       if (!note) return;
       const updatedProperties = note.properties.filter(
          (property) => property.id !== propertyToDeleteId,
       );
       noteController.updateNote(noteId, { properties: updatedProperties });
+
+      // Comprobamos si hay una propiedad global con ese nombre
+      const existingGlobalProperty =
+         globalPropertyController.getGlobalPropertyByName(
+            propertyToDelete.name,
+         );
+      if (!existingGlobalProperty) return;
+      globalPropertyController.unlinkFromGlobalProperty(propertyToDelete);
    };
 
-   private updatePropertyFromNote = (
+   updatePropertyFromNote = (
       noteId: Note["id"],
-      propertyId: Property["id"],
-      updatedProperty: Partial<Property>,
+      propertyId: NoteProperty["id"],
+      updatedProperty: Partial<NoteProperty>,
    ): void => {
       const note = noteStore.getNoteById(noteId);
       if (!note) return;
 
-      const updatedProperties: Property[] = note.properties.map((prop) => {
+      const updatedProperties: NoteProperty[] = note.properties.map((prop) => {
          if (prop.id === propertyId) {
             return {
                ...prop,
                ...updatedProperty,
-            } as Property;
+            } as NoteProperty;
          }
          return prop;
       });
@@ -49,7 +62,7 @@ class NotePropertyController {
    getPropertyById = (
       noteId: string,
       propertyId: string,
-   ): Property | undefined => {
+   ): NoteProperty | undefined => {
       const note = noteStore.getNoteById(noteId);
       if (!note) return undefined;
       return note.properties.find((property) => property.id === propertyId);
@@ -57,8 +70,8 @@ class NotePropertyController {
 
    createProperty = (
       noteId: string,
-      name: Property["name"],
-      type: Property["type"],
+      name: NoteProperty["name"],
+      type: NoteProperty["type"],
    ): void => {
       // Comprobamos si esta registrada globalmente
       const existingGlobalProperty =
@@ -70,8 +83,7 @@ class NotePropertyController {
          : type;
 
       // generamos la nueva propiedad
-      const newProperty: Property = generateProperty(name, propertyType);
-
+      const newProperty: NoteProperty = generateProperty(name, propertyType);
 
       // Agregamos la nueva propiedad a la nota
       this.addPropertyToNote(noteId, newProperty);
@@ -81,26 +93,28 @@ class NotePropertyController {
          globalPropertyController.createGlobalProperty(
             newProperty.name,
             newProperty.type,
+            newProperty,
          );
       }
    };
 
-   renameNoteProperty(
+   localPropertyRename(
       noteId: Note["id"],
-      propertyId: Property["id"],
-      newPropertyName: Property["name"],
+      propertyId: NoteProperty["id"],
+      newPropertyName: NoteProperty["name"],
    ) {
       // Comprobamos si hay una propiedad global con ese nombre
       const existingGlobalProperty =
          globalPropertyController.getGlobalPropertyByName(newPropertyName);
 
       // Propiedad que despues se usara para actualizar
-      let updatedProperty: Partial<Property> = {
-         name: newPropertyName,
-      };
+      const propertyToUpdate = this.getPropertyById(noteId, propertyId);
+      if (!propertyToUpdate) return;
+      propertyToUpdate.name = newPropertyName;
+
       if (existingGlobalProperty) {
          // Si hay propiedad global usamos su tipo
-         updatedProperty.type = existingGlobalProperty.type;
+         propertyToUpdate.type = existingGlobalProperty.type;
       } else {
          // Creamos una nueva propiedad global con el tipo de la propiedad
          const propertyToUpdate = this.getPropertyById(noteId, propertyId);
@@ -108,17 +122,18 @@ class NotePropertyController {
             globalPropertyController.createGlobalProperty(
                newPropertyName,
                propertyToUpdate.type,
+               propertyToUpdate,
             );
          }
       }
 
-      this.updatePropertyFromNote(noteId, propertyId, updatedProperty);
+      this.updatePropertyFromNote(noteId, propertyId, propertyToUpdate);
    }
 
    changeNotePropertyType(
       noteId: Note["id"],
-      propertyId: Property["id"],
-      newPropertyType: Property["type"],
+      propertyId: NoteProperty["id"],
+      newPropertyType: NoteProperty["type"],
    ) {
       const property = this.getPropertyById(noteId, propertyId);
       if (!property) return;
@@ -127,23 +142,19 @@ class NotePropertyController {
       const existingGlobalProperty =
          globalPropertyController.getGlobalPropertyByName(property.name);
 
+      if (!existingGlobalProperty) return;
+
       // Actualizamos la propiedad
       this.updatePropertyFromNote(noteId, propertyId, {
          type: newPropertyType,
       });
 
-      // Si existe cambiamos el tipo de la propiedad global
-      if (existingGlobalProperty) {
-         globalPropertyController.updateGlobalPropertyType(
-            existingGlobalProperty.id,
-            newPropertyType,
-         );
-      }
+      // Cambiamos el tipo de la propiedad global
+      globalPropertyController.updateGlobalPropertyType(
+         existingGlobalProperty.id,
+         newPropertyType,
+      );
    }
-
-   deleteProperty = (noteId: string, propertyId: string): void => {
-      this.deletePropertyFromNote(noteId, propertyId);
-   };
 
    reorderNoteProperties = (
       noteId: string,
@@ -186,12 +197,12 @@ class NotePropertyController {
    updateNotePropertyValue = (
       noteId: string,
       propertyId: string,
-      newValue: Property["value"],
+      newValue: NoteProperty["value"],
    ): void => {
       this.updatePropertyFromNote(noteId, propertyId, { value: newValue });
    };
 
-   getNoteProperties = (noteId: string): Property[] => {
+   getNoteProperties = (noteId: string): NoteProperty[] => {
       const note = noteStore.getNoteById(noteId);
       return note ? note.properties : [];
    };

@@ -7,7 +7,7 @@ import { notePropertyController } from "@controllers/note/property/notePropertyC
 import { TextCursorInputIcon, Trash2Icon } from "lucide-svelte";
 
 import type { Note } from "@projectTypes/noteTypes";
-import type { GlobalProperty, Property } from "@projectTypes/propertyTypes";
+import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
 import type { MenuItem } from "@projectTypes/editorMenuTypes";
 import Button from "@components/utils/Button.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
@@ -19,7 +19,7 @@ let {
    handleDragEnd,
 }: {
    noteId: Note["id"];
-   property: Property;
+   property: NoteProperty;
    handleDragStart: (event: DragEvent) => void;
    handleDragEnd: (event: DragEvent) => void;
 } = $props();
@@ -38,7 +38,7 @@ const labelMenuItems: MenuItem[] = [
       label: "Delete Property",
       icon: Trash2Icon,
       action: () => {
-         notePropertyController.deleteProperty(noteId, property.id);
+         notePropertyController.deletePropertyFromNote(noteId, property.id);
          // close
       },
       class: "text-error",

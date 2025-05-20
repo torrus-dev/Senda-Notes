@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { Property } from "@projectTypes/propertyTypes";
+import type { NoteProperty } from "@projectTypes/propertyTypes";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
@@ -18,7 +18,7 @@ let {
 
 // Estado interno del editor
 let newPropertyName: string = $state("");
-let newPropertyType: Property["type"] = $state("text");
+let newPropertyType: NoteProperty["type"] = $state("text");
 let isGlobalProperty: boolean = $state(false);
 
 // Verificamos si coincide con otra propiedad global cuando cambia el nombre

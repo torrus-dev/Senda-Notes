@@ -3,6 +3,8 @@ import type { Note } from "./noteTypes";
 
 interface BaseProperty {
    id: string; // con crypto.randomUUID()
+   noteId: Note["id"];
+   globalPropertyId?: string;
    name: string;
 }
 
@@ -43,7 +45,7 @@ export interface DateTimeProperty extends BaseProperty {
 }
 
 /** Unión de todos los tipos de propiedad */
-export type Property =
+export type NoteProperty =
    | TextProperty
    | ListProperty
    | NumberProperty
@@ -52,10 +54,12 @@ export type Property =
    | DateTimeProperty;
 
 export interface GlobalProperty {
-   id: Property["name"];
-   name: Property["name"];
-   type: Property["type"];
-   linkedProperties: { noteId: Note["id"]; propertyId: Property["id"] }[];
+   id: string;
+   name: string;
+   type: NoteProperty["type"];
+   linkedProperties: { noteId: Note["id"]; propertyId: NoteProperty["id"] }[];
    createdAt: DateTime;
    updatedAt: DateTime;
+   // Valores posibles si el tipo lo admite (puede usarse para sugerencias/autocompletado)
+   suggestedValues?: string[]; // para text/list
 }

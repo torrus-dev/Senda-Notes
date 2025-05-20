@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 import type { Note } from "@projectTypes/noteTypes";
 import type { PersistedWorkspaceState } from "@projectTypes/workspaceTypes";
 import type { Settings } from "@projectTypes/settingsTypes";
-import type { GlobalProperty, Property } from "@projectTypes/propertyTypes";
+import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
 
 const NOTES_STORAGE_KEY = "NoteList";
 const GLOBAL_PROPERTIES_STORAGE_KEY = "GlobalProperties";

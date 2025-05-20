@@ -1,8 +1,9 @@
 <script lang="ts">
 import { getPropertyIcon } from "@utils/propertyUtils";
-import type { Property } from "@projectTypes/propertyTypes";
+import type { NoteProperty } from "@projectTypes/propertyTypes";
 
-let { propertyType = "text" }: { propertyType?: Property["type"] } = $props();
+let { propertyType = "text" }: { propertyType?: NoteProperty["type"] } =
+   $props();
 
 // Obtener el componente de icono actual (derivado)
 const IconComponent = $derived(getPropertyIcon(propertyType));

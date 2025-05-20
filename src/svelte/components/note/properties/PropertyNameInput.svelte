@@ -3,7 +3,7 @@ import Popover from "@components/floating/popover/Popover.svelte";
 import Button from "@components/utils/Button.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
 import type { Note } from "@projectTypes/noteTypes";
-import type { GlobalProperty, Property } from "@projectTypes/propertyTypes";
+import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
 import { getPropertyIcon } from "@utils/propertyUtils";
 
 let {
@@ -12,13 +12,13 @@ let {
    onSelectGlobalProperty,
    noteId = undefined,
 }: {
-   value: Property["name"];
+   value: NoteProperty["name"];
    onchange: (newName: string) => void;
    onSelectGlobalProperty: (globalProperty: GlobalProperty) => void;
    noteId?: Note["id"];
 } = $props();
 
-let newName: Property["name"] = $state(value);
+let newName: NoteProperty["name"] = $state(value);
 let inputElement: HTMLInputElement | undefined = $state(undefined);
 let isFocused: boolean = $state(false);
 let isSelectingFromSuggestions: boolean = $state(false);

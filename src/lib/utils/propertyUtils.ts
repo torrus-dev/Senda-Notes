@@ -7,7 +7,7 @@ import {
    CalendarClockIcon,
    type Icon,
 } from "lucide-svelte";
-import type { GlobalProperty, Property } from "@projectTypes/propertyTypes";
+import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
 import { DateTime } from "luxon";
 
 // Seleccionar el icono según el tipo de propiedad
@@ -31,7 +31,9 @@ export function getPropertyIcon(type: string) {
 }
 
 // Definimos una función auxiliar específica para cada tipo de propiedad
-function getDefaultTypeValue(type: Property["type"]): Property["value"] {
+function getDefaultTypeValue(
+   type: NoteProperty["type"],
+): NoteProperty["value"] {
    switch (type) {
       case "text":
          return "";
@@ -51,16 +53,16 @@ function getDefaultTypeValue(type: Property["type"]): Property["value"] {
 }
 
 export function generateProperty(
-   name: Property["name"],
-   type: Property["type"],
-): Property {
+   name: NoteProperty["name"],
+   type: NoteProperty["type"],
+): NoteProperty {
    const newProperty = {
       id: crypto.randomUUID(),
       name: name,
       type: type,
       value: getDefaultTypeValue(type),
    };
-   return newProperty as Property;
+   return newProperty as NoteProperty;
 }
 
 export function getPropertyTypesList(): { value: string; label: string }[] {
@@ -75,8 +77,8 @@ export function getPropertyTypesList(): { value: string; label: string }[] {
 }
 
 export function convertPropertyValue(
-   oldType: Property["type"],
-   newtype: Property["type"],
+   oldType: NoteProperty["type"],
+   newtype: NoteProperty["type"],
 ) {
    // completar
    return getDefaultTypeValue(newtype);
@@ -85,6 +87,7 @@ export function convertPropertyValue(
 export function generateGlobalProperty(
    name: GlobalProperty["name"],
    type: GlobalProperty["type"],
+   property: NoteProperty,
 ): GlobalProperty {
    const newGlobalProperty: GlobalProperty = {
       id: crypto.randomUUID(),
@@ -92,7 +95,12 @@ export function generateGlobalProperty(
       type: type,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
-      linkedProperties: [],
+      linkedProperties: [
+         {
+            noteId: property.noteId,
+            propertyId: property.id,
+         },
+      ],
    };
    return newGlobalProperty;
 }

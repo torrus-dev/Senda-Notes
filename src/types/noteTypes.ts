@@ -1,4 +1,4 @@
-import type { Property } from "@projectTypes/propertyTypes";
+import type { NoteProperty } from "@projectTypes/propertyTypes";
 import type { DateTime } from "luxon";
 
 export interface Reference {
@@ -15,7 +15,7 @@ export interface Note {
    children: string[];
    parentId?: string;
    metadata: NoteMetadata;
-   properties: Property[];
+   properties: NoteProperty[];
 }
 
 export interface NoteMetadata {
