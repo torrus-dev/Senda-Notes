@@ -11,7 +11,10 @@ import type { GlobalProperty } from "@projectTypes/propertyTypes";
 let {
    property = undefined,
    noteId,
-}: { property?: Property | undefined; noteId: string } = $props();
+}: {
+   property?: Property | undefined;
+   noteId: string;
+} = $props();
 
 // Estado interno del editor
 const propertyId = property ? property.id : undefined;
@@ -19,12 +22,9 @@ const originalName = property ? property.name : "";
 const originalType = property ? property.type : "text";
 let newPropertyName: string = $state(originalName);
 let newPropertyType: Property["type"] = $state(originalType);
-let isGlobalProperty: boolean = $state(false);
-let wasNameChanged: boolean = $state(false);
+let wasNameChanged: boolean = $derived(newPropertyName !== originalName);
 let originalGlobalProperty = $state<GlobalProperty | undefined>(undefined);
-
-// Lista de tipos de propiedades disponibles
-const propertyTypes = getPropertyTypesList();
+let isGlobalProperty: boolean = $state(false);
 
 // Verificamos si esta propiedad está vinculada a una propiedad global al cargar
 $effect(() => {
@@ -36,11 +36,6 @@ $effect(() => {
          isGlobalProperty = true;
       }
    }
-});
-
-// Detectamos si el nombre ha cambiado respecto al original
-$effect(() => {
-   wasNameChanged = newPropertyName !== originalName;
 });
 
 // Verificamos si coincide con otra propiedad global cuando cambia el nombre
@@ -169,7 +164,7 @@ function closeEditor() {
          name="type"
          bind:value={newPropertyType}
          disabled={isGlobalProperty && wasNameChanged === false}>
-         {#each propertyTypes as { value, label }}
+         {#each getPropertyTypesList() as { value, label }}
             {@const TypeIcon = getPropertyIcon(value)}
             <option value={value}>
                {label}
