@@ -83,6 +83,8 @@ class GlobalPropertyController {
       name: string,
       noteId?: Note["id"],
    ): GlobalProperty[] {
+      console.log("noteId para las sugerencias", noteId);
+
       // Preparar el término de búsqueda normalizado (si existe)
       const searchTerm = name?.trim()
          ? removeDiacritics(name.toLowerCase())
@@ -120,6 +122,7 @@ class GlobalPropertyController {
       this.updateGlobalPropertyById(globalProperty.id, {
          linkedProperties: [...globalProperty.linkedProperties, newLink],
       });
+      console.log(this.getGlobalPropertyById(globalProperty.id));
 
       // 2) Actualizar la propiedad local (en la nota) para fijar globalPropertyId
       notePropertyController.updatePropertyFromNote(
@@ -140,9 +143,9 @@ class GlobalPropertyController {
     * @param deletedNoteProperty
     */
    unlinkFromGlobalProperty(deletedNoteProperty: NoteProperty) {
-      const globalProperty = this.getGlobalPropertyById(
-         deletedNoteProperty.globalPropertyId,
-      );
+      const { globalPropertyId } = deletedNoteProperty;
+      if (!globalPropertyId) return;
+      const globalProperty = this.getGlobalPropertyById(globalPropertyId);
       if (!globalProperty) return;
 
       // Filtrar las noteProperties enlazadas con la global
@@ -153,7 +156,7 @@ class GlobalPropertyController {
                link.propertyId === deletedNoteProperty.id
             ),
       );
-      this.updateGlobalPropertyById(deletedNoteProperty.globalPropertyId, {
+      this.updateGlobalPropertyById(globalPropertyId, {
          linkedProperties: filteredLinks,
       });
 

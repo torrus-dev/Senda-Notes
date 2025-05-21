@@ -22,7 +22,7 @@ class NotePropertyController {
       type: NoteProperty["type"],
    ): void => {
       // Generamos la nueva propiedad
-      const newProperty: NoteProperty = generateProperty(name, type);
+      const newProperty = generateProperty(noteId, name, type);
 
       // Comprobamos si existe propiedad global con ese nombre
       const existingGlobalProperty =

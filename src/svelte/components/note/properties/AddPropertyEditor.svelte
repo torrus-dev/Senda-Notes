@@ -79,7 +79,7 @@ function closeEditor() {
 </script>
 
 <div
-   class="property-editor rounded-box bordered bg-base-200 absolute top-full left-0 z-30 mt-1 flex flex-col gap-2 px-5 py-4 shadow-lg"
+   class="property-editor rounded-box bordered bg-base-200 mt-1 flex flex-col gap-2 px-5 py-4 shadow-lg"
    use:onOutsideOrEsc={{
       action: closeEditor,
    }}
@@ -90,7 +90,6 @@ function closeEditor() {
    }}
    role="menu"
    tabindex="-1">
-   <div class="text-muted-content mb-2 text-center">Add Property</div>
    <div class="form-group">
       <label class="inline-block w-[3rem]" for="name">Name</label>
       <div class="inline-block w-[16rem]">

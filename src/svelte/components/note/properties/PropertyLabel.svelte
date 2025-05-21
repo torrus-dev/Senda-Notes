@@ -1,16 +1,17 @@
 <script lang="ts">
-import PropertyNameInput from "@components/note/properties/PropertyNameInput.svelte";
-import PropertyIcon from "./PropertyIcon.svelte";
-
-import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
-
-import { TextCursorInputIcon, Trash2Icon } from "lucide-svelte";
-
 import type { Note } from "@projectTypes/noteTypes";
 import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
 import type { MenuItem } from "@projectTypes/editorMenuTypes";
-import Button from "@components/utils/Button.svelte";
+
+import { SquarePenIcon, TextCursorInputIcon, Trash2Icon } from "lucide-svelte";
+
+import { getPropertyIcon, getPropertyTypesList } from "@utils/propertyUtils";
+
+import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
+
+import PropertyIcon from "@components/note/properties/PropertyIcon.svelte";
+import Button from "@components/utils/Button.svelte";
 
 let {
    noteId,
@@ -24,15 +25,37 @@ let {
    handleDragEnd: (event: DragEvent) => void;
 } = $props();
 
+const propertyTypesMenuItems: MenuItem[] = getPropertyTypesList().map(
+   (option) => ({
+      type: "action",
+      label: option.label,
+      icon: getPropertyIcon(option.value),
+      action: () => {
+         notePropertyController.changeNotePropertyType(
+            noteId,
+            property.id,
+            option.value,
+         );
+      },
+   }),
+);
+
 const labelMenuItems: MenuItem[] = [
    {
       type: "action",
-      label: "Edit Property",
+      label: "Rename Property",
       icon: TextCursorInputIcon,
       action: () => {
          workspace.openPropertyEditor(noteId, property.id);
       },
    },
+   {
+      type: "group",
+      label: "Property Type",
+      icon: SquarePenIcon,
+      children: propertyTypesMenuItems,
+   },
+   { type: "separator" },
    {
       type: "action",
       label: "Delete Property",
