@@ -16,6 +16,32 @@ class NotePropertyController {
       noteController.updateNote(noteId, { properties: updatedProperties });
    };
 
+   handleCreateNoteProperty = (
+      noteId: string,
+      name: NoteProperty["name"],
+      type: NoteProperty["type"],
+   ): void => {
+      // Generamos la nueva propiedad
+      const newProperty: NoteProperty = generateProperty(name, type);
+
+      // Comprobamos si existe propiedad global con ese nombre
+      const existingGlobalProperty =
+         globalPropertyController.getGlobalPropertyByName(name);
+      if (existingGlobalProperty) {
+         // Vinculamos a la propiedad global si existe
+         globalPropertyController.linkToGlobalProperty(
+            newProperty,
+            existingGlobalProperty,
+         );
+      } else {
+         // Creamos la propiedad global si no existe
+         globalPropertyController.createGlobalProperty(name, type, newProperty);
+      }
+
+      // Agregamos la nueva propiedad a la nota
+      this.addPropertyToNote(noteId, newProperty);
+   };
+
    deletePropertyFromNote = (
       noteId: Note["id"],
       propertyToDeleteId: NoteProperty["id"],
@@ -29,7 +55,7 @@ class NotePropertyController {
       );
       noteController.updateNote(noteId, { properties: updatedProperties });
 
-      // Comprobamos si hay una propiedad global con ese nombre
+      // Comprobamos si hay una propiedad global con ese nombre y la desvinculamos
       const existingGlobalProperty =
          globalPropertyController.getGlobalPropertyByName(
             propertyToDelete.name,
@@ -68,66 +94,45 @@ class NotePropertyController {
       return note.properties.find((property) => property.id === propertyId);
    };
 
-   createProperty = (
-      noteId: string,
-      name: NoteProperty["name"],
-      type: NoteProperty["type"],
-   ): void => {
-      // Comprobamos si esta registrada globalmente
-      const existingGlobalProperty =
-         globalPropertyController.getGlobalPropertyByName(name);
-
-      // Si ya existe una propiedad con ese nombre usamos el tipo definido globalmente
-      const propertyType = existingGlobalProperty
-         ? existingGlobalProperty.type
-         : type;
-
-      // generamos la nueva propiedad
-      const newProperty: NoteProperty = generateProperty(name, propertyType);
-
-      // Agregamos la nueva propiedad a la nota
-      this.addPropertyToNote(noteId, newProperty);
-
-      // Si no existe propiedad global con mismo nombre la registramos
-      if (!existingGlobalProperty) {
-         globalPropertyController.createGlobalProperty(
-            newProperty.name,
-            newProperty.type,
-            newProperty,
-         );
-      }
-   };
-
-   localPropertyRename(
+   renameNotePropertyById(
       noteId: Note["id"],
       propertyId: NoteProperty["id"],
       newPropertyName: NoteProperty["name"],
    ) {
-      // Comprobamos si hay una propiedad global con ese nombre
-      const existingGlobalProperty =
-         globalPropertyController.getGlobalPropertyByName(newPropertyName);
-
-      // Propiedad que despues se usara para actualizar
       const propertyToUpdate = this.getPropertyById(noteId, propertyId);
       if (!propertyToUpdate) return;
       propertyToUpdate.name = newPropertyName;
+      this.updatePropertyFromNote(noteId, propertyId, propertyToUpdate);
+   }
+
+   handleNotePropertyRename(
+      noteId: Note["id"],
+      propertyId: NoteProperty["id"],
+      newPropertyName: NoteProperty["name"],
+   ) {
+      // Buscamos que exista una propiedad por esos Ids y la renombramos
+      const propertyToUpdate = this.getPropertyById(noteId, propertyId);
+      if (!propertyToUpdate) return;
+      this.renameNotePropertyById(noteId, propertyId, newPropertyName);
+
+      // Comprobamos si existe propiedad global con el nuevo nombre
+      const existingGlobalProperty =
+         globalPropertyController.getGlobalPropertyByName(newPropertyName);
 
       if (existingGlobalProperty) {
-         // Si hay propiedad global usamos su tipo
-         propertyToUpdate.type = existingGlobalProperty.type;
+         // Si existe propiedad global se vincula a la propiedad
+         globalPropertyController.linkToGlobalProperty(
+            propertyToUpdate,
+            existingGlobalProperty,
+         );
       } else {
-         // Creamos una nueva propiedad global con el tipo de la propiedad
-         const propertyToUpdate = this.getPropertyById(noteId, propertyId);
-         if (propertyToUpdate) {
-            globalPropertyController.createGlobalProperty(
-               newPropertyName,
-               propertyToUpdate.type,
-               propertyToUpdate,
-            );
-         }
+         // Si no existe propiedad global, la creamos con nombre y tipo
+         globalPropertyController.createGlobalProperty(
+            newPropertyName,
+            propertyToUpdate.type,
+            propertyToUpdate,
+         );
       }
-
-      this.updatePropertyFromNote(noteId, propertyId, propertyToUpdate);
    }
 
    changeNotePropertyType(

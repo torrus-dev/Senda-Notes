@@ -64,7 +64,7 @@ function handleSave() {
    if (newPropertyName.trim() === "") return;
 
    // Crear nueva propiedad
-   notePropertyController.createProperty(
+   notePropertyController.handleCreateNoteProperty(
       noteId,
       newPropertyName,
       newPropertyType,

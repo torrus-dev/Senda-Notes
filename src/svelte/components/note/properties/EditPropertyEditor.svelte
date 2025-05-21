@@ -82,7 +82,7 @@ function handleSave() {
 
    if (wasNameChanged) {
       // Si cambió el nombre, es una desvinculación o cambio a otra propiedad global
-      notePropertyController.localPropertyRename(
+      notePropertyController.handleNotePropertyRename(
          noteId,
          propertyId,
          newPropertyName,
