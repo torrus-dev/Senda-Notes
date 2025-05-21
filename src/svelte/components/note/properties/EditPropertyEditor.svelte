@@ -137,7 +137,6 @@ function closeEditor() {
    <div class="form-group">
       <label class="inline-block w-[5rem]" for="name">Name</label>
       <div class="inline-block w-[16rem]">
-         {noteId}
          <PropertyNameInput
             value={newPropertyName}
             onchange={handleNameChange}

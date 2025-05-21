@@ -1,6 +1,5 @@
 <script lang="ts">
 import type { NoteProperty } from "@projectTypes/propertyTypes";
-import { workspace } from "@controllers/workspaceController.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
 import PropertyNameInput from "./PropertyNameInput.svelte";
@@ -96,6 +95,7 @@ function closeEditor() {
          <PropertyNameInput
             value={newPropertyName}
             onchange={handleNameChange}
+            noteId={noteId}
             onSelectGlobalProperty={handleSelectGlobalProperty} />
       </div>
    </div>

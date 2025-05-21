@@ -28,16 +28,9 @@ $effect(() => {
    newName = value;
 });
 
-let suggestedGlobalProperties: GlobalProperty[] = $state([]);
-$effect(() => {
-   if (newName && noteId) {
-      suggestedGlobalProperties =
-         globalPropertyController.getGlobalPropertiesSuggestions(
-            newName,
-            noteId,
-         );
-   }
-});
+let suggestedGlobalProperties: GlobalProperty[] = $derived(
+   globalPropertyController.getGlobalPropertiesSuggestions(newName, noteId),
+);
 
 let showSuggestedGlobalProps = $derived(
    isFocused && suggestedGlobalProperties.length > 0,
@@ -120,7 +113,6 @@ function handleKeyDown(event: KeyboardEvent) {
 </script>
 
 <div class="property-name-input">
-   {noteId}
    <input
       type="text"
       bind:value={newName}
