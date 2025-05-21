@@ -4,7 +4,7 @@ import type { Note } from "./noteTypes";
 interface BaseProperty {
    id: string; // con crypto.randomUUID()
    noteId: Note["id"];
-   globalPropertyId?: string;
+   globalPropertyId: GlobalProperty["id"];
    name: string;
 }
 

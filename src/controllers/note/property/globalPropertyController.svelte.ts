@@ -17,10 +17,11 @@ class GlobalPropertyController {
    createGlobalProperty(
       name: GlobalProperty["name"],
       type: GlobalProperty["type"],
-      property: NoteProperty,
+      noteProperty: NoteProperty,
    ) {
-      const newGlobalProperty = generateGlobalProperty(name, type, property);
+      const newGlobalProperty = generateGlobalProperty(name, type);
       globalPropertiesStore.createGlobalProperty(newGlobalProperty);
+      this.linkToGlobalProperty(noteProperty, newGlobalProperty);
    }
 
    private updateGlobalPropertyById(
@@ -87,34 +88,28 @@ class GlobalPropertyController {
       name: string,
       noteId?: Note["id"],
    ): GlobalProperty[] {
-      const allGlobalProperties = globalPropertiesStore.getGlobalProperties();
-
       // Preparar el término de búsqueda normalizado (si existe)
-      const searchTerm =
-         name && name.trim() !== ""
-            ? removeDiacritics(name.toLowerCase())
-            : undefined;
+      const searchTerm = name?.trim()
+         ? removeDiacritics(name.toLowerCase())
+         : "";
 
-      // Recorrer las propiedades globales y filtrarlas
-      return allGlobalProperties.filter((property) => {
-         // Normalizar el nombre de la propiedad una sola vez
-         const normalizedPropertyName = removeDiacritics(
-            property.name.toLowerCase(),
-         );
-
-         // Si hay un noteId, verificar si esta propiedad ya está vinculada a la nota
-         if (noteId) {
-            const isAlreadyLinked = property.linkedProperties.some(
-               (link) => link.noteId === noteId,
-            );
-            if (isAlreadyLinked) return false;
+      // Recorremos las propiedades globales filtrandolas
+      return globalPropertiesStore.getGlobalProperties().filter((property) => {
+         if (
+            noteId &&
+            property.linkedProperties.some((link) => link.noteId === noteId)
+         ) {
+            // Si hay noteId y la nota ya contiene una propiedad enlazada a la propiedad global actual, no la sugerimos
+            return false;
          }
 
-         // Si no hay término de búsqueda, incluir la propiedad
+         // Si no hay termino de busqueda sugerimos la propiedad global actual
          if (!searchTerm) return true;
 
-         // Verificar si el nombre de la propiedad coincide con el término de búsqueda
-         return normalizedPropertyName.includes(searchTerm);
+         // Comprobamos si la propiedad global despues de preparar el nombre coincide con el termino de busqueda
+         return removeDiacritics(property.name.toLowerCase()).includes(
+            searchTerm,
+         );
       });
    }
 
@@ -132,63 +127,41 @@ class GlobalPropertyController {
       });
 
       // 2) Actualizar la propiedad local (en la nota) para fijar globalPropertyId
-      noteProperty.globalPropertyId = globalProperty.id;
-      noteProperty.name = globalProperty.name;
-      noteProperty.type = globalProperty.type;
       notePropertyController.updatePropertyFromNote(
          noteProperty.noteId,
          noteProperty.id,
          {
             globalPropertyId: globalProperty.id,
             name: globalProperty.name,
-            type: globalProperty.type,
+            // No actualizamos el tipo mostraremos un aviso en la UI del missmatch
+            // type: globalProperty.type,
          },
       );
    }
 
-   unlinkFromGlobalProperty(noteProperty: NoteProperty) {
-      if (!noteProperty.globalPropertyId) return;
+   /**
+    * Usado al eliminar notas de propiedades
+    *
+    * @param deletedNoteProperty
+    */
+   unlinkFromGlobalProperty(deletedNoteProperty: NoteProperty) {
+      const globalId = deletedNoteProperty.globalPropertyId;
+      const globalProperty = this.getGlobalPropertyById(globalId);
+      if (!globalProperty) return;
 
-      const globalId = noteProperty.globalPropertyId;
-      const global = this.getGlobalPropertyById(globalId);
-      if (!global) return;
-
-      // 1) Filtrar el enlace de la global
-      const filteredLinks = global.linkedProperties.filter(
+      // Filtrar las noteProperties enlazadas con la global
+      const filteredLinks = globalProperty.linkedProperties.filter(
          (link) =>
             !(
-               link.noteId === noteProperty.noteId &&
-               link.propertyId === noteProperty.id
+               link.noteId === deletedNoteProperty.noteId &&
+               link.propertyId === deletedNoteProperty.id
             ),
       );
       this.updateGlobalPropertyById(globalId, {
          linkedProperties: filteredLinks,
       });
 
-      // 2) Quitar la referencia en la nota
-      noteProperty.globalPropertyId = undefined;
-      notePropertyController.updatePropertyFromNote(
-         noteProperty.noteId,
-         noteProperty.id,
-         { globalPropertyId: undefined },
-      );
-   }
-
-   updateGlobalType(
-      globalProperty: GlobalProperty,
-      newType: NoteProperty["type"],
-   ) {
-      // 1) Actualizar el type en la global
-      this.updateGlobalPropertyType(globalProperty.id, newType);
-
-      // 2) Para cada nota enlazada, actualizar solo el campo `type`
-      for (const link of globalProperty.linkedProperties) {
-         notePropertyController.updatePropertyFromNote(
-            link.noteId,
-            link.propertyId,
-            { type: newType },
-         );
-      }
+      // No eliminamos de la nota, ya que siempre tendran un globalPropertyId y esta función debe usarse solo al eliminar noteProperties o las propiedades se desincronizaran.
    }
 }
 

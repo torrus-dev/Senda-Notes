@@ -87,7 +87,6 @@ export function convertPropertyValue(
 export function generateGlobalProperty(
    name: GlobalProperty["name"],
    type: GlobalProperty["type"],
-   property: NoteProperty,
 ): GlobalProperty {
    const newGlobalProperty: GlobalProperty = {
       id: crypto.randomUUID(),
@@ -95,12 +94,8 @@ export function generateGlobalProperty(
       type: type,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
-      linkedProperties: [
-         {
-            noteId: property.noteId,
-            propertyId: property.id,
-         },
-      ],
+      linkedProperties: [],
    };
    return newGlobalProperty;
 }
+
