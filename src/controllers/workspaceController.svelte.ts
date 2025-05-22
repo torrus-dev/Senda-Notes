@@ -68,7 +68,7 @@ class WorkspaceController {
    };
 
    // ---------- Property Editor ----------
-   openPropertyEditor = (noteId: string, propertyId: string) => {
+   toggleEditProperty = (noteId: string, propertyId: string) => {
       workspaceStore.propertyEditor = {
          isOpen: true,
          noteId: noteId,
@@ -76,7 +76,15 @@ class WorkspaceController {
       };
    };
 
-   closePropertyEditor = () => {
+   toggleAddProperty = () => {
+      workspaceStore.propertyEditor = {
+         isOpen: true,
+         noteId: undefined,
+         propertyId: undefined,
+      };
+   };
+
+   stopPropertyEdit = () => {
       workspaceStore.propertyEditor = {
          isOpen: false,
          noteId: undefined,
@@ -84,7 +92,7 @@ class WorkspaceController {
       };
    };
 
-   isOpenPropertyEditor = (
+   isEditingProperty = (
       noteId: string | undefined = undefined,
       propertyId: string | undefined = undefined,
    ) => {
@@ -92,6 +100,14 @@ class WorkspaceController {
          workspaceStore.propertyEditor.isOpen &&
          workspaceStore.propertyEditor.noteId === noteId &&
          workspaceStore.propertyEditor.propertyId === propertyId
+      );
+   };
+
+   isAddingProperty = () => {
+      return (
+         workspaceStore.propertyEditor.isOpen &&
+         workspaceStore.propertyEditor.noteId === undefined &&
+         workspaceStore.propertyEditor.propertyId === undefined
       );
    };
 

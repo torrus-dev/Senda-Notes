@@ -12,7 +12,7 @@ let {
    onSelectGlobalProperty,
    noteId,
 }: {
-   value: NoteProperty["name"];
+   value?: NoteProperty["name"];
    onchange: (newName: string) => void;
    onSelectGlobalProperty: (globalProperty: GlobalProperty) => void;
    noteId?: Note["id"];

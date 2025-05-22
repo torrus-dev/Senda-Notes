@@ -26,9 +26,7 @@ let {
    handleDragEnd: (event: DragEvent) => void;
 } = $props();
 
-let isEditorOpen = $derived(
-   workspace.isOpenPropertyEditor(noteId, property.id),
-);
+let isEditorOpen = $derived(workspace.isEditingProperty(noteId, property.id));
 
 const propertyTypesMenuItems: MenuItem[] = getPropertyTypesList().map(
    (option) => ({
@@ -51,7 +49,7 @@ const labelMenuItems: MenuItem[] = [
       label: "Rename Property",
       icon: TextCursorInputIcon,
       action: () => {
-         workspace.openPropertyEditor(noteId, property.id);
+         workspace.toggleEditProperty(noteId, property.id);
       },
    },
    {

@@ -2,8 +2,6 @@
 </style>
 
 <script lang="ts">
-import { workspace } from "@controllers/workspaceController.svelte";
-
 import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";
 
 import PropertyValue from "@components/note/properties/PropertyValue.svelte";
