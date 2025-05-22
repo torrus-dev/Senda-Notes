@@ -2,7 +2,7 @@
 import { noteController } from "@controllers/note/noteController.svelte";
 import { sanitizeTitle } from "@utils/noteUtils";
 import { tick } from "svelte";
-import Popover from "@components/floating/popover/Popover.svelte";
+import Popover from "@components/floating/Popover.svelte";
 
 // Props
 let {

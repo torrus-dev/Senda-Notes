@@ -1,5 +1,5 @@
 <script lang="ts">
-import Popover from "@components/floating/popover/Popover.svelte";
+import Popover from "@components/floating/Popover.svelte";
 import Button from "@components/utils/Button.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
 import type { Note } from "@projectTypes/noteTypes";
