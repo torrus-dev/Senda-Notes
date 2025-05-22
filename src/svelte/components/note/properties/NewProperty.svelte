@@ -7,6 +7,7 @@ import type { GlobalProperty } from "@projectTypes/propertyTypes";
 import PropertyNameInput from "@components/note/properties/PropertyNameInput.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
+import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
 
 let { noteId }: { noteId: Note["id"] } = $props();
 
@@ -28,11 +29,19 @@ function createPropertyFromGlobal(globalProperty: GlobalProperty) {
    );
    workspace.stopPropertyEdit();
 }
+let newPropertyElement: HTMLElement | undefined = $state(undefined);
 </script>
 
-<div class="w[12rem] flex items-center gap-0.5">
+<div
+   bind:this={newPropertyElement}
+   class="w[12rem] flex items-center gap-0.5"
+   use:onOutsideOrEsc={{
+      action: () => {
+         workspace.stopPropertyEdit();
+      },
+      triggerElement: newPropertyElement,
+   }}>
    <PropertyIcon propertyType={newPropertyType} />
-   <!-- HACER QUE FUNCIONE ESTO DE ABAJO -->
    <PropertyNameInput
       onNameChange={createPropertyFromName}
       onSelectGlobalProperty={createPropertyFromGlobal}

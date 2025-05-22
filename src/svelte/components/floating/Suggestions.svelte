@@ -31,7 +31,7 @@ let selectedSuggestion: suggestion | undefined = $derived(
       : undefined,
 );
 
-// Resetea el índice cuando cambian las sugerencias
+// Resetea el índice de teclado cuando cambia el prop suggestionList
 $effect(() => {
    if (suggestionList) {
       selectedIndex = -1;
@@ -101,7 +101,7 @@ function handleMouseEnter(index: number) {
             selectedIndex = -1; // Reset selection cuando el mouse sale
          }}>
          {#each suggestionList as suggestionItem, index}
-            <li>
+            <li class="w-full">
                <Button
                   onclick={(event) => {
                      handleSuggestionClick(suggestionItem, index);

@@ -47,27 +47,27 @@ let isAddingProperty = $derived(workspace.isAddingProperty());
       oncollapse={() => {
          workspace.toggleEditorPropertiesCollapsed();
       }}>
-      {#if properties.length > 0}
-         <!-- Listar propiedades de la nota -->
-         <ul class="gap-1">
+      <!-- Listar propiedades de la nota -->
+      <ul class="gap-1">
+         {#if properties.length > 0}
             {#each properties as property, index (property.id)}
                <Property noteId={noteId} property={property} position={index} />
             {/each}
-            {#if isAddingProperty}
-               <NewProperty noteId={noteId} />
-            {:else}
-               <li>
-                  <Button
-                     class="text-base-content/80"
-                     onclick={() => {
-                        workspace.toggleAddProperty();
-                     }}
-                     title="Add property">
-                     <PlusIcon size="1.0625em" />Add Property
-                  </Button>
-               </li>
-            {/if}
-         </ul>
-      {/if}
+         {/if}
+         {#if isAddingProperty}
+            <NewProperty noteId={noteId} />
+         {:else}
+            <li>
+               <Button
+                  class="text-base-content/80"
+                  onclick={() => {
+                     workspace.toggleAddProperty();
+                  }}
+                  title="Add property">
+                  <PlusIcon size="1.0625em" />Add Property
+               </Button>
+            </li>
+         {/if}
+      </ul>
    </Collapsible>
 {/if}
