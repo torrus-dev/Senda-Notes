@@ -16,14 +16,12 @@ let {
    suggestionList = [],
 }: {
    isOpen: boolean;
-   inputElement: HTMLInputElement;
+   inputElement: HTMLInputElement | undefined;
    mouseInSuggestions: boolean;
    suggestionList: suggestion[];
 } = $props();
 
-let showSuggestions = $derived(
-   isOpen && suggestionList.length > 0 && inputElement,
-);
+let showSuggestions = $derived(isOpen && suggestionList.length > 0);
 
 // Índice para la navegación con teclado
 let selectedIndex: number = $state(-1);
@@ -40,8 +38,19 @@ $effect(() => {
    }
 });
 
+// Agregar event listener para el teclado
+$effect(() => {
+   if (inputElement && showSuggestions) {
+      inputElement.addEventListener("keydown", handleKeyDown);
+
+      return () => {
+         inputElement.removeEventListener("keydown", handleKeyDown);
+      };
+   }
+});
+
 function handleKeyDown(event: KeyboardEvent) {
-   if (!showSuggestions) return;
+   if (!(showSuggestions && inputElement)) return;
 
    if (event.key === "ArrowDown") {
       event.preventDefault(); // Evitar que el cursor se mueva en el input
@@ -51,21 +60,32 @@ function handleKeyDown(event: KeyboardEvent) {
       selectedIndex = Math.max(selectedIndex - 1, -1);
    } else if (event.key === "Enter") {
       if (selectedSuggestion) {
+         event.preventDefault(); // Evitar submit del form si está dentro de uno
          selectedSuggestion.onSelect();
+         isOpen = false; // Cerrar las sugerencias después de seleccionar
       }
    } else if (event.key === "Escape") {
+      event.preventDefault();
       // Si hay una selección activa, la reseteamos
       if (selectedIndex >= 0) {
          selectedIndex = -1;
       } else {
-         // Restauramos el nombre original de la propiedad
          isOpen = false;
       }
    }
 }
+
+function handleSuggestionClick(suggestionItem: suggestion, index: number) {
+   suggestionItem.onSelect();
+   isOpen = false; // Cerrar las sugerencias después de seleccionar
+}
+
+function handleMouseEnter(index: number) {
+   selectedIndex = index; // Sincronizar la selección visual con el mouse
+}
 </script>
 
-{#if showSuggestions}
+{#if showSuggestions && inputElement}
    <Popover
       isOpen={true}
       htmlElement={inputElement}
@@ -78,16 +98,17 @@ function handleKeyDown(event: KeyboardEvent) {
          }}
          onmouseleave={() => {
             mouseInSuggestions = false;
+            selectedIndex = -1; // Reset selection cuando el mouse sale
          }}>
          {#each suggestionList as suggestionItem, index}
             <li>
                <Button
                   onclick={(event) => {
-                     suggestionItem.onSelect();
-                     selectedIndex = index;
+                     handleSuggestionClick(suggestionItem, index);
                      event.preventDefault();
                      event.stopPropagation();
                   }}
+                  onmouseenter={() => handleMouseEnter(index)}
                   class={index === selectedIndex ? "bg-interactive-focus" : ""}>
                   {#if suggestionItem.icon}
                      <suggestionItem.icon size="1.125em" />
