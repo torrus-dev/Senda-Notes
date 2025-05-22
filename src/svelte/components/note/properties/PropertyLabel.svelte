@@ -96,9 +96,9 @@ function handlePropertyRename() {
    <div class="flex w-full items-center">
       <PropertyIcon propertyType={property.type} />
       <PropertyNameInput
-         value={property.name}
+         initialPropertyName={property.name}
          noteId={noteId}
-         onchange={handlePropertyRename}
+         onNameChange={handlePropertyRename}
          onSelectGlobalProperty={handleSelectGlobalProperty} />
    </div>
 {/if}

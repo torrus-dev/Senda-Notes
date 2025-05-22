@@ -7,26 +7,21 @@ import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
 import { getPropertyIcon } from "@utils/propertyUtils";
 
 let {
-   value = "",
-   onchange,
+   initialPropertyName = "",
+   onNameChange,
    onSelectGlobalProperty,
    noteId,
 }: {
-   value?: NoteProperty["name"];
-   onchange: (newName: string) => void;
+   initialPropertyName?: NoteProperty["name"];
+   onNameChange: (newName: string) => void;
    onSelectGlobalProperty: (globalProperty: GlobalProperty) => void;
    noteId?: Note["id"];
 } = $props();
 
-let newName: NoteProperty["name"] = $state(value);
+let newName: NoteProperty["name"] = $state(initialPropertyName);
 let inputElement: HTMLInputElement | undefined = $state(undefined);
 let isFocused: boolean = $state(false);
 let isSelectingFromSuggestions: boolean = $state(false);
-
-// Actualizamos el valor interno cuando cambia el prop externo
-$effect(() => {
-   newName = value;
-});
 
 let suggestedGlobalProperties: GlobalProperty[] = $derived(
    globalPropertyController.getGlobalPropertiesSuggestions(newName, noteId),
@@ -56,16 +51,9 @@ function selectGlobalProperty(property: GlobalProperty) {
 
 function handleNameChange() {
    if (newName.trim() !== "") {
-      onchange(newName);
+      onNameChange(newName);
    }
 }
-
-// Manejamos el cambio de valor interno para actualizar el prop externo
-$effect(() => {
-   if (newName !== value && newName.trim() !== "") {
-      onchange(newName);
-   }
-});
 
 // Manejar la navegación con teclado
 function handleKeyDown(event: KeyboardEvent) {
@@ -102,12 +90,13 @@ function handleKeyDown(event: KeyboardEvent) {
       }
       isFocused = false;
    } else if (event.key === "Escape") {
-      // Si hay una selección activa, primero la reseteamos
+      // Si hay una selección activa, la reseteamos
       if (selectedIndex >= 0) {
          selectedIndex = -1;
+      } else {
+         // Restauramos el nombre original de la propiedad
+         newName = initialPropertyName;
       }
-      // Restauramos el nombre original
-      newName = value;
    }
 }
 </script>

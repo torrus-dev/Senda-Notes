@@ -30,11 +30,11 @@ function createPropertyFromGlobal(globalProperty: GlobalProperty) {
 }
 </script>
 
-<div class="grid grid-cols-[12rem_auto] gap-0.5">
+<div class="w[12rem] flex items-center gap-0.5">
    <PropertyIcon propertyType={newPropertyType} />
    <!-- HACER QUE FUNCIONE ESTO DE ABAJO -->
    <PropertyNameInput
-      onchange={createPropertyFromName}
+      onNameChange={createPropertyFromName}
       onSelectGlobalProperty={createPropertyFromGlobal}
       noteId={noteId} />
 </div>
