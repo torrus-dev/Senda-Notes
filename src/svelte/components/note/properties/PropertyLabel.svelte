@@ -12,6 +12,7 @@ import { workspace } from "@controllers/workspaceController.svelte";
 
 import PropertyIcon from "@components/note/properties/PropertyIcon.svelte";
 import Button from "@components/utils/Button.svelte";
+import PropertyNameInput from "@components/note/properties/PropertyNameInput.svelte";
 
 let {
    noteId,
@@ -24,6 +25,10 @@ let {
    handleDragStart: (event: DragEvent) => void;
    handleDragEnd: (event: DragEvent) => void;
 } = $props();
+
+let isEditorOpen = $derived(
+   workspace.isOpenPropertyEditor(noteId, property.id),
+);
 
 const propertyTypesMenuItems: MenuItem[] = getPropertyTypesList().map(
    (option) => ({
@@ -68,23 +73,34 @@ const labelMenuItems: MenuItem[] = [
    },
 ];
 
-function selectGlobalProperty(globalProperty: GlobalProperty) {
+function handleSelectGlobalProperty(globalProperty: GlobalProperty) {
    console.log("ejecutando selectGlobalProperty");
 }
 
-function nameChange() {
+function handlePropertyRename() {
    console.log("ejecutando nameChange");
 }
 </script>
 
-<div
-   draggable="true"
-   role="listitem"
-   class="flex w-full items-center"
-   ondragstart={handleDragStart}
-   ondragend={handleDragEnd}>
-   <Button dropdownMenuItems={labelMenuItems} class="w-full">
+{#if !isEditorOpen}
+   <div
+      draggable="true"
+      role="listitem"
+      class="flex w-full items-center"
+      ondragstart={handleDragStart}
+      ondragend={handleDragEnd}>
+      <Button dropdownMenuItems={labelMenuItems} class="w-full">
+         <PropertyIcon propertyType={property.type} />
+         {property.name}
+      </Button>
+   </div>
+{:else}
+   <div class="flex w-full items-center">
       <PropertyIcon propertyType={property.type} />
-      {property.name}
-   </Button>
-</div>
+      <PropertyNameInput
+         value={property.name}
+         noteId={noteId}
+         onchange={handlePropertyRename}
+         onSelectGlobalProperty={handleSelectGlobalProperty} />
+   </div>
+{/if}

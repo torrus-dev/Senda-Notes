@@ -8,7 +8,6 @@ import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";
 
 import PropertyValue from "@components/note/properties/PropertyValue.svelte";
 import PropertyLabel from "@components/note/properties/PropertyLabel.svelte";
-import EditPropertyEditor from "@components/note/properties/EditPropertyEditor.svelte";
 
 import type { NoteProperty } from "@projectTypes/propertyTypes";
 
@@ -21,10 +20,6 @@ let {
    position: number;
    property: NoteProperty;
 } = $props();
-
-let isEditorOpen = $derived(
-   workspace.isOpenPropertyEditor(noteId, property.id),
-);
 
 // setup drag and drop
 let isDragedOver = $state(false);
@@ -55,9 +50,7 @@ const {
          property={property}
          handleDragStart={handleDragStart}
          handleDragEnd={handleDragEnd} />
+
       <PropertyValue noteId={noteId} property={property} />
    </div>
-   {#if isEditorOpen}
-      <EditPropertyEditor noteId={noteId} property={property} />
-   {/if}
 </li>
