@@ -4,6 +4,7 @@ import { globalPropertyController } from "@controllers/note/property/globalPrope
 import type { Note } from "@projectTypes/noteTypes";
 import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
 import { getPropertyIcon } from "@utils/propertyUtils";
+import { onMount, tick } from "svelte";
 
 let {
    initialPropertyName = "",
@@ -77,6 +78,15 @@ function handleKeyDown(event: KeyboardEvent) {
       // Si hay selección activa, Suggestions.svelte manejará el Escape
    }
 }
+
+// Al crear al componente enfocamos el cursor en el elemento input
+onMount(() => {
+   tick().then(() => {
+      if (inputElement) {
+         inputElement.focus();
+      }
+   });
+});
 </script>
 
 <div class="property-name-input">
@@ -94,7 +104,7 @@ function handleKeyDown(event: KeyboardEvent) {
          isFocused = true;
       }}
       onkeydown={handleKeyDown}
-      class="rounded-field bg-interactive-accent w-full overflow-clip px-2 py-1 text-left focus:outline-none"
+      class="w-full overflow-clip px-2 py-1 text-left focus:outline-none"
       placeholder="Enter property name" />
 
    <Suggestions

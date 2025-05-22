@@ -23,6 +23,10 @@ class NotePropertyController {
    ): void => {
       // Generamos la nueva propiedad
       const newProperty = generateProperty(noteId, name, type);
+      // Agregamos la nueva propiedad a la nota
+      this.addPropertyToNote(noteId, newProperty);
+
+      // Importante: si no hacemos lo de arriba primero, la nota no "existira" y fallara la vinculación
 
       // Comprobamos si existe propiedad global con ese nombre
       const existingGlobalProperty =
@@ -37,9 +41,6 @@ class NotePropertyController {
          // Creamos la propiedad global si no existe
          globalPropertyController.createGlobalProperty(name, type, newProperty);
       }
-
-      // Agregamos la nueva propiedad a la nota
-      this.addPropertyToNote(noteId, newProperty);
    };
 
    deletePropertyFromNote = (
@@ -50,10 +51,10 @@ class NotePropertyController {
       if (!propertyToDelete) return;
       const note = noteStore.getNoteById(noteId);
       if (!note) return;
-      const updatedProperties = note.properties.filter(
+      const updatedNoteProperties = note.properties.filter(
          (property) => property.id !== propertyToDeleteId,
       );
-      noteController.updateNote(noteId, { properties: updatedProperties });
+      noteController.updateNote(noteId, { properties: updatedNoteProperties });
 
       // Comprobamos si hay una propiedad global con ese nombre y la desvinculamos
       const existingGlobalProperty =

@@ -83,8 +83,6 @@ class GlobalPropertyController {
       name: string,
       noteId?: Note["id"],
    ): GlobalProperty[] {
-      console.log("noteId para las sugerencias", noteId);
-
       // Preparar el término de búsqueda normalizado (si existe)
       const searchTerm = name?.trim()
          ? removeDiacritics(name.toLowerCase())
@@ -122,7 +120,6 @@ class GlobalPropertyController {
       this.updateGlobalPropertyById(globalProperty.id, {
          linkedProperties: [...globalProperty.linkedProperties, newLink],
       });
-      console.log(this.getGlobalPropertyById(globalProperty.id));
 
       // 2) Actualizar la propiedad local (en la nota) para fijar globalPropertyId
       notePropertyController.updatePropertyFromNote(

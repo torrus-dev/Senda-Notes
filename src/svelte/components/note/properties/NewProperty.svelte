@@ -33,7 +33,7 @@ let newPropertyElement: HTMLElement | undefined = $state(undefined);
 
 <div
    bind:this={newPropertyElement}
-   class="flex w-[12rem] items-center gap-0.5"
+   class="flex w-[12rem] items-center gap-0.5 p-2"
    use:onOutsideOrEsc={{
       action: () => {
          workspace.stopPropertyEdit();
