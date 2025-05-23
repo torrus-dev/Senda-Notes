@@ -10,15 +10,17 @@ interface suggestion {
 }
 
 let {
-   isOpen = $bindable(),
+   isOpen,
    inputElement,
    mouseInSuggestions = $bindable(),
    suggestionList = [],
+   onCloseSuggestions,
 }: {
    isOpen: boolean;
    inputElement: HTMLInputElement | undefined;
    mouseInSuggestions: boolean;
    suggestionList: suggestion[];
+   onCloseSuggestions: () => void;
 } = $props();
 
 let showSuggestions = $derived(isOpen && suggestionList.length > 0);
@@ -63,21 +65,22 @@ function handleKeyDown(event: KeyboardEvent) {
          event.preventDefault(); // Evitar submit del form si está dentro de uno
          selectedSuggestion.onSelect();
          isOpen = false; // Cerrar las sugerencias después de seleccionar
+         onCloseSuggestions();
       }
    } else if (event.key === "Escape") {
       event.preventDefault();
-      // Si hay una selección activa, la reseteamos
-      if (selectedIndex >= 0) {
-         selectedIndex = -1;
-      } else {
-         isOpen = false;
-      }
+      // Reseteamos selección
+      selectedIndex = -1;
+
+      isOpen = false;
+      onCloseSuggestions();
    }
 }
 
 function handleSuggestionClick(suggestionItem: suggestion, index: number) {
    suggestionItem.onSelect();
    isOpen = false; // Cerrar las sugerencias después de seleccionar
+   onCloseSuggestions();
 }
 
 function handleMouseEnter(index: number) {
@@ -98,7 +101,6 @@ function handleMouseEnter(index: number) {
          }}
          onmouseleave={() => {
             mouseInSuggestions = false;
-            selectedIndex = -1; // Reset selection cuando el mouse sale
          }}>
          {#each suggestionList as suggestionItem, index}
             <li class="w-full">
@@ -109,7 +111,7 @@ function handleMouseEnter(index: number) {
                      event.stopPropagation();
                   }}
                   onmouseenter={() => handleMouseEnter(index)}
-                  class={index === selectedIndex ? "bg-interactive-focus" : ""}>
+                  class="{index === selectedIndex ? 'bg-interactive-focus' : ''} ">
                   {#if suggestionItem.icon}
                      <suggestionItem.icon size="1.125em" />
                   {/if}

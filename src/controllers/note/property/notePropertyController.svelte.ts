@@ -16,11 +16,31 @@ class NotePropertyController {
       noteController.updateNote(noteId, { properties: updatedProperties });
    };
 
+   /** Devuelve true si ya existe en la nota otra propiedad con ese nombre */
+   isDuplicateName(
+      noteId: Note["id"],
+      name: string,
+      excludePropertyId?: NoteProperty["id"],
+   ): boolean {
+      const props = this.getNoteProperties(noteId);
+      const normalized = name.trim().toLowerCase();
+      return props
+         .filter((p) => p.id !== excludePropertyId)
+         .some((p) => p.name.trim().toLowerCase() === normalized);
+   }
+
    handleCreateNoteProperty = (
       noteId: string,
       name: NoteProperty["name"],
       type: NoteProperty["type"],
    ): void => {
+      if (this.isDuplicateName(noteId, name)) {
+         console.warn(
+            `No se puede crear: la nota ${noteId} ya tiene una propiedad "${name}".`,
+         );
+         return;
+      }
+
       // Generamos la nueva propiedad
       const newProperty = generateProperty(noteId, name, type);
       // Agregamos la nueva propiedad a la nota
@@ -111,6 +131,13 @@ class NotePropertyController {
       propertyId: NoteProperty["id"],
       newPropertyName: NoteProperty["name"],
    ) {
+      if (this.isDuplicateName(noteId, newPropertyName, propertyId)) {
+         console.warn(
+            `No se puede renombrar: la nota ${noteId} ya tiene una propiedad "${newPropertyName}".`,
+         );
+         return;
+      }
+
       // Buscamos que exista una propiedad por esos Ids y la renombramos
       const propertyToUpdate = this.getPropertyById(noteId, propertyId);
       if (!propertyToUpdate) return;

@@ -8,6 +8,7 @@ import PropertyValue from "@components/note/properties/PropertyValue.svelte";
 import PropertyLabel from "@components/note/properties/PropertyLabel.svelte";
 
 import type { NoteProperty } from "@projectTypes/propertyTypes";
+import { workspace } from "@controllers/workspaceController.svelte";
 
 let {
    noteId,
@@ -33,12 +34,18 @@ const {
    getPosition: () => position,
    setIsDraggedOver: (val) => (isDragedOver = val),
 });
+
+let isEditingProperty = $derived(
+   workspace.isEditingProperty(noteId, property.id),
+);
 </script>
 
 <li
-   class="rounded-field relative transition-colors duration-300 {isDragedOver
-      ? 'highlight'
-      : ''}"
+   class="
+   rounded-field outline-border-normal relative transition-colors duration-300
+   {isEditingProperty ? 'outlined bg-interactive-hover' : ''} 
+   {isDragedOver ? 'highlight' : ''}
+       "
    ondragover={handleDragOver}
    ondragleave={handleDragLeave}
    ondrop={handleDrop}>
@@ -46,6 +53,7 @@ const {
       <PropertyLabel
          noteId={noteId}
          property={property}
+         isEditingProperty={isEditingProperty}
          handleDragStart={handleDragStart}
          handleDragEnd={handleDragEnd} />
 

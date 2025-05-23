@@ -1,23 +1,26 @@
 <script lang="ts">
+import Popover from "@components/floating/Popover.svelte";
 import Suggestions from "@components/floating/Suggestions.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
+import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 import type { Note } from "@projectTypes/noteTypes";
 import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
 import { getPropertyIcon } from "@utils/propertyUtils";
 import { onMount, tick } from "svelte";
 
 let {
-   initialPropertyName = "",
+   property = undefined,
    onNameChange,
    onSelectGlobalProperty,
    noteId,
 }: {
-   initialPropertyName?: NoteProperty["name"];
+   property?: NoteProperty;
    onNameChange: (newName: string) => void;
    onSelectGlobalProperty: (globalProperty: GlobalProperty) => void;
-   noteId?: Note["id"];
+   noteId: Note["id"];
 } = $props();
 
+let initialPropertyName = property ? property.name : "";
 let newName: NoteProperty["name"] = $state(initialPropertyName);
 let inputElement: HTMLInputElement | undefined = $state(undefined);
 let isFocused: boolean = $state(false);
@@ -34,6 +37,10 @@ let suggestionList = $derived(
       label: globalProperty.name,
       onSelect: () => selectGlobalProperty(globalProperty),
    })),
+);
+
+let isDuplicate = $derived(
+   notePropertyController.isDuplicateName(noteId, newName, property?.id),
 );
 
 // Función para seleccionar una propiedad global
@@ -53,7 +60,7 @@ function handleNameChange() {
 
 // Manejar eventos especiales del input
 function handleKeyDown(event: KeyboardEvent) {
-   if (event.key === "Enter") {
+   if (event.key === "Enter" && !isDuplicate) {
       // Si no hay sugerencias visibles o ninguna seleccionada
       if (!isFocused || suggestionList.length === 0) {
          // Comprobar si existe una propiedad global con ese nombre exacto
@@ -95,7 +102,7 @@ onMount(() => {
       bind:value={newName}
       bind:this={inputElement}
       onblur={() => {
-         if (!mouseInSuggestions) {
+         if (!mouseInSuggestions && !isDuplicate) {
             handleNameChange();
             isFocused = false;
          }
@@ -106,10 +113,22 @@ onMount(() => {
       onkeydown={handleKeyDown}
       class="w-full overflow-clip px-2 py-1 text-left focus:outline-none"
       placeholder="Enter property name" />
+   <Popover
+      isOpen={isDuplicate}
+      htmlElement={inputElement}
+      placement="bottom"
+      alignment="start">
+      <p class="text-content bg-error-bg rounded-field flex items-center p-2">
+         Propiedad ya existe en la nota
+      </p>
+   </Popover>
 
    <Suggestions
-      bind:isOpen={isFocused}
+      isOpen={isFocused && !isDuplicate}
       inputElement={inputElement}
       bind:mouseInSuggestions={mouseInSuggestions}
-      suggestionList={suggestionList} />
+      suggestionList={suggestionList}
+      onCloseSuggestions={() => {
+         isFocused = false;
+      }} />
 </div>

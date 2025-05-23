@@ -18,18 +18,16 @@ import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
 let {
    noteId,
    property,
+   isEditingProperty,
    handleDragStart,
    handleDragEnd,
 }: {
    noteId: Note["id"];
    property: NoteProperty;
+   isEditingProperty: boolean;
    handleDragStart: (event: DragEvent) => void;
    handleDragEnd: (event: DragEvent) => void;
 } = $props();
-
-let isEditingProperty = $derived(
-   workspace.isEditingProperty(noteId, property.id),
-);
 
 const propertyTypesMenuItems: MenuItem[] = getPropertyTypesList().map(
    (option) => ({
@@ -97,20 +95,20 @@ function handlePropertyRename() {
    </div>
 {:else}
    <div
-      class="highlight rounded-field flex w-full items-center p-1 px-2"
+      class="rounded-field bg-interactive flex w-full items-center p-1 px-2"
       use:onOutsideOrEsc={{
          action: () => {
-            // 1. REVISAR ESTO, NO QUEREMOS HACER ESTO SIEMPRE HABRIA QUE PENSAR EL COMPORTAMIENTO PARA RENOMBRAR UNA PROPIEDAD EXISTENTE, con ESC igual si seria cancelar pero con clickOutside habría que pensar si queremos guardar. 
+            // 1. REVISAR ESTO, NO QUEREMOS HACER ESTO SIEMPRE HABRIA QUE PENSAR EL COMPORTAMIENTO PARA RENOMBRAR UNA PROPIEDAD EXISTENTE, con ESC igual si seria cancelar pero con clickOutside habría que pensar si queremos guardar.
 
-            // 2. Luego tambien hay que controlar en PROPERTYNAMEINPUT que no se pueda poner un nombre de una propiedad que ya existe en la nota, es decir no permitir salir hasta que pongas un nombre valido o canceles, bloquear la salida es un comportamiento deseado. 
-            
+            // 2. Luego tambien hay que controlar en PROPERTYNAMEINPUT que no se pueda poner un nombre de una propiedad que ya existe en la nota, es decir no permitir salir hasta que pongas un nombre valido o canceles, bloquear la salida es un comportamiento deseado.
+
             // 3. Luego tambien habria que mostrar un aviso si hay un missmatch de tipos entre la propiedad de la nota y la propiedad global con la que este vinculada
             workspace.stopPropertyEdit();
          },
       }}>
       <PropertyIcon propertyType={property.type} />
       <PropertyNameInput
-         initialPropertyName={property.name}
+         property={property}
          noteId={noteId}
          onNameChange={handlePropertyRename}
          onSelectGlobalProperty={handleSelectGlobalProperty} />
