@@ -10,17 +10,15 @@ interface suggestion {
 }
 
 let {
-   isOpen,
+   isOpen = $bindable(),
    inputElement,
    mouseInSuggestions = $bindable(),
    suggestionList = [],
-   onCloseSuggestions,
 }: {
    isOpen: boolean;
    inputElement: HTMLInputElement | undefined;
    mouseInSuggestions: boolean;
    suggestionList: suggestion[];
-   onCloseSuggestions: () => void;
 } = $props();
 
 let showSuggestions = $derived(isOpen && suggestionList.length > 0);
@@ -66,7 +64,6 @@ function handleKeyDown(event: KeyboardEvent) {
          event.stopPropagation();
          selectedSuggestion.onSelect();
          isOpen = false; // Cerrar las sugerencias después de seleccionar
-         onCloseSuggestions();
       }
    } else if (event.key === "Escape") {
       event.preventDefault();
@@ -75,7 +72,6 @@ function handleKeyDown(event: KeyboardEvent) {
       selectedIndex = -1;
 
       isOpen = false;
-      onCloseSuggestions();
    }
 }
 
@@ -88,7 +84,6 @@ function handleSuggestionClick(
    isOpen = false; // Cerrar las sugerencias después de seleccionar
    event.preventDefault();
    event.stopPropagation();
-   onCloseSuggestions();
 }
 
 function handleMouseEnter(index: number) {

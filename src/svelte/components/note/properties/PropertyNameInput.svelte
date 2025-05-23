@@ -25,7 +25,7 @@ let {
 let initialPropertyName = property ? property.name : "";
 let newName: NoteProperty["name"] = $state(initialPropertyName);
 let inputElement: HTMLInputElement | undefined = $state(undefined);
-let isFocused: boolean = $state(false);
+let showSuggestions: boolean = $state(false);
 let mouseInSuggestions: boolean = $state(false);
 
 let suggestedGlobalProperties: GlobalProperty[] = $derived(
@@ -51,10 +51,9 @@ let isDuplicate = $derived(
 function selectGlobalProperty(property: GlobalProperty) {
    onSelectGlobalProperty(property);
    newName = property.name;
-   isFocused = false;
+   showSuggestions = false;
    // Mantener el foco en el input
    inputElement?.focus();
-   console.log("lanzando", "selectGlobalProperty");
 }
 
 function handleNameChange() {
@@ -66,30 +65,24 @@ function handleNameChange() {
 // Manejar eventos especiales del input
 function handleKeyDown(event: KeyboardEvent) {
    if (event.key === "Enter" && !isDuplicate) {
-      console.log("PNI NAME11", suggestionList.length === 0);
-      // Si no hay sugerencias visibles o ninguna seleccionada
-
-      if (!isFocused || suggestionList.length === 0) {
-         console.log("PNI NAME11");
-         // Comprobar si existe una propiedad global con ese nombre exacto
-         const globalProperty =
-            globalPropertyController.getGlobalPropertyByName(newName);
-         if (globalProperty) {
-            event.preventDefault();
-            selectGlobalProperty(globalProperty);
-         } else {
-            // Si no hay coincidencia exacta, aplicar el cambio de nombre
-            console.log("bbbb");
-            handleNameChange();
-            isFocused = false;
-         }
+      // Comprobar si existe una propiedad global con ese nombre exacto
+      const globalProperty =
+         globalPropertyController.getGlobalPropertyByName(newName);
+      if (globalProperty) {
+         event.preventDefault();
+         selectGlobalProperty(globalProperty);
+      } else {
+         // Si no hay coincidencia exacta, aplicar el cambio de nombre
+         handleNameChange();
+         showSuggestions = false;
       }
+
       // Si hay sugerencias, Suggestions.svelte manejará el Enter
    } else if (event.key === "Escape") {
       // Restaurar el nombre original si no hay selección activa en sugerencias
       if (!mouseInSuggestions) {
          newName = initialPropertyName;
-         isFocused = false;
+         showSuggestions = false;
          workspace.stopPropertyEdit();
       }
       // Si hay selección activa, Suggestions.svelte manejará el Escape
@@ -129,11 +122,11 @@ onMount(() => {
       onblur={() => {
          if (!mouseInSuggestions && !isDuplicate) {
             handleNameChange();
-            isFocused = false;
+            showSuggestions = false;
          }
       }}
       onfocus={() => {
-         isFocused = true;
+         showSuggestions = true;
       }}
       onkeydown={handleKeyDown}
       class="w-full overflow-clip px-2 py-1 text-left focus:outline-none"
@@ -149,11 +142,8 @@ onMount(() => {
    </Popover>
 
    <Suggestions
-      isOpen={isFocused && !isDuplicate}
+      bind:isOpen={showSuggestions}
       inputElement={inputElement}
       bind:mouseInSuggestions={mouseInSuggestions}
-      suggestionList={suggestionList}
-      onCloseSuggestions={() => {
-         isFocused = false;
-      }} />
+      suggestionList={suggestionList} />
 </div>
