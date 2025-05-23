@@ -3,6 +3,8 @@ import Popover from "@components/floating/Popover.svelte";
 import Suggestions from "@components/floating/Suggestions.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
+import { workspace } from "@controllers/workspaceController.svelte";
+import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
 import type { Note } from "@projectTypes/noteTypes";
 import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
 import { getPropertyIcon } from "@utils/propertyUtils";
@@ -35,7 +37,9 @@ let suggestionList = $derived(
    suggestedGlobalProperties.map((globalProperty) => ({
       icon: getPropertyIcon(globalProperty.type),
       label: globalProperty.name,
-      onSelect: () => selectGlobalProperty(globalProperty),
+      onSelect: () => {
+         selectGlobalProperty(globalProperty);
+      },
    })),
 );
 
@@ -50,6 +54,7 @@ function selectGlobalProperty(property: GlobalProperty) {
    isFocused = false;
    // Mantener el foco en el input
    inputElement?.focus();
+   console.log("lanzando", "selectGlobalProperty");
 }
 
 function handleNameChange() {
@@ -81,6 +86,7 @@ function handleKeyDown(event: KeyboardEvent) {
       if (!mouseInSuggestions) {
          newName = initialPropertyName;
          isFocused = false;
+         workspace.stopPropertyEdit();
       }
       // Si hay selección activa, Suggestions.svelte manejará el Escape
    }
@@ -96,7 +102,22 @@ onMount(() => {
 });
 </script>
 
-<div class="property-name-input">
+<div
+   class="property-name-input"
+   use:onOutsideOrEsc={{
+      // como ESC ya lo gestionamos de otra forma nos encargamos de click outside
+      preventOnEsc: true,
+      action: () => {
+         if (isDuplicate) return;
+         if (newName.trim() === "" || newName === initialPropertyName) {
+            // Si el nombre esta vacio o es igual paramos la edición
+            workspace.stopPropertyEdit();
+         } else {
+            // Si no guardamos los cambios
+            handleNameChange();
+         }
+      },
+   }}>
    <input
       type="text"
       bind:value={newName}

@@ -6,12 +6,12 @@ import { notePropertyController } from "@controllers/note/property/notePropertyC
 import { workspace } from "@controllers/workspaceController.svelte";
 import PropertyIcon from "@components/note/properties//PropertyIcon.svelte";
 import PropertyNameInput from "@components/note/properties/PropertyNameInput.svelte";
-import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
 
 let { noteId }: { noteId: Note["id"] } = $props();
 
 const newPropertyType = "text";
 
+// Funciones para añadir propiedades con el componente PropertyNameInput
 function createPropertyFromName(propertyName: string) {
    notePropertyController.handleCreateNoteProperty(
       noteId,
@@ -33,13 +33,7 @@ let newPropertyElement: HTMLElement | undefined = $state(undefined);
 
 <div
    bind:this={newPropertyElement}
-   class="flex w-[12rem] items-center gap-0.5 p-2"
-   use:onOutsideOrEsc={{
-      action: () => {
-         workspace.stopPropertyEdit();
-      },
-      triggerElement: newPropertyElement,
-   }}>
+   class="flex w-[12rem] items-center gap-0.5 p-2">
    <PropertyIcon propertyType={newPropertyType} />
    <PropertyNameInput
       onNameChange={createPropertyFromName}

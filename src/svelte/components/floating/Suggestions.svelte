@@ -64,6 +64,8 @@ function handleKeyDown(event: KeyboardEvent) {
       if (selectedSuggestion) {
          event.preventDefault(); // Evitar submit del form si está dentro de uno
          selectedSuggestion.onSelect();
+         event.preventDefault();
+         event.stopPropagation();
          isOpen = false; // Cerrar las sugerencias después de seleccionar
          onCloseSuggestions();
       }
@@ -77,9 +79,15 @@ function handleKeyDown(event: KeyboardEvent) {
    }
 }
 
-function handleSuggestionClick(suggestionItem: suggestion, index: number) {
+function handleSuggestionClick(
+   event: Event,
+   suggestionItem: suggestion,
+   index: number,
+) {
    suggestionItem.onSelect();
    isOpen = false; // Cerrar las sugerencias después de seleccionar
+   event.preventDefault();
+   event.stopPropagation();
    onCloseSuggestions();
 }
 
@@ -106,12 +114,14 @@ function handleMouseEnter(index: number) {
             <li class="w-full">
                <Button
                   onclick={(event) => {
-                     handleSuggestionClick(suggestionItem, index);
+                     handleSuggestionClick(event, suggestionItem, index);
                      event.preventDefault();
                      event.stopPropagation();
                   }}
                   onmouseenter={() => handleMouseEnter(index)}
-                  class="{index === selectedIndex ? 'bg-interactive-focus' : ''} ">
+                  class="{index === selectedIndex
+                     ? 'bg-interactive-focus'
+                     : ''} w-full">
                   {#if suggestionItem.icon}
                      <suggestionItem.icon size="1.125em" />
                   {/if}

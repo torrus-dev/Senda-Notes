@@ -13,7 +13,6 @@ import { workspace } from "@controllers/workspaceController.svelte";
 import PropertyIcon from "@components/note/properties/PropertyIcon.svelte";
 import Button from "@components/utils/Button.svelte";
 import PropertyNameInput from "@components/note/properties/PropertyNameInput.svelte";
-import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
 
 let {
    noteId,
@@ -72,12 +71,23 @@ const labelMenuItems: MenuItem[] = [
    },
 ];
 
-function handleSelectGlobalProperty(globalProperty: GlobalProperty) {
-   console.log("ejecutando selectGlobalProperty");
+// Funciones para editar propiedades con el componente PropertyNameInput
+function renameProperty(newPropertyName: string) {
+   notePropertyController.handleNotePropertyRename(
+      noteId,
+      property.id,
+      newPropertyName,
+   );
+   workspace.stopPropertyEdit();
 }
 
-function handlePropertyRename() {
-   console.log("ejecutando nameChange");
+function renamePropertyFromGlobal(globalProperty: GlobalProperty) {
+   notePropertyController.handleNotePropertyRename(
+      noteId,
+      property.id,
+      globalProperty.name,
+   );
+   workspace.stopPropertyEdit();
 }
 </script>
 
@@ -94,23 +104,12 @@ function handlePropertyRename() {
       </Button>
    </div>
 {:else}
-   <div
-      class="rounded-field bg-interactive flex w-full items-center p-1 px-2"
-      use:onOutsideOrEsc={{
-         action: () => {
-            // 1. REVISAR ESTO, NO QUEREMOS HACER ESTO SIEMPRE HABRIA QUE PENSAR EL COMPORTAMIENTO PARA RENOMBRAR UNA PROPIEDAD EXISTENTE, con ESC igual si seria cancelar pero con clickOutside habría que pensar si queremos guardar.
-
-            // 2. Luego tambien hay que controlar en PROPERTYNAMEINPUT que no se pueda poner un nombre de una propiedad que ya existe en la nota, es decir no permitir salir hasta que pongas un nombre valido o canceles, bloquear la salida es un comportamiento deseado.
-
-            // 3. Luego tambien habria que mostrar un aviso si hay un missmatch de tipos entre la propiedad de la nota y la propiedad global con la que este vinculada
-            workspace.stopPropertyEdit();
-         },
-      }}>
+   <div class="rounded-field bg-interactive flex w-full items-center p-1 px-2">
       <PropertyIcon propertyType={property.type} />
       <PropertyNameInput
          property={property}
          noteId={noteId}
-         onNameChange={handlePropertyRename}
-         onSelectGlobalProperty={handleSelectGlobalProperty} />
+         onNameChange={renameProperty}
+         onSelectGlobalProperty={renamePropertyFromGlobal} />
    </div>
 {/if}
