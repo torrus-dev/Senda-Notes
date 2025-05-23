@@ -62,10 +62,9 @@ function handleKeyDown(event: KeyboardEvent) {
       selectedIndex = Math.max(selectedIndex - 1, -1);
    } else if (event.key === "Enter") {
       if (selectedSuggestion) {
-         event.preventDefault(); // Evitar submit del form si está dentro de uno
-         selectedSuggestion.onSelect();
          event.preventDefault();
          event.stopPropagation();
+         selectedSuggestion.onSelect();
          isOpen = false; // Cerrar las sugerencias después de seleccionar
          onCloseSuggestions();
       }
