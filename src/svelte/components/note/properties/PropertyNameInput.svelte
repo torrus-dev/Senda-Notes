@@ -66,8 +66,11 @@ function handleNameChange() {
 // Manejar eventos especiales del input
 function handleKeyDown(event: KeyboardEvent) {
    if (event.key === "Enter" && !isDuplicate) {
+      console.log("PNI NAME11", suggestionList.length === 0);
       // Si no hay sugerencias visibles o ninguna seleccionada
+
       if (!isFocused || suggestionList.length === 0) {
+         console.log("PNI NAME11");
          // Comprobar si existe una propiedad global con ese nombre exacto
          const globalProperty =
             globalPropertyController.getGlobalPropertyByName(newName);
@@ -76,6 +79,7 @@ function handleKeyDown(event: KeyboardEvent) {
             selectGlobalProperty(globalProperty);
          } else {
             // Si no hay coincidencia exacta, aplicar el cambio de nombre
+            console.log("bbbb");
             handleNameChange();
             isFocused = false;
          }

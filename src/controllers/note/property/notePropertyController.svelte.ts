@@ -4,6 +4,7 @@ import { generateProperty } from "@utils/propertyUtils";
 import { noteStore } from "@stores/noteStore.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
 import { noteController } from "@controllers/note/noteController.svelte";
+import { removeDiacritics } from "@utils/searchUtils";
 
 class NotePropertyController {
    private addPropertyToNote = (
@@ -23,10 +24,12 @@ class NotePropertyController {
       excludePropertyId?: NoteProperty["id"],
    ): boolean {
       const props = this.getNoteProperties(noteId);
-      const normalized = name.trim().toLowerCase();
+      const normalized = removeDiacritics(name.trim().toLowerCase());
       return props
          .filter((p) => p.id !== excludePropertyId)
-         .some((p) => p.name.trim().toLowerCase() === normalized);
+         .some(
+            (p) => removeDiacritics(p.name.trim().toLowerCase()) === normalized,
+         );
    }
 
    handleCreateNoteProperty = (

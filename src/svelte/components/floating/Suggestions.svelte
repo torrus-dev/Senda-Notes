@@ -70,6 +70,7 @@ function handleKeyDown(event: KeyboardEvent) {
       }
    } else if (event.key === "Escape") {
       event.preventDefault();
+      event.stopPropagation();
       // Reseteamos selección
       selectedIndex = -1;
 
