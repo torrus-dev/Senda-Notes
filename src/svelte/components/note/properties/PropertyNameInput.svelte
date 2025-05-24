@@ -27,13 +27,14 @@ let newName: NoteProperty["name"] = $state(initialPropertyName);
 let inputElement: HTMLInputElement | undefined = $state(undefined);
 let showSuggestions: boolean = $state(false);
 let mouseInSuggestions: boolean = $state(false);
+let showDuplicateWarning: boolean = $state(false);
 
+// Estado derivado
 let suggestedGlobalProperties: GlobalProperty[] = $derived(
    globalPropertyController.getGlobalPropertiesSuggestions(newName, noteId),
 );
 
-// Convertir las propiedades globales al formato que espera Suggestions
-let suggestionList = $derived(
+let globalPropertySuggestionList = $derived(
    suggestedGlobalProperties.map((globalProperty) => ({
       icon: getPropertyIcon(globalProperty.type),
       label: globalProperty.name,
@@ -47,53 +48,67 @@ let isDuplicate = $derived(
    notePropertyController.isDuplicateName(noteId, newName, property?.id),
 );
 
-// Función para seleccionar una propiedad global
-function selectGlobalProperty(property: GlobalProperty) {
-   onSelectGlobalProperty(property);
-   newName = property.name;
+// Funciones principales
+function cancelNameInput() {
+   newName = initialPropertyName;
    showSuggestions = false;
-   // Mantener el foco en el input
-   inputElement?.focus();
+   workspace.stopPropertyEdit();
 }
 
-function handleNameChange() {
-   if (newName.trim() !== "") {
-      onNameChange(newName);
+function selectGlobalProperty(property: GlobalProperty) {
+   if (isDuplicate) {
+      showDuplicateWarning = true;
+   } else {
+      onSelectGlobalProperty(property);
+      newName = property.name;
+      showSuggestions = false;
+      // Mantener el foco en el input
+      inputElement?.focus();
+   }
+}
+
+function confirmName() {
+   if (newName.trim() !== "" && newName !== initialPropertyName) {
+      if (isDuplicate) {
+         showDuplicateWarning = true;
+      } else {
+         onNameChange(newName);
+         showSuggestions = false;
+      }
+   } else {
+      cancelNameInput();
    }
 }
 
 // Manejar eventos especiales del input
 function handleKeyDown(event: KeyboardEvent) {
-   if (event.key === "Enter" && !isDuplicate) {
+   if (showDuplicateWarning) {
+      showDuplicateWarning = false;
+   }
+   if (event.key === "Enter") {
       // Comprobar si existe una propiedad global con ese nombre exacto
       const globalProperty =
          globalPropertyController.getGlobalPropertyByName(newName);
       if (globalProperty) {
-         event.preventDefault();
          selectGlobalProperty(globalProperty);
       } else {
-         // Si no hay coincidencia exacta, aplicar el cambio de nombre
-         handleNameChange();
-         showSuggestions = false;
+         confirmName();
       }
 
       // Si hay sugerencias, Suggestions.svelte manejará el Enter
    } else if (event.key === "Escape") {
-      // Restaurar el nombre original si no hay selección activa en sugerencias
       if (!mouseInSuggestions) {
-         newName = initialPropertyName;
-         showSuggestions = false;
-         workspace.stopPropertyEdit();
+         cancelNameInput();
       }
       // Si hay selección activa, Suggestions.svelte manejará el Escape
    }
 }
 
-// Al crear al componente enfocamos el cursor en el elemento input
+// Al principio seleccionamos el contenido del input
 onMount(() => {
    tick().then(() => {
       if (inputElement) {
-         inputElement.focus();
+         inputElement.select();
       }
    });
 });
@@ -102,27 +117,20 @@ onMount(() => {
 <div
    class="property-name-input"
    use:onOutsideOrEsc={{
-      // como ESC ya lo gestionamos de otra forma nos encargamos de click outside
+      // ESC ya lo gestionamos con handleKeyDown
       preventOnEsc: true,
       action: () => {
-         if (isDuplicate) return;
-         if (newName.trim() === "" || newName === initialPropertyName) {
-            // Si el nombre esta vacio o es igual paramos la edición
-            workspace.stopPropertyEdit();
-         } else {
-            // Si no guardamos los cambios
-            handleNameChange();
-         }
+         confirmName();
       },
    }}>
    <input
       type="text"
       bind:value={newName}
       bind:this={inputElement}
-      onblur={() => {
-         if (!mouseInSuggestions && !isDuplicate) {
-            handleNameChange();
-            showSuggestions = false;
+      onblur={(event) => {
+         if (!mouseInSuggestions) {
+            confirmName();
+            event.preventDefault();
          }
       }}
       onfocus={() => {
@@ -131,12 +139,19 @@ onMount(() => {
       onkeydown={handleKeyDown}
       class="w-full overflow-clip px-2 py-1 text-left focus:outline-none"
       placeholder="Enter property name" />
+
    <Popover
-      isOpen={isDuplicate}
+      isOpen={showDuplicateWarning}
       htmlElement={inputElement}
       placement="bottom"
       alignment="start">
-      <p class="text-content bg-error-bg rounded-field flex items-center p-2">
+      <p
+         class="text-content bg-error-bg rounded-field flex items-center p-2"
+         use:onOutsideOrEsc={{
+            action: () => {
+               showDuplicateWarning = false;
+            },
+         }}>
          Propiedad ya existe en la nota
       </p>
    </Popover>
@@ -145,5 +160,5 @@ onMount(() => {
       bind:isOpen={showSuggestions}
       inputElement={inputElement}
       bind:mouseInSuggestions={mouseInSuggestions}
-      suggestionList={suggestionList} />
+      suggestionList={globalPropertySuggestionList} />
 </div>
