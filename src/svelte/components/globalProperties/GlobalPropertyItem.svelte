@@ -65,10 +65,15 @@ let menuItems: MenuItem[] = [
 </script>
 
 <li class="flex w-full items-center gap-1 py-1">
-   <Button dropdownMenuItems={menuItems}>
-      {#if IconComponent}
-         <IconComponent size="1.0625em" />
-      {/if}
-      {globalProperty.name}
+   <Button dropdownMenuItems={menuItems} class="w-full">
+      <div class="flex grow items-center gap-1">
+         {#if IconComponent}
+            <IconComponent size="1.0625em" />
+         {/if}
+         {globalProperty.name}
+      </div>
+      <p class="text-muted-content">
+         {globalProperty.linkedProperties.length}
+      </p>
    </Button>
 </li>
