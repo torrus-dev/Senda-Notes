@@ -159,6 +159,22 @@ class GlobalPropertyController {
 
       // No eliminamos de la nota, ya que siempre tendran un globalPropertyId y esta función debe usarse solo al eliminar noteProperties o las propiedades se desincronizaran.
    }
+
+   checkTypeMatch(noteProperty: NoteProperty): boolean {
+      const { globalPropertyId } = noteProperty;
+
+      if (!globalPropertyId) return false;
+
+      let globalProperty = this.getGlobalPropertyById(globalPropertyId);
+      if (!globalProperty) {
+         console.warn(
+            "No se ha encontrado ninguna propiedad global enlazada a esta propiedad",
+         );
+      } else if (noteProperty.type === globalProperty.type) {
+         return true;
+      }
+      return false;
+   }
 }
 
 export const globalPropertyController = $state(new GlobalPropertyController());

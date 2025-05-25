@@ -60,8 +60,10 @@ let isAddingProperty = $derived(workspace.isAddingProperty());
             <li>
                <Button
                   class="text-base-content/80"
-                  onclick={() => {
+                  onclick={(event) => {
                      workspace.toggleAddProperty();
+                     event.stopPropagation();
+                     event.preventDefault();
                   }}
                   title="Add property">
                   <PlusIcon size="1.0625em" />Add Property

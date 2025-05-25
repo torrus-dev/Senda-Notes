@@ -9,6 +9,7 @@ import PropertyLabel from "@components/note/properties/PropertyLabel.svelte";
 
 import type { NoteProperty } from "@projectTypes/propertyTypes";
 import { workspace } from "@controllers/workspaceController.svelte";
+import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
 
 let {
    noteId,
@@ -38,6 +39,10 @@ const {
 let isEditingProperty = $derived(
    workspace.isEditingProperty(noteId, property.id),
 );
+
+let isTypeMissmatched = $derived(
+   !globalPropertyController.checkTypeMatch(property),
+);
 </script>
 
 <li
@@ -57,6 +62,10 @@ let isEditingProperty = $derived(
          handleDragStart={handleDragStart}
          handleDragEnd={handleDragEnd} />
 
+      <!-- pasar isTypeMissmatched y mostrarlo con icono -->
       <PropertyValue noteId={noteId} property={property} />
+      {#if isTypeMissmatched}
+         🚧 Tipo coincide con la propiedad global
+      {/if}
    </div>
 </li>
