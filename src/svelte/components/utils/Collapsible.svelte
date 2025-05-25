@@ -5,26 +5,26 @@
 import { type Snippet } from "svelte";
 import { ChevronDownIcon } from "lucide-svelte";
 
-interface CollapsibleProps {
-   oncollapse?: () => void;
-   startCollapsed?: boolean;
-   headingContent: Snippet;
-   headingClass?: string;
-   hasSeparator?: boolean;
-   children?: Snippet;
-   chevronPosition?: "floating-left" | "left" | "right";
-}
-
 let {
+   startCollapsed = false,
    oncollapse,
-   startCollapsed: collapsed = false,
    headingContent,
+   additionalContent,
    headingClass,
-   children,
    hasSeparator = false,
    chevronPosition = "right",
-}: CollapsibleProps = $props();
-let isCollapsed: boolean = $state(collapsed);
+   children,
+}: {
+   startCollapsed?: boolean;
+   oncollapse?: () => void;
+   headingContent: Snippet;
+   additionalContent?: Snippet;
+   headingClass?: string;
+   hasSeparator?: boolean;
+   chevronPosition?: "floating-left" | "left" | "right";
+   children?: Snippet;
+} = $props();
+let isCollapsed: boolean = $state(startCollapsed);
 
 function toggle(): void {
    isCollapsed = !isCollapsed;
@@ -56,9 +56,17 @@ const chevronCollapseButtonStyles =
             </button>
          {/if}
 
-         <!-- Heading Svelte Snippet -->
-         <div class="flex-grow">
-            {@render headingContent()}
+         <div class="flex grow items-center justify-between">
+            <!-- Heading Svelte Snippet -->
+            <button class="flex-grow" onclick={toggle}>
+               {@render headingContent()}
+            </button>
+
+            {#if additionalContent}
+               <div>
+                  {@render additionalContent()}
+               </div>
+            {/if}
          </div>
 
          <!-- Collapse button -->

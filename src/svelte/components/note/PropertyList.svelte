@@ -2,19 +2,21 @@
 </style>
 
 <script lang="ts">
+import type { NoteProperty as PropertyType } from "@projectTypes/propertyTypes";
+
 import {
    SlidersHorizontalIcon,
    PlusIcon,
    TablePropertiesIcon,
 } from "lucide-svelte";
+
 import { workspace } from "@controllers/workspaceController.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
-import Property from "@components/note/properties/Property.svelte";
+
 import Button from "@components/utils/Button.svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";
-
-import type { NoteProperty as PropertyType } from "@projectTypes/propertyTypes";
-import NewProperty from "./properties/NewProperty.svelte";
+import Property from "@components/noteProperties/Property.svelte";
+import NewProperty from "@components/noteProperties/NewProperty.svelte";
 
 let { noteId }: { noteId: string } = $props();
 
@@ -27,21 +29,20 @@ let isAddingProperty = $derived(workspace.isAddingProperty());
 
 {#if noteId}
    {#snippet headingContent()}
-      <div class="flex items-center justify-between">
-         <div class="flex items-center gap-2">
-            <TablePropertiesIcon size="1.125rem" /> Properties
-         </div>
-         <div>
-            <Button class="text-muted-content">
-               <SlidersHorizontalIcon size="1.125rem" />
-               Manage Properties
-            </Button>
-         </div>
+      <div class="flex items-center gap-2">
+         <TablePropertiesIcon size="1.125rem" /> Properties
       </div>
+   {/snippet}
+   {#snippet additionalContent()}
+      <Button class="text-muted-content">
+         <SlidersHorizontalIcon size="1.125rem" />
+         Manage Properties
+      </Button>
    {/snippet}
 
    <Collapsible
       headingContent={headingContent}
+      additionalContent={additionalContent}
       chevronPosition="floating-left"
       startCollapsed={workspace.isEditorPropertiesCollapsed()}
       oncollapse={() => {

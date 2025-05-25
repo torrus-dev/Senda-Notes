@@ -4,8 +4,8 @@ import type { GlobalProperty } from "@projectTypes/propertyTypes";
 
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
-import PropertyIcon from "@components/note/properties//PropertyIcon.svelte";
-import PropertyNameInput from "@components/note/properties/PropertyNameInput.svelte";
+import PropertyIcon from "@components/noteProperties/PropertyIcon.svelte";
+import PropertyNameInput from "@components/noteProperties/PropertyNameInput.svelte";
 
 let { noteId }: { noteId: Note["id"] } = $props();
 

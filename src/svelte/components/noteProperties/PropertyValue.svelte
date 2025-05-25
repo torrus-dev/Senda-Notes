@@ -4,12 +4,12 @@ import { notePropertyController } from "@controllers/note/property/notePropertyC
 import type { NoteProperty } from "@projectTypes/propertyTypes";
 import type { Note } from "@projectTypes/noteTypes";
 
-import PropertyText from "@components/note/properties/propTypes/PropertyText.svelte";
-import PropertyList from "@components/note/properties/propTypes/PropertyList.svelte";
-import PropertyNumber from "@components/note/properties/propTypes/PropertyNumber.svelte";
-import PropertyCheck from "@components/note/properties/propTypes/PropertyCheck.svelte";
-import PropertyDate from "@components/note/properties/propTypes/PropertyDate.svelte";
-import PropertyDatetime from "@components/note/properties/propTypes/PropertyDateTime.svelte";
+import PropertyText from "@components/noteProperties/propTypes/PropertyText.svelte";
+import PropertyList from "@components/noteProperties/propTypes/PropertyList.svelte";
+import PropertyNumber from "@components/noteProperties/propTypes/PropertyNumber.svelte";
+import PropertyCheck from "@components/noteProperties/propTypes/PropertyCheck.svelte";
+import PropertyDate from "@components/noteProperties/propTypes/PropertyDate.svelte";
+import PropertyDatetime from "@components/noteProperties/propTypes/PropertyDateTime.svelte";
 
 let { noteId, property }: { noteId: Note["id"]; property: NoteProperty } =
    $props();

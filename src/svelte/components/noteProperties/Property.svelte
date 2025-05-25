@@ -4,12 +4,12 @@
 <script lang="ts">
 import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";
 
-import PropertyValue from "@components/note/properties/PropertyValue.svelte";
-import PropertyLabel from "@components/note/properties/PropertyLabel.svelte";
-
 import type { NoteProperty } from "@projectTypes/propertyTypes";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
+
+import PropertyValue from "@components/noteProperties/PropertyValue.svelte";
+import PropertyLabel from "@components/noteProperties/PropertyLabel.svelte";
 
 let {
    noteId,

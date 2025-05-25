@@ -10,9 +10,9 @@ import { getPropertyIcon, getPropertyTypesList } from "@utils/propertyUtils";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 
-import PropertyIcon from "@components/note/properties/PropertyIcon.svelte";
+import PropertyIcon from "@components/noteProperties/PropertyIcon.svelte";
 import Button from "@components/utils/Button.svelte";
-import PropertyNameInput from "@components/note/properties/PropertyNameInput.svelte";
+import PropertyNameInput from "@components/noteProperties/PropertyNameInput.svelte";
 
 let {
    noteId,

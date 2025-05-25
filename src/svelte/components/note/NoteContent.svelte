@@ -1,8 +1,8 @@
 <script lang="ts">
 import Title from "./Title.svelte";
-import Metadata from "./widgets/Metadata.svelte";
+import Metadata from "./Metadata.svelte";
 import PropertyList from "@components/note/PropertyList.svelte";
-import ChildNotes from "./widgets/ChildNotes.svelte";
+import ChildNotes from "./ChildNotes.svelte";
 import Editor from "./editor/Editor.svelte";
 
 import { settingsController } from "@controllers/settingsController.svelte";

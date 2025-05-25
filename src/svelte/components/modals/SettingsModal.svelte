@@ -1,6 +1,6 @@
 <script lang="ts">
+import GlobalPropertyMenu from "@components/globalProperties/GlobalPropertyMenu.svelte";
 import Slider from "@components/utils/Slider.svelte";
-import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
 
 let searchQuery = $state("");
@@ -47,16 +47,6 @@ let searchQuery = $state("");
                }
             }} />
       </div>
-
-      <div>
-         <h2 class="py-2 text-2xl font-bold">Global Properties:</h2>
-         <ul class="list-disc pl-4">
-            {#each globalPropertyController.getGlobalProperties() as globalProperty}
-               <li>
-                  {globalProperty.name}
-               </li>
-            {/each}
-         </ul>
-      </div>
+      <GlobalPropertyMenu />
    </div>
 </aside>
