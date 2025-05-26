@@ -12,11 +12,13 @@ export function onOutsideOrEsc(node: HTMLElement, options: CloseOptions) {
    // Definir manejadores de eventos
    const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
-      const clickInDropdownTrigger = triggerElement?.contains(target);
-      if (clickInDropdownTrigger) return;
+      const clickInTriggerElement = triggerElement?.contains(target);
+      if (clickInTriggerElement) return;
       const clickOutide = !node.contains(target);
       if (clickOutide) {
          action();
+         event.preventDefault();
+         event.stopPropagation();
       }
    };
 

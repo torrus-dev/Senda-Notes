@@ -16,6 +16,10 @@ import { globalPropertyController } from "@controllers/note/property/globalPrope
 
 let { globalProperty }: { globalProperty: GlobalProperty } = $props();
 
+let globalPropertyElement: HTMLElement | undefined = $state();
+let showHasLinkedPropertiesWarning: boolean = $state(false);
+
+let linkedPropertiesCount = $derived(globalProperty.linkedProperties.length);
 const IconComponent = $derived(getPropertyIcon(globalProperty.type));
 
 const propertyTypesMenuItems: MenuItem[] = getPropertyTypesList().map(
@@ -57,14 +61,24 @@ let menuItems: MenuItem[] = [
    {
       type: "action",
       label: "Delete Global Property",
+      disabled: () => linkedPropertiesCount > 0,
       class: "text-error",
       icon: Trash2Icon,
-      action: () => {},
+      action: () => {
+         if (linkedPropertiesCount === 0) {
+            // mostrar con un dialogo de confirmación cuando este creado
+            globalPropertyController.deleteGlobalPropertyById(
+               globalProperty.id,
+            );
+         }
+      },
    },
 ];
 </script>
 
-<li class="flex w-full items-center gap-1 py-1">
+<li
+   class="flex w-full items-center gap-1 py-1"
+   bind:this={globalPropertyElement}>
    <Button dropdownMenuItems={menuItems} class="w-full">
       <div class="flex grow items-center gap-1">
          {#if IconComponent}
@@ -73,7 +87,7 @@ let menuItems: MenuItem[] = [
          {globalProperty.name}
       </div>
       <p class="text-muted-content">
-         {globalProperty.linkedProperties.length}
+         {linkedPropertiesCount}
       </p>
    </Button>
 </li>

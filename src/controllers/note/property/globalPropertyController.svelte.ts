@@ -112,7 +112,10 @@ class GlobalPropertyController {
       noteProperty: NoteProperty,
       globalProperty: GlobalProperty,
    ) {
-      // 1) Actualizar la global: añadir el enlace
+      // 1) Desvincular a la propiedad global anterior
+      this.unlinkFromGlobalProperty(noteProperty)
+
+      // 2) Actualizar la global: añadir el enlace
       const newLink = {
          noteId: noteProperty.noteId,
          propertyId: noteProperty.id,
@@ -121,7 +124,7 @@ class GlobalPropertyController {
          linkedProperties: [...globalProperty.linkedProperties, newLink],
       });
 
-      // 2) Actualizar la propiedad local (en la nota) para fijar globalPropertyId
+      // 3) Actualizar la propiedad local (en la nota) para fijar globalPropertyId
       notePropertyController.updatePropertyFromNote(
          noteProperty.noteId,
          noteProperty.id,

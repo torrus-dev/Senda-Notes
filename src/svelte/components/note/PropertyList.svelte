@@ -4,11 +4,7 @@
 <script lang="ts">
 import type { NoteProperty as PropertyType } from "@projectTypes/propertyTypes";
 
-import {
-   SlidersHorizontalIcon,
-   PlusIcon,
-   TablePropertiesIcon,
-} from "lucide-svelte";
+import { SlidersHorizontalIcon, PlusIcon, ShapesIcon } from "lucide-svelte";
 
 import { workspace } from "@controllers/workspaceController.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
@@ -30,7 +26,7 @@ let isAddingProperty = $derived(workspace.isAddingProperty());
 {#if noteId}
    {#snippet headingContent()}
       <div class="flex items-center gap-2">
-         <TablePropertiesIcon size="1.125rem" /> Properties
+         <ShapesIcon size="1.125rem" /> Properties
       </div>
    {/snippet}
    {#snippet additionalContent()}

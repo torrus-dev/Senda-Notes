@@ -42,6 +42,7 @@ onMount(() => {
 <li>
    <Button
       bind:buttonElement={itemElement}
+      disabled={menuItem.disabled ? true : false}
       size="small"
       class="w-full justify-between outline-none {menuItem.class}"
       onclick={() => {

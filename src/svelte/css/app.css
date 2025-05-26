@@ -30,6 +30,9 @@
 
    --color-error-bg: var(--color-error-bg);
    --color-error: var(--color-error);
+
+   --color-warning-bg: var(--color-warning-bg);
+   --color-warning: var(--color-warning);
 }
 
 @utility bg-interactive {
@@ -96,8 +99,6 @@ input {
          margin-bottom: 0.25em;
       }
    }
-
-   
 
    /* Code and preformatted text styles */
    code {

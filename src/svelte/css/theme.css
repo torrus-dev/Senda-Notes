@@ -30,8 +30,12 @@
    --color-muted-content: oklch(30% 0 0);
    --color-faint-content: oklch(45% 0 0);
 
+   /* Semantic colors */
    --color-error-bg: var(--color-rose-400);
    --color-error: var(--color-rose-800);
+
+   --color-warning-bg: var(--color-yellow-400);
+   --color-warning: var(--color-yellow-800);
 
    --color-bg-accent-hover: oklch(69.56% 0.1271 253.81 / 50%);
    --color-bg-accent-focus: oklch(69.56% 0.1271 253.81 / 70%);
@@ -54,8 +58,12 @@
    --color-muted-content: oklch(75% 0 0);
    --color-faint-content: oklch(55% 0 0);
 
+   /* Semantic colors */
    --color-error-bg: var(--color-rose-800);
    --color-error: var(--color-rose-400);
+
+   --color-warning-bg: var(--color-yellow-800);
+   --color-warning: var(--color-yellow-400);
 
    --color-bg-accent-hover: oklch(55.82% 0.1762 256.43 / 50%);
    --color-bg-accent-focus: oklch(55.82% 0.1762 256.43 / 70%);

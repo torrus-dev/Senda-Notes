@@ -10,6 +10,8 @@ import { globalPropertyController } from "@controllers/note/property/globalPrope
 
 import PropertyValue from "@components/noteProperties/PropertyValue.svelte";
 import PropertyLabel from "@components/noteProperties/PropertyLabel.svelte";
+import { TriangleAlertIcon } from "lucide-svelte";
+import Button from "@components/utils/Button.svelte";
 
 let {
    noteId,
@@ -63,9 +65,17 @@ let isTypeMissmatched = $derived(
          handleDragEnd={handleDragEnd} />
 
       <!-- pasar isTypeMissmatched y mostrarlo con icono -->
-      <PropertyValue noteId={noteId} property={property} />
-      {#if isTypeMissmatched}
-         🚧 Tipo coincide con la propiedad global
-      {/if}
+      <div class="flex items-center">
+         <div class="flex grow">
+            <PropertyValue noteId={noteId} property={property} />
+         </div>
+         {#if isTypeMissmatched}
+            <div>
+               <Button class="text-warning">
+                  <TriangleAlertIcon size="1.125em" />
+               </Button>
+            </div>
+         {/if}
+      </div>
    </div>
 </li>
