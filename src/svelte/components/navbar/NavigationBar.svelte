@@ -6,13 +6,14 @@ import Button from "@components/utils/Button.svelte";
 import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 import { searchController } from "@controllers/searchController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
-import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
 
 import type { Note } from "@projectTypes/noteTypes";
 import type { SearchResult } from "@projectTypes/searchTypes";
 
 import { tick } from "svelte";
 import { DeleteIcon, XIcon } from "lucide-svelte";
+import { onClickOutside } from "@directives/onClickOutside";
+import { onPressEsc } from "@directives/onPressEsc";
 
 let { note }: { note: Note | undefined } = $props();
 
@@ -65,11 +66,17 @@ function handleResultSelect(result: SearchResult) {
    {#if isSearching}
       <div
          class=" rounded-field flex flex-grow pl-2.5"
-         use:onOutsideOrEsc={{
+         use:onPressEsc={{
+            action: () => {
+               searchController.isSearching = false;
+            },
+         }}
+         use:onClickOutside={{
             action: () => {
                searchController.isSearching = false;
             },
          }}>
+         >
          <input
             type="text"
             class=" w-full py-1.5 focus:outline-none"

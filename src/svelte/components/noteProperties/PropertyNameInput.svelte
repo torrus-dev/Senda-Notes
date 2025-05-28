@@ -4,7 +4,8 @@ import Suggestions from "@components/floating/Suggestions.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
-import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
+import { onClickOutside } from "@directives/onClickOutside";
+import { onPressEsc } from "@directives/onPressEsc";
 import type { Note } from "@projectTypes/noteTypes";
 import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
 import { getPropertyIcon } from "@utils/propertyUtils";
@@ -116,9 +117,7 @@ onMount(() => {
 
 <div
    class="property-name-input"
-   use:onOutsideOrEsc={{
-      // ESC ya lo gestionamos con handleKeyDown
-      preventOnEsc: true,
+   use:onClickOutside={{
       action: () => {
          confirmName();
       },
@@ -147,7 +146,12 @@ onMount(() => {
       alignment="start">
       <p
          class="text-content bg-error-bg rounded-field flex items-center p-2"
-         use:onOutsideOrEsc={{
+         use:onPressEsc={{
+            action: () => {
+               showDuplicateWarning = false;
+            },
+         }}
+         use:onClickOutside={{
             action: () => {
                showDuplicateWarning = false;
             },

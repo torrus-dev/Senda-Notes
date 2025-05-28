@@ -3,7 +3,7 @@ import { workspace } from "@controllers/workspaceController.svelte";
 import Button from "@components/utils/Button.svelte";
 import { XIcon } from "lucide-svelte";
 import { floatingMenuController } from "@controllers/floatingMenuController.svelte";
-import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
+import { onPressEsc } from "@directives/onPressEsc";
 
 let isOpen = $derived(workspace.isModalOpen());
 let content = $derived(workspace.getModalContent());
@@ -22,8 +22,7 @@ function closeModal() {
       onclick={closeModal}>
       <!-- svelte-ignore a11y_click_events_have_key_events -->
       <div
-         use:onOutsideOrEsc={{
-            preventOnClickOutside: true,
+         use:onPressEsc={{
             action: closeModal,
          }}
          class="rounded-selector bg-base-200 bordered relative m-auto min-h-2/3 w-3xl p-6 shadow-xl"

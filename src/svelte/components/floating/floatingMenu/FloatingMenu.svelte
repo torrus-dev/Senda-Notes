@@ -6,7 +6,6 @@ import type {
 } from "@projectTypes/floatingTypes";
 
 import { floatingMenuController } from "@controllers/floatingMenuController.svelte";
-import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
 import { setupKeyboardNavigation } from "./keyboardNavigation";
 
 import {
@@ -18,6 +17,8 @@ import { tick } from "svelte";
 import ActionMenuItem from "./menuItems/ActionMenuItem.svelte";
 import GroupMenuItem from "./menuItems/GroupMenuItem.svelte";
 import SeparatorMenuItem from "./menuItems/SeparatorMenuItem.svelte";
+import { onPressEsc } from "@directives/onPressEsc";
+import { onClickOutside } from "@directives/onClickOutside";
 
 let menuData: FloatingMenuData = $derived(
    floatingMenuController.getMenuState(),
@@ -98,12 +99,18 @@ $effect(() => {
       class="absolute z-100"
       style={positionStyles}
       bind:this={menuElement}
-      use:onOutsideOrEsc={{
+      use:onPressEsc={{
+         action: () => {
+            floatingMenuController.closeMenu();
+         },
+      }}
+      use:onClickOutside={{
          triggerElement: floatingMenuController.getTriggerElement(),
          action: () => {
             floatingMenuController.closeMenu();
          },
       }}>
+      >
       <ul
          class="rounded-field outlined bg-base-200 flex min-w-48 flex-col p-1 shadow-xl">
          {#if activeSubMenu === undefined}
