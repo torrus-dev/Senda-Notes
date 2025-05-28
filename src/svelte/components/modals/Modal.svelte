@@ -1,9 +1,9 @@
 <script lang="ts">
 import { workspace } from "@controllers/workspaceController.svelte";
-import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
 import Button from "@components/utils/Button.svelte";
 import { XIcon } from "lucide-svelte";
 import { floatingMenuController } from "@controllers/floatingMenuController.svelte";
+import { onOutsideOrEsc } from "@directives/onOutsideOrEsc";
 
 let isOpen = $derived(workspace.isModalOpen());
 let content = $derived(workspace.getModalContent());
@@ -17,14 +17,22 @@ function closeModal() {
 </script>
 
 {#if isOpen}
-   <div
-      class="absolute top-0 right-0 bottom-0 left-0 z-30 flex bg-black/30 backdrop-blur-xs">
+   <button
+      class="absolute top-0 right-0 bottom-0 left-0 z-30 flex bg-black/30 backdrop-blur-xs"
+      onclick={closeModal}>
+      <!-- svelte-ignore a11y_click_events_have_key_events -->
       <div
-         class="rounded-selector bg-base-200 bordered relative m-auto min-h-2/3 w-3xl p-6 shadow-xl"
          use:onOutsideOrEsc={{
+            preventOnClickOutside: true,
             action: closeModal,
          }}
-         role="dialog">
+         class="rounded-selector bg-base-200 bordered relative m-auto min-h-2/3 w-3xl p-6 shadow-xl"
+         onclick={(event) => {
+            event.stopPropagation();
+         }}
+         role="dialog"
+         aria-modal="true"
+         tabindex="-1">
          <Button
             class="absolute top-0 right-0"
             title="Close modal"
@@ -33,5 +41,5 @@ function closeModal() {
          </Button>
          {@render content()}
       </div>
-   </div>
+   </button>
 {/if}
