@@ -13,11 +13,12 @@ import {
 } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
+import ConfirmationDialog from "@components/dialog/ConfirmationDialog.svelte";
+import { globalConfirmationDialog } from "@UIState/ConfirmationDialogState.svelte";
 
 let { globalProperty }: { globalProperty: GlobalProperty } = $props();
 
 let globalPropertyElement: HTMLElement | undefined = $state();
-let showHasLinkedPropertiesWarning: boolean = $state(false);
 
 let linkedPropertiesCount = $derived(globalProperty.linkedProperties.length);
 const IconComponent = $derived(getPropertyIcon(globalProperty.type));
@@ -61,15 +62,22 @@ let menuItems: MenuItem[] = [
    {
       type: "action",
       label: "Delete Global Property",
-      disabled: () => linkedPropertiesCount > 0,
+      disabled: globalProperty.linkedProperties.length > 0,
       class: "text-error",
       icon: Trash2Icon,
       action: () => {
-         if (linkedPropertiesCount === 0) {
-            // mostrar con un dialogo de confirmación cuando este creado
-            globalPropertyController.deleteGlobalPropertyById(
-               globalProperty.id,
-            );
+         if (linkedPropertiesCount == 0) {
+            globalConfirmationDialog.show({
+               title: "Borrar Propiedad Global",
+               message:
+                  "Seguro que quieres borrar esta propiedad, esta acción no puede deshacerse",
+               variant: "danger",
+               onAccept: () => {
+                  globalPropertyController.deleteGlobalPropertyById(
+                     globalProperty.id,
+                  );
+               },
+            });
          }
       },
    },

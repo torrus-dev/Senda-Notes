@@ -18,8 +18,7 @@ function closeModal() {
 
 {#if isOpen}
    <div
-      class="absolute top-0 right-0 bottom-0 left-0 z-30 flex bg-black/30 backdrop-blur-xs"
-      aria-hidden={!isOpen}>
+      class="absolute top-0 right-0 bottom-0 left-0 z-30 flex bg-black/30 backdrop-blur-xs">
       <div
          class="rounded-selector bg-base-200 bordered relative m-auto min-h-2/3 w-3xl p-6 shadow-xl"
          use:onOutsideOrEsc={{

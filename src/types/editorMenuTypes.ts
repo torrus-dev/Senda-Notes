@@ -9,7 +9,7 @@ export interface SeparatorMenuItem {
 }
 export interface ActionMenuItem extends BaseMenuItem {
    type: "action";
-   disabled?: () => boolean;
+   disabled?: boolean;
    action: () => void;
    checked?: boolean;
    children?: never;

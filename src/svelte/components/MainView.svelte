@@ -12,6 +12,7 @@ import { noteQueryController } from "@controllers/note/noteQueryController.svelt
 import Notifications from "@components/floating/notifications/Notifications.svelte";
 
 import StatusBar from "@components/note/StatusBar.svelte";
+import ConfirmationDialog from "./dialog/ConfirmationDialog.svelte";
 
 const activeNote: Note | undefined = $derived(
    noteQueryController.getActiveNote(),
@@ -21,9 +22,12 @@ const activeNote: Note | undefined = $derived(
 <div
    class="text-base-content bg-base-100
   {settingsController.getTheme() === 'dark' ? 'theme-dark' : 'theme-light'}">
+   <!-- Componentes globales dinámicos o invisibles-->
    <Modal />
+   <ConfirmationDialog />
    <FloatingMenu />
    <Notifications />
+
    <div
       class="text-base-content bg-base-100 grid h-screen grid-flow-col grid-cols-[min-content_1fr]">
       <Sidebar />
