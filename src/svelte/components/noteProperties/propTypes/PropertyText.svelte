@@ -16,4 +16,4 @@ let newValue: TextProperty["value"] = $state(property.value);
    bind:value={newValue}
    onchange={() => onUpdate(newValue)}
    placeholder="No value"
-   class="bg-interactive rounded-field px-2 focus:outline-none" />
+   class="bg-interactive rounded-field w-full p-2 focus:outline-none" />

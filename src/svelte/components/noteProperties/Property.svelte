@@ -64,14 +64,11 @@ let isTypeMissmatched = $derived(
          handleDragStart={handleDragStart}
          handleDragEnd={handleDragEnd} />
 
-      <!-- pasar isTypeMissmatched y mostrarlo con icono -->
-      <div class="flex items-center">
-         <div class="flex grow">
-            <PropertyValue noteId={noteId} property={property} />
-         </div>
+      <div class="relative">
+         <PropertyValue noteId={noteId} property={property} />
          {#if isTypeMissmatched}
-            <div>
-               <Button class="text-warning">
+            <div class="absolute top-0 right-0">
+               <Button class="text-warning" size="large">
                   <TriangleAlertIcon size="1.125em" />
                </Button>
             </div>
