@@ -10,12 +10,12 @@ import {
    updateModifiedMetadata,
 } from "@utils/noteUtils";
 
-import { globalPropertiesStore } from "@stores/globalPropertiesStore.svelte";
 import { focusController } from "@controllers/focusController.svelte";
 import { noteTreeController } from "@controllers/note/noteTreeController.svelte";
 import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { notificationController } from "@controllers/notificationController.svelte";
+import { globalConfirmationDialog } from "@UIState/ConfirmationDialogState.svelte";
 
 class NoteController {
    createNote = (parentId?: string | undefined): void => {
@@ -79,6 +79,18 @@ class NoteController {
    updateNoteContent = (noteId: string, content: string): void => {
       this.updateNote(noteId, { content: content });
    };
+
+   deleteNoteWithConfirmation(id: string): void {
+      globalConfirmationDialog.show({
+         title: "Borrar Propiedad Global",
+         message:
+            "Seguro que quieres borrar esta propiedad, esta acción no puede deshacerse",
+         variant: "danger",
+         onAccept: () => {
+            this.deleteNote(id);
+         },
+      });
+   }
 
    deleteNote = (id: string): void => {
       // Nos aseguramos de que la nota existe.

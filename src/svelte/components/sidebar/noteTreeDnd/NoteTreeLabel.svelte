@@ -79,7 +79,7 @@ let editableElement: SvelteComponent;
          type: "action",
          label: "Delete Note",
          icon: Trash2Icon,
-         action: () => noteController.deleteNote(note.id),
+         action: () => noteController.deleteNoteWithConfirmation(note.id),
          class: "text-error",
       },
    ]}

@@ -26,7 +26,7 @@ const noteOptionsItems: MenuItem[] = [
       type: "action",
       label: "Delete Note",
       icon: Trash2Icon,
-      action: () => noteController.deleteNote(noteId),
+      action: () => noteController.deleteNoteWithConfirmation(noteId),
       class: "text-error",
    },
    { type: "separator" },

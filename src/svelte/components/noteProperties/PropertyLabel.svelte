@@ -13,6 +13,7 @@ import { workspace } from "@controllers/workspaceController.svelte";
 import PropertyIcon from "@components/noteProperties/PropertyIcon.svelte";
 import Button from "@components/utils/Button.svelte";
 import PropertyNameInput from "@components/noteProperties/PropertyNameInput.svelte";
+import { globalConfirmationDialog } from "@UIState/ConfirmationDialogState.svelte";
 
 let {
    noteId,
@@ -65,7 +66,6 @@ const labelMenuItems: MenuItem[] = [
       icon: Trash2Icon,
       action: () => {
          notePropertyController.deletePropertyFromNote(noteId, property.id);
-         // close
       },
       class: "text-error",
    },
