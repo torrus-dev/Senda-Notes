@@ -13,9 +13,9 @@ let confirmationState = $derived(globalConfirmationDialog.getDialogState());
    <div class="absolute top-0 right-0 bottom-0 left-0 z-40 flex">
       <div class="bg-base-100 bordered rounded-box m-auto p-4 shadow-xl">
          {#if confirmationState.title}
-            <h3 class="mb-6 text-lg">{confirmationState.title}</h3>
+            <h3 class="mb-5 text-xl font-bold">{confirmationState.title}</h3>
          {/if}
-         <p class="mb-6">
+         <p class="mb-5">
             {confirmationState.message}
          </p>
          <div>
@@ -23,12 +23,18 @@ let confirmationState = $derived(globalConfirmationDialog.getDialogState());
                onclick={(event) => {
                   globalConfirmationDialog.close();
                   event.stopPropagation();
-               }}>Cancelar</Button>
+               }}
+               class="bordered">
+               Cancelar
+            </Button>
             <Button
                onclick={(event) => {
                   globalConfirmationDialog.accept();
                   event.stopPropagation();
-               }}>Aceptar</Button>
+               }}
+               class="bordered">
+               Aceptar
+            </Button>
          </div>
       </div>
    </div>
