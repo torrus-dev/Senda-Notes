@@ -86,22 +86,26 @@ let menuItems: MenuItem[] = [
 ];
 </script>
 
-<li class="flex w-full items-center gap-1 py-1">
-   {#if !isRenaming}
-      <Button dropdownMenuItems={menuItems} class="w-full">
-         <div class="flex grow items-center gap-1">
-            {#if IconComponent}
-               <IconComponent size="1.0625em" />
-            {/if}
+<li class="w-full">
+   <Button
+      dropdownMenuItems={!isRenaming ? menuItems : undefined}
+      class="w-full {isRenaming
+         ? 'bg-interactive-focus outlined outline-interactive-accent-focus'
+         : ''}">
+      <div class="flex grow items-center gap-1">
+         {#if IconComponent}
+            <IconComponent size="1.0625em" />
+         {/if}
+         {#if !isRenaming}
             {globalProperty.name}
-         </div>
-         <p class="text-muted-content">
-            {linkedPropertiesCount}
-         </p>
-      </Button>
-   {:else}
-      <GlobalPropertyNameInput
-         globalProperty={globalProperty}
-         bind:isRenaming={isRenaming} />
-   {/if}
+         {:else}
+            <GlobalPropertyNameInput
+               globalProperty={globalProperty}
+               bind:isRenaming={isRenaming} />
+         {/if}
+      </div>
+      <p class="text-muted-content">
+         {linkedPropertiesCount}
+      </p>
+   </Button>
 </li>

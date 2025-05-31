@@ -1,15 +1,16 @@
 <script lang="ts">
-import Title from "./Title.svelte";
-import Metadata from "./Metadata.svelte";
-import PropertyList from "@components/note/PropertyList.svelte";
-import ChildNotes from "./ChildNotes.svelte";
-import Editor from "./editor/Editor.svelte";
+import type { Note } from "@projectTypes/noteTypes";
 
 import { settingsController } from "@controllers/settingsController.svelte";
-import type { Note } from "@projectTypes/noteTypes";
 import { searchController } from "@controllers/searchController.svelte";
-import Button from "@components/utils/Button.svelte";
 import { noteController } from "@controllers/note/noteController.svelte";
+
+import Button from "@components/utils/Button.svelte";
+import Title from "@components/note/Title.svelte";
+import Metadata from "@components/note/Metadata.svelte";
+import PropertyList from "@components/note/PropertyList.svelte";
+import ChildNotes from "@components/note/ChildNotes.svelte";
+import Editor from "@components/note/editor/Editor.svelte";
 
 let { note }: { note: Note | undefined } = $props();
 </script>

@@ -50,22 +50,19 @@ onMount(() => {
 });
 </script>
 
-<div
-   class="property-name-input"
+<input
+   type="text"
+   bind:value={newName}
+   bind:this={inputElement}
+   onblur={(event) => {
+      confirmNameChange();
+      event.preventDefault();
+   }}
    use:onClickOutside={{
       action: () => {
          confirmNameChange();
       },
-   }}>
-   <input
-      type="text"
-      bind:value={newName}
-      bind:this={inputElement}
-      onblur={(event) => {
-         confirmNameChange();
-         event.preventDefault();
-      }}
-      onkeydown={handleKeyDown}
-      class="w-full overflow-clip px-2 py-1 text-left focus:outline-none"
-      placeholder="Enter property name" />
-</div>
+   }}
+   onkeydown={handleKeyDown}
+   class="w-full overflow-clip text-left focus:outline-none"
+   placeholder="Enter property name" />
