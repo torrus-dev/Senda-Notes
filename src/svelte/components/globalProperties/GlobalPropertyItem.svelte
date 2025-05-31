@@ -13,12 +13,12 @@ import {
 } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
-import ConfirmationDialog from "@components/dialog/ConfirmationDialog.svelte";
-import { globalConfirmationDialog } from "@UIState/ConfirmationDialogState.svelte";
+import { globalConfirmationDialog } from "@UIState/confirmationDialogState.svelte";
+import GlobalPropertyNameInput from "./GlobalPropertyNameInput.svelte";
 
 let { globalProperty }: { globalProperty: GlobalProperty } = $props();
 
-let globalPropertyElement: HTMLElement | undefined = $state();
+let isRenaming: boolean = $state(false);
 
 let linkedPropertiesCount = $derived(globalProperty.linkedProperties.length);
 const IconComponent = $derived(getPropertyIcon(globalProperty.type));
@@ -48,7 +48,9 @@ let menuItems: MenuItem[] = [
       type: "action",
       label: "Rename Global Property",
       icon: TextCursorInputIcon,
-      action: () => {},
+      action: () => {
+         isRenaming = true;
+      },
    },
    {
       type: "group",
@@ -70,7 +72,7 @@ let menuItems: MenuItem[] = [
             globalConfirmationDialog.show({
                title: "Borrar Propiedad Global",
                message:
-                  "Seguro que quieres borrar esta propiedad, esta acción no puede deshacerse",
+                  "Seguro que quieres borrar esta propiedad global, esta acción no puede deshacerse",
                variant: "danger",
                onAccept: () => {
                   globalPropertyController.deleteGlobalPropertyById(
@@ -84,18 +86,22 @@ let menuItems: MenuItem[] = [
 ];
 </script>
 
-<li
-   class="flex w-full items-center gap-1 py-1"
-   bind:this={globalPropertyElement}>
-   <Button dropdownMenuItems={menuItems} class="w-full">
-      <div class="flex grow items-center gap-1">
-         {#if IconComponent}
-            <IconComponent size="1.0625em" />
-         {/if}
-         {globalProperty.name}
-      </div>
-      <p class="text-muted-content">
-         {linkedPropertiesCount}
-      </p>
-   </Button>
+<li class="flex w-full items-center gap-1 py-1">
+   {#if !isRenaming}
+      <Button dropdownMenuItems={menuItems} class="w-full">
+         <div class="flex grow items-center gap-1">
+            {#if IconComponent}
+               <IconComponent size="1.0625em" />
+            {/if}
+            {globalProperty.name}
+         </div>
+         <p class="text-muted-content">
+            {linkedPropertiesCount}
+         </p>
+      </Button>
+   {:else}
+      <GlobalPropertyNameInput
+         globalProperty={globalProperty}
+         bind:isRenaming={isRenaming} />
+   {/if}
 </li>

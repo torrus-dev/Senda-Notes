@@ -53,7 +53,14 @@ class GlobalPropertyController {
       // Buscamos y cambiamos el nombre a la propiedad global
       const globalProperty = this.getGlobalPropertyById(id);
       if (!globalProperty) return;
-      this.updateGlobalPropertyById(id, { name: newPropertyName });
+      // Comprobamos si ya existe
+      const globalPropertyNameMatch =
+         this.getGlobalPropertyByName(newPropertyName);
+         if(!globalPropertyNameMatch) {
+            this.updateGlobalPropertyById(id, { name: newPropertyName });
+         } else {
+            // metodo y dialogo para combinar propiedad a la que tiene el nuevo nombre
+         }
 
       // Recorremos las note properties vinculadas a la propiedad global y actualizamos el nombre
       globalProperty.linkedProperties.forEach(({ noteId, propertyId }) => {
@@ -113,7 +120,7 @@ class GlobalPropertyController {
       globalProperty: GlobalProperty,
    ) {
       // 1) Desvincular a la propiedad global anterior
-      this.unlinkFromGlobalProperty(noteProperty)
+      this.unlinkFromGlobalProperty(noteProperty);
 
       // 2) Actualizar la global: añadir el enlace
       const newLink = {

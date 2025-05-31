@@ -15,7 +15,7 @@ import { noteTreeController } from "@controllers/note/noteTreeController.svelte"
 import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { notificationController } from "@controllers/notificationController.svelte";
-import { globalConfirmationDialog } from "@UIState/ConfirmationDialogState.svelte";
+import { globalConfirmationDialog } from "@UIState/confirmationDialogState.svelte";
 
 class NoteController {
    createNote = (parentId?: string | undefined): void => {
@@ -82,9 +82,9 @@ class NoteController {
 
    deleteNoteWithConfirmation(id: string): void {
       globalConfirmationDialog.show({
-         title: "Borrar Propiedad Global",
+         title: "Borrar Nota",
          message:
-            "Seguro que quieres borrar esta propiedad, esta acción no puede deshacerse",
+            "Seguro que quieres borrar esta nota, esta acción no puede deshacerse",
          variant: "danger",
          onAccept: () => {
             this.deleteNote(id);
