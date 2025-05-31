@@ -1,6 +1,6 @@
 import type { Note } from "@projectTypes/noteTypes";
 
-class FavoritesController {
+class FavoriteController {
    favorites = $state<Note[]>([]);
 
    // Comprobar si una nota está en favoritos
@@ -30,4 +30,4 @@ class FavoritesController {
    };
 }
 
-export const favorites = $state(new FavoritesController());
+export const favoriteController = $state(new FavoriteController());

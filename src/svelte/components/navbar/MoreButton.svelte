@@ -10,16 +10,31 @@ import {
    FileSearchIcon,
 } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
+import { favoriteController } from "@controllers/ui/favoritesController.svelte";
 
 let { noteId } = $props();
 
-const noteOptionsItems: MenuItem[] = [
+let favoritesText = $derived(
+   !favoriteController.isFavorite(noteId)
+      ? "Add to favorites"
+      : "Remove from favorites",
+);
+
+const noteOptionsItems: MenuItem[] = $derived([
    {
       type: "action",
       label: "Rename Note",
       icon: PenLineIcon,
       action: () => {
          focusController.requestFocus(FocusTarget.TITLE);
+      },
+   },
+   {
+      type: "action",
+      label: favoritesText,
+      icon: PenLineIcon,
+      action: () => {
+         favoriteController.toggleFavorite(noteId);
       },
    },
    {
@@ -42,7 +57,7 @@ const noteOptionsItems: MenuItem[] = [
       icon: FileSearchIcon,
       action: () => {},
    },
-];
+]);
 </script>
 
 <Button dropdownMenuItems={noteOptionsItems} title="More options">
