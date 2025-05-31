@@ -110,7 +110,6 @@ $effect(() => {
             floatingMenuController.closeMenu();
          },
       }}>
-      >
       <ul
          class="rounded-field outlined bg-base-200 flex min-w-48 flex-col p-1 shadow-xl">
          {#if activeSubMenu === undefined}

@@ -16,10 +16,13 @@ import {
    PenLineIcon,
    Trash2Icon,
    FilePlusIcon,
+   StarIcon,
+   StarOffIcon,
 } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
 import InlineTitleEditor from "@components/utils/InlineTitleEditor.svelte";
 import { contextMenu } from "@directives/floatingMenuDirective.svelte";
+import { favoriteController } from "@controllers/ui/favoritesController.svelte";
 
 let {
    note,
@@ -38,6 +41,8 @@ let {
 let isActive = $derived(note.id === workspace.getActiveNoteId());
 let childrenCount = $derived(noteQueryController.getChildrenCount(note.id));
 let hasChildren = $derived(childrenCount > 0);
+
+let isFavorited = $derived(favoriteController.isFavorite(note.id));
 
 const handleSelectTitle = (event: KeyboardEvent | MouseEvent) => {
    if (!isEditingTitle) {
@@ -65,6 +70,14 @@ let editableElement: SvelteComponent;
          icon: FilePlusIcon,
          action: () => {
             noteController.createNote(note.id);
+         },
+      },
+      {
+         type: "action",
+         label: !isFavorited ? "Add to favorites" : "Remove from favorites",
+         icon: !isFavorited ? StarIcon : StarOffIcon,
+         action: () => {
+            favoriteController.toggleFavorite(note.id);
          },
       },
       {

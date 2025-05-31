@@ -4,7 +4,7 @@ import type { Note } from "@projectTypes/noteTypes";
 const FAVORITES_STORAGE_KEY = "favorites";
 
 interface FavoritesState {
-   favorites: Note[];
+   favorites: Note["id"][];
 }
 
 class FavoritesStore {
@@ -26,23 +26,12 @@ class FavoritesStore {
          });
       });
    }
-
-   // Función pura que convierte el array de favoritos en string
-   private serializeFavoritesState = (favorites: Note[]): string => {
-      return JSON.stringify(favorites);
-   };
-
-   // Función pura que convierte string en array de favoritos
-   private deserializeFavoritesState = (serialized: string): Note[] => {
-      return JSON.parse(serialized);
-   };
-
    // Función que guarda favoritos en localStorage
    private saveFavoritesState = (
-      favorites: Note[],
+      favorites: Note["id"][],
       storage: Storage = localStorage,
-   ): Note[] => {
-      const serialized = this.serializeFavoritesState(favorites);
+   ): Note["id"][] => {
+      const serialized = JSON.stringify(favorites);
       storage.setItem(FAVORITES_STORAGE_KEY, serialized);
       return favorites;
    };
@@ -50,16 +39,16 @@ class FavoritesStore {
    // Función que carga favoritos desde localStorage
    private loadFavoritesState = (
       storage: Storage = localStorage,
-   ): Note[] | null => {
+   ): Note["id"][] | null => {
       const serialized = storage.getItem(FAVORITES_STORAGE_KEY);
-      return serialized ? this.deserializeFavoritesState(serialized) : null;
+      return serialized ? JSON.parse(serialized) : null;
    };
 
    get favorites() {
       return this.data.favorites;
    }
 
-   set favorites(value: Note[]) {
+   set favorites(value: Note["id"][]) {
       this.data.favorites = value;
    }
 }

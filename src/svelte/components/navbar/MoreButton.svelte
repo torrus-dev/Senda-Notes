@@ -8,17 +8,15 @@ import {
    Trash2Icon,
    PenLineIcon,
    FileSearchIcon,
+   StarIcon,
+   StarOffIcon,
 } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
 import { favoriteController } from "@controllers/ui/favoritesController.svelte";
 
 let { noteId } = $props();
 
-let favoritesText = $derived(
-   !favoriteController.isFavorite(noteId)
-      ? "Add to favorites"
-      : "Remove from favorites",
-);
+let isFavorited = $derived(favoriteController.isFavorite(noteId));
 
 const noteOptionsItems: MenuItem[] = $derived([
    {
@@ -31,8 +29,8 @@ const noteOptionsItems: MenuItem[] = $derived([
    },
    {
       type: "action",
-      label: favoritesText,
-      icon: PenLineIcon,
+      label: !isFavorited ? "Add to favorites" : "Remove from favorites",
+      icon: !isFavorited ? StarIcon : StarOffIcon,
       action: () => {
          favoriteController.toggleFavorite(noteId);
       },

@@ -1,31 +1,34 @@
 import type { Note } from "@projectTypes/noteTypes";
+import { favoritesStore } from "@stores/favoritesStore.svelte";
 
 class FavoriteController {
-   favorites = $state<Note[]>([]);
-
    // Comprobar si una nota está en favoritos
    isFavorite = (noteId: string): boolean => {
-      return this.favorites.some((note) => note.id === noteId);
+      return favoritesStore.favorites.some(
+         (favoriteId) => favoriteId === noteId,
+      );
    };
 
    // Añadir nota a favoritos
-   addToFavorites = (note: Note): void => {
-      if (!this.isFavorite(note.id)) {
-         this.favorites.push(note);
+   addToFavorites = (noteId: Note["id"]): void => {
+      if (!this.isFavorite(noteId)) {
+         favoritesStore.favorites.push(noteId);
       }
    };
 
    // Eliminar nota de favoritos
    removeFromFavorites = (noteId: string): void => {
-      this.favorites = this.favorites.filter((note) => note.id !== noteId);
+      favoritesStore.favorites = favoritesStore.favorites.filter(
+         (favoriteId) => favoriteId !== noteId,
+      );
    };
 
    // Toggle favorito (bonus)
-   toggleFavorite = (note: Note): void => {
-      if (this.isFavorite(note.id)) {
-         this.removeFromFavorites(note.id);
+   toggleFavorite = (noteId: Note["id"]): void => {
+      if (this.isFavorite(noteId)) {
+         this.removeFromFavorites(noteId);
       } else {
-         this.addToFavorites(note);
+         this.addToFavorites(noteId);
       }
    };
 }
