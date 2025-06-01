@@ -76,7 +76,6 @@ function handleResultSelect(result: SearchResult) {
                searchController.isSearching = false;
             },
          }}>
-         >
          <input
             type="text"
             class=" w-full py-1.5 focus:outline-none"

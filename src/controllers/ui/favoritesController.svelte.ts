@@ -1,13 +1,22 @@
+import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 import type { Note } from "@projectTypes/noteTypes";
 import { favoritesStore } from "@stores/favoritesStore.svelte";
 
 class FavoriteController {
    // Comprobar si una nota está en favoritos
-   isFavorite = (noteId: string): boolean => {
+   isFavorite(noteId: string): boolean {
       return favoritesStore.favorites.some(
          (favoriteId) => favoriteId === noteId,
       );
-   };
+   }
+
+   getFavorites() {
+      return favoritesStore.favorites;
+   }
+
+   getFavoritesAsNotes() {
+      return noteQueryController.getNotesByIdList(favoritesStore.favorites);
+   }
 
    // Añadir nota a favoritos
    addToFavorites = (noteId: Note["id"]): void => {

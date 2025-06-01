@@ -1,15 +1,15 @@
 <script lang="ts">
 import { SettingsIcon, InfoIcon, StarIcon, Trash2Icon } from "lucide-svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
+import { screenSizeController } from "@controllers/screenSizeController.svelte";
+import { settingsController } from "@controllers/settingsController.svelte";
 
 import NoteTreeRenderer from "@components/sidebar/noteTreeDnd/NoteTreeRenderer.svelte";
 import SettingsModal from "@components/modals/SettingsModal.svelte";
 import AboutModal from "@components/modals/AboutModal.svelte";
 import Button from "@components/utils/Button.svelte";
 import ResizableHandler from "@components/sidebar/ResizableHandler.svelte";
-
-import { screenSizeController } from "@controllers/screenSizeController.svelte";
-import { settingsController } from "@controllers/settingsController.svelte";
+import Favorites from "@components/sidebar/Favorites.svelte";
 
 let width = $state(workspace.getSidebarWidth());
 let isMobile = $derived(screenSizeController.isMobile);
@@ -43,16 +43,12 @@ let widthStyle = $derived(isMobile ? "90%" : `${width}em`);
       updateWidth={updateWidth}
       onResizeStart={handleResizeStart}
       onResizeEnd={handleResizeEnd} />
-   <div class="p-2">
+   <div class="flex flex-col gap-6 p-2">
       <NoteTreeRenderer />
+      <Favorites />
       <div>
          <!-- notas en favoritos y en papelera  -->
          <ul class="my-4 flex w-full flex-col p-2">
-            <li class="w-full">
-               <Button class="w-full">
-                  <StarIcon size="1.125em"></StarIcon>Favoritos
-               </Button>
-            </li>
             <li>
                <Button class="w-full">
                   <Trash2Icon size="1.125em"></Trash2Icon>Papelera

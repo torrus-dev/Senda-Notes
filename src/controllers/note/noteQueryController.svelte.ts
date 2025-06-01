@@ -5,20 +5,31 @@ import { workspace } from "@controllers/workspaceController.svelte";
 
 class NoteQueryController {
    // Métodos de acceso a datos delegados al store
-   getAllNotes = () => noteStore.getAllNotes();
-   getNoteById = (id: string): Note | undefined => noteStore.getNoteById(id);
+   getAllNotes() {
+      return noteStore.getAllNotes();
+   }
+   getNoteById(id: string): Note | undefined {
+      return noteStore.getNoteById(id);
+   }
+   getNotesByIdList(idList: string[]): Note[] {
+      return idList
+         .map((currentId) => this.getNoteById(currentId))
+         .filter((note) => note !== undefined);
+   }
 
    getTitleById = (id: string): string | undefined => {
       const note = this.getNoteById(id);
       return note ? note.title : undefined;
    };
 
-   getActiveNote = (): Note | undefined => {
+   getActiveNote(): Note | undefined {
       const activeNoteId = workspace.getActiveNoteId();
       return activeNoteId ? this.getNoteById(activeNoteId) : undefined;
-   };
+   }
 
-   getRootNotes = (): Note[] => noteStore.getRootNotes();
+   getRootNotes(): Note[] {
+      return noteStore.getRootNotes();
+   }
 
    getPathAsArray(noteId: string): Array<{ id: string; title: string }> {
       const path = [];
