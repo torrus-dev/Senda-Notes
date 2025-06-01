@@ -18,13 +18,10 @@ let favorites: Note[] = $derived(favoriteController.getFavoritesAsNotes());
 {/snippet}
 
 <Collapsible
+   id="favorites"
    headingContent={headingContent}
    headingClass="border-base-400 rounded-field"
-   chevronPosition="left"
-   startCollapsed={workspace.isNotesCollapsed()}
-   oncollapse={() => {
-      workspace.toogleNotesCollapsed();
-   }}>
+   chevronPosition="left">
    <ul class="pl-2">
       {#each favorites as favorite}
          <Button

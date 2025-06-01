@@ -35,15 +35,8 @@ export interface WorkspaceState {
       isOpen: boolean;
       width: number | null;
    };
-   collapsible: {
-      notesCollapsed: boolean;
-      metadataCollapsed: boolean;
-      propertiesCollapsed: boolean;
-      childrenCollapsed: boolean;
-   };
 }
 
 export interface PersistedWorkspaceState {
    sidebar: WorkspaceState["sidebar"];
-   collapsible: WorkspaceState["collapsible"];
 }

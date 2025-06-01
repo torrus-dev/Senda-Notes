@@ -2,12 +2,13 @@
 </style>
 
 <script lang="ts">
-import { type Snippet } from "svelte";
+import { onMount, type Snippet } from "svelte";
 import { ChevronDownIcon } from "lucide-svelte";
+import { collapsibleController } from "@controllers/ui/collapsibleController.svelte";
 
 let {
-   startCollapsed = false,
-   oncollapse,
+   id,
+   defaultCollapsed,
    headingContent,
    additionalContent,
    headingClass,
@@ -15,8 +16,8 @@ let {
    chevronPosition = "right",
    children,
 }: {
-   startCollapsed?: boolean;
-   oncollapse?: () => void;
+   id: string;
+   defaultCollapsed?: boolean;
    headingContent: Snippet;
    additionalContent?: Snippet;
    headingClass?: string;
@@ -24,13 +25,15 @@ let {
    chevronPosition?: "floating-left" | "left" | "right";
    children?: Snippet;
 } = $props();
-let isCollapsed: boolean = $state(startCollapsed);
+
+onMount(() => {
+   collapsibleController.register(id, defaultCollapsed);
+});
+
+let isCollapsed = $derived(collapsibleController.getState(id));
 
 function toggle(): void {
-   isCollapsed = !isCollapsed;
-   if (oncollapse) {
-      oncollapse();
-   }
+   collapsibleController.toggle(id);
 }
 
 const chevronCollapseButtonStyles =

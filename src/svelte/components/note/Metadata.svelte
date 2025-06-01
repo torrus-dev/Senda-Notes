@@ -15,12 +15,9 @@ let { noteId, metadata }: { noteId: string; metadata: NoteMetadata } = $props();
 
 {#if noteId && metadata}
    <Collapsible
+      id="note-metadata"
       headingContent={headingContent}
-      chevronPosition="floating-left"
-      startCollapsed={workspace.isEditorMetadataCollapsed()}
-      oncollapse={() => {
-         workspace.toggleEditorMetadataCollapsed();
-      }}>
+      chevronPosition="floating-left">
       <div class="bg-base-200 rounded-field my-2 px-4 py-2.5">
          <ul class="text-muted-content w-full gap-2">
             <li>

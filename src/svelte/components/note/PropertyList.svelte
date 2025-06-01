@@ -37,13 +37,10 @@ let isAddingProperty = $derived(workspace.isAddingProperty());
    {/snippet}
 
    <Collapsible
+      id="note-properties"
       headingContent={headingContent}
       additionalContent={additionalContent}
-      chevronPosition="floating-left"
-      startCollapsed={workspace.isEditorPropertiesCollapsed()}
-      oncollapse={() => {
-         workspace.toggleEditorPropertiesCollapsed();
-      }}>
+      chevronPosition="floating-left">
       <!-- Listar propiedades de la nota -->
       <ul class="gap-1">
          {#if properties.length > 0}
