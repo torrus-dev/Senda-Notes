@@ -1,4 +1,4 @@
-import { collapsibleModal } from "@stores/collapsibleModal.svelte";
+import { collapsibleModal } from "modal/collapsibleModal.svelte";
 
 class CollapsibleController {
    register(id: string, defaultCollapsed: boolean = false): boolean {

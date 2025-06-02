@@ -1,7 +1,7 @@
 import type { NoteProperty } from "@projectTypes/propertyTypes";
 import type { Note } from "@projectTypes/noteTypes";
 import { generateProperty } from "@utils/propertyUtils";
-import { noteStore } from "@stores/noteStore.svelte";
+import { noteStore } from "modal/noteStore.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
 import { noteController } from "@controllers/note/noteController.svelte";
 import { removeDiacritics } from "@utils/searchUtils";

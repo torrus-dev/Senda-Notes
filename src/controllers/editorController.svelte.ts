@@ -1,4 +1,4 @@
-import { editorStore } from "@stores/editorStore.svelte";
+import { editorStore } from "modal/editorStore.svelte";
 
 class EditorController {
    set contentSaved(newValue: boolean) {

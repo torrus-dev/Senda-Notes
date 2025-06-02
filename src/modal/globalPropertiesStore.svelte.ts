@@ -3,7 +3,7 @@ import {
    loadGlobalPropertiesFromStorage,
    saveGlobalPropertiesToStorage,
 } from "@utils/storage";
-import { settingsStore } from "@stores/settingsStore.svelte";
+import { settingsStore } from "modal/settingsStore.svelte";
 
 class GlobalPropertiesStore {
    // registro de propiedades (nombre, tipo) para saber que propiedades hay creadas globalmente en la aplicación

@@ -1,5 +1,5 @@
 import { Component } from "svelte";
-import { workspaceStore } from "@stores/workspaceStore.svelte";
+import { workspaceStore } from "modal/workspaceStore.svelte";
 
 class WorkspaceController {
    // ---------- Sidebar ----------
