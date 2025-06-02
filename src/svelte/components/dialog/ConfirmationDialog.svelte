@@ -4,7 +4,7 @@
 <!-- ConfirmationDialog.svelte -->
 <script lang="ts">
 import Button from "@components/utils/Button.svelte";
-import { globalConfirmationDialog } from "modal/ui/confirmationDialogModal.svelte";
+import { globalConfirmationDialog } from "@modal/ui/confirmationDialogModal.svelte";
 
 let confirmationState = $derived(globalConfirmationDialog.getDialogState());
 </script>

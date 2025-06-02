@@ -3,7 +3,7 @@ import {
    loadGlobalPropertiesFromStorage,
    saveGlobalPropertiesToStorage,
 } from "@utils/storage";
-import { settingsStore } from "modal/settingsStore.svelte";
+import { settingsStore } from "@modal/settingsStore.svelte";
 
 class GlobalPropertiesStore {
    // registro de propiedades (nombre, tipo) para saber que propiedades hay creadas globalmente en la aplicación
@@ -22,7 +22,10 @@ class GlobalPropertiesStore {
    saveGlobalProperties() {
       saveGlobalPropertiesToStorage(this.globalProperties);
       if (settingsStore.debugLevel > 0) {
-         console.log("guardando propiedades globales", $state.snapshot(this.globalProperties));
+         console.log(
+            "guardando propiedades globales",
+            $state.snapshot(this.globalProperties),
+         );
       }
    }
 
@@ -60,8 +63,10 @@ class GlobalPropertiesStore {
          (globalProperty) => globalProperty.id === id,
       );
    }
-   
-   getGlobalPropertyByName(name: GlobalProperty["name"]): GlobalProperty | undefined {
+
+   getGlobalPropertyByName(
+      name: GlobalProperty["name"],
+   ): GlobalProperty | undefined {
       return this.globalProperties.find(
          (globalProperty) => globalProperty.name === name,
       );

@@ -1,7 +1,7 @@
 import { isDescendant } from "@utils/noteUtils";
 import { dndController } from "@controllers/dndController.svelte";
 import { DragSource } from "@projectTypes/dndTypes";
-import { noteStore } from "modal/noteStore.svelte";
+import { noteStore } from "@modal/noteStore.svelte";
 
 // Handlers para NoteTreeNode
 export function createNoteTreeNodeDndHandlers(params: {

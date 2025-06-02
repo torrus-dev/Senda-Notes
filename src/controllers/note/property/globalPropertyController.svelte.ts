@@ -1,6 +1,6 @@
 import type { Note } from "@projectTypes/noteTypes";
 import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
-import { globalPropertiesStore } from "modal/globalPropertiesStore.svelte";
+import { globalPropertiesStore } from "@modal/globalPropertiesStore.svelte";
 import { generateGlobalProperty } from "@utils/propertyUtils";
 import { removeDiacritics } from "@utils/searchUtils";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
@@ -56,11 +56,11 @@ class GlobalPropertyController {
       // Comprobamos si ya existe
       const globalPropertyNameMatch =
          this.getGlobalPropertyByName(newPropertyName);
-         if(!globalPropertyNameMatch) {
-            this.updateGlobalPropertyById(id, { name: newPropertyName });
-         } else {
-            // metodo y dialogo para combinar propiedad a la que tiene el nuevo nombre
-         }
+      if (!globalPropertyNameMatch) {
+         this.updateGlobalPropertyById(id, { name: newPropertyName });
+      } else {
+         // metodo y dialogo para combinar propiedad a la que tiene el nuevo nombre
+      }
 
       // Recorremos las note properties vinculadas a la propiedad global y actualizamos el nombre
       globalProperty.linkedProperties.forEach(({ noteId, propertyId }) => {

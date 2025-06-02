@@ -1,4 +1,4 @@
-import { settingsStore } from "modal/settingsStore.svelte";
+import { settingsStore } from "@modal/settingsStore.svelte";
 
 class SettingsController {
    // theme

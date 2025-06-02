@@ -15,7 +15,7 @@ export default defineConfig({
          "@lib": path.resolve(__dirname, "src/lib"),
          "@controllers": path.resolve(__dirname, "src/controllers"),
          "@UIState": path.resolve(__dirname, "src/UIState"),
-         "@stores": path.resolve(__dirname, "src/stores"),
+         "@modal": path.resolve(__dirname, "src/modal"),
          "@directives": path.resolve(__dirname, "src/directives"),
          "@fonts": path.resolve(__dirname, "src/fonts"),
          "@components": path.resolve(__dirname, "src/svelte/components"),

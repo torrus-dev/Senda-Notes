@@ -2,7 +2,7 @@ import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Note } from "@projectTypes/noteTypes";
 import type { NoteProperty } from "@projectTypes/propertyTypes";
 
-import { noteStore } from "modal/noteStore.svelte";
+import { noteStore } from "@modal/noteStore.svelte";
 import {
    createDefaultMetadata,
    generateUniqueTitle,
@@ -15,7 +15,7 @@ import { noteTreeController } from "@controllers/note/noteTreeController.svelte"
 import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { notificationController } from "@controllers/notificationController.svelte";
-import { globalConfirmationDialog } from "modal/ui/confirmationDialogModal.svelte";
+import { globalConfirmationDialog } from "@modal/ui/confirmationDialogModal.svelte";
 
 class NoteController {
    createNote = (parentId?: string | undefined): void => {

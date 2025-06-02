@@ -1,6 +1,6 @@
 import { isDescendant } from "@utils/noteUtils";
 import { DragSource, DropTarget } from "@projectTypes/dndTypes";
-import { noteStore } from "modal/noteStore.svelte";
+import { noteStore } from "@modal/noteStore.svelte";
 import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 import { noteController } from "@controllers/note/noteController.svelte";
 import { noteTreeController } from "@controllers/note/noteTreeController.svelte";
@@ -118,7 +118,11 @@ class DndController {
          return;
       }
 
-      notePropertyController.reorderNoteProperties(noteId, propertyId, newPosition);
+      notePropertyController.reorderNoteProperties(
+         noteId,
+         propertyId,
+         newPosition,
+      );
    };
 
    // Note Tree
