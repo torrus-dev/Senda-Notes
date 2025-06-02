@@ -14,12 +14,13 @@ class NoteModal {
          console.log("notas cargadas: ", $state.snapshot(this.notes));
       }
 
-      // Auto-persistencia con $effect
-      $effect(() => {
-         this.saveToStorage(this.notes);
-         if (settingsStore.debugLevel > 0) {
-            console.log("guardando notas", $state.snapshot(this.notes));
-         }
+      $effect.root(() => {
+         $effect(() => {
+            this.saveToStorage(this.notes);
+            if (settingsStore.debugLevel > 0) {
+               console.log("guardando notas", $state.snapshot(this.notes));
+            }
+         });
       });
    }
 
