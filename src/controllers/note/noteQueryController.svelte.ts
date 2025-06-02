@@ -4,74 +4,59 @@ import { getDescendantsId } from "@utils/noteUtils";
 import { workspace } from "@controllers/workspaceController.svelte";
 
 class NoteQueryController {
-   // Métodos de acceso a datos delegados al store
-   getAllNotes() {
-      return noteModal.getAllNotes();
-   }
-   getNoteById(id: string): Note | undefined {
-      return noteModal.getNoteById(id);
-   }
-   getNotesByIdList(idList: string[]): Note[] {
-      return idList
-         .map((currentId) => this.getNoteById(currentId))
-         .filter((note) => note !== undefined);
+   getNoteById = noteModal.getNoteById.bind(noteModal);
+   getAllNotes = noteModal.getAllNotes.bind(noteModal);
+
+   // Métodos con lógica específica del controlador
+   getRootNotes() {
+      return noteModal.getAllNotes().filter((note) => !note.parentId);
    }
 
-   getTitleById = (id: string): string | undefined => {
-      const note = this.getNoteById(id);
-      return note ? note.title : undefined;
-   };
+   getNotesByIdList(idList: string[]): Note[] {
+      return idList
+         .map(this.getNoteById)
+         .filter((note): note is Note => note !== undefined);
+   }
 
    getActiveNote(): Note | undefined {
       const activeNoteId = workspace.getActiveNoteId();
       return activeNoteId ? this.getNoteById(activeNoteId) : undefined;
    }
 
-   getRootNotes(): Note[] {
-      return noteModal.getRootNotes();
-   }
-
    getPathAsArray(noteId: string): Array<{ id: string; title: string }> {
-      const path = [];
+      const path: Array<{ id: string; title: string }> = [];
       let currentNote = this.getNoteById(noteId);
+
       while (currentNote) {
          path.unshift({ id: currentNote.id, title: currentNote.title });
          currentNote = currentNote.parentId
             ? this.getNoteById(currentNote.parentId)
             : undefined;
       }
+
       return path;
    }
 
-   getPathFromNoteId(noteId: string): string {
-      const titles = [];
-      let currentNote = this.getNoteById(noteId);
-
-      while (currentNote) {
-         titles.unshift(currentNote.title);
-         currentNote = currentNote.parentId
-            ? this.getNoteById(currentNote.parentId)
-            : undefined;
-      }
-
-      return titles.join("/");
+   getPathAsString(noteId: string): string {
+      return this.getPathAsArray(noteId)
+         .map((p) => p.title)
+         .join("/");
    }
 
-   getNoteCount = (): number => noteModal.getAllNotes().length;
+   getNoteCount(): number {
+      return this.getAllNotes().length;
+   }
 
-   getChildrenCount = (noteId: string): number => {
+   getChildrenCount(noteId: string): number {
       const note = this.getNoteById(noteId);
-      if (!note) return 0;
-      const descendants = getDescendantsId(noteModal.getAllNotes(), noteId);
-      return descendants.length;
-   };
+      return note ? getDescendantsId(this.getAllNotes(), noteId).length : 0;
+   }
 
-   // Funciones de validación
-   requireNote = (id: string, context: string = "Note"): Note => {
+   requireNote(id: string, context = "Note"): Note {
       const note = this.getNoteById(id);
       if (!note) throw new Error(`${context} ${id} not found`);
       return note;
-   };
+   }
 }
 
-export let noteQueryController = $state(new NoteQueryController());
+export const noteQueryController = new NoteQueryController();

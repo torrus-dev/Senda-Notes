@@ -65,9 +65,12 @@ class NoteModal {
       }
    }
 
+   // get/set
+
    getNoteById(id: string): Note | undefined {
       return this.notes.find((note) => note.id === id);
    }
+
    getAllNotes(): Note[] {
       return this.notes;
    }
@@ -76,10 +79,7 @@ class NoteModal {
       this.notes = newNotes;
    }
 
-   getRootNotes(): Note[] {
-      return this.notes.filter((note) => !note.parentId);
-   }
-
+   // crud
    createNote(note: Note): void {
       this.notes = [...this.notes, note];
    }

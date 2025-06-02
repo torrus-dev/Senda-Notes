@@ -18,7 +18,7 @@ import { onPressEsc } from "@directives/onPressEsc";
 let { note }: { note: Note | undefined } = $props();
 
 const getNotePath = () =>
-   note?.id ? noteQueryController.getPathFromNoteId(note?.id) : "";
+   note?.id ? noteQueryController.getPathAsString(note?.id) : "";
 
 let searchValue: string = $state("");
 let searchElement: HTMLInputElement | undefined = $state(undefined);

@@ -57,7 +57,7 @@ class SearchController {
                note,
                matchType: "title",
                matchedText: note.title,
-               path: noteQueryController.getPathFromNoteId(note.id),
+               path: noteQueryController.getPathAsString(note.id),
             });
             continue;
          }
@@ -71,7 +71,7 @@ class SearchController {
                   note,
                   matchType: "alias",
                   matchedText: alias,
-                  path: noteQueryController.getPathFromNoteId(note.id),
+                  path: noteQueryController.getPathAsString(note.id),
                });
                break;
             }
@@ -101,7 +101,7 @@ class SearchController {
       for (const note of allNotes) {
          // Obtener y normalizar la ruta de la nota
          const notePath = removeDiacritics(
-            noteQueryController.getPathFromNoteId(note.id).toLowerCase(),
+            noteQueryController.getPathAsString(note.id).toLowerCase(),
          );
 
          // Para búsqueda exacta de directorio
@@ -115,7 +115,7 @@ class SearchController {
                   note,
                   matchType: "title",
                   matchedText: note.title,
-                  path: noteQueryController.getPathFromNoteId(note.id),
+                  path: noteQueryController.getPathAsString(note.id),
                });
             }
             continue;
@@ -137,7 +137,7 @@ class SearchController {
                note,
                matchType: "title",
                matchedText: note.title,
-               path: noteQueryController.getPathFromNoteId(note.id),
+               path: noteQueryController.getPathAsString(note.id),
             });
             continue;
          }
@@ -151,7 +151,7 @@ class SearchController {
                   note,
                   matchType: "alias",
                   matchedText: alias,
-                  path: noteQueryController.getPathFromNoteId(note.id),
+                  path: noteQueryController.getPathAsString(note.id),
                });
                break;
             }
