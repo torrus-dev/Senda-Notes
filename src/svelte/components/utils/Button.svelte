@@ -28,8 +28,9 @@ let {
 } = $props();
 
 if (onclick && dropdownMenuItems) {
-   console.warn("Se esta pasando 'onclick' a un boton con dropdown");
-   onclick = () => {};
+   console.warn(
+      "Se esta pasando 'onclick' a un boton con dropdown, no se usara el click izquierdo",
+   );
 }
 
 // Define los estilos por tamaño
@@ -73,7 +74,7 @@ const disabledClass = $derived(
       disabled={disabled}
       use:dropdownMenu={{
          menuItems: dropdownMenuItems,
-         rightClickEnabled: true,
+         leftClickDisabled: onclick ? true : false,
       }}
       bind:this={buttonElement}>
       {@render children()}

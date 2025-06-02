@@ -67,11 +67,11 @@ export function dropdownMenu(
    node: HTMLElement,
    params: {
       menuItems: MenuItem[] | undefined;
-      rightClickEnabled?: boolean;
+      leftClickDisabled?: boolean;
+      rightClickDisabled?: boolean;
    },
 ) {
-   let menuItems = params.menuItems;
-   let rightClickEnabled = params.rightClickEnabled || false;
+   let { menuItems, leftClickDisabled, rightClickDisabled } = params;
 
    // Si no hay menuItems, devolver un objeto de directiva "noop"
    if (!checkValid(menuItems)) {
@@ -82,6 +82,7 @@ export function dropdownMenu(
    }
 
    function handleClick(event: MouseEvent) {
+      if (leftClickDisabled) return;
       event.preventDefault();
       event.stopPropagation();
 
@@ -95,7 +96,7 @@ export function dropdownMenu(
    }
 
    function handleContextMenu(event: MouseEvent) {
-      if (!rightClickEnabled) return; // Solo procesar si está habilitado el clic derecho
+      if (rightClickDisabled) return; // Solo procesar si está habilitado el clic derecho
 
       event.preventDefault();
       event.stopPropagation();
@@ -116,11 +117,12 @@ export function dropdownMenu(
    return {
       // Actualizar las opciones si cambian
       update(newParams: {
-         menuItems: MenuItem[] | undefined;
-         rightClickEnabled?: boolean;
+         newMenuItems: MenuItem[] | undefined;
+         leftClickDisabled?: boolean;
+         rightClickDisabled?: boolean;
       }) {
-         const newMenuItems = newParams.menuItems;
-         rightClickEnabled = newParams.rightClickEnabled || false;
+         const { newMenuItems, leftClickDisabled, rightClickDisabled } =
+            newParams;
 
          const wasValid = checkValid(menuItems);
          const isValid = checkValid(newMenuItems);
