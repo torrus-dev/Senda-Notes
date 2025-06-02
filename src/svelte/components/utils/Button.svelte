@@ -27,12 +27,6 @@ let {
    disabled?: boolean;
 } = $props();
 
-if (onclick && dropdownMenuItems) {
-   console.warn(
-      "Se esta pasando 'onclick' a un boton con dropdown, no se usara el click izquierdo",
-   );
-}
-
 // Define los estilos por tamaño
 let sizeStyle = { small: "", medium: "", large: "" };
 

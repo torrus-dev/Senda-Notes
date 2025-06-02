@@ -5,7 +5,7 @@ import { DateTime } from "luxon";
 
 const NOTES_STORAGE_KEY = "notes";
 
-class NoteModal {
+class NoteModel {
    private notes = $state<Note[]>([]);
 
    constructor() {
@@ -99,4 +99,4 @@ class NoteModal {
    }
 }
 
-export const noteModal = new NoteModal();
+export const noteModel = new NoteModel();

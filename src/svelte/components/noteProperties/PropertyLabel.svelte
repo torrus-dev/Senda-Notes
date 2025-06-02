@@ -13,7 +13,7 @@ import { workspace } from "@controllers/workspaceController.svelte";
 import PropertyIcon from "@components/noteProperties/PropertyIcon.svelte";
 import Button from "@components/utils/Button.svelte";
 import PropertyNameInput from "@components/noteProperties/PropertyNameInput.svelte";
-import { globalConfirmationDialog } from "@modal/ui/confirmationDialogModal.svelte";
+import { globalConfirmationDialog } from "@controllers/ui/confirmationDialogController.svelte";
 
 let {
    noteId,

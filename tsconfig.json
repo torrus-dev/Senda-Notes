@@ -18,7 +18,7 @@
          "@lib/*": ["lib/*"],
          "@controllers/*": ["controllers/*"],
          "@UIState/*": ["UIState/*"],
-         "@modal/*": ["modal/*"],
+         "@model/*": ["model/*"],
          "@directives/*": ["directives/*"],
          "@fonts/*": ["fonts/*"],
          "@components/*": ["svelte/components/*"],

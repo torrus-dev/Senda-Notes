@@ -1,7 +1,7 @@
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Note } from "@projectTypes/noteTypes";
 
-import { noteModal } from "@modal/noteModal.svelte";
+import { noteModel } from "@model/noteModel.svelte";
 import {
    createDefaultMetadata,
    generateUniqueTitle,
@@ -14,10 +14,10 @@ import { noteTreeController } from "@controllers/note/noteTreeController.svelte"
 import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { notificationController } from "@controllers/notificationController.svelte";
-import { globalConfirmationDialog } from "@modal/ui/confirmationDialogModal.svelte";
+import { globalConfirmationDialog } from "@controllers/ui/confirmationDialogController.svelte";
 
 class NoteController {
-   setAllNotes = noteModal.setAllNotes.bind(noteModal);
+   setAllNotes = noteModel.setAllNotes.bind(noteModel);
 
    createNote = (parentId?: string): void => {
       // Validación previa si hay padre
@@ -28,7 +28,7 @@ class NoteController {
 
       const newNote: Note = {
          id: crypto.randomUUID(),
-         title: generateUniqueTitle(noteModal.getAllNotes()),
+         title: generateUniqueTitle(noteModel.getAllNotes()),
          children: [],
          content: "",
          metadata: createDefaultMetadata(),
@@ -37,11 +37,11 @@ class NoteController {
       };
 
       // Añadir la nueva nota
-      noteModal.createNote(newNote);
+      noteModel.createNote(newNote);
 
       // Si tiene padre, actualizar su array children
       if (parentId) {
-         noteModal.updateNote(parentId, (parent) => ({
+         noteModel.updateNote(parentId, (parent) => ({
             ...parent,
             children: [...parent.children, newNote.id],
          }));
@@ -57,7 +57,7 @@ class NoteController {
          return;
       }
 
-      noteModal.updateNote(noteId, (note) => ({ ...note, ...updates }));
+      noteModel.updateNote(noteId, (note) => ({ ...note, ...updates }));
    };
 
    updateNoteTitle = (noteId: string, title: string): void => {
@@ -99,7 +99,7 @@ class NoteController {
       idsToDelete.add(id);
 
       // Batch update: eliminar notas y limpiar referencias en una sola operación
-      noteModal.updateAllNotes((notes) => {
+      noteModel.updateAllNotes((notes) => {
          // Filtrar notas eliminadas
          const remainingNotes = notes.filter(
             (note) => !idsToDelete.has(note.id),

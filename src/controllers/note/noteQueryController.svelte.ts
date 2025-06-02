@@ -1,15 +1,15 @@
 import type { Note } from "@projectTypes/noteTypes";
-import { noteModal } from "@modal/noteModal.svelte";
+import { noteModel } from "@model/noteModel.svelte";
 import { getDescendantsId } from "@utils/noteUtils";
 import { workspace } from "@controllers/workspaceController.svelte";
 
 class NoteQueryController {
-   getNoteById = noteModal.getNoteById.bind(noteModal);
-   getAllNotes = noteModal.getAllNotes.bind(noteModal);
+   getNoteById = noteModel.getNoteById.bind(noteModel);
+   getAllNotes = noteModel.getAllNotes.bind(noteModel);
 
    // Métodos con lógica específica del controlador
    getRootNotes() {
-      return noteModal.getAllNotes().filter((note) => !note.parentId);
+      return noteModel.getAllNotes().filter((note) => !note.parentId);
    }
 
    getNotesByIdList(idList: string[]): Note[] {

@@ -6,7 +6,6 @@ function checkValid(menuItems: MenuItem[] | undefined) {
    if (menuItems && Array.isArray(menuItems) && menuItems.length > 0) {
       return true;
    }
-   console.warn("menu items are invalid", menuItems);
    return false;
 }
 

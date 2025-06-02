@@ -4,7 +4,7 @@ type CollapsibleStates = {
    [key: string]: boolean;
 };
 
-class CollapsibleModal {
+class CollapsibleModel {
    states: CollapsibleStates = $state({});
 
    constructor() {
@@ -45,4 +45,4 @@ class CollapsibleModal {
    }
 }
 
-export const collapsibleModal = new CollapsibleModal();
+export const collapsibleModel = new CollapsibleModel();
