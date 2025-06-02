@@ -1,7 +1,9 @@
+import type { DragSource } from "@projectTypes/dndTypes";
+
 import { isDescendant } from "@utils/noteUtils";
+
 import { dndController } from "@controllers/dndController.svelte";
-import { DragSource } from "@projectTypes/dndTypes";
-import { noteModal } from "@modal/noteModal.svelte";
+import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 
 // Handlers para NoteTreeNode
 export function createNoteTreeNodeDndHandlers(params: {
@@ -171,7 +173,11 @@ export function checkDraggingBranch(noteId: string) {
       if (dragSourceId === noteId) {
          return true;
       } else {
-         return isDescendant(noteModal.getAllNotes(), noteId, dragSourceId);
+         return isDescendant(
+            noteQueryController.getAllNotes(),
+            noteId,
+            dragSourceId,
+         );
       }
    }
    return false;
