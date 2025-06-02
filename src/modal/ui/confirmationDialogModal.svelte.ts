@@ -34,7 +34,7 @@ class ConfirmationController {
    show(options: {
       title: string;
       message: string;
-      variant?: "danger" | "warning" | "info";
+      variant?: ConfirmationDialogOptions["variant"];
       onAccept: () => void;
       onCancel?: () => void;
    }) {

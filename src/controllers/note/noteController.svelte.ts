@@ -15,7 +15,7 @@ import { noteTreeController } from "@controllers/note/noteTreeController.svelte"
 import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 import { notificationController } from "@controllers/notificationController.svelte";
-import { globalConfirmationDialog } from "modal/confirmationDialogState.svelte";
+import { globalConfirmationDialog } from "modal/ui/confirmationDialogModal.svelte";
 
 class NoteController {
    createNote = (parentId?: string | undefined): void => {
