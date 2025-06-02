@@ -84,7 +84,7 @@ class NoteTreeController {
    }
 
    updateNoteParentId(noteId: string, newParentId: string | undefined): void {
-      noteModal.updateAll((notes) =>
+      noteModal.updateAllNotes((notes) =>
          notes.map((n) =>
             n.id === noteId
                ? updateModifiedMetadata({ ...n, parentId: newParentId })
@@ -152,7 +152,7 @@ class NoteTreeController {
       parentId: string,
       updateFn: (children: string[]) => string[],
    ): void {
-      noteModal.updateAll((notes) =>
+      noteModal.updateAllNotes((notes) =>
          notes.map((n) =>
             n.id === parentId
                ? updateModifiedMetadata({

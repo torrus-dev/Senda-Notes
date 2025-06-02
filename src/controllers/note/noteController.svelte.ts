@@ -97,7 +97,7 @@ class NoteController {
       idsToDelete.add(id);
 
       // Batch update: eliminar notas y limpiar referencias en una sola operación
-      noteModal.updateAll((notes) => {
+      noteModal.updateAllNotes((notes) => {
          // Filtrar notas eliminadas
          const remainingNotes = notes.filter(
             (note) => !idsToDelete.has(note.id),

@@ -65,7 +65,6 @@ class NoteModal {
       }
    }
 
-   // Métodos de acceso simplificados
    getNoteById(id: string): Note | undefined {
       return this.notes.find((note) => note.id === id);
    }
@@ -91,19 +90,12 @@ class NoteModal {
          this.notes[index] = updateModifiedMetadata(updater(this.notes[index]));
       }
    }
-
-   removeNote(id: string): void {
-      this.notes = this.notes.filter((note) => note.id !== id);
-   }
-
-   // Para operaciones batch más complejas
-   updateAll(updater: (notes: Note[]) => Note[]): void {
+   updateAllNotes(updater: (notes: Note[]) => Note[]): void {
       this.notes = updater(this.notes);
    }
 
-   // Setter completo para casos especiales (migración, etc.)
-   setAll(newNotes: Note[]): void {
-      this.notes = newNotes;
+   removeNote(id: string): void {
+      this.notes = this.notes.filter((note) => note.id !== id);
    }
 }
 
