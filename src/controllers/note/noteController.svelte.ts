@@ -17,6 +17,8 @@ import { notificationController } from "@controllers/notificationController.svel
 import { globalConfirmationDialog } from "@modal/ui/confirmationDialogModal.svelte";
 
 class NoteController {
+   setAllNotes = noteModal.setAllNotes.bind(noteModal);
+
    createNote = (parentId?: string): void => {
       // Validación previa si hay padre
       if (parentId && !noteQueryController.getNoteById(parentId)) {

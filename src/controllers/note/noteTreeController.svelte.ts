@@ -1,9 +1,11 @@
 import type { Note } from "@projectTypes/noteTypes";
-import { updateModifiedMetadata } from "@utils/noteUtils";
-import { noteModal } from "@modal/noteModal.svelte";
+import { noteController } from "@controllers/note/noteController.svelte";
 import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 
 class NoteTreeController {
+   /**
+    * Mueve una nota a una nueva posición en el árbol
+    */
    moveNoteToPosition = (
       noteId: string,
       newParentId: string | undefined,
@@ -20,42 +22,45 @@ class NoteTreeController {
       this.removeFromPreviousParent(note);
 
       // 2. Actualizar parentId de la nota
-      this.updateNoteParentId(noteId, newParentId);
-      const updatedNote = noteQueryController.getNoteById(noteId)!;
+      noteController.updateNote(noteId, { parentId: newParentId });
 
       // 3. Insertar en nueva ubicación
       if (newParentId) {
-         this.insertIntoParent(newParentId, updatedNote.id, position);
+         this.insertIntoParent(newParentId, noteId, position);
       } else {
-         this.insertIntoRoot(updatedNote, position);
+         this.insertIntoRoot(noteId, position);
       }
    };
 
+   /**
+    * Obtiene todos los IDs descendientes de una nota (excluyendo la nota misma)
+    */
    getDescendantIds = (noteId: string): Set<string> => {
-      const idsToDelete = new Set<string>();
+      const descendants = new Set<string>();
+      const allNotes = noteQueryController.getAllNotes();
+
       const collectDescendants = (currNoteId: string) => {
-         idsToDelete.add(currNoteId);
-         noteModal.getAllNotes().forEach((note) => {
+         descendants.add(currNoteId);
+         allNotes.forEach((note) => {
             if (note.parentId === currNoteId) {
                collectDescendants(note.id);
             }
          });
       };
 
-      // Llamamos a la función recursiva pero no incluimos el ID inicial
-      // ya que eso lo hace el método llamador cuando sea necesario
-      const notes = noteModal.getAllNotes();
-      notes.forEach((note) => {
+      // Recoger descendientes pero NO incluir el noteId inicial
+      allNotes.forEach((note) => {
          if (note.parentId === noteId) {
             collectDescendants(note.id);
          }
       });
 
-      return idsToDelete;
+      return descendants;
    };
 
-   /* ----------------- Funciones auxiliares ----------------- */
-
+   /**
+    * Verifica si mover una nota crearía un ciclo
+    */
    wouldCreateCycle = (parentId: string, childId: string): boolean => {
       let current = noteQueryController.getNoteById(parentId);
       while (current?.parentId) {
@@ -65,11 +70,14 @@ class NoteTreeController {
       return false;
    };
 
+   // Métodos de validación y auxiliares
    validateParentRelationship(newParentId: string, noteId: string): void {
       noteQueryController.requireNote(newParentId, "New parent note");
+
       if (newParentId === noteId) {
          throw new Error("Cannot move note to itself");
       }
+
       if (this.wouldCreateCycle(newParentId, noteId)) {
          throw new Error("Cannot move note to its own descendant");
       }
@@ -77,92 +85,85 @@ class NoteTreeController {
 
    removeFromPreviousParent(note: Note): void {
       if (note.parentId) {
-         this.updateParentChildren(note.parentId, (children) =>
-            children.filter((id) => id !== note.id),
-         );
+         const parent = noteQueryController.requireNote(note.parentId);
+         const newChildren = parent.children.filter((id) => id !== note.id);
+         noteController.updateNote(note.parentId, { children: newChildren });
       }
    }
 
-   updateNoteParentId(noteId: string, newParentId: string | undefined): void {
-      noteModal.updateAllNotes((notes) =>
-         notes.map((n) =>
-            n.id === noteId
-               ? updateModifiedMetadata({ ...n, parentId: newParentId })
-               : n,
-         ),
-      );
-   }
-
    insertIntoParent(parentId: string, noteId: string, position: number): void {
-      this.updateParentChildren(parentId, (children) => {
-         const filtered = children.filter((id) => id !== noteId);
-         const originalIndex = children.indexOf(noteId);
-         const adjustedPosition = this.getAdjustedPosition(
-            originalIndex,
-            position,
-            filtered.length,
-         );
+      const parent = noteQueryController.requireNote(parentId);
+      const children = [...parent.children];
 
-         return [
-            ...filtered.slice(0, adjustedPosition),
-            noteId,
-            ...filtered.slice(adjustedPosition),
-         ];
-      });
-   }
+      // Filtrar el noteId si ya existe
+      const filtered = children.filter((id) => id !== noteId);
+      const originalIndex = children.indexOf(noteId);
 
-   insertIntoRoot(movedNote: Note, position: number): void {
-      const rootNotes = noteQueryController
-         .getRootNotes()
-         .filter((note: Note) => note.id !== movedNote.id);
-      const originalIndex = rootNotes.findIndex(
-         (note: Note) => note.id === movedNote.id,
-      );
+      // Calcular posición ajustada usando la lógica original
       const adjustedPosition = this.getAdjustedPosition(
          originalIndex,
          position,
-         rootNotes.length,
+         filtered.length,
       );
 
-      const newRootNotes = [
-         ...rootNotes.slice(0, adjustedPosition),
-         movedNote,
-         ...rootNotes.slice(adjustedPosition),
+      // Insertar en la posición correcta
+      const newChildren = [
+         ...filtered.slice(0, adjustedPosition),
+         noteId,
+         ...filtered.slice(adjustedPosition),
       ];
 
-      const notesWithParents = noteModal
-         .getAllNotes()
-         .filter((n) => n.parentId);
-      noteModal.setNotes([...newRootNotes, ...notesWithParents]);
+      noteController.updateNote(parentId, { children: newChildren });
    }
 
+   insertIntoRoot(noteId: string, position: number): void {
+      const allNotes = noteQueryController.getAllNotes();
+      const rootNotes = allNotes.filter((note) => !note.parentId);
+      const notesWithParents = allNotes.filter((note) => note.parentId);
+
+      // Filtrar la nota movida de rootNotes
+      const filteredRootNotes = rootNotes.filter((note) => note.id !== noteId);
+      const movedNote = noteQueryController.requireNote(noteId);
+
+      // Calcular posición original y ajustada
+      const originalIndex = rootNotes.findIndex((note) => note.id === noteId);
+      const adjustedPosition = this.getAdjustedPosition(
+         originalIndex,
+         position,
+         filteredRootNotes.length,
+      );
+
+      // Crear nuevo array de root notes con la nota en la posición correcta
+      const newRootNotes = [
+         ...filteredRootNotes.slice(0, adjustedPosition),
+         movedNote,
+         ...filteredRootNotes.slice(adjustedPosition),
+      ];
+
+      // Actualizar el array completo manteniendo el orden: root notes + notes with parents
+      const newNotesOrder = [...newRootNotes, ...notesWithParents];
+      noteController.setAllNotes(newNotesOrder);
+   }
+
+   /**
+    * Calcula la posición ajustada considerando si el elemento ya existe en el array
+    * Lógica original preservada del código base
+    */
    getAdjustedPosition(
       originalIndex: number,
       targetPosition: number,
       maxLength: number,
    ): number {
       let adjusted = targetPosition;
-      if (originalIndex !== -1 && originalIndex < targetPosition) {
-         adjusted = targetPosition - 1; // Ajuste por movimiento dentro del mismo contenedor
-      }
-      return Math.max(0, Math.min(adjusted, maxLength)); // Clamping correcto
-   }
 
-   updateParentChildren(
-      parentId: string,
-      updateFn: (children: string[]) => string[],
-   ): void {
-      noteModal.updateAllNotes((notes) =>
-         notes.map((n) =>
-            n.id === parentId
-               ? updateModifiedMetadata({
-                    ...n,
-                    children: updateFn(n.children),
-                 })
-               : n,
-         ),
-      );
+      // Si el elemento ya existía y está antes de la posición objetivo, ajustar
+      if (originalIndex !== -1 && originalIndex < targetPosition) {
+         adjusted = targetPosition - 1;
+      }
+
+      // Clamping para mantener dentro de límites válidos
+      return Math.max(0, Math.min(adjusted, maxLength));
    }
 }
 
-export let noteTreeController = $state(new NoteTreeController());
+export const noteTreeController = new NoteTreeController();

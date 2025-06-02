@@ -75,7 +75,7 @@ class NoteModal {
       return this.notes;
    }
 
-   setNotes(newNotes: Note[]) {
+   setAllNotes(newNotes: Note[]) {
       this.notes = newNotes;
    }
 
