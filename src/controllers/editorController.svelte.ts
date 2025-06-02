@@ -7,6 +7,8 @@ class EditorController {
    get contentSaved() {
       return editorStore.contentSaved;
    }
+
+   // Stats
    set chararecterCount(newValue: number) {
       editorStore.chararecterCount = newValue;
    }

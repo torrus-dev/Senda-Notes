@@ -1,5 +1,5 @@
 import type { Note } from "@projectTypes/noteTypes";
-import { noteStore } from "@modal/noteStore.svelte";
+import { noteStore } from "@modal/noteModal.svelte";
 import { getDescendantsId } from "@utils/noteUtils";
 import { workspace } from "@controllers/workspaceController.svelte";
 

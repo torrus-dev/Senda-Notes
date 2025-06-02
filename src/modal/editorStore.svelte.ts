@@ -1,9 +1,3 @@
-import type {
-   WorkspaceState,
-   PersistedWorkspaceState,
-} from "@projectTypes/workspaceTypes";
-import { loadWorkspaceState, saveWorkspaceState } from "@utils/storage";
-
 interface EditorData {
    contentSaved: boolean;
    wordCount: number;
@@ -50,6 +44,5 @@ class EditorStore {
    set lineCount(value: number) {
       this.data.lineCount = value;
    }
-
 }
 export let editorStore = $state(new EditorStore());

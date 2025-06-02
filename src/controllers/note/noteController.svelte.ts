@@ -2,7 +2,7 @@ import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Note } from "@projectTypes/noteTypes";
 import type { NoteProperty } from "@projectTypes/propertyTypes";
 
-import { noteStore } from "@modal/noteStore.svelte";
+import { noteStore } from "@modal/noteModal.svelte";
 import {
    createDefaultMetadata,
    generateUniqueTitle,

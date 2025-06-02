@@ -1,6 +1,6 @@
 import type { Note } from "@projectTypes/noteTypes";
 import { updateModifiedMetadata } from "@utils/noteUtils";
-import { noteStore } from "@modal/noteStore.svelte";
+import { noteStore } from "@modal/noteModal.svelte";
 import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 
 class NoteTreeController {
