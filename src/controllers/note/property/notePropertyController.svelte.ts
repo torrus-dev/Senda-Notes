@@ -1,7 +1,7 @@
 import type { NoteProperty } from "@projectTypes/propertyTypes";
 import type { Note } from "@projectTypes/noteTypes";
 import { generateProperty } from "@utils/propertyUtils";
-import { noteStore } from "@modal/noteModal.svelte";
+import { noteModal } from "@modal/noteModal.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
 import { noteController } from "@controllers/note/noteController.svelte";
 import { removeDiacritics } from "@utils/searchUtils";
@@ -11,7 +11,7 @@ class NotePropertyController {
       noteId: Note["id"],
       newProperty: NoteProperty,
    ) => {
-      const note = noteStore.getNoteById(noteId);
+      const note = noteModal.getNoteById(noteId);
       if (!note) return;
       const updatedProperties = [...note.properties, newProperty];
       noteController.updateNote(noteId, { properties: updatedProperties });
@@ -72,7 +72,7 @@ class NotePropertyController {
    ) => {
       const propertyToDelete = this.getPropertyById(noteId, propertyToDeleteId);
       if (!propertyToDelete) return;
-      const note = noteStore.getNoteById(noteId);
+      const note = noteModal.getNoteById(noteId);
       if (!note) return;
       const updatedNoteProperties = note.properties.filter(
          (property) => property.id !== propertyToDeleteId,
@@ -93,7 +93,7 @@ class NotePropertyController {
       propertyId: NoteProperty["id"],
       updatedProperty: Partial<NoteProperty>,
    ): void => {
-      const note = noteStore.getNoteById(noteId);
+      const note = noteModal.getNoteById(noteId);
       if (!note) return;
 
       const updatedProperties: NoteProperty[] = note.properties.map((prop) => {
@@ -113,7 +113,7 @@ class NotePropertyController {
       noteId: string,
       propertyId: string,
    ): NoteProperty | undefined => {
-      const note = noteStore.getNoteById(noteId);
+      const note = noteModal.getNoteById(noteId);
       if (!note) return undefined;
       return note.properties.find((property) => property.id === propertyId);
    };
@@ -198,7 +198,7 @@ class NotePropertyController {
       newPosition: number,
    ): void => {
       // Verificamos que la propiedad exista
-      const note = noteStore.getNoteById(noteId);
+      const note = noteModal.getNoteById(noteId);
       if (!note) return;
       const properties = [...note.properties];
 
@@ -239,7 +239,7 @@ class NotePropertyController {
    };
 
    getNoteProperties = (noteId: string): NoteProperty[] => {
-      const note = noteStore.getNoteById(noteId);
+      const note = noteModal.getNoteById(noteId);
       return note ? note.properties : [];
    };
 }

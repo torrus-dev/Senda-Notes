@@ -1,15 +1,15 @@
 import type { Note } from "@projectTypes/noteTypes";
-import { noteStore } from "@modal/noteModal.svelte";
+import { noteModal } from "@modal/noteModal.svelte";
 import { getDescendantsId } from "@utils/noteUtils";
 import { workspace } from "@controllers/workspaceController.svelte";
 
 class NoteQueryController {
    // Métodos de acceso a datos delegados al store
    getAllNotes() {
-      return noteStore.getAllNotes();
+      return noteModal.getAllNotes();
    }
    getNoteById(id: string): Note | undefined {
-      return noteStore.getNoteById(id);
+      return noteModal.getNoteById(id);
    }
    getNotesByIdList(idList: string[]): Note[] {
       return idList
@@ -28,7 +28,7 @@ class NoteQueryController {
    }
 
    getRootNotes(): Note[] {
-      return noteStore.getRootNotes();
+      return noteModal.getRootNotes();
    }
 
    getPathAsArray(noteId: string): Array<{ id: string; title: string }> {
@@ -57,12 +57,12 @@ class NoteQueryController {
       return titles.join("/");
    }
 
-   getNoteCount = (): number => noteStore.getAllNotes().length;
+   getNoteCount = (): number => noteModal.getAllNotes().length;
 
    getChildrenCount = (noteId: string): number => {
       const note = this.getNoteById(noteId);
       if (!note) return 0;
-      const descendants = getDescendantsId(noteStore.getAllNotes(), noteId);
+      const descendants = getDescendantsId(noteModal.getAllNotes(), noteId);
       return descendants.length;
    };
 

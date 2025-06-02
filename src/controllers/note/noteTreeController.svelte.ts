@@ -1,6 +1,6 @@
 import type { Note } from "@projectTypes/noteTypes";
 import { updateModifiedMetadata } from "@utils/noteUtils";
-import { noteStore } from "@modal/noteModal.svelte";
+import { noteModal } from "@modal/noteModal.svelte";
 import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 
 class NoteTreeController {
@@ -35,7 +35,7 @@ class NoteTreeController {
       const idsToDelete = new Set<string>();
       const collectDescendants = (currNoteId: string) => {
          idsToDelete.add(currNoteId);
-         noteStore.getAllNotes().forEach((note) => {
+         noteModal.getAllNotes().forEach((note) => {
             if (note.parentId === currNoteId) {
                collectDescendants(note.id);
             }
@@ -44,7 +44,7 @@ class NoteTreeController {
 
       // Llamamos a la función recursiva pero no incluimos el ID inicial
       // ya que eso lo hace el método llamador cuando sea necesario
-      const notes = noteStore.getAllNotes();
+      const notes = noteModal.getAllNotes();
       notes.forEach((note) => {
          if (note.parentId === noteId) {
             collectDescendants(note.id);
@@ -84,7 +84,7 @@ class NoteTreeController {
    }
 
    updateNoteParentId(noteId: string, newParentId: string | undefined): void {
-      noteStore.updateNotes((notes) =>
+      noteModal.updateAll((notes) =>
          notes.map((n) =>
             n.id === noteId
                ? updateModifiedMetadata({ ...n, parentId: newParentId })
@@ -130,10 +130,10 @@ class NoteTreeController {
          ...rootNotes.slice(adjustedPosition),
       ];
 
-      const notesWithParents = noteStore
+      const notesWithParents = noteModal
          .getAllNotes()
          .filter((n) => n.parentId);
-      noteStore.setNotes([...newRootNotes, ...notesWithParents]);
+      noteModal.setNotes([...newRootNotes, ...notesWithParents]);
    }
 
    getAdjustedPosition(
@@ -152,7 +152,7 @@ class NoteTreeController {
       parentId: string,
       updateFn: (children: string[]) => string[],
    ): void {
-      noteStore.updateNotes((notes) =>
+      noteModal.updateAll((notes) =>
          notes.map((n) =>
             n.id === parentId
                ? updateModifiedMetadata({

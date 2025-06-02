@@ -1,8 +1,7 @@
 import { isDescendant } from "@utils/noteUtils";
 import { DragSource, DropTarget } from "@projectTypes/dndTypes";
-import { noteStore } from "@modal/noteModal.svelte";
+import { noteModal } from "@modal/noteModal.svelte";
 import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
-import { noteController } from "@controllers/note/noteController.svelte";
 import { noteTreeController } from "@controllers/note/noteTreeController.svelte";
 import { notePropertyController } from "./note/property/notePropertyController.svelte";
 
@@ -146,7 +145,7 @@ class DndController {
             return;
          }
          if (
-            isDescendant(noteStore.getAllNotes(), targetNoteId, draggedNoteId)
+            isDescendant(noteModal.getAllNotes(), targetNoteId, draggedNoteId)
          ) {
             console.warn(
                "No se puede soltar una nota sobre un descendiente suyo",
@@ -177,7 +176,7 @@ class DndController {
             targetParentId &&
             (targetParentId === draggedNoteId ||
                isDescendant(
-                  noteStore.getAllNotes(),
+                  noteModal.getAllNotes(),
                   targetParentId,
                   draggedNoteId,
                ))

@@ -1,66 +1,109 @@
 import type { Note } from "@projectTypes/noteTypes";
-import { loadNotesFromStorage, saveNotesToStorage } from "@utils/storage";
 import { updateModifiedMetadata } from "@utils/noteUtils";
 import { settingsStore } from "./settingsStore.svelte";
+import { DateTime } from "luxon";
 
-class NoteStore {
+const NOTES_STORAGE_KEY = "notes";
+
+class NoteModal {
    private notes = $state<Note[]>([]);
 
    constructor() {
-      this.notes = loadNotesFromStorage();
+      this.notes = this.loadFromStorage();
       if (settingsStore.debugLevel > 0) {
          console.log("notas cargadas: ", $state.snapshot(this.notes));
       }
+
+      // Auto-persistencia con $effect
+      $effect(() => {
+         this.saveToStorage(this.notes);
+         if (settingsStore.debugLevel > 0) {
+            console.log("guardando notas", $state.snapshot(this.notes));
+         }
+      });
    }
 
-   saveNotes() {
-      saveNotesToStorage(this.notes);
-      if (settingsStore.debugLevel > 0) {
-         console.log("guardando notas", $state.snapshot(this.notes));
+   // Métodos de persistencia integrados
+   private loadFromStorage(): Note[] {
+      const stored = localStorage.getItem(NOTES_STORAGE_KEY);
+      if (stored) {
+         try {
+            const parsedNotes = JSON.parse(stored);
+            return parsedNotes.map((note: any) => ({
+               ...note,
+               metadata: {
+                  ...note.metadata,
+                  created: DateTime.fromISO(note.metadata.created),
+                  modified: DateTime.fromISO(note.metadata.modified),
+               },
+            }));
+         } catch (error) {
+            console.error("Error al parsear notas desde localStorage:", error);
+            return [];
+         }
+      }
+      return [];
+   }
+
+   private saveToStorage(notes: Note[]): void {
+      try {
+         const serializedNotes = notes.map((note) => ({
+            ...note,
+            metadata: {
+               ...note.metadata,
+               created: note.metadata.created.toISO(),
+               modified: note.metadata.modified.toISO(),
+            },
+         }));
+         localStorage.setItem(
+            NOTES_STORAGE_KEY,
+            JSON.stringify(serializedNotes),
+         );
+      } catch (error) {
+         console.error("Error al guardar notas en localStorage:", error);
       }
    }
 
-   // Métodos básicos de acceso a datos
+   // Métodos de acceso simplificados
    getNoteById(id: string): Note | undefined {
       return this.notes.find((note) => note.id === id);
    }
-
    getAllNotes(): Note[] {
       return this.notes;
    }
 
    setNotes(newNotes: Note[]) {
       this.notes = newNotes;
-      this.saveNotes();
-   }
-
-   createNote(note: Note): void {
-      this.notes = [...this.notes, note];
-      this.saveNotes();
-   }
-
-   // Actualiza una nota en el array por ID aplicando un updater
-   updateNoteById(id: string, updater: (note: Note) => Note): void {
-      const index = this.notes.findIndex((n) => n.id === id);
-      if (index !== -1) {
-         this.notes[index] = updateModifiedMetadata(updater(this.notes[index]));
-      }
-      this.saveNotes();
-   }
-
-   removeNote(id: string): void {
-      this.notes = this.notes.filter((note) => note.id !== id);
-      this.saveNotes();
-   }
-
-   updateNotes(noteUpdater: (notes: Note[]) => Note[]): void {
-      this.notes = noteUpdater(this.notes);
-      this.saveNotes();
    }
 
    getRootNotes(): Note[] {
       return this.notes.filter((note) => !note.parentId);
    }
+
+   createNote(note: Note): void {
+      this.notes = [...this.notes, note];
+   }
+
+   updateNote(id: string, updater: (note: Note) => Note): void {
+      const index = this.notes.findIndex((n) => n.id === id);
+      if (index !== -1) {
+         this.notes[index] = updateModifiedMetadata(updater(this.notes[index]));
+      }
+   }
+
+   removeNote(id: string): void {
+      this.notes = this.notes.filter((note) => note.id !== id);
+   }
+
+   // Para operaciones batch más complejas
+   updateAll(updater: (notes: Note[]) => Note[]): void {
+      this.notes = updater(this.notes);
+   }
+
+   // Setter completo para casos especiales (migración, etc.)
+   setAll(newNotes: Note[]): void {
+      this.notes = newNotes;
+   }
 }
 
-export let noteStore = $state(new NoteStore());
+export const noteModal = new NoteModal();

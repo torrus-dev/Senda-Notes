@@ -1,8 +1,7 @@
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Note } from "@projectTypes/noteTypes";
-import type { NoteProperty } from "@projectTypes/propertyTypes";
 
-import { noteStore } from "@modal/noteModal.svelte";
+import { noteModal } from "@modal/noteModal.svelte";
 import {
    createDefaultMetadata,
    generateUniqueTitle,
@@ -18,32 +17,32 @@ import { notificationController } from "@controllers/notificationController.svel
 import { globalConfirmationDialog } from "@modal/ui/confirmationDialogModal.svelte";
 
 class NoteController {
-   createNote = (parentId?: string | undefined): void => {
-      if (typeof parentId === "string") {
-         noteQueryController.requireNote(parentId, "Parent note");
+   createNote = (parentId?: string): void => {
+      // Validación previa si hay padre
+      if (parentId && !noteQueryController.getNoteById(parentId)) {
+         console.error(`Parent note with id ${parentId} not found`);
+         return;
       }
 
       const newNote: Note = {
          id: crypto.randomUUID(),
-         title: generateUniqueTitle(noteStore.getAllNotes()),
+         title: generateUniqueTitle(noteModal.getAllNotes()),
          children: [],
          content: "",
          metadata: createDefaultMetadata(),
          properties: [],
-         parentId: typeof parentId === "string" ? parentId : undefined,
+         parentId,
       };
 
-      noteStore.createNote(newNote);
+      // Añadir la nueva nota
+      noteModal.createNote(newNote);
 
-      if (typeof parentId === "string") {
-         // Actualizamos el array de notas para agregar el ID de la nueva nota al padre
-         noteStore.updateNotes((notes) =>
-            notes.map((n) =>
-               n.id === parentId
-                  ? { ...n, children: [...n.children, newNote.id] }
-                  : n,
-            ),
-         );
+      // Si tiene padre, actualizar su array children
+      if (parentId) {
+         noteModal.updateNote(parentId, (parent) => ({
+            ...parent,
+            children: [...parent.children, newNote.id],
+         }));
       }
 
       workspace.setActiveNoteId(newNote.id);
@@ -51,86 +50,87 @@ class NoteController {
    };
 
    updateNote = (noteId: string, updates: Partial<Note>): void => {
-      const note = noteQueryController.getNoteById(noteId);
-      if (!note) return;
+      if (!noteQueryController.getNoteById(noteId)) {
+         console.error(`Note with id ${noteId} not found`);
+         return;
+      }
 
-      noteStore.updateNoteById(
-         noteId,
-         (existingNote) =>
-            ({
-               ...existingNote,
-               ...updates,
-            }) as Note,
-      );
+      noteModal.updateNote(noteId, (note) => ({ ...note, ...updates }));
    };
 
    updateNoteTitle = (noteId: string, title: string): void => {
       const sanitizedTitle = sanitizeTitle(title);
       const note = noteQueryController.getNoteById(noteId);
 
-      // Solo actualizar si el título ha cambiado
       if (note && note.title !== sanitizedTitle) {
          this.updateNote(noteId, { title: sanitizedTitle });
       }
    };
-   updateNoteIcon = (noteId: string, icon: string | undefined): void => {
+
+   updateNoteIcon = (noteId: string, icon?: string): void => {
       this.updateNote(noteId, { icon });
    };
+
    updateNoteContent = (noteId: string, content: string): void => {
-      this.updateNote(noteId, { content: content });
+      this.updateNote(noteId, { content });
    };
 
-   deleteNoteWithConfirmation(id: string): void {
+   deleteNoteWithConfirmation = (id: string): void => {
+      const note = noteQueryController.getNoteById(id);
+      if (!note) return;
+
       globalConfirmationDialog.show({
          title: "Borrar Nota",
          message:
-            "Seguro que quieres borrar esta nota, esta acción no puede deshacerse",
+            "¿Seguro que quieres borrar esta nota? Esta acción no puede deshacerse.",
          variant: "danger",
-         onAccept: () => {
-            this.deleteNote(id);
-         },
+         onAccept: () => this.deleteNote(id),
       });
-   }
+   };
 
    deleteNote = (id: string): void => {
-      // Nos aseguramos de que la nota existe.
       const noteToDelete = noteQueryController.getNoteById(id);
       if (!noteToDelete) return;
 
-      // Recopilamos recursivamente los IDs de la nota y todos sus descendientes usando parentId.
+      // Obtener todos los IDs a eliminar (nota + descendientes)
       const idsToDelete = noteTreeController.getDescendantIds(id);
       idsToDelete.add(id);
 
-      // Filtramos las notas eliminando las que están en idsToDelete.
-      noteStore.updateNotes((notes) =>
-         notes.filter((note) => !idsToDelete.has(note.id)),
-      );
+      // Batch update: eliminar notas y limpiar referencias en una sola operación
+      noteModal.updateAll((notes) => {
+         // Filtrar notas eliminadas
+         const remainingNotes = notes.filter(
+            (note) => !idsToDelete.has(note.id),
+         );
 
-      // Actualizamos el array children de las notas restantes (por si algún padre referenciaba notas eliminadas)
-      noteStore.updateNotes((notes) =>
-         notes.map((note) =>
-            note.children.some((childId) => idsToDelete.has(childId))
+         // Limpiar referencias en children arrays
+         return remainingNotes.map((note) => {
+            const hasDeletedChildren = note.children.some((childId) =>
+               idsToDelete.has(childId),
+            );
+
+            return hasDeletedChildren
                ? updateModifiedMetadata({
                     ...note,
                     children: note.children.filter(
                        (childId) => !idsToDelete.has(childId),
                     ),
                  })
-               : note,
-         ),
-      );
+               : note;
+         });
+      });
 
-      // Si la nota activa fue borrada, se limpia la referencia.
+      // Limpiar nota activa si fue eliminada
       const activeNoteId = workspace.getActiveNoteId();
       if (activeNoteId && idsToDelete.has(activeNoteId)) {
          workspace.unsetActiveNoteId();
       }
 
       notificationController.addNotification({
-         message: `Deleted note ${noteToDelete.title}.`,
+         message: `Nota "${noteToDelete.title}" eliminada.`,
          type: "base",
       });
    };
 }
 
-export let noteController = $state(new NoteController());
+export const noteController = new NoteController();
