@@ -20,9 +20,11 @@ import { CleanPasteExtension } from "@lib/editorExtensions/cleanPasteExtension";
 import { getEditorContextMenuItems } from "@utils/editorMenuItems";
 import Toolbar from "@components/note/editor/Toolbar.svelte";
 
-import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Coordinates } from "@projectTypes/floatingTypes";
+import type { NoteStats } from "@projectTypes/noteTypes";
+import { FocusTarget } from "@projectTypes/focusTypes";
 import { editorController } from "@controllers/editorController.svelte";
+import { DateTime } from "luxon";
 
 // Props
 let { noteId, content = "" }: { noteId: string; content: string } = $props();
@@ -43,10 +45,19 @@ const SAVE_DELAY = 5000; // 5 segundos de retraso
 
 function saveContentChanges() {
    if (editorBox.current && currentNoteId) {
-      noteController.updateNoteContent(
-         currentNoteId,
-         editorBox.current.getHTML(),
-      );
+      const content = editorBox.current.getHTML();
+
+      // Crear objeto de estadísticas
+      const stats: NoteStats = {
+         wordCount: editorController.wordCount,
+         characterCount: editorController.characterCount,
+         lineCount: editorController.lineCount,
+         lastCalculated: DateTime.now(),
+      };
+
+      // Guardar contenido y estadísticas juntos
+      noteController.updateNoteContentWithStats(currentNoteId, content, stats);
+
       // Indicar que el contenido está guardado
       editorController.contentSaved = true;
    }
@@ -79,22 +90,20 @@ function forceSave() {
 }
 
 function getEditorStatistics(editor: Editor) {
-   // Corregido: llamar a getText() como función
    const text = editor.getText();
 
-   // Conteo de caracteres (excluir espacios en blanco al principio y final)
-   editorController.chararecterCount = text.trim().length;
-
-   // Conteo de líneas (filtrar líneas vacías)
-   editorController.lineCount = text
+   // Calcular estadísticas
+   const chararecterCount = text.trim().length;
+   const lineCount = text
       .split("\n")
       .filter((line) => line.trim().length > 0).length;
-
-   // Conteo de palabras (parece estar funcionando correctamente)
-   editorController.wordCount = text
+   const wordCount = text
       .trim()
       .split(/\s+/)
       .filter((word) => word.length > 0).length;
+
+   // Actualizar el controlador (para UI en tiempo real)
+   editorController.updateStats(wordCount, chararecterCount, lineCount);
 }
 
 function initializeEditor(initialContent: string) {

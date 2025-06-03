@@ -1,5 +1,5 @@
 import { FocusTarget } from "@projectTypes/focusTypes";
-import type { Note } from "@projectTypes/noteTypes";
+import type { Note, NoteStats } from "@projectTypes/noteTypes";
 
 import { noteModel } from "@model/noteModel.svelte";
 import {
@@ -8,6 +8,7 @@ import {
    sanitizeTitle,
    updateModifiedMetadata,
 } from "@utils/noteUtils";
+import { DateTime } from "luxon";
 
 import { focusController } from "@controllers/focusController.svelte";
 import { noteTreeController } from "@controllers/note/noteTreeController.svelte";
@@ -75,6 +76,28 @@ class NoteController {
 
    updateNoteContent = (noteId: string, content: string): void => {
       this.updateNote(noteId, { content });
+   };
+
+   updateNoteStats = (noteId: string, stats: NoteStats): void => {
+      this.updateNote(noteId, { stats });
+   };
+
+   updateNoteContentWithStats = (
+      noteId: string,
+      content: string,
+      stats: NoteStats,
+   ): void => {
+      const note = noteQueryController.getNoteById(noteId);
+      if (!note) return;
+
+      this.updateNote(noteId, {
+         content,
+         stats,
+         metadata: {
+            ...note.metadata,
+            modified: DateTime.now(),
+         },
+      });
    };
 
    deleteNoteWithConfirmation = (id: string): void => {

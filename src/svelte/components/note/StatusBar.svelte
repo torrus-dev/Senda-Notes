@@ -3,7 +3,7 @@ import { editorController } from "@controllers/editorController.svelte";
 import { workspace } from "@controllers/workspaceController.svelte";
 
 let contentSaved = $derived(editorController.contentSaved);
-let chararecterCount = $derived(editorController.chararecterCount);
+let characterCount = $derived(editorController.characterCount);
 let wordCount = $derived(editorController.wordCount);
 let lineCount = $derived(editorController.lineCount);
 </script>
@@ -19,7 +19,7 @@ let lineCount = $derived(editorController.lineCount);
 
    <div class="text-muted-content flex items-center gap-3">
       {#if workspace.getActiveNoteId() !== undefined}
-         <p>Char {chararecterCount}</p>
+         <p>Char {characterCount}</p>
          <p>Words {wordCount}</p>
          <p>Lines {lineCount}</p>
       {/if}

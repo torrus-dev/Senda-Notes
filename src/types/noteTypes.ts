@@ -14,6 +14,7 @@ export interface Note {
    content: string;
    children: string[];
    parentId?: string;
+   stats?: NoteStats;
    metadata: NoteMetadata;
    properties: NoteProperty[];
 }
@@ -24,4 +25,11 @@ export interface NoteMetadata {
    outgoingLinks: Reference[];
    incomingLinks: Reference[];
    aliases: string[];
+}
+
+export interface NoteStats {
+   wordCount: number;
+   characterCount: number;
+   lineCount: number;
+   lastCalculated: DateTime;
 }
