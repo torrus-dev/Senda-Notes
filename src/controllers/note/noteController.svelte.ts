@@ -158,4 +158,4 @@ class NoteController {
    };
 }
 
-export const noteController = new NoteController();
+export const noteController = $state(new NoteController());
