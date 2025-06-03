@@ -1,6 +1,6 @@
 import type { Note } from "@projectTypes/noteTypes";
 import { updateModifiedMetadata } from "@utils/noteUtils";
-import { settingsStore } from "./settingsStore.svelte";
+import { settingsModel } from "./settingsModel.svelte";
 import { DateTime } from "luxon";
 
 const NOTES_STORAGE_KEY = "notes";
@@ -10,14 +10,14 @@ class NoteModel {
 
    constructor() {
       this.notes = this.loadFromStorage();
-      if (settingsStore.debugLevel > 0) {
+      if (settingsModel.debugLevel > 0) {
          console.log("notas cargadas: ", $state.snapshot(this.notes));
       }
 
       $effect.root(() => {
          $effect(() => {
             this.saveToStorage(this.notes);
-            if (settingsStore.debugLevel > 0) {
+            if (settingsModel.debugLevel > 0) {
                console.log("guardando notas", $state.snapshot(this.notes));
             }
          });

@@ -4,7 +4,7 @@ import type {
 } from "@projectTypes/workspaceTypes";
 import { loadWorkspaceState, saveWorkspaceState } from "@utils/storage";
 
-class WorkspaceStore {
+class WorkspaceModel {
    data: WorkspaceState = $state({
       activeNoteId: undefined,
       previousActiveNoteId: undefined,
@@ -100,4 +100,4 @@ class WorkspaceStore {
       this.data.previousActiveNoteId = value;
    }
 }
-export let workspaceStore = $state(new WorkspaceStore());
+export let workspaceModel = $state(new WorkspaceModel());

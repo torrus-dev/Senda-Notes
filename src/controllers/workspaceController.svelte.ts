@@ -1,67 +1,67 @@
 import { Component } from "svelte";
-import { workspaceStore } from "@model/workspaceStore.svelte";
+import { workspaceModel } from "@model/workspaceModel.svelte";
 
 class WorkspaceController {
    // ---------- Sidebar ----------
-   getActiveNoteId = () => workspaceStore.activeNoteId;
+   getActiveNoteId = () => workspaceModel.activeNoteId;
    setActiveNoteId = (newId: string) => {
-      workspaceStore.previousActiveNoteId = workspaceStore.activeNoteId;
-      workspaceStore.activeNoteId = newId;
+      workspaceModel.previousActiveNoteId = workspaceModel.activeNoteId;
+      workspaceModel.activeNoteId = newId;
    };
    unsetActiveNoteId = () => {
-      workspaceStore.previousActiveNoteId = workspaceStore.activeNoteId;
-      workspaceStore.activeNoteId = undefined;
+      workspaceModel.previousActiveNoteId = workspaceModel.activeNoteId;
+      workspaceModel.activeNoteId = undefined;
    };
 
    // ---------- Modal ----------
    openModal = (modalContent: Component | undefined = undefined) => {
-      workspaceStore.modal = {
+      workspaceModel.modal = {
          isOpen: true,
          content: modalContent,
       };
    };
 
    closeModal = () => {
-      workspaceStore.modal = {
+      workspaceModel.modal = {
          isOpen: false,
          content: undefined,
       };
    };
 
    isModalOpen = () => {
-      return workspaceStore.modal.isOpen;
+      return workspaceModel.modal.isOpen;
    };
 
    getModalContent = () => {
-      return workspaceStore.modal.content;
+      return workspaceModel.modal.content;
    };
 
    // ---------- Sidebar ----------
    setSidebarWidth = (newWidth: number) => {
       if (typeof newWidth === "number") {
-         workspaceStore.sidebar.width = newWidth;
+         workspaceModel.sidebar.width = newWidth;
       }
    };
 
    getSidebarWidth = () => {
-      return workspaceStore.sidebar.width;
+      return workspaceModel.sidebar.width;
    };
 
    toggleSidebar = () => {
-      workspaceStore.sidebar.isOpen = !workspaceStore.sidebar.isOpen;
+      workspaceModel.sidebar.isOpen = !workspaceModel.sidebar.isOpen;
    };
 
    closeSidebar = () => {
-      workspaceStore.sidebar.isOpen = false;
+      workspaceModel.sidebar.isOpen = false;
    };
 
    isSidebarOpen = () => {
-      return workspaceStore.sidebar.isOpen;
+      return workspaceModel.sidebar.isOpen;
    };
 
    // ---------- Property Editor ----------
    toggleEditProperty = (noteId: string, propertyId: string) => {
-      workspaceStore.propertyEditor = {
+      workspaceModel.propertyEditor = {
          isOpen: true,
          noteId: noteId,
          propertyId: propertyId,
@@ -69,7 +69,7 @@ class WorkspaceController {
    };
 
    toggleAddProperty = () => {
-      workspaceStore.propertyEditor = {
+      workspaceModel.propertyEditor = {
          isOpen: true,
          noteId: undefined,
          propertyId: undefined,
@@ -77,7 +77,7 @@ class WorkspaceController {
    };
 
    stopPropertyEdit = () => {
-      workspaceStore.propertyEditor = {
+      workspaceModel.propertyEditor = {
          isOpen: false,
          noteId: undefined,
          propertyId: undefined,
@@ -89,17 +89,17 @@ class WorkspaceController {
       propertyId: string | undefined = undefined,
    ) => {
       return (
-         workspaceStore.propertyEditor.isOpen &&
-         workspaceStore.propertyEditor.noteId === noteId &&
-         workspaceStore.propertyEditor.propertyId === propertyId
+         workspaceModel.propertyEditor.isOpen &&
+         workspaceModel.propertyEditor.noteId === noteId &&
+         workspaceModel.propertyEditor.propertyId === propertyId
       );
    };
 
    isAddingProperty = () => {
       return (
-         workspaceStore.propertyEditor.isOpen &&
-         workspaceStore.propertyEditor.noteId === undefined &&
-         workspaceStore.propertyEditor.propertyId === undefined
+         workspaceModel.propertyEditor.isOpen &&
+         workspaceModel.propertyEditor.noteId === undefined &&
+         workspaceModel.propertyEditor.propertyId === undefined
       );
    };
 }

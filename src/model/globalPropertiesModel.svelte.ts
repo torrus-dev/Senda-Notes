@@ -3,7 +3,7 @@ import {
    loadGlobalPropertiesFromStorage,
    saveGlobalPropertiesToStorage,
 } from "@utils/storage";
-import { settingsStore } from "@model/settingsStore.svelte";
+import { settingsModel } from "@model/settingsModel.svelte";
 
 class GlobalPropertiesModel {
    // registro de propiedades (nombre, tipo) para saber que propiedades hay creadas globalmente en la aplicación
@@ -11,7 +11,7 @@ class GlobalPropertiesModel {
 
    constructor() {
       this.globalProperties = loadGlobalPropertiesFromStorage() || [];
-      if (settingsStore.debugLevel > 0) {
+      if (settingsModel.debugLevel > 0) {
          console.log(
             "propiedades globales cargadas: ",
             $state.snapshot(this.globalProperties),
@@ -21,7 +21,7 @@ class GlobalPropertiesModel {
 
    saveGlobalProperties() {
       saveGlobalPropertiesToStorage(this.globalProperties);
-      if (settingsStore.debugLevel > 0) {
+      if (settingsModel.debugLevel > 0) {
          console.log(
             "guardando propiedades globales",
             $state.snapshot(this.globalProperties),

@@ -1,7 +1,7 @@
 import { Settings } from "@projectTypes/settingsTypes";
 import { loadSettingsState, saveSettingsState } from "@utils/storage";
 
-class SettingsStore {
+class SettingsModel {
    private data: Settings = $state({
       theme: "light",
       showEditorToolbar: true,
@@ -66,4 +66,4 @@ class SettingsStore {
       this.data.debugLevel = value;
    }
 }
-export let settingsStore = $state(new SettingsStore());
+export let settingsModel = $state(new SettingsModel());

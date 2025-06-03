@@ -1,35 +1,35 @@
-import { settingsStore } from "@model/settingsStore.svelte";
+import { settingsModel } from "@model/settingsModel.svelte";
 
 class SettingsController {
    // theme
    toggleThemeMode = () => {
-      settingsStore.theme = settingsStore.theme === "light" ? "dark" : "light";
+      settingsModel.theme = settingsModel.theme === "light" ? "dark" : "light";
    };
-   getTheme = (): "light" | "dark" => settingsStore.theme;
+   getTheme = (): "light" | "dark" => settingsModel.theme;
 
    // lock sidebar
    toggleLockSidebar = () => {
-      settingsStore.sidebarIsLocked = !settingsStore.sidebarIsLocked;
+      settingsModel.sidebarIsLocked = !settingsModel.sidebarIsLocked;
    };
-   getLockSidebar = () => settingsStore.sidebarIsLocked;
+   getLockSidebar = () => settingsModel.sidebarIsLocked;
 
    // show metadata
    toggleShowMetadata = (): void => {
-      settingsStore.showMetadata = !settingsStore.showMetadata;
+      settingsModel.showMetadata = !settingsModel.showMetadata;
    };
-   getShowMetadata = () => settingsStore.showMetadata;
+   getShowMetadata = () => settingsModel.showMetadata;
 
    // show editor toolbar
    toogleShowEditorToolbar = (): void => {
-      settingsStore.showEditorToolbar = !settingsStore.showEditorToolbar;
+      settingsModel.showEditorToolbar = !settingsModel.showEditorToolbar;
    };
-   getShowEditorToolbar = () => settingsStore.showEditorToolbar;
+   getShowEditorToolbar = () => settingsModel.showEditorToolbar;
 
    // debug level
    setDebugLevel = (value: number) => {
-      settingsStore.debugLevel = value;
+      settingsModel.debugLevel = value;
    };
-   getDebugLevel = () => settingsStore.debugLevel;
+   getDebugLevel = () => settingsModel.debugLevel;
 }
 
 export const settingsController = $state(new SettingsController());
