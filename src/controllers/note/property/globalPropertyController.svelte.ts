@@ -1,17 +1,17 @@
 import type { Note } from "@projectTypes/noteTypes";
 import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
-import { globalPropertiesStore } from "@model/globalPropertiesStore.svelte";
+import { globalPropertiesModal } from "@model/globalPropertiesModel.svelte";
 import { generateGlobalProperty } from "@utils/propertyUtils";
 import { removeDiacritics } from "@utils/searchUtils";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 
 class GlobalPropertyController {
    getGlobalPropertyById(id: GlobalProperty["id"]): GlobalProperty | undefined {
-      return globalPropertiesStore.getGlobalPropertyById(id);
+      return globalPropertiesModal.getGlobalPropertyById(id);
    }
 
    getGlobalPropertyByName(name: GlobalProperty["name"]) {
-      return globalPropertiesStore.getGlobalPropertyByName(name);
+      return globalPropertiesModal.getGlobalPropertyByName(name);
    }
 
    createGlobalProperty(
@@ -21,7 +21,7 @@ class GlobalPropertyController {
    ) {
       // Generar y registrar la propiedad global
       const newGlobalProperty = generateGlobalProperty(name, type);
-      globalPropertiesStore.createGlobalProperty(newGlobalProperty);
+      globalPropertiesModal.createGlobalProperty(newGlobalProperty);
 
       // Vincular la propiedad de nota que crea la propiedad global a esta
       this.linkToGlobalProperty(noteProperty, newGlobalProperty);
@@ -31,9 +31,9 @@ class GlobalPropertyController {
       id: GlobalProperty["id"],
       updates: Partial<GlobalProperty>,
    ) {
-      const globalProperty = globalPropertiesStore.getGlobalPropertyById(id);
+      const globalProperty = globalPropertiesModal.getGlobalPropertyById(id);
       if (!globalProperty) return;
-      globalPropertiesStore.updateGlobalPropertyById(id, (globalProperty) => ({
+      globalPropertiesModal.updateGlobalPropertyById(id, (globalProperty) => ({
          ...globalProperty,
          ...updates,
       }));
@@ -78,12 +78,12 @@ class GlobalPropertyController {
       if (globalProperty.linkedProperties.length > 0) {
          console.warn("Cannot delete global property in use!");
       } else {
-         globalPropertiesStore.deleteGlobalProperty(id);
+         globalPropertiesModal.deleteGlobalProperty(id);
       }
    }
 
    getGlobalProperties() {
-      return globalPropertiesStore.getGlobalProperties();
+      return globalPropertiesModal.getGlobalProperties();
    }
 
    getGlobalPropertiesSuggestions(
@@ -96,7 +96,7 @@ class GlobalPropertyController {
          : "";
 
       // Recorremos las propiedades globales filtrandolas
-      return globalPropertiesStore.getGlobalProperties().filter((property) => {
+      return globalPropertiesModal.getGlobalProperties().filter((property) => {
          if (
             noteId &&
             property.linkedProperties.some((link) => link.noteId === noteId)

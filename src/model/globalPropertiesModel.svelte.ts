@@ -5,7 +5,7 @@ import {
 } from "@utils/storage";
 import { settingsStore } from "@model/settingsStore.svelte";
 
-class GlobalPropertiesStore {
+class GlobalPropertiesModel {
    // registro de propiedades (nombre, tipo) para saber que propiedades hay creadas globalmente en la aplicación
    private globalProperties = $state<GlobalProperty[]>([]);
 
@@ -73,4 +73,4 @@ class GlobalPropertiesStore {
    }
 }
 
-export let globalPropertiesStore = $state(new GlobalPropertiesStore());
+export let globalPropertiesModal = $state(new GlobalPropertiesModel());
