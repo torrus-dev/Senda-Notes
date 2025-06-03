@@ -4,60 +4,9 @@ import type { PersistedWorkspaceState } from "@projectTypes/workspaceTypes";
 import type { Settings } from "@projectTypes/settingsTypes";
 import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
 
-const NOTES_STORAGE_KEY = "NoteList";
 const GLOBAL_PROPERTIES_STORAGE_KEY = "GlobalProperties";
 const WORKSPACE_STORAGE_KEY = "WorkspaceState";
 const SETTINGS_STORAGE_KEY = "SettingsState";
-
-// NOTES
-export function loadNotesFromStorage(): Note[] {
-   const stored = localStorage.getItem(NOTES_STORAGE_KEY);
-   if (stored) {
-      try {
-         const parsedNotes = JSON.parse(stored);
-         // Convertir los campos `created` y `modified` a instancias de DateTime
-         return parsedNotes.map((note: any) => ({
-            ...note,
-            metadata: {
-               ...note.metadata,
-               created: DateTime.fromISO(note.metadata.created),
-               modified: DateTime.fromISO(note.metadata.modified),
-            },
-         }));
-      } catch (error) {
-         console.error(
-            "Error al parsear",
-            NOTES_STORAGE_KEY,
-            "desde localStorage:",
-            error,
-         );
-         return [];
-      }
-   }
-   return [];
-}
-
-export function saveNotesToStorage(notes: Note[]): void {
-   try {
-      // Convertir los campos `created` y `modified` a cadenas ISO antes de guardar
-      const serializedNotes = notes.map((note) => ({
-         ...note,
-         metadata: {
-            ...note.metadata,
-            created: note.metadata.created.toISO(),
-            modified: note.metadata.modified.toISO(),
-         },
-      }));
-      localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(serializedNotes));
-   } catch (error) {
-      console.error(
-         "Error al guardar",
-         NOTES_STORAGE_KEY,
-         "en localStorage:",
-         error,
-      );
-   }
-}
 
 // GLOBAL PROPERTIES
 export function loadGlobalPropertiesFromStorage(): GlobalProperty[] {
