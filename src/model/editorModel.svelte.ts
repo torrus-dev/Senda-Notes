@@ -45,4 +45,4 @@ class EditorStore {
       this.data.lineCount = value;
    }
 }
-export let editorStore = $state(new EditorStore());
+export let editorModel = $state(new EditorStore());

@@ -1,31 +1,31 @@
-import { editorStore } from "@model/editorStore.svelte";
+import { editorModel } from "@model/editorModel.svelte";
 
 class EditorController {
    set contentSaved(newValue: boolean) {
-      editorStore.contentSaved = newValue;
+      editorModel.contentSaved = newValue;
    }
    get contentSaved() {
-      return editorStore.contentSaved;
+      return editorModel.contentSaved;
    }
 
    // Stats
    set chararecterCount(newValue: number) {
-      editorStore.chararecterCount = newValue;
+      editorModel.chararecterCount = newValue;
    }
    get chararecterCount() {
-      return editorStore.chararecterCount;
+      return editorModel.chararecterCount;
    }
    set wordCount(newValue: number) {
-      editorStore.wordCount = newValue;
+      editorModel.wordCount = newValue;
    }
    get wordCount() {
-      return editorStore.wordCount;
+      return editorModel.wordCount;
    }
    set lineCount(newValue: number) {
-      editorStore.lineCount = newValue;
+      editorModel.lineCount = newValue;
    }
    get lineCount() {
-      return editorStore.lineCount;
+      return editorModel.lineCount;
    }
 }
 
