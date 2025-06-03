@@ -1,4 +1,3 @@
-// favoritesStore.svelte.ts
 import type { Note } from "@projectTypes/noteTypes";
 
 const FAVORITES_STORAGE_KEY = "favorites";
@@ -7,7 +6,7 @@ interface FavoritesState {
    favorites: Note["id"][];
 }
 
-class FavoritesStore {
+class FavoritesModel {
    data: FavoritesState = $state({
       favorites: [],
    });
@@ -53,4 +52,4 @@ class FavoritesStore {
    }
 }
 
-export let favoritesStore = $state(new FavoritesStore());
+export let favoritesModel = $state(new FavoritesModel());

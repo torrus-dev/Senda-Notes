@@ -1,33 +1,33 @@
 import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 import type { Note } from "@projectTypes/noteTypes";
-import { favoritesStore } from "@model/favoritesStore.svelte";
+import { favoritesModel } from "@model/favoritesModel.svelte";
 
 class FavoriteController {
    // Comprobar si una nota está en favoritos
    isFavorite(noteId: string): boolean {
-      return favoritesStore.favorites.some(
+      return favoritesModel.favorites.some(
          (favoriteId) => favoriteId === noteId,
       );
    }
 
    getFavorites() {
-      return favoritesStore.favorites;
+      return favoritesModel.favorites;
    }
 
    getFavoritesAsNotes() {
-      return noteQueryController.getNotesByIdList(favoritesStore.favorites);
+      return noteQueryController.getNotesByIdList(favoritesModel.favorites);
    }
 
    // Añadir nota a favoritos
    addToFavorites = (noteId: Note["id"]): void => {
       if (!this.isFavorite(noteId)) {
-         favoritesStore.favorites.push(noteId);
+         favoritesModel.favorites.push(noteId);
       }
    };
 
    // Eliminar nota de favoritos
    removeFromFavorites = (noteId: string): void => {
-      favoritesStore.favorites = favoritesStore.favorites.filter(
+      favoritesModel.favorites = favoritesModel.favorites.filter(
          (favoriteId) => favoriteId !== noteId,
       );
    };
