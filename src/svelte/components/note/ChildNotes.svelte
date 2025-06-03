@@ -16,7 +16,10 @@ let { children }: { children: string[] } = $props();
 {/snippet}
 
 {#if children && children.length > 0}
-   <Collapsible id="child-notes" headingContent={headingContent} chevronPosition="floating-left">
+   <Collapsible
+      id="child-notes"
+      headingContent={headingContent}
+      chevronPosition="floating-left">
       <ul class="rounded-field mb-2">
          {#each children as childId}
             <li>
@@ -25,7 +28,7 @@ let { children }: { children: string[] } = $props();
                   shape="rect"
                   onclick={() => workspace.setActiveNoteId(childId)}
                   title="Abrir nota">
-                  {noteQueryController.getTitleById(childId)}
+                  {noteQueryController.getNoteById(childId)?.title}
                </Button>
             </li>
          {/each}

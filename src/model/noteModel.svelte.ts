@@ -99,4 +99,4 @@ class NoteModel {
    }
 }
 
-export const noteModel = new NoteModel();
+export const noteModel = $state(new NoteModel());
