@@ -1,36 +1,9 @@
-import { DateTime } from "luxon";
-import type { Note } from "@projectTypes/noteTypes";
 import type { PersistedWorkspaceState } from "@projectTypes/workspaceTypes";
 import type { Settings } from "@projectTypes/settingsTypes";
 import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
 
-const GLOBAL_PROPERTIES_STORAGE_KEY = "GlobalProperties";
 const WORKSPACE_STORAGE_KEY = "WorkspaceState";
 const SETTINGS_STORAGE_KEY = "SettingsState";
-
-// GLOBAL PROPERTIES
-export function loadGlobalPropertiesFromStorage(): GlobalProperty[] {
-   try {
-      const stored = localStorage.getItem(GLOBAL_PROPERTIES_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
-   } catch (error) {
-      console.error("Error al cargar propiedades globales:", error);
-      return [];
-   }
-}
-
-export function saveGlobalPropertiesToStorage(
-   globalProperties: GlobalProperty[],
-): void {
-   try {
-      localStorage.setItem(
-         GLOBAL_PROPERTIES_STORAGE_KEY,
-         JSON.stringify(globalProperties),
-      );
-   } catch (error) {
-      console.error("Error al guardar propiedades globales:", error);
-   }
-}
 
 // WORKSPACE
 // Función pura que convierte el estado persistente en un string

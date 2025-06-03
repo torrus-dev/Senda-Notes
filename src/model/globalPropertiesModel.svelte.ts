@@ -1,16 +1,14 @@
 import type { GlobalProperty } from "@projectTypes/propertyTypes";
-import {
-   loadGlobalPropertiesFromStorage,
-   saveGlobalPropertiesToStorage,
-} from "@utils/storage";
 import { settingsModel } from "@model/settingsModel.svelte";
 
 class GlobalPropertiesModel {
+   private static readonly STORAGE_KEY = "GlobalProperties";
+
    // registro de propiedades (nombre, tipo) para saber que propiedades hay creadas globalmente en la aplicación
    private globalProperties = $state<GlobalProperty[]>([]);
 
    constructor() {
-      this.globalProperties = loadGlobalPropertiesFromStorage() || [];
+      this.globalProperties = this.loadFromStorage();
       if (settingsModel.debugLevel > 0) {
          console.log(
             "propiedades globales cargadas: ",
@@ -19,42 +17,60 @@ class GlobalPropertiesModel {
       }
    }
 
-   saveGlobalProperties() {
-      saveGlobalPropertiesToStorage(this.globalProperties);
-      if (settingsModel.debugLevel > 0) {
-         console.log(
-            "guardando propiedades globales",
-            $state.snapshot(this.globalProperties),
-         );
+   // MÉTODOS PRIVADOS DE STORAGE
+   private loadFromStorage(): GlobalProperty[] {
+      try {
+         const stored = localStorage.getItem(GlobalPropertiesModel.STORAGE_KEY);
+         return stored ? JSON.parse(stored) : [];
+      } catch (error) {
+         console.error("Error al cargar propiedades globales:", error);
+         return [];
       }
    }
 
-   // GLOBAL PROPERTIES
+   private saveToStorage(): void {
+      try {
+         localStorage.setItem(
+            GlobalPropertiesModel.STORAGE_KEY,
+            JSON.stringify(this.globalProperties),
+         );
+         if (settingsModel.debugLevel > 0) {
+            console.log(
+               "guardando propiedades globales",
+               $state.snapshot(this.globalProperties),
+            );
+         }
+      } catch (error) {
+         console.error("Error al guardar propiedades globales:", error);
+      }
+   }
+
+   // MÉTODOS PÚBLICOS PARA GLOBAL PROPERTIES
 
    createGlobalProperty(globalProperty: GlobalProperty): void {
       this.globalProperties.push(globalProperty);
-      this.saveGlobalProperties();
+      this.saveToStorage();
    }
 
-   deleteGlobalProperty(id: GlobalProperty["id"]) {
+   deleteGlobalProperty(id: GlobalProperty["id"]): void {
       this.globalProperties = this.globalProperties.filter(
          (globalProperty) => globalProperty.id !== id,
       );
-      this.saveGlobalProperties();
+      this.saveToStorage();
    }
 
    updateGlobalPropertyById(
       id: GlobalProperty["id"],
       updater: (globalProperty: GlobalProperty) => GlobalProperty,
-   ) {
+   ): void {
       const index = this.globalProperties.findIndex((n) => n.id === id);
       if (index !== -1) {
          this.globalProperties[index] = updater(this.globalProperties[index]);
       }
-      this.saveGlobalProperties();
+      this.saveToStorage();
    }
 
-   getGlobalProperties() {
+   getGlobalProperties(): GlobalProperty[] {
       return this.globalProperties;
    }
 
@@ -73,4 +89,4 @@ class GlobalPropertiesModel {
    }
 }
 
-export let globalPropertiesModal = $state(new GlobalPropertiesModel());
+export let globalPropertiesModel = $state(new GlobalPropertiesModel());
