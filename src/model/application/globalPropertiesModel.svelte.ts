@@ -1,5 +1,5 @@
 import type { GlobalProperty } from "@projectTypes/propertyTypes";
-import { settingsModel } from "@model/settingsModel.svelte";
+import { settingsModel } from "@model/application/settingsModel.svelte";
 
 class GlobalPropertiesModel {
    private static readonly STORAGE_KEY = "GlobalProperties";

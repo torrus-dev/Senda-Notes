@@ -1,4 +1,4 @@
-import { settingsModel } from "@model/settingsModel.svelte";
+import { settingsModel } from "@model/application/settingsModel.svelte";
 
 class SettingsController {
    // theme

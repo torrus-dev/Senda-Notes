@@ -1,5 +1,5 @@
 import type { Note } from "@projectTypes/noteTypes";
-import { noteModel } from "@model/noteModel.svelte";
+import { noteModel } from "@model/notes/noteModel.svelte";
 import { getDescendantsId } from "@utils/noteUtils";
 import { noteNavigationController } from "@controllers/navigation/noteNavigationController.svelte";
 

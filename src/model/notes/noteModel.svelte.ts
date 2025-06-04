@@ -1,6 +1,6 @@
 import type { Note } from "@projectTypes/noteTypes";
 import { updateModifiedMetadata } from "@utils/noteUtils";
-import { settingsModel } from "./settingsModel.svelte";
+import { settingsModel } from "../application/settingsModel.svelte";
 import { DateTime } from "luxon";
 
 const NOTES_STORAGE_KEY = "notes";

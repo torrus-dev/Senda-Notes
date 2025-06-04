@@ -1,4 +1,4 @@
-import { noteNavigationModel } from "@model/ui/noteNavigationModel.svelte";
+import { noteNavigationModel } from "@model/navigation/noteNavigationModel.svelte";
 
 class NoteNavigationController {
    getActiveNoteId() {

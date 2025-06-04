@@ -1,7 +1,7 @@
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { Note, NoteStats } from "@projectTypes/noteTypes";
 
-import { noteModel } from "@model/noteModel.svelte";
+import { noteModel } from "@model/notes/noteModel.svelte";
 import {
    createDefaultMetadata,
    generateUniqueTitle,

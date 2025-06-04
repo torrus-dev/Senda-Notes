@@ -1,6 +1,6 @@
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 import type { Note } from "@projectTypes/noteTypes";
-import { favoritesModel } from "@model/favoritesModel.svelte";
+import { favoritesModel } from "@model/notes/favoritesModel.svelte";
 
 class FavoriteController {
    // Comprobar si una nota está en favoritos
