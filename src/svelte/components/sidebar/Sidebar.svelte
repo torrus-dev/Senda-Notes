@@ -1,7 +1,7 @@
 <script lang="ts">
 import { SettingsIcon, InfoIcon, Trash2Icon } from "lucide-svelte";
-import { screenSizeController } from "@controllers/screenSizeController.svelte";
-import { settingsController } from "@controllers/settingsController.svelte";
+import { screenSizeController } from "@controllers/application/screenSizeController.svelte";
+import { settingsController } from "@controllers/application/settingsController.svelte";
 
 import NoteTreeRenderer from "@components/sidebar/noteTreeDnd/NoteTreeRenderer.svelte";
 import SettingsModal from "@components/modals/SettingsModal.svelte";
@@ -10,7 +10,7 @@ import Button from "@components/utils/Button.svelte";
 import ResizableHandler from "@components/sidebar/ResizableHandler.svelte";
 import Favorites from "@components/sidebar/Favorites.svelte";
 import { sidebarController } from "@controllers/ui/sidebarController.svelte";
-import { modalController } from "@controllers/ui/modalController.svelte";
+import { modalController } from "@controllers/menu/modalController.svelte";
 
 let width = $state(sidebarController.getWidth());
 let isMobile = $derived(screenSizeController.isMobile);

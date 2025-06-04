@@ -1,7 +1,7 @@
 <script lang="ts">
 import GlobalPropertyMenu from "@components/globalProperties/GlobalPropertyMenu.svelte";
 import Slider from "@components/utils/Slider.svelte";
-import { settingsController } from "@controllers/settingsController.svelte";
+import { settingsController } from "@controllers/application/settingsController.svelte";
 
 let searchQuery = $state("");
 </script>

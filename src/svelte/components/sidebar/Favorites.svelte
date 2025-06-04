@@ -2,11 +2,11 @@
 import type { Note } from "@projectTypes/noteTypes";
 
 import Collapsible from "@components/utils/Collapsible.svelte";
-import { favoriteController } from "@controllers/ui/favoritesController.svelte";
+import { favoriteController } from "@controllers/notes/favoritesController.svelte";
 
 import { StarIcon, StarOffIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
-import { noteNavigationController } from "@controllers/ui/noteNavigationController.svelte";
+import { noteNavigationController } from "@controllers/navigation/noteNavigationController.svelte";
 
 let favorites: Note[] = $derived(favoriteController.getFavoritesAsNotes());
 </script>

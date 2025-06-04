@@ -12,8 +12,8 @@ import {
    Trash2Icon,
 } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
-import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
-import { globalConfirmationDialog } from "@controllers/ui/confirmationDialogController.svelte";
+import { globalPropertyController } from "@controllers/property/globalPropertyController.svelte";
+import { globalConfirmationDialog } from "@controllers/menu/confirmationDialogController.svelte";
 import GlobalPropertyNameInput from "./GlobalPropertyNameInput.svelte";
 
 let { globalProperty }: { globalProperty: GlobalProperty } = $props();

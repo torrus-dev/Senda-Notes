@@ -2,7 +2,7 @@
 </style>
 
 <script lang="ts">
-import { dndController } from "@controllers/dndController.svelte";
+import { dndController } from "@controllers/ui/dndController.svelte";
 import {
    createNoteTreeNodeDndHandlers,
    checkDraggingBranch,
@@ -11,7 +11,7 @@ import {
 import NoteTreeNode from "./NoteTreeNode.svelte";
 import NoteTreeLine from "./NoteTreeLine.svelte";
 import NoteTreeLabel from "./NoteTreeLabel.svelte";
-import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
+import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 
 let { note, position } = $props();
 

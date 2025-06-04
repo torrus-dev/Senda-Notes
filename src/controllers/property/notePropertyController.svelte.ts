@@ -1,9 +1,9 @@
 import type { NoteProperty } from "@projectTypes/propertyTypes";
 import type { Note } from "@projectTypes/noteTypes";
 
-import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
-import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
-import { noteController } from "@controllers/note/noteController.svelte";
+import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { globalPropertyController } from "@controllers/property/globalPropertyController.svelte";
+import { noteController } from "@controllers/notes/noteController.svelte";
 
 import { generateProperty } from "@utils/propertyUtils";
 import { removeDiacritics } from "@utils/searchUtils";

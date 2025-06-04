@@ -5,7 +5,7 @@
 import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";
 
 import type { NoteProperty } from "@projectTypes/propertyTypes";
-import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
+import { globalPropertyController } from "@controllers/property/globalPropertyController.svelte";
 
 import PropertyValue from "@components/noteProperties/PropertyValue.svelte";
 import PropertyLabel from "@components/noteProperties/PropertyLabel.svelte";

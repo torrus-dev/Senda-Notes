@@ -1,5 +1,5 @@
 <script lang="ts">
-import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
+import { notePropertyController } from "@controllers/property/notePropertyController.svelte";
 
 import type { NoteProperty } from "@projectTypes/propertyTypes";
 import type { Note } from "@projectTypes/noteTypes";

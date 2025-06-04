@@ -10,11 +10,11 @@ import TaskItem from "@tiptap/extension-task-item";
 import Highlight from "@tiptap/extension-highlight";
 import Underline from "@tiptap/extension-underline";
 
-import { noteController } from "@controllers/note/noteController.svelte";
-import { focusController } from "@controllers/focusController.svelte";
-import { floatingMenuController } from "@controllers/floatingMenuController.svelte.js";
-import { screenSizeController } from "@controllers/screenSizeController.svelte";
-import { settingsController } from "@controllers/settingsController.svelte";
+import { noteController } from "@controllers/notes/noteController.svelte";
+import { focusController } from "@controllers/ui/focusController.svelte";
+import { floatingMenuController } from "@controllers/menu/floatingMenuController.svelte.js";
+import { screenSizeController } from "@controllers/application/screenSizeController.svelte";
+import { settingsController } from "@controllers/application/settingsController.svelte";
 import { CleanPasteExtension } from "@lib/editorExtensions/cleanPasteExtension";
 
 import { getEditorContextMenuItems } from "@utils/editorMenuItems";
@@ -23,7 +23,7 @@ import Toolbar from "@components/note/editor/Toolbar.svelte";
 import type { Coordinates } from "@projectTypes/floatingTypes";
 import type { NoteStats } from "@projectTypes/noteTypes";
 import { FocusTarget } from "@projectTypes/focusTypes";
-import { editorController } from "@controllers/editorController.svelte";
+import { editorController } from "@controllers/notes/editorController.svelte";
 import { DateTime } from "luxon";
 
 // Props

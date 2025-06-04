@@ -10,9 +10,9 @@ ul {
 </style>
 
 <script lang="ts">
-import { noteNavigationController } from "@controllers/ui/noteNavigationController.svelte";
+import { noteNavigationController } from "@controllers/navigation/noteNavigationController.svelte";
 import Button from "./Button.svelte";
-import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
+import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 
 let { noteId }: { noteId: string } = $props();
 

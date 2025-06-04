@@ -1,4 +1,4 @@
-import { dndController } from "@controllers/dndController.svelte";
+import { dndController } from "@controllers/ui/dndController.svelte";
 import { NoteProperty } from "@projectTypes/propertyTypes";
 
 export function createDragAndDropHandlers(params: {

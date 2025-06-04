@@ -5,7 +5,7 @@ import type { ActionMenuItem } from "@projectTypes/editorMenuTypes";
 
 import { CheckIcon } from "lucide-svelte";
 
-import { floatingMenuController } from "@controllers/floatingMenuController.svelte";
+import { floatingMenuController } from "@controllers/menu/floatingMenuController.svelte";
 import Button from "@components/utils/Button.svelte";
 import { onMount } from "svelte";
 

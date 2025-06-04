@@ -2,7 +2,7 @@
 </style>
 
 <script lang="ts">
-import { dndController } from "@controllers/dndController.svelte";
+import { dndController } from "@controllers/ui/dndController.svelte";
 import {
    createNoteTreeLineDndHandlers,
    checkDraggingBranch,

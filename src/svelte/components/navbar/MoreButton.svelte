@@ -1,6 +1,6 @@
 <script lang="ts">
-import { focusController } from "@controllers/focusController.svelte";
-import { noteController } from "@controllers/note/noteController.svelte";
+import { focusController } from "@controllers/ui/focusController.svelte";
+import { noteController } from "@controllers/notes/noteController.svelte";
 import { FocusTarget } from "@projectTypes/focusTypes";
 import type { MenuItem } from "@projectTypes/editorMenuTypes";
 import {
@@ -12,7 +12,7 @@ import {
    StarOffIcon,
 } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
-import { favoriteController } from "@controllers/ui/favoritesController.svelte";
+import { favoriteController } from "@controllers/notes/favoritesController.svelte";
 
 let { noteId } = $props();
 

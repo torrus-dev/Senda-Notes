@@ -1,6 +1,6 @@
 <script lang="ts">
-import { settingsController } from "@controllers/settingsController.svelte";
-import { screenSizeController } from "@controllers/screenSizeController.svelte";
+import { settingsController } from "@controllers/application/settingsController.svelte";
+import { screenSizeController } from "@controllers/application/screenSizeController.svelte";
 import Button from "@components/utils/Button.svelte";
 
 import { PanelLeftOpenIcon, PanelLeftCloseIcon } from "lucide-svelte";

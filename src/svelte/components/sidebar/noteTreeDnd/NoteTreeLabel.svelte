@@ -7,8 +7,8 @@
 <script lang="ts">
 import type { SvelteComponent } from "svelte";
 import type { Note } from "@projectTypes/noteTypes";
-import { noteController } from "@controllers/note/noteController.svelte";
-import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
+import { noteController } from "@controllers/notes/noteController.svelte";
+import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 import {
    ChevronRightIcon,
    PlusIcon,
@@ -21,8 +21,8 @@ import {
 import Button from "@components/utils/Button.svelte";
 import InlineTitleEditor from "@components/utils/InlineTitleEditor.svelte";
 import { contextMenu } from "@directives/floatingMenuDirective.svelte";
-import { favoriteController } from "@controllers/ui/favoritesController.svelte";
-import { noteNavigationController } from "@controllers/ui/noteNavigationController.svelte";
+import { favoriteController } from "@controllers/notes/favoritesController.svelte";
+import { noteNavigationController } from "@controllers/navigation/noteNavigationController.svelte";
 
 let {
    note,

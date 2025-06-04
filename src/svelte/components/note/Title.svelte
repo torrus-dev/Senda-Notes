@@ -1,8 +1,8 @@
 <script lang="ts">
 import { sanitizeTitle } from "@utils/noteUtils";
 
-import { noteController } from "@controllers/note/noteController.svelte";
-import { focusController } from "@controllers/focusController.svelte";
+import { noteController } from "@controllers/notes/noteController.svelte";
+import { focusController } from "@controllers/ui/focusController.svelte";
 import { FocusTarget } from "@projectTypes/focusTypes";
 import Popover from "@components/floating/Popover.svelte";
 

@@ -1,10 +1,10 @@
 <script lang="ts">
-import { noteController } from "@controllers/note/noteController.svelte";
-import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
+import { noteController } from "@controllers/notes/noteController.svelte";
+import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 import { FilePlusIcon, PlusIcon } from "lucide-svelte";
 import { contextMenu } from "@directives/floatingMenuDirective.svelte";
 import Button from "@components/utils/Button.svelte";
-import { dndController } from "@controllers/dndController.svelte";
+import { dndController } from "@controllers/ui/dndController.svelte";
 
 let { isDragedOver = $bindable() } = $props();
 

@@ -6,8 +6,8 @@ import type {
 import type { Editor } from "@tiptap/core";
 
 import Button from "@components/utils/Button.svelte";
-import { screenSizeController } from "@controllers/screenSizeController.svelte";
-import { settingsController } from "@controllers/settingsController.svelte";
+import { screenSizeController } from "@controllers/application/screenSizeController.svelte";
+import { settingsController } from "@controllers/application/settingsController.svelte";
 import { getEditorToolbarMenuItems } from "@utils/editorMenuItems";
 
 let { editorBox }: { editorBox: { current: Editor } } = $props();

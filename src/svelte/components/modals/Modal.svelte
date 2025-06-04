@@ -1,9 +1,9 @@
 <script lang="ts">
 import Button from "@components/utils/Button.svelte";
 import { XIcon } from "lucide-svelte";
-import { floatingMenuController } from "@controllers/floatingMenuController.svelte";
+import { floatingMenuController } from "@controllers/menu/floatingMenuController.svelte";
 import { onPressEsc } from "@directives/onPressEsc";
-import { modalController } from "@controllers/ui/modalController.svelte";
+import { modalController } from "@controllers/menu/modalController.svelte";
 
 let isOpen = $derived(modalController.isOpen());
 let content = $derived(modalController.getContent());

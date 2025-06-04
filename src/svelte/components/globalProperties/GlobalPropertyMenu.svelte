@@ -1,5 +1,5 @@
 <script lang="ts">
-import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
+import { globalPropertyController } from "@controllers/property/globalPropertyController.svelte";
 import GlobalPropertyItem from "./GlobalPropertyItem.svelte";
 
 const globalProperties = $derived(

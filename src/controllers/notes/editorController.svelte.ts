@@ -1,5 +1,5 @@
 import type { NoteStats } from "@projectTypes/noteTypes";
-import { noteController } from "@controllers/note/noteController.svelte";
+import { noteController } from "@controllers/notes/noteController.svelte";
 import { DateTime } from "luxon";
 
 class EditorController {

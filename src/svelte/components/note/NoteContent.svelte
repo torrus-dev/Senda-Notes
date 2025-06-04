@@ -1,9 +1,9 @@
 <script lang="ts">
 import type { Note } from "@projectTypes/noteTypes";
 
-import { settingsController } from "@controllers/settingsController.svelte";
-import { searchController } from "@controllers/searchController.svelte";
-import { noteController } from "@controllers/note/noteController.svelte";
+import { settingsController } from "@controllers/application/settingsController.svelte";
+import { searchController } from "@controllers/navigation/searchController.svelte";
+import { noteController } from "@controllers/notes/noteController.svelte";
 
 import Button from "@components/utils/Button.svelte";
 import Title from "@components/note/Title.svelte";

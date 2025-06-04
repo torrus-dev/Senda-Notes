@@ -1,4 +1,4 @@
-import { floatingMenuController } from "@controllers/floatingMenuController.svelte";
+import { floatingMenuController } from "@controllers/menu/floatingMenuController.svelte";
 import type { MenuItem } from "@projectTypes/editorMenuTypes";
 import type { Coordinates } from "@projectTypes/floatingTypes";
 

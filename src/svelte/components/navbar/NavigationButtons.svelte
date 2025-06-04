@@ -1,6 +1,6 @@
 <script lang="ts">
 import Button from "@components/utils/Button.svelte";
-import { noteNavigationController } from "@controllers/ui/noteNavigationController.svelte";
+import { noteNavigationController } from "@controllers/navigation/noteNavigationController.svelte";
 import { ArrowLeftIcon, ArrowRightIcon, HomeIcon } from "lucide-svelte";
 </script>
 

@@ -10,12 +10,12 @@ import {
 } from "@utils/noteUtils";
 import { DateTime } from "luxon";
 
-import { focusController } from "@controllers/focusController.svelte";
-import { noteTreeController } from "@controllers/note/noteTreeController.svelte";
-import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
-import { notificationController } from "@controllers/notificationController.svelte";
-import { globalConfirmationDialog } from "@controllers/ui/confirmationDialogController.svelte";
-import { noteNavigationController } from "@controllers/ui/noteNavigationController.svelte";
+import { focusController } from "@controllers/ui/focusController.svelte";
+import { noteTreeController } from "@controllers/notes/noteTreeController.svelte";
+import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { notificationController } from "@controllers/application/notificationController.svelte";
+import { globalConfirmationDialog } from "@controllers/menu/confirmationDialogController.svelte";
+import { noteNavigationController } from "@controllers/navigation/noteNavigationController.svelte";
 
 class NoteController {
    setAllNotes = noteModel.setAllNotes.bind(noteModel);

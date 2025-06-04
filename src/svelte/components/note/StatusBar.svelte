@@ -1,6 +1,6 @@
 <script lang="ts">
-import { editorController } from "@controllers/editorController.svelte";
-import { noteNavigationController } from "@controllers/ui/noteNavigationController.svelte";
+import { editorController } from "@controllers/notes/editorController.svelte";
+import { noteNavigationController } from "@controllers/navigation/noteNavigationController.svelte";
 
 let contentSaved = $derived(editorController.contentSaved);
 let characterCount = $derived(editorController.characterCount);

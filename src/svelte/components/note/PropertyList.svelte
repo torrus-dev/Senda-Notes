@@ -6,7 +6,7 @@ import type { NoteProperty as PropertyType } from "@projectTypes/propertyTypes";
 
 import { SlidersHorizontalIcon, PlusIcon, ShapesIcon } from "lucide-svelte";
 
-import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
+import { notePropertyController } from "@controllers/property/notePropertyController.svelte";
 
 import Button from "@components/utils/Button.svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";

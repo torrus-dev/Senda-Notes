@@ -1,41 +1,46 @@
 import { isDescendant } from "@utils/noteUtils";
 import { DragSource, DropTarget } from "@projectTypes/dndTypes";
-import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
-import { noteTreeController } from "@controllers/note/noteTreeController.svelte";
-import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
+import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { noteTreeController } from "@controllers/notes/noteTreeController.svelte";
+import { notePropertyController } from "@controllers/property/notePropertyController.svelte";
 
 class DndController {
    isDragging = $state<boolean>(false);
    dragSource = $state<DragSource | undefined>(undefined);
    dropTarget = $state<DropTarget | undefined>(undefined);
 
-   clearDragAndDrop = (): void => {
+   clearDragAndDrop(): void {
       this.isDragging = false;
       this.dragSource = undefined;
       this.dropTarget = undefined;
-   };
+   }
 
-   setDragSource = (dragSource: DragSource): void => {
+   setDragSource(dragSource: DragSource): void {
       if (!dragSource || !dragSource.id) {
          console.warn("Drag source inválido:", dragSource);
          return;
       }
       this.dragSource = dragSource;
       this.isDragging = true;
-   };
+   }
 
-   setDropTarget = (dropTarget: DropTarget): void => {
+   setDropTarget(dropTarget: DropTarget): void {
       if (!dropTarget) {
          console.warn("Drop target inválido:", dropTarget);
          return;
       }
       this.dropTarget = dropTarget;
-   };
+   }
 
-   getDragSourceId = (): string | undefined => this.dragSource?.id;
-   getDropTargetId = (): string | undefined => this.dropTarget?.id;
+   getDragSourceId(): string | undefined {
+      return this.dragSource?.id;
+   }
 
-   handleDrop = (): void => {
+   getDropTargetId(): string | undefined {
+      return this.dropTarget?.id;
+   }
+
+   handleDrop(): void {
       if (!this.dragSource || !this.dropTarget) {
          console.warn("No se dispone de drag source o drop target al soltar");
          return;
@@ -86,10 +91,10 @@ class DndController {
       } catch (error) {
          console.error("Error en handleDrop:", error);
       }
-   };
+   }
 
    // Properties
-   propertyDnd = (): void => {
+   propertyDnd(): void {
       const { dragSource, dropTarget } = this;
 
       // Validar condiciones mínimas para continuar
@@ -121,10 +126,10 @@ class DndController {
          propertyId,
          newPosition,
       );
-   };
+   }
 
    // Note Tree
-   noteTreeDnd = (): void => {
+   noteTreeDnd(): void {
       const draggedNoteId = this.dragSource?.id;
       if (!draggedNoteId) {
          console.error("Dragged note ID no definido");
@@ -210,13 +215,13 @@ class DndController {
             this.dropTarget.type,
          );
       }
-   };
+   }
 
-   dropNoteOnNote = (
+   dropNoteOnNote(
       targetNoteId: string,
       draggedNoteId: string,
       position: number = -1,
-   ): void => {
+   ): void {
       if (!draggedNoteId || !targetNoteId) {
          console.error("IDs no definidos en dropNoteOnNote");
          return;
@@ -226,20 +231,20 @@ class DndController {
          targetNoteId,
          position,
       );
-   };
+   }
 
-   dropNoteOnLineIndicator = (
+   dropNoteOnLineIndicator(
       parentId: string | undefined,
       draggedNoteId: string,
       position: number,
-   ): void => {
+   ): void {
       if (!draggedNoteId || position < 0) {
          console.error("Datos inválidos en dropNoteOnLineIndicator");
          return;
       }
 
       noteTreeController.moveNoteToPosition(draggedNoteId, parentId, position);
-   };
+   }
 }
 
 export const dndController = $state(new DndController());

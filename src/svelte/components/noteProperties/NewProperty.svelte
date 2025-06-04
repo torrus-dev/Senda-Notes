@@ -2,7 +2,7 @@
 import type { Note } from "@projectTypes/noteTypes";
 import type { GlobalProperty } from "@projectTypes/propertyTypes";
 
-import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
+import { notePropertyController } from "@controllers/property/notePropertyController.svelte";
 import PropertyIcon from "@components/noteProperties/PropertyIcon.svelte";
 import PropertyNameInput from "@components/noteProperties/PropertyNameInput.svelte";
 import { propertyEditorController } from "@controllers/ui/propertyEditorController.svelte";

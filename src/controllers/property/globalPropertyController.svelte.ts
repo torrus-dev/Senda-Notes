@@ -3,7 +3,7 @@ import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
 import { globalPropertiesModel } from "@model/globalPropertiesModel.svelte";
 import { generateGlobalProperty } from "@utils/propertyUtils";
 import { removeDiacritics } from "@utils/searchUtils";
-import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
+import { notePropertyController } from "@controllers/property/notePropertyController.svelte";
 
 class GlobalPropertyController {
    getGlobalPropertyById(id: GlobalProperty["id"]): GlobalProperty | undefined {
