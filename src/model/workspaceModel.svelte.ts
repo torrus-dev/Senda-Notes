@@ -2,7 +2,8 @@ import type {
    WorkspaceState,
    PersistedWorkspaceState,
 } from "@projectTypes/workspaceTypes";
-import { loadWorkspaceState, saveWorkspaceState } from "@utils/storage";
+
+const WORKSPACE_STORAGE_KEY = "Workspace";
 
 class WorkspaceModel {
    data: WorkspaceState = $state({
@@ -27,8 +28,7 @@ class WorkspaceModel {
 
    constructor() {
       // Cargamos solo el estado persistente
-      const loadedPersistedState =
-         loadWorkspaceState() as PersistedWorkspaceState | null;
+      const loadedPersistedState = this.loadWorkspaceState();
       if (loadedPersistedState && loadedPersistedState.sidebar) {
          this.data.sidebar = loadedPersistedState.sidebar;
       }
@@ -39,11 +39,39 @@ class WorkspaceModel {
             const persistableState: PersistedWorkspaceState = {
                sidebar: this.data.sidebar,
             };
-            saveWorkspaceState(persistableState);
+            this.saveWorkspaceState(persistableState);
          });
       });
    }
 
+   // Funciones de storage integradas
+   private serializeWorkspaceState(state: PersistedWorkspaceState): string {
+      return JSON.stringify(state);
+   }
+
+   private deserializeWorkspaceState(
+      serializedState: string,
+   ): PersistedWorkspaceState {
+      return JSON.parse(serializedState);
+   }
+
+   private saveWorkspaceState(
+      state: PersistedWorkspaceState,
+      storage: Storage = localStorage,
+   ): PersistedWorkspaceState {
+      const serialized = this.serializeWorkspaceState(state);
+      storage.setItem(WORKSPACE_STORAGE_KEY, serialized);
+      return state;
+   }
+
+   private loadWorkspaceState(
+      storage: Storage = localStorage,
+   ): PersistedWorkspaceState | null {
+      const serialized = storage.getItem(WORKSPACE_STORAGE_KEY);
+      return serialized ? this.deserializeWorkspaceState(serialized) : null;
+   }
+
+   // Getters y setters
    get propertyEditor() {
       return this.data.propertyEditor;
    }
@@ -100,4 +128,5 @@ class WorkspaceModel {
       this.data.previousActiveNoteId = value;
    }
 }
+
 export let workspaceModel = $state(new WorkspaceModel());
