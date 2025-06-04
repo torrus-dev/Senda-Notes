@@ -1,6 +1,6 @@
 <script lang="ts">
 import Button from "@components/utils/Button.svelte";
-import { workspace } from "@controllers/workspaceController.svelte";
+import { noteNavigationController } from "@controllers/ui/noteNavigationController.svelte";
 import { ArrowLeftIcon, ArrowRightIcon, HomeIcon } from "lucide-svelte";
 </script>
 
@@ -13,7 +13,7 @@ import { ArrowLeftIcon, ArrowRightIcon, HomeIcon } from "lucide-svelte";
    </Button>
    <Button
       onclick={() => {
-         workspace.unsetActiveNoteId();
+         noteNavigationController.unsetActiveNoteId();
       }}
       title="Home screen">
       <HomeIcon size="1.125em" />

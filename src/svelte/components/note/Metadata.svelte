@@ -2,7 +2,6 @@
 import { FileCogIcon } from "lucide-svelte";
 import type { NoteMetadata } from "@projectTypes/noteTypes";
 import Collapsible from "@components/utils/Collapsible.svelte";
-import { workspace } from "@controllers/workspaceController.svelte";
 
 let { noteId, metadata }: { noteId: string; metadata: NoteMetadata } = $props();
 </script>

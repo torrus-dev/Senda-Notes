@@ -9,7 +9,6 @@ import type { SvelteComponent } from "svelte";
 import type { Note } from "@projectTypes/noteTypes";
 import { noteController } from "@controllers/note/noteController.svelte";
 import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
-import { workspace } from "@controllers/workspaceController.svelte";
 import {
    ChevronRightIcon,
    PlusIcon,
@@ -23,6 +22,7 @@ import Button from "@components/utils/Button.svelte";
 import InlineTitleEditor from "@components/utils/InlineTitleEditor.svelte";
 import { contextMenu } from "@directives/floatingMenuDirective.svelte";
 import { favoriteController } from "@controllers/ui/favoritesController.svelte";
+import { noteNavigationController } from "@controllers/ui/noteNavigationController.svelte";
 
 let {
    note,
@@ -38,7 +38,7 @@ let {
    toggleEditTitleMode: () => void;
 } = $props();
 
-let isActive = $derived(note.id === workspace.getActiveNoteId());
+let isActive = $derived(note.id === noteNavigationController.getActiveNoteId());
 let childrenCount = $derived(noteQueryController.getChildrenCount(note.id));
 let hasChildren = $derived(childrenCount > 0);
 
@@ -48,7 +48,7 @@ const handleSelectTitle = (event: KeyboardEvent | MouseEvent) => {
    if (!isEditingTitle) {
       if (("key" in event && event.key === "Enter") || event.type === "click") {
          // Solo seleccionar la nota si no estamos en modo edición
-         workspace.setActiveNoteId(note.id);
+         noteNavigationController.setActiveNoteId(note.id);
       }
    }
 };

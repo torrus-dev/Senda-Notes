@@ -3,9 +3,9 @@ import type { Note } from "@projectTypes/noteTypes";
 import type { GlobalProperty } from "@projectTypes/propertyTypes";
 
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
-import { workspace } from "@controllers/workspaceController.svelte";
 import PropertyIcon from "@components/noteProperties/PropertyIcon.svelte";
 import PropertyNameInput from "@components/noteProperties/PropertyNameInput.svelte";
+import { propertyEditorController } from "@controllers/ui/propertyEditorController.svelte";
 
 let { noteId }: { noteId: Note["id"] } = $props();
 
@@ -18,7 +18,7 @@ function createPropertyFromName(propertyName: string) {
       propertyName,
       newPropertyType,
    );
-   workspace.stopPropertyEdit();
+   propertyEditorController.stop();
 }
 function createPropertyFromGlobal(globalProperty: GlobalProperty) {
    notePropertyController.handleCreateNoteProperty(
@@ -26,7 +26,7 @@ function createPropertyFromGlobal(globalProperty: GlobalProperty) {
       globalProperty.name,
       globalProperty.type,
    );
-   workspace.stopPropertyEdit();
+   propertyEditorController.stop();
 }
 let newPropertyElement: HTMLElement | undefined = $state(undefined);
 </script>

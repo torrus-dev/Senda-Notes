@@ -5,7 +5,6 @@ import SearchResults from "@components/navbar/SearchResults.svelte";
 import Button from "@components/utils/Button.svelte";
 import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 import { searchController } from "@controllers/searchController.svelte";
-import { workspace } from "@controllers/workspaceController.svelte";
 
 import type { Note } from "@projectTypes/noteTypes";
 import type { SearchResult } from "@projectTypes/searchTypes";
@@ -14,6 +13,7 @@ import { tick } from "svelte";
 import { DeleteIcon, XIcon } from "lucide-svelte";
 import { onClickOutside } from "@directives/onClickOutside";
 import { onPressEsc } from "@directives/onPressEsc";
+import { noteNavigationController } from "@controllers/ui/noteNavigationController.svelte";
 
 let { note }: { note: Note | undefined } = $props();
 
@@ -54,7 +54,7 @@ $effect(() => {
 function handleResultSelect(result: SearchResult) {
    // Navegar a la nota seleccionada
    if (result.note && result.note.id) {
-      workspace.setActiveNoteId(result.note.id);
+      noteNavigationController.setActiveNoteId(result.note.id);
       searchController.isSearching = false;
    }
 }

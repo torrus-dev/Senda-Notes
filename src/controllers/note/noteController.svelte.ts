@@ -13,9 +13,9 @@ import { DateTime } from "luxon";
 import { focusController } from "@controllers/focusController.svelte";
 import { noteTreeController } from "@controllers/note/noteTreeController.svelte";
 import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
-import { workspace } from "@controllers/workspaceController.svelte";
 import { notificationController } from "@controllers/notificationController.svelte";
 import { globalConfirmationDialog } from "@controllers/ui/confirmationDialogController.svelte";
+import { noteNavigationController } from "@controllers/ui/noteNavigationController.svelte";
 
 class NoteController {
    setAllNotes = noteModel.setAllNotes.bind(noteModel);
@@ -48,7 +48,7 @@ class NoteController {
          }));
       }
 
-      workspace.setActiveNoteId(newNote.id);
+      noteNavigationController.setActiveNoteId(newNote.id);
       focusController.requestFocus(FocusTarget.TITLE);
    };
 
@@ -146,9 +146,9 @@ class NoteController {
       });
 
       // Limpiar nota activa si fue eliminada
-      const activeNoteId = workspace.getActiveNoteId();
+      const activeNoteId = noteNavigationController.getActiveNoteId();
       if (activeNoteId && idsToDelete.has(activeNoteId)) {
-         workspace.unsetActiveNoteId();
+         noteNavigationController.unsetActiveNoteId();
       }
 
       notificationController.addNotification({

@@ -1,6 +1,5 @@
 <script lang="ts">
-import { SettingsIcon, InfoIcon, StarIcon, Trash2Icon } from "lucide-svelte";
-import { workspace } from "@controllers/workspaceController.svelte";
+import { SettingsIcon, InfoIcon, Trash2Icon } from "lucide-svelte";
 import { screenSizeController } from "@controllers/screenSizeController.svelte";
 import { settingsController } from "@controllers/settingsController.svelte";
 
@@ -10,11 +9,13 @@ import AboutModal from "@components/modals/AboutModal.svelte";
 import Button from "@components/utils/Button.svelte";
 import ResizableHandler from "@components/sidebar/ResizableHandler.svelte";
 import Favorites from "@components/sidebar/Favorites.svelte";
+import { sidebarController } from "@controllers/ui/sidebarController.svelte";
+import { modalController } from "@controllers/ui/modalController.svelte";
 
-let width = $state(workspace.getSidebarWidth());
+let width = $state(sidebarController.getWidth());
 let isMobile = $derived(screenSizeController.isMobile);
 let isSidebarOpen = $derived(
-   workspace.isSidebarOpen() || settingsController.getLockSidebar(),
+   sidebarController.isOpen() || settingsController.getLockSidebar(),
 );
 let isResizing = $state(false);
 
@@ -64,7 +65,7 @@ let widthStyle = $derived(isMobile ? "90%" : `${width}em`);
             <li>
                <Button
                   onclick={() => {
-                     workspace.openModal(SettingsModal);
+                     modalController.open(SettingsModal);
                   }}>
                   <SettingsIcon size="1.5rem"></SettingsIcon>
                </Button>
@@ -72,7 +73,7 @@ let widthStyle = $derived(isMobile ? "90%" : `${width}em`);
             <li>
                <Button
                   onclick={() => {
-                     workspace.openModal(AboutModal);
+                     modalController.open(AboutModal);
                   }}>
                   <InfoIcon size="1.5rem"></InfoIcon>
                </Button>

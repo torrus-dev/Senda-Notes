@@ -3,7 +3,7 @@ import Popover from "@components/floating/Popover.svelte";
 import Suggestions from "@components/floating/Suggestions.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
-import { workspace } from "@controllers/workspaceController.svelte";
+import { propertyEditorController } from "@controllers/ui/propertyEditorController.svelte";
 import { onClickOutside } from "@directives/onClickOutside";
 import { onPressEsc } from "@directives/onPressEsc";
 import type { Note } from "@projectTypes/noteTypes";
@@ -53,7 +53,7 @@ let isDuplicate = $derived(
 function cancelNameInput() {
    newName = initialPropertyName;
    showSuggestions = false;
-   workspace.stopPropertyEdit();
+   propertyEditorController.stop();
 }
 
 function selectGlobalProperty(property: GlobalProperty) {

@@ -1,17 +1,17 @@
 <script lang="ts">
-import { workspace } from "@controllers/workspaceController.svelte";
 import Button from "@components/utils/Button.svelte";
 import { XIcon } from "lucide-svelte";
 import { floatingMenuController } from "@controllers/floatingMenuController.svelte";
 import { onPressEsc } from "@directives/onPressEsc";
+import { modalController } from "@controllers/ui/modalController.svelte";
 
-let isOpen = $derived(workspace.isModalOpen());
-let content = $derived(workspace.getModalContent());
+let isOpen = $derived(modalController.isOpen());
+let content = $derived(modalController.getContent());
 
 function closeModal() {
    // Si esta abierto el menu flotante no cerramos el modal
    if (!floatingMenuController.getMenuState().isOpen) {
-      workspace.closeModal();
+      modalController.close();
    }
 }
 </script>

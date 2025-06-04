@@ -6,13 +6,13 @@ import type { NoteProperty as PropertyType } from "@projectTypes/propertyTypes";
 
 import { SlidersHorizontalIcon, PlusIcon, ShapesIcon } from "lucide-svelte";
 
-import { workspace } from "@controllers/workspaceController.svelte";
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
 
 import Button from "@components/utils/Button.svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";
 import Property from "@components/noteProperties/Property.svelte";
 import NewProperty from "@components/noteProperties/NewProperty.svelte";
+import { propertyEditorController } from "@controllers/ui/propertyEditorController.svelte";
 
 let { noteId }: { noteId: string } = $props();
 
@@ -20,7 +20,7 @@ let properties: PropertyType[] = $derived(
    notePropertyController.getNoteProperties(noteId),
 );
 
-let isAddingProperty = $derived(workspace.isAddingProperty());
+let isAddingProperty = $derived(propertyEditorController.isAddingProperty());
 </script>
 
 {#if noteId}
@@ -55,7 +55,7 @@ let isAddingProperty = $derived(workspace.isAddingProperty());
                <Button
                   class="text-base-content/80"
                   onclick={(event) => {
-                     workspace.toggleAddProperty();
+                     propertyEditorController.startAddProperty();
                      event.stopPropagation();
                      event.preventDefault();
                   }}

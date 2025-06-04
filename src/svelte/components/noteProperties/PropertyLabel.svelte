@@ -8,12 +8,11 @@ import { SquarePenIcon, TextCursorInputIcon, Trash2Icon } from "lucide-svelte";
 import { getPropertyIcon, getPropertyTypesList } from "@utils/propertyUtils";
 
 import { notePropertyController } from "@controllers/note/property/notePropertyController.svelte";
-import { workspace } from "@controllers/workspaceController.svelte";
 
 import PropertyIcon from "@components/noteProperties/PropertyIcon.svelte";
 import Button from "@components/utils/Button.svelte";
 import PropertyNameInput from "@components/noteProperties/PropertyNameInput.svelte";
-import { globalConfirmationDialog } from "@controllers/ui/confirmationDialogController.svelte";
+import { propertyEditorController } from "@controllers/ui/propertyEditorController.svelte";
 
 let {
    noteId,
@@ -50,7 +49,7 @@ const labelMenuItems: MenuItem[] = [
       label: "Rename Property",
       icon: TextCursorInputIcon,
       action: () => {
-         workspace.toggleEditProperty(noteId, property.id);
+         propertyEditorController.startEditProperty(noteId, property.id);
       },
    },
    {
@@ -78,7 +77,7 @@ function renameProperty(newPropertyName: string) {
       property.id,
       newPropertyName,
    );
-   workspace.stopPropertyEdit();
+   propertyEditorController.stop();
 }
 
 function renamePropertyFromGlobal(globalProperty: GlobalProperty) {
@@ -87,7 +86,7 @@ function renamePropertyFromGlobal(globalProperty: GlobalProperty) {
       property.id,
       globalProperty.name,
    );
-   workspace.stopPropertyEdit();
+   propertyEditorController.stop();
 }
 </script>
 

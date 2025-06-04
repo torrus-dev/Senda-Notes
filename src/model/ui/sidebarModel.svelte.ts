@@ -1,5 +1,3 @@
-import type { WorkspaceState } from "@projectTypes/workspaceTypes";
-
 const SIDEBAR_STORAGE_KEY = "Sidebar";
 
 interface SidebarState {

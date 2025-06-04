@@ -3,8 +3,8 @@ import Button from "@components/utils/Button.svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";
 
 import { NetworkIcon, PlusIcon } from "lucide-svelte";
-import { workspace } from "@controllers/workspaceController.svelte";
 import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
+import { noteNavigationController } from "@controllers/ui/noteNavigationController.svelte";
 
 let { children }: { children: string[] } = $props();
 </script>
@@ -26,7 +26,8 @@ let { children }: { children: string[] } = $props();
                <Button
                   size="small"
                   shape="rect"
-                  onclick={() => workspace.setActiveNoteId(childId)}
+                  onclick={() =>
+                     noteNavigationController.setActiveNoteId(childId)}
                   title="Abrir nota">
                   {noteQueryController.getNoteById(childId)?.title}
                </Button>

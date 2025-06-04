@@ -10,8 +10,8 @@ ul {
 </style>
 
 <script lang="ts">
+import { noteNavigationController } from "@controllers/ui/noteNavigationController.svelte";
 import Button from "./Button.svelte";
-import { workspace } from "@controllers/workspaceController.svelte";
 import { noteQueryController } from "@controllers/note/noteQueryController.svelte";
 
 let { noteId }: { noteId: string } = $props();
@@ -31,7 +31,7 @@ let path: { id: string; title: string }[] = $derived(
                      size="small"
                      shape="rect"
                      onclick={(event: Event) => {
-                        workspace.setActiveNoteId(crumb.id);
+                        noteNavigationController.setActiveNoteId(crumb.id);
                         event.stopPropagation();
                      }}
                      title="Open note">

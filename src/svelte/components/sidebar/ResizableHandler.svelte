@@ -1,11 +1,11 @@
 <script lang="ts">
+import { sidebarController } from "@controllers/ui/sidebarController.svelte";
 import { onDestroy } from "svelte";
-import { workspace } from "@controllers/workspaceController.svelte";
 
 // Propiedades del componente
 let { disabled = false, updateWidth, onResizeStart, onResizeEnd } = $props();
 
-const savedWidth = workspace.getSidebarWidth();
+const savedWidth = sidebarController.getWidth();
 const minWidth = 8;
 const maxWidth = 30;
 
@@ -48,7 +48,7 @@ function stopDragging() {
    document.removeEventListener("mousemove", handleDrag);
    document.removeEventListener("mouseup", stopDragging);
    document.body.classList.remove("cursor-col-resize", "select-none");
-   workspace.setSidebarWidth(width);
+   sidebarController.setWidth(width);
    onResizeEnd();
 }
 

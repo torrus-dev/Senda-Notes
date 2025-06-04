@@ -5,13 +5,13 @@
 import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";
 
 import type { NoteProperty } from "@projectTypes/propertyTypes";
-import { workspace } from "@controllers/workspaceController.svelte";
 import { globalPropertyController } from "@controllers/note/property/globalPropertyController.svelte";
 
 import PropertyValue from "@components/noteProperties/PropertyValue.svelte";
 import PropertyLabel from "@components/noteProperties/PropertyLabel.svelte";
 import { TriangleAlertIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
+import { propertyEditorController } from "@controllers/ui/propertyEditorController.svelte";
 
 let {
    noteId,
@@ -39,7 +39,7 @@ const {
 });
 
 let isEditingProperty = $derived(
-   workspace.isEditingProperty(noteId, property.id),
+   propertyEditorController.isEditingProperty(noteId, property.id),
 );
 
 let isTypeMissmatched = $derived(
