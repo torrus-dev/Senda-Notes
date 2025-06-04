@@ -1,51 +1,46 @@
-interface NoteNavigationState {
-   activeNoteId: string | undefined;
-   previousActiveNoteId: string | undefined;
-}
+import { noteNavigationModel } from "@model/ui/noteNavigationModel.svelte";
 
 class NoteNavigationController {
-   data: NoteNavigationState = $state({
-      activeNoteId: undefined,
-      previousActiveNoteId: undefined,
-   });
-
    getActiveNoteId() {
-      return this.data.activeNoteId;
+      return noteNavigationModel.activeNoteId;
    }
 
    setActiveNoteId(newId: string) {
-      this.data.previousActiveNoteId = this.data.activeNoteId;
-      this.data.activeNoteId = newId;
+      noteNavigationModel.previousActiveNoteId =
+         noteNavigationModel.activeNoteId;
+      noteNavigationModel.activeNoteId = newId;
    }
 
    unsetActiveNoteId() {
-      this.data.previousActiveNoteId = this.data.activeNoteId;
-      this.data.activeNoteId = undefined;
+      noteNavigationModel.previousActiveNoteId =
+         noteNavigationModel.activeNoteId;
+      noteNavigationModel.activeNoteId = undefined;
    }
 
    getPreviousActiveNoteId() {
-      return this.data.previousActiveNoteId;
+      return noteNavigationModel.previousActiveNoteId;
    }
 
    goToPreviousNote() {
-      if (this.data.previousActiveNoteId) {
-         const temp = this.data.activeNoteId;
-         this.data.activeNoteId = this.data.previousActiveNoteId;
-         this.data.previousActiveNoteId = temp;
+      if (noteNavigationModel.previousActiveNoteId) {
+         const temp = noteNavigationModel.activeNoteId;
+         noteNavigationModel.activeNoteId =
+            noteNavigationModel.previousActiveNoteId;
+         noteNavigationModel.previousActiveNoteId = temp;
       }
    }
 
    hasActiveNote() {
-      return this.data.activeNoteId !== undefined;
+      return noteNavigationModel.activeNoteId !== undefined;
    }
 
    hasPreviousNote() {
-      return this.data.previousActiveNoteId !== undefined;
+      return noteNavigationModel.previousActiveNoteId !== undefined;
    }
 
-   // Getter para acceso directo al estado
+   // Getter para acceso directo al estado del modelo
    get state() {
-      return this.data;
+      return noteNavigationModel.data;
    }
 }
 

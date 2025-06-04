@@ -1,4 +1,8 @@
-import type { PropertyEditorState } from "@projectTypes/workspaceTypes";
+export interface PropertyEditorState {
+   isOpen: boolean;
+   noteId: string | undefined;
+   propertyId: string | undefined;
+}
 
 class PropertyEditorController {
    data: PropertyEditorState = $state({
