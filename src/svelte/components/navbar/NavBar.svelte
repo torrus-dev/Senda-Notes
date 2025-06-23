@@ -9,6 +9,7 @@ let { note }: { note: Note | undefined } = $props();
 
 <nav class="bg-base-100">
    <div class="flex w-full items-center gap-0 p-2">
+      <!-- zona de arrastre deberia ser todo, pero que no se se pueda arrastrar si damos a otros botones -->
       <div class="flex flex-1/6 items-center gap-1">
          <SidebarToogle />
          <NavigationButtons />
@@ -16,6 +17,8 @@ let { note }: { note: Note | undefined } = $props();
       <div class="md:flex-3/6">
          <NavigationBar note={note} />
       </div>
-      <div class="md:flex-1/6"></div>
+      <div class="md:flex-1/6">
+         <!-- añadir controles de ventana -->
+      </div>
    </div>
 </nav>
