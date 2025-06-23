@@ -4,7 +4,7 @@ class UiModeController {
    showOptions: boolean = $state(false);
    prefersDarkColorScheme = window.matchMedia("(prefers-color-scheme: dark)");
 
-   private applyTheme() {
+   applyTheme() {
       let newUiMode = this.uiMode;
 
       if (newUiMode === "system") {
@@ -15,7 +15,6 @@ class UiModeController {
    }
 
    constructor() {
-      this.applyTheme();
       $effect.root(() => {
          // Effect para escuchar cambios en la preferencia del sistema
          $effect(() => {
