@@ -1,7 +1,10 @@
 <script lang="ts">
 import GlobalPropertyMenu from "@components/globalProperties/GlobalPropertyMenu.svelte";
+import Button from "@components/utils/Button.svelte";
 import Slider from "@components/utils/Slider.svelte";
 import { settingsController } from "@controllers/application/settingsController.svelte";
+import { uiModeController } from "@controllers/ui/uiModeController.svelte";
+import { UiModeType } from "@projectTypes/uiTypes";
 
 let searchQuery = $state("");
 </script>
@@ -10,10 +13,18 @@ let searchQuery = $state("");
    <h2 class="mb-8 py-2 text-2xl font-bold">Settings</h2>
    <div class="flex w-full flex-col gap-4">
       <div class="flex items-center justify-between py-2">
-         <span>Toggle Dark mode</span>
-         <Slider
-            value={settingsController.getTheme() === "dark"}
-            onChange={() => settingsController.toggleThemeMode()} />
+         <span>UI Mode</span>
+         <select
+            class="ml-4 rounded border px-2 py-1"
+            bind:value={uiModeController.uiMode}
+            onchange={(event: Event) => {
+               const target = event.target as HTMLSelectElement;
+               uiModeController.uiMode = target.value as UiModeType;
+            }}>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="system">System</option>
+         </select>
       </div>
       <div class="flex items-center justify-between py-2">
          <span>Lock Sidebar on large screens</span>

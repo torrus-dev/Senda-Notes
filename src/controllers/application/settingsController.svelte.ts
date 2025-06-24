@@ -1,12 +1,6 @@
 import { settingsModel } from "@model/application/settingsModel.svelte";
 
 class SettingsController {
-   // theme
-   toggleThemeMode = () => {
-      settingsModel.theme = settingsModel.theme === "light" ? "dark" : "light";
-   };
-   getTheme = (): "light" | "dark" => settingsModel.theme;
-
    // lock sidebar
    toggleLockSidebar = () => {
       settingsModel.sidebarIsLocked = !settingsModel.sidebarIsLocked;

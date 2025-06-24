@@ -20,7 +20,7 @@
    size: var(--icon-lg);
 }
 
-.theme-light {
+[data-ui-mode="light"] {
    --color-base-100: oklch(100% 0 0);
    --color-base-200: oklch(96% 0 0);
    --color-base-300: oklch(92% 0 0);
@@ -48,7 +48,7 @@
    --color-bg-active: #00000018;
 }
 
-.theme-dark {
+[data-ui-mode="dark"] {
    --color-base-100: oklch(24% 0 0);
    --color-base-200: oklch(29% 0 0);
    --color-base-300: oklch(34% 0 0);

@@ -3,6 +3,7 @@
 @import "tailwindcss";
 @import "tailwindcss/preflight.css" layer(base);
 @import "./note_content.css";
+@import "./forms.css";
 
 @plugin "@tailwindcss/typography";
 

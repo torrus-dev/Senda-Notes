@@ -36,7 +36,6 @@ class SettingsModel {
    private getDefaultSettings(): Settings {
       return {
          showEditorToolbar: false,
-         theme: "dark",
          sidebarIsLocked: false,
          showMetadata: false,
          debugLevel: 0,
@@ -52,14 +51,6 @@ class SettingsModel {
          const defaultState = this.getDefaultSettings();
          this.data = { ...this.data, ...defaultState };
       }
-   }
-
-   // theme
-   get theme() {
-      return this.data.theme;
-   }
-   set theme(value: "light" | "dark") {
-      this.data.theme = value;
    }
 
    // showEditorToolbar

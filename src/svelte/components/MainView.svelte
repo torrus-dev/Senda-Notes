@@ -19,9 +19,7 @@ const activeNote: Note | undefined = $derived(
 );
 </script>
 
-<div
-   class="text-base-content bg-base-100
-  {settingsController.getTheme() === 'dark' ? 'theme-dark' : 'theme-light'}">
+<div class="text-base-content bg-base-100">
    <!-- Componentes globales dinámicos o invisibles-->
    <Modal />
    <ConfirmationDialog />

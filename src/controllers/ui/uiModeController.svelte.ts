@@ -1,16 +1,24 @@
 import { uiModeModel } from "@model/uiModeModel.svelte";
+import { UiModeType } from "@projectTypes/uiTypes";
 
 class UiModeController {
    showOptions: boolean = $state(false);
    prefersDarkColorScheme = window.matchMedia("(prefers-color-scheme: dark)");
 
-   applyTheme() {
-      let newUiMode = this.uiMode;
+   isDarkMode: boolean = $derived(
+      this.uiMode === "dark" || this.prefersDarkColorScheme.matches,
+   );
 
-      if (newUiMode === "system") {
+   private checkMode(): Exclude<UiModeType, "system"> {
+      if (this.uiMode === "system") {
          // Comprobar que modo esta usando el dispositivo
-         newUiMode = this.prefersDarkColorScheme.matches ? "dark" : "light";
+         return this.prefersDarkColorScheme.matches ? "dark" : "light";
+      } else {
+         return this.uiMode as Exclude<UiModeType, "system">;
       }
+   }
+   applyTheme() {
+      let newUiMode = this.checkMode();
       document.documentElement.dataset.uiMode = newUiMode;
    }
 
@@ -22,8 +30,7 @@ class UiModeController {
 
             const handleChange = (event: MediaQueryListEvent) => {
                if (uiModeController.uiMode === "system") {
-                  const uiMode = event.matches ? "dark" : "light";
-                  document.documentElement.dataset.uiMode = uiMode;
+                  this.applyTheme();
                }
             };
 

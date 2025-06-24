@@ -25,13 +25,14 @@ import type { NoteStats } from "@projectTypes/noteTypes";
 import { FocusTarget } from "@projectTypes/focusTypes";
 import { editorController } from "@controllers/notes/editorController.svelte";
 import { DateTime } from "luxon";
+import { uiModeController } from "@controllers/ui/uiModeController.svelte";
 
 // Props
 let { noteId, content = "" }: { noteId: string; content: string } = $props();
 
 // Estado derivado
 let isMobile: boolean = $derived(screenSizeController.isMobile);
-let useDarkMode: boolean = $derived(settingsController.getTheme() === "dark");
+let useDarkMode: boolean = $derived(uiModeController.isDarkMode);
 
 // Referencias DOM y estado
 let editorElement: HTMLElement;

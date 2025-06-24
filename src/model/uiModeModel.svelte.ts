@@ -1,7 +1,9 @@
+import { UiModeType } from "@projectTypes/uiTypes";
+
 const STORAGE_KEY = "ui-mode";
 
 interface uiModelSettings {
-   uiMode: "system" | "light" | "dark";
+   uiMode: UiModeType;
 }
 
 class UiModeModel {
