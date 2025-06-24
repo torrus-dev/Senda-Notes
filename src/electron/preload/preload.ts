@@ -1,28 +1,13 @@
-// import { create } from 'domain'
-// import { contextBridge } from 'electron'
+const { contextBridge, ipcRenderer } = require("electron");
 
-// const dummyNote = {
-//   title: 'Dummy Data',
-//   properties: {
-//     created: '2021-09-01',
-//     updated: '2021-09-01',
-//     publish: true,
-//     tags: ['dummy', 'data'],
-//     theme: "Web Development"
-//   },
-//   content: [
-//     {
-//       "id": 1,
-//       "type": "text",
-//       "properties": {
-//         "block_content": "This is a basic block with dummy text content"
-//       },
-//       "children" : [],
-//       "parent": null
-//     }
-//   ]
-// };
+// Exponer APIs seguras al renderer process
+contextBridge.exposeInMainWorld("electronAPI", {
+   // Controles de ventana
+   minimize: () => ipcRenderer.invoke("window:minimize"),
+   maximize: () => ipcRenderer.invoke("window:maximize"),
+   close: () => ipcRenderer.invoke("window:close"),
+   isMaximized: () => ipcRenderer.invoke("window:isMaximized"),
 
-// contextBridge.exposeInMainWorld('data', {
-//   getDummyData: () => dummyNote
-// })
+   // Información del sistema
+   platform: process.platform,
+});

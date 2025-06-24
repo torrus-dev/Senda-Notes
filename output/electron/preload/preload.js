@@ -1,1 +1,1 @@
-"use strict";
+"use strict";const{contextBridge:e,ipcRenderer:i}=require("electron");e.exposeInMainWorld("electronAPI",{minimize:()=>i.invoke("window:minimize"),maximize:()=>i.invoke("window:maximize"),close:()=>i.invoke("window:close"),isMaximized:()=>i.invoke("window:isMaximized"),platform:process.platform});
