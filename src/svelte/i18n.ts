@@ -2,17 +2,30 @@ import i18next from "i18next";
 import { createI18nStore } from "svelte-i18next";
 
 i18next.init({
- lng: 'en',
- resources: {
-    en: {
-      translation: {
-        "key": "hello world"
-      }
-    }
-  },
-  interpolation: {
-    escapeValue: false, // not needed for svelte as it escapes by default
-  }
+   lng: "es", // Cambia a español por defecto ya que usas "es-ES" en Luxon
+   fallbackLng: "en",
+   debug: true, // Solo en desarrollo
+   resources: {
+      en: {
+         translation: {
+            welcome: "Welcome",
+            hello: "Hello World",
+            settings: "Settings",
+            // Añade más claves aquí
+         },
+      },
+      es: {
+         translation: {
+            welcome: "Bienvenido",
+            hello: "Hola Mundo",
+            settings: "Configuración",
+            // Añade más claves aquí
+         },
+      },
+   },
+   interpolation: {
+      escapeValue: false,
+   },
 });
 
 const i18n = createI18nStore(i18next);
