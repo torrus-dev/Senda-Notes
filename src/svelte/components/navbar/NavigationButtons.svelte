@@ -11,11 +11,5 @@ import { ArrowLeftIcon, ArrowRightIcon, HomeIcon } from "lucide-svelte";
    <Button onclick={() => {}} title="Go forward">
       <ArrowRightIcon size="1.125em" />
    </Button>
-   <Button
-      onclick={() => {
-         noteNavigationController.unsetActiveNoteId();
-      }}
-      title="Home screen">
-      <HomeIcon size="1.125em" />
-   </Button>
+   
 </div>

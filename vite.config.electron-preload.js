@@ -14,6 +14,7 @@ export default defineConfig({
          "@directives": path.resolve(__dirname, "src/directives"),
          "@fonts": path.resolve(__dirname, "src/fonts"),
          "@components": path.resolve(__dirname, "src/svelte/components"),
+         "@assets": path.resolve(__dirname, "src/svelte/assets"),
          "@i18n": path.resolve(__dirname, "src/i18n"),
          "@css": path.resolve(__dirname, "src/svelte/css"),
       },

@@ -3,7 +3,7 @@ import type { Note } from "@projectTypes/noteTypes";
 import NavigationButtons from "@components/navbar/NavigationButtons.svelte";
 import SidebarToogle from "@components/sidebar/SidebarToogle.svelte";
 import NavigationBar from "@components/navbar/search/NavigationBar.svelte";
-import WindowControls from "./WindowControls.svelte";
+import WindowControls from "@components/navbar/WindowControls.svelte";
 
 let { note }: { note: Note | undefined } = $props();
 </script>
@@ -19,7 +19,7 @@ let { note }: { note: Note | undefined } = $props();
             <NavigationButtons />
          </div>
       </div>
-      <div class="md:flex-3/6" style="-webkit-app-region: no-drag">
+      <div class="md:flex-4/6" style="-webkit-app-region: no-drag">
          <NavigationBar note={note} />
       </div>
       <div class="md:flex-1/6">

@@ -107,9 +107,9 @@ function handleResultSelect(result: SearchResult) {
          </div>
       </div>
    {:else}
-      <div class="rounded-field flex flex-grow items-center pl-2">
+      <div class="rounded-field flex flex-grow items-center">
          {#if note}
-            <Breadcrumbs noteId={note.id} />
+            <Breadcrumbs showHome={true} noteId={note.id} />
          {/if}
          <button
             class="flex-grow cursor-text p-2 text-left"

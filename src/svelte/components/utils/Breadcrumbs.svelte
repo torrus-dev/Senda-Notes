@@ -13,6 +13,7 @@ ul {
 import { noteNavigationController } from "@controllers/navigation/noteNavigationController.svelte";
 import Button from "./Button.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { HomeIcon } from "lucide-svelte";
 
 let { noteId, showHome }: { showHome: boolean; noteId: string } = $props();
 
@@ -23,6 +24,18 @@ let path: { id: string; title: string }[] = $derived(
 
 <div aria-label="breadcrumb">
    <ul class="inline-flex items-center">
+      {#if showHome}
+         <div class="flex items-center">
+            <Button
+               onclick={() => {
+                  noteNavigationController.unsetActiveNoteId();
+               }}
+               title="Home">
+               <HomeIcon size="1.0625em" />
+               >
+            </Button>
+         </div>
+      {/if}
       {#if path}
          {#each path as crumb, index (crumb.id)}
             {#if index !== path.length - 1}
