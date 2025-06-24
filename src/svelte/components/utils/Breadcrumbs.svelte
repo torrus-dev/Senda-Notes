@@ -14,7 +14,7 @@ import { noteNavigationController } from "@controllers/navigation/noteNavigation
 import Button from "./Button.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 
-let { noteId }: { noteId: string } = $props();
+let { noteId, showHome }: { showHome: boolean; noteId: string } = $props();
 
 let path: { id: string; title: string }[] = $derived(
    noteId ? noteQueryController.getPathAsArray(noteId) : [],

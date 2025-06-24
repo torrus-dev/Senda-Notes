@@ -2,7 +2,7 @@
 import type { Note } from "@projectTypes/noteTypes";
 import NavigationButtons from "@components/navbar/NavigationButtons.svelte";
 import SidebarToogle from "@components/sidebar/SidebarToogle.svelte";
-import NavigationBar from "@components/navbar/NavigationBar.svelte";
+import NavigationBar from "@components/navbar/search/NavigationBar.svelte";
 import WindowControls from "./WindowControls.svelte";
 
 let { note }: { note: Note | undefined } = $props();

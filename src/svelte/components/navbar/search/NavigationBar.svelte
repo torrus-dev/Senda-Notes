@@ -1,7 +1,7 @@
 <script lang="ts">
 import MoreButton from "@components/navbar/MoreButton.svelte";
 import Breadcrumbs from "@components/utils/Breadcrumbs.svelte";
-import SearchResults from "@components/navbar/SearchResults.svelte";
+import SearchResults from "@components/navbar/search/SearchResults.svelte";
 import Button from "@components/utils/Button.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 import { searchController } from "@controllers/navigation/searchController.svelte";

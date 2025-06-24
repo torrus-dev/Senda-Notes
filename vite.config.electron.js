@@ -10,7 +10,6 @@ export default defineConfig({
          "@utils": path.resolve(__dirname, "src/lib/utils"),
          "@lib": path.resolve(__dirname, "src/lib"),
          "@controllers": path.resolve(__dirname, "src/controllers"),
-         "@UIState": path.resolve(__dirname, "src/UIState"),
          "@model": path.resolve(__dirname, "src/model"),
          "@directives": path.resolve(__dirname, "src/directives"),
          "@fonts": path.resolve(__dirname, "src/fonts"),

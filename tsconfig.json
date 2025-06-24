@@ -17,7 +17,6 @@
          "@utils/*": ["lib/utils/*"],
          "@lib/*": ["lib/*"],
          "@controllers/*": ["controllers/*"],
-         "@UIState/*": ["UIState/*"],
          "@model/*": ["model/*"],
          "@directives/*": ["directives/*"],
          "@fonts/*": ["fonts/*"],
