@@ -33,25 +33,21 @@ async function handleClose() {
 }
 </script>
 
-<div
-   class="ml-auto flex w-fit items-center"
-   style="-webkit-app-region: no-drag;">
-   <button
-      class="flex cursor-pointer items-center justify-center border-0 bg-transparent p-3 transition-colors hover:bg-black/10"
-      onclick={handleMinimize}
-      aria-label="Minimizar">
-      <MinusIcon size={20} />
-   </button>
-   <button
-      class="flex cursor-pointer items-center justify-center border-0 bg-transparent p-3 transition-colors hover:bg-black/10"
-      onclick={handleMaximize}
-      aria-label="Maximizar">
-      <Maximize size={20} />
-   </button>
-   <button
-      class="flexcursor-pointer items-center justify-center border-0 bg-transparent p-3 transition-colors hover:bg-red-500/80 hover:text-white"
-      onclick={handleClose}
-      aria-label="Cerrar">
-      <XIcon size={20} />
-   </button>
-</div>
+<button
+   class="flex cursor-pointer items-center justify-center border-0 bg-transparent p-3 transition-colors hover:bg-black/10"
+   onclick={handleMinimize}
+   aria-label="Minimizar">
+   <MinusIcon size={20} />
+</button>
+<button
+   class="flex cursor-pointer items-center justify-center border-0 bg-transparent p-3 transition-colors hover:bg-black/10"
+   onclick={handleMaximize}
+   aria-label="Maximizar">
+   <Maximize size={20} />
+</button>
+<button
+   class="flexcursor-pointer items-center justify-center border-0 bg-transparent p-3 transition-colors hover:bg-red-500/80 hover:text-white"
+   onclick={handleClose}
+   aria-label="Cerrar">
+   <XIcon size={20} />
+</button>

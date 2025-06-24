@@ -8,18 +8,26 @@ import WindowControls from "./WindowControls.svelte";
 let { note }: { note: Note | undefined } = $props();
 </script>
 
-<nav class="bg-base-100">
+<nav class="bg-base-100" style="-webkit-app-region: drag">
    <div class="flex w-full items-center gap-0 p-2">
       <!-- zona de arrastre deberia ser todo, pero que no se se pueda arrastrar si damos a otros botones -->
-      <div class="flex flex-1/6 items-center gap-1">
-         <SidebarToogle />
-         <NavigationButtons />
+      <div class=" flex-1/6">
+         <div
+            style="-webkit-app-region: no-drag"
+            class="mr-auto flex w-fit items-center gap-1">
+            <SidebarToogle />
+            <NavigationButtons />
+         </div>
       </div>
-      <div class="md:flex-3/6">
+      <div class="md:flex-3/6" style="-webkit-app-region: no-drag">
          <NavigationBar note={note} />
       </div>
       <div class="md:flex-1/6">
-         <WindowControls/>
+         <div
+            class="ml-auto flex w-fit items-center"
+            style="-webkit-app-region: no-drag">
+            <WindowControls />
+         </div>
       </div>
    </div>
 </nav>
