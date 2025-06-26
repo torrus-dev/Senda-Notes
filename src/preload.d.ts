@@ -1,4 +1,3 @@
-// electron.d.ts
 export interface ElectronAPI {
    minimize: () => Promise<void>;
    maximize: () => Promise<boolean>;

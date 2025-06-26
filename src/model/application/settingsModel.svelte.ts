@@ -1,6 +1,6 @@
 import { Settings } from "@projectTypes/core/settingsTypes";
 
-const SETTINGS_STORAGE_KEY = "settings"; // Ajusta esta clave según tu aplicación
+const SETTINGS_STORAGE_KEY = "settings"; 
 
 class SettingsModel {
    private data: Settings = $state(this.getDefaultSettings());
