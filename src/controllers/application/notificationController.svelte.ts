@@ -3,8 +3,7 @@ import type {
    Notification,
    SnackbarType,
    SnackbarAction,
-} from "@projectTypes/notificationsTypes";
-import { nanoid } from "nanoid"; // Asumiendo que usas nanoid para IDs
+} from "@projectTypes/uiTypes.ts";
 
 class NotificationController {
    notifications: Notification[] = $state([]);

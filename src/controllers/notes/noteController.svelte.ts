@@ -1,4 +1,4 @@
-import { FocusTarget } from "@projectTypes/focusTypes";
+import { FocusTarget } from "@projectTypes/uiTypes";
 import type { Note, NoteStats } from "@projectTypes/noteTypes";
 
 import { noteModel } from "@model/notes/noteModel.svelte";

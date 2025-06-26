@@ -1,5 +1,5 @@
 import { isDescendant } from "@utils/noteUtils";
-import { DragSource, DropTarget } from "@projectTypes/dndTypes";
+import { DragSource, DropTarget } from "@projectTypes/uiTypes";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 import { noteTreeController } from "@controllers/notes/noteTreeController.svelte";
 import { notePropertyController } from "@controllers/property/notePropertyController.svelte";

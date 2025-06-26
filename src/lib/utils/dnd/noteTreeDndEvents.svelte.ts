@@ -1,4 +1,4 @@
-import type { DragSource } from "@projectTypes/dndTypes";
+import type { DragSource } from "@projectTypes/uiTypes";
 
 import { isDescendant } from "@utils/noteUtils";
 
