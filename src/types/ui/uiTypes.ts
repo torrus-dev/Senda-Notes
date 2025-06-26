@@ -1,3 +1,5 @@
+import type { Note } from "@projectTypes/noteTypes";
+
 // UI MODE
 export type UiModeType = "light" | "dark" | "system";
 
@@ -39,8 +41,15 @@ export enum FocusTarget {
    PROPERTY_EDITOR = "property-editor",
 }
 
-// Estado del sistema de foco
 export interface FocusState {
    targetId: FocusTarget | null;
    timestamp: number;
+}
+
+// SEARCH
+export interface SearchResult {
+   note: Note;
+   matchType: "title" | "alias";
+   matchedText: string;
+   path: string;
 }

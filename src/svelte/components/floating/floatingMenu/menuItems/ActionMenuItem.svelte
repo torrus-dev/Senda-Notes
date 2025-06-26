@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { RenderItem } from "@projectTypes/floatingTypes";
+import type { RenderItem } from "@projectTypes/ui/contextMenuTypes";
 
-import type { ActionMenuItem } from "@projectTypes/editorMenuTypes";
+import type { ActionMenuItem } from "@projectTypes/ui/contextMenuTypes";
 
 import { CheckIcon } from "lucide-svelte";
 

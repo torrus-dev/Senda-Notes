@@ -4,7 +4,7 @@ import Button from "@components/utils/Button.svelte";
 import Slider from "@components/utils/Slider.svelte";
 import { settingsController } from "@controllers/application/settingsController.svelte";
 import { uiModeController } from "@controllers/ui/uiModeController.svelte";
-import { UiModeType } from "@projectTypes/uiTypes";
+import { UiModeType } from "@projectTypes/ui/uiTypes";
 
 let searchQuery = $state("");
 </script>

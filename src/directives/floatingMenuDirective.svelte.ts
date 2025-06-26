@@ -1,6 +1,6 @@
 import { floatingMenuController } from "@controllers/menu/floatingMenuController.svelte";
-import type { MenuItem } from "@projectTypes/editorMenuTypes";
-import type { Coordinates } from "@projectTypes/floatingTypes";
+import type { MenuItem } from "@projectTypes/ui/contextMenuTypes";
+import type { Coordinates } from "@projectTypes/ui/contextMenuTypes";
 
 function checkValid(menuItems: MenuItem[] | undefined) {
    if (menuItems && Array.isArray(menuItems) && menuItems.length > 0) {

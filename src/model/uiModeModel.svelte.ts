@@ -1,4 +1,4 @@
-import { UiModeType } from "@projectTypes/uiTypes";
+import { UiModeType } from "@projectTypes/ui/uiTypes";
 
 const STORAGE_KEY = "ui-mode";
 

@@ -3,7 +3,7 @@ import { sanitizeTitle } from "@utils/noteUtils";
 
 import { noteController } from "@controllers/notes/noteController.svelte";
 import { focusController } from "@controllers/ui/focusController.svelte";
-import { FocusTarget } from "@projectTypes/uiTypes";
+import { FocusTarget } from "@projectTypes/ui/uiTypes";
 import Popover from "@components/floating/Popover.svelte";
 
 // Props

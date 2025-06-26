@@ -27,7 +27,7 @@ import {
    UnderlineIcon,
 } from "lucide-svelte";
 import type { Editor } from "@tiptap/core";
-import type { MenuItem } from "@projectTypes/editorMenuTypes";
+import type { MenuItem } from "@projectTypes/ui/contextMenuTypes";
 
 export function getEditorContextMenuItems(editorBox: {
    current: Editor;

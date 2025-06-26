@@ -1,8 +1,8 @@
 <script lang="ts">
 import Button from "@components/utils/Button.svelte";
 import { floatingMenuController } from "@controllers/menu/floatingMenuController.svelte";
-import type { GroupMenuItem } from "@projectTypes/editorMenuTypes";
-import type { RenderItem } from "@projectTypes/floatingTypes";
+import type { GroupMenuItem } from "@projectTypes/ui/contextMenuTypes";
+import type { RenderItem } from "@projectTypes/ui/contextMenuTypes";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-svelte";
 import { onMount } from "svelte";
 

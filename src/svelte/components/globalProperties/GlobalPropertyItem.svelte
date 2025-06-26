@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { GlobalProperty } from "@projectTypes/propertyTypes";
-import type { MenuItem } from "@projectTypes/editorMenuTypes";
+import type { MenuItem } from "@projectTypes/ui/contextMenuTypes";
 import {
    getPropertyIcon,
    getPropertyTypesList,

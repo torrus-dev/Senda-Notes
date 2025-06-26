@@ -1,6 +1,6 @@
 <script lang="ts">
 import { dropdownMenu } from "@directives/floatingMenuDirective.svelte";
-import type { MenuItem } from "@projectTypes/editorMenuTypes";
+import type { MenuItem } from "@projectTypes/ui/contextMenuTypes";
 import type { Snippet } from "svelte";
 
 let {

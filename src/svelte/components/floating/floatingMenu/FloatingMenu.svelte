@@ -3,7 +3,7 @@ import type {
    ContextMenuData,
    DropdownMenuData,
    FloatingMenuData,
-} from "@projectTypes/floatingTypes";
+} from "@projectTypes/ui/contextMenuTypes";
 
 import { floatingMenuController } from "@controllers/menu/floatingMenuController.svelte";
 import { setupKeyboardNavigation } from "./keyboardNavigation";

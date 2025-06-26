@@ -5,8 +5,11 @@ import type {
    FloatingMenuData,
    RenderItem,
    EmptyMenuData,
-} from "@projectTypes/floatingTypes";
-import type { MenuItem, GroupMenuItem } from "@projectTypes/editorMenuTypes";
+} from "@projectTypes/ui/contextMenuTypes";
+import type {
+   MenuItem,
+   GroupMenuItem,
+} from "@projectTypes/ui/contextMenuTypes";
 
 class FloatingMenuController {
    private emptyMenuState = (): EmptyMenuData => ({

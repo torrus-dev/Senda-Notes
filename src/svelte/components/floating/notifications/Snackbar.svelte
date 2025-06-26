@@ -1,6 +1,6 @@
 <script lang="ts">
 import Button from "@components/utils/Button.svelte";
-import type { Notification } from "@projectTypes/uiTypes";
+import type { Notification } from "@projectTypes/ui/uiTypes";
 import { XIcon } from "lucide-svelte";
 
 let {

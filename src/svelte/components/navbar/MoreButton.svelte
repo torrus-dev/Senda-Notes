@@ -1,8 +1,8 @@
 <script lang="ts">
 import { focusController } from "@controllers/ui/focusController.svelte";
 import { noteController } from "@controllers/notes/noteController.svelte";
-import { FocusTarget } from "@projectTypes/uiTypes";
-import type { MenuItem } from "@projectTypes/editorMenuTypes";
+import { FocusTarget } from "@projectTypes/ui/uiTypes";
+import type { MenuItem } from "@projectTypes/ui/contextMenuTypes";
 import {
    MoreVerticalIcon,
    Trash2Icon,

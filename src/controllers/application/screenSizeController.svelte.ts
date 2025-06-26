@@ -1,5 +1,5 @@
 import { MediaQuery } from "svelte/reactivity";
-import type { Dimensions } from "@projectTypes/floatingTypes";
+import type { Dimensions } from "@projectTypes/ui/contextMenuTypes";
 
 class ScreenSizeController {
    private windowSize = $state<Dimensions>({

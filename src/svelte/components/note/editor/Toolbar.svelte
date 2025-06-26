@@ -2,7 +2,7 @@
 import type {
    ActionMenuItem,
    GroupMenuItem,
-} from "@projectTypes/editorMenuTypes";
+} from "@projectTypes/ui/contextMenuTypes";
 import type { Editor } from "@tiptap/core";
 
 import Button from "@components/utils/Button.svelte";

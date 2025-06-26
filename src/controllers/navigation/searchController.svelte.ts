@@ -1,6 +1,6 @@
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 import { removeDiacritics } from "@utils/searchUtils";
-import type { SearchResult } from "@projectTypes/searchTypes";
+import type { SearchResult } from "@projectTypes/uiTypes";
 
 class SearchController {
    // Almacena los últimos resultados de búsqueda

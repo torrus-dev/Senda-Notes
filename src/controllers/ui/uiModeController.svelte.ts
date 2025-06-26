@@ -1,5 +1,5 @@
 import { uiModeModel } from "@model/uiModeModel.svelte";
-import { UiModeType } from "@projectTypes/uiTypes";
+import { UiModeType } from "@projectTypes/ui/uiTypes";
 
 class UiModeController {
    showOptions: boolean = $state(false);

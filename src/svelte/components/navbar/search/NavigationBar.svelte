@@ -7,7 +7,7 @@ import { noteQueryController } from "@controllers/notes/noteQueryController.svel
 import { searchController } from "@controllers/navigation/searchController.svelte";
 
 import type { Note } from "@projectTypes/noteTypes";
-import type { SearchResult } from "@projectTypes/searchTypes";
+import type { SearchResult } from "@projectTypes/uiTypes";
 
 import { tick } from "svelte";
 import { DeleteIcon, XIcon } from "lucide-svelte";

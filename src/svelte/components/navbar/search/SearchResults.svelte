@@ -2,7 +2,7 @@
 </style>
 
 <script lang="ts">
-import type { SearchResult } from "@projectTypes/searchTypes";
+import type { SearchResult } from "@projectTypes/uiTypes";
 import { FileIcon } from "lucide-svelte";
 import { tick } from "svelte";
 

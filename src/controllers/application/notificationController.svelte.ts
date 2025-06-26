@@ -3,7 +3,7 @@ import type {
    Notification,
    SnackbarType,
    SnackbarAction,
-} from "@projectTypes/uiTypes.ts";
+} from "@projectTypes/ui/uiTypes";
 
 class NotificationController {
    notifications: Notification[] = $state([]);

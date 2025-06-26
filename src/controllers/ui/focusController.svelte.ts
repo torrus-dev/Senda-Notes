@@ -1,4 +1,4 @@
-import type { FocusState, FocusTarget } from "@projectTypes/uiTypes";
+import type { FocusState, FocusTarget } from "@projectTypes/ui/uiTypes";
 
 class FocusController {
    focus = $state<FocusState>({
