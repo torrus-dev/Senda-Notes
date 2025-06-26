@@ -1,7 +1,34 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
+import fs from "fs/promises";
 
 const isDev = !app.isPackaged;
+
+// Obtener el directorio de datos de usuario
+function getUserDataPath(): string {
+   return app.getPath("userData");
+}
+
+// Crear el directorio de configuración si no existe
+async function ensureConfigDirectory(): Promise<string> {
+   const configDir = path.join(getUserDataPath(), "config");
+   try {
+      await fs.mkdir(configDir, { recursive: true });
+   } catch (error: unknown) {
+      if (error instanceof Error) {
+         console.error(
+            "Error creando directorio de configuración:",
+            error.message,
+         );
+      } else {
+         console.error(
+            "Error creando directorio de configuración (tipo inesperado):",
+            String(error),
+         );
+      }
+   }
+   return configDir;
+}
 
 function createWindow() {
    const mainWindow = new BrowserWindow({
@@ -47,6 +74,59 @@ function createWindow() {
       return mainWindow.isMaximized();
    });
 
+   // Configurar IPC handlers para sistema de archivos
+   ipcMain.handle("fs:saveJson", async (_, filename: string, data: any) => {
+      try {
+         const configDir = await ensureConfigDirectory();
+         const filePath = path.join(configDir, `${filename}.json`);
+         await fs.writeFile(filePath, JSON.stringify(data, null, 2), "utf-8");
+         return { success: true };
+      } catch (error: unknown) {
+         let msg: string;
+         if (error instanceof Error) {
+            msg = error.message;
+         } else {
+            msg = String(error);
+         }
+         console.error(`Error guardando ${filename}.json:`, msg);
+         return { success: false, error: msg };
+      }
+   });
+
+   ipcMain.handle("fs:loadJson", async (_, filename: string) => {
+      try {
+         const configDir = await ensureConfigDirectory();
+         const filePath = path.join(configDir, `${filename}.json`);
+         const data = await fs.readFile(filePath, "utf-8");
+         return { success: true, data: JSON.parse(data) };
+      } catch (error: unknown) {
+         if (error instanceof Error) {
+            if ((error as NodeJS.ErrnoException).code === "ENOENT") {
+               return { success: false, error: "FILE_NOT_FOUND" };
+            }
+            console.error(`Error cargando ${filename}.json:`, error.message);
+            return { success: false, error: error.message };
+         } else {
+            console.error(
+               `Error cargando ${filename}.json (tipo inesperado):`,
+               String(error),
+            );
+            return { success: false, error: String(error) };
+         }
+      }
+   });
+
+   ipcMain.handle("fs:exists", async (_, filename: string) => {
+      try {
+         const configDir = await ensureConfigDirectory();
+         const filePath = path.join(configDir, `${filename}.json`);
+         await fs.access(filePath);
+         return true;
+      } catch {
+         return false;
+      }
+   });
+
    if (isDev) {
       // En desarrollo, cargar desde el servidor de Vite
       mainWindow.loadURL("http://localhost:5173").catch(() => {
@@ -84,4 +164,8 @@ app.on("before-quit", () => {
    ipcMain.removeAllListeners("window:maximize");
    ipcMain.removeAllListeners("window:close");
    ipcMain.removeAllListeners("window:isMaximized");
+   // Limpiar handlers de sistema de archivos
+   ipcMain.removeAllListeners("fs:saveJson");
+   ipcMain.removeAllListeners("fs:loadJson");
+   ipcMain.removeAllListeners("fs:exists");
 });
