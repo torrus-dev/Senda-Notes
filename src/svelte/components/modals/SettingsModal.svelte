@@ -1,10 +1,9 @@
 <script lang="ts">
 import GlobalPropertyMenu from "@components/globalProperties/GlobalPropertyMenu.svelte";
-import Button from "@components/utils/Button.svelte";
 import Slider from "@components/utils/Slider.svelte";
 import { settingsController } from "@controllers/application/settingsController.svelte";
 import { uiModeController } from "@controllers/ui/uiModeController.svelte";
-import { UiModeType } from "@projectTypes/ui/uiTypes";
+import type { UiModeType } from "@projectTypes/ui/uiTypes";
 
 let searchQuery = $state("");
 </script>

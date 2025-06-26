@@ -1,39 +1,12 @@
 import { Settings } from "@projectTypes/core/settingsTypes";
+import { PersistentModel } from "@model/persistentModel.svelte";
 
-const SETTINGS_STORAGE_KEY = "settings"; 
-
-class SettingsModel {
-   private data: Settings = $state(this.getDefaultSettings());
-
+class SettingsModel extends PersistentModel<Settings> {
    constructor() {
-      this.loadSettings();
-      $effect.root(() => {
-         $effect(() => {
-            this.saveSettings();
-         });
-      });
+      super("settings"); // nombre del archivo JSON
    }
 
-   // Funciones auxiliares integradas
-   private saveSettings() {
-      try {
-         localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(this.data));
-      } catch (error) {
-         console.error("Error al guardar el estado de configuración:", error);
-      }
-   }
-
-   private loadSavedSettings(): Settings | null {
-      try {
-         const storedState = localStorage.getItem(SETTINGS_STORAGE_KEY);
-         return storedState ? JSON.parse(storedState) : null;
-      } catch (error) {
-         console.error("Error al cargar el estado de configuración:", error);
-         return null;
-      }
-   }
-
-   private getDefaultSettings(): Settings {
+   protected getDefaultData(): Settings {
       return {
          showEditorToolbar: false,
          sidebarIsLocked: false,
@@ -42,19 +15,10 @@ class SettingsModel {
       };
    }
 
-   loadSettings() {
-      const loadedState = this.loadSavedSettings();
-      if (loadedState) {
-         this.data = loadedState;
-      } else {
-         // Si no hay datos guardados, usar los valores por defecto
-         const defaultState = this.getDefaultSettings();
-         this.data = { ...this.data, ...defaultState };
-      }
-   }
+   // Getters y setters para cada propiedad
 
    // showEditorToolbar
-   get showEditorToolbar() {
+   get showEditorToolbar(): boolean {
       return this.data.showEditorToolbar;
    }
    set showEditorToolbar(value: boolean) {
@@ -62,15 +26,15 @@ class SettingsModel {
    }
 
    // sidebarIsLocked
-   get sidebarIsLocked() {
+   get sidebarIsLocked(): boolean {
       return this.data.sidebarIsLocked;
    }
    set sidebarIsLocked(value: boolean) {
       this.data.sidebarIsLocked = value;
    }
 
-   // show metadata
-   get showMetadata() {
+   // showMetadata
+   get showMetadata(): boolean {
       return this.data.showMetadata;
    }
    set showMetadata(value: boolean) {
@@ -84,6 +48,23 @@ class SettingsModel {
    set debugLevel(value: Settings["debugLevel"]) {
       this.data.debugLevel = value;
    }
+
+   // Métodos adicionales específicos para settings
+   public toggleEditorToolbar(): void {
+      this.showEditorToolbar = !this.showEditorToolbar;
+   }
+
+   public toggleSidebarLock(): void {
+      this.sidebarIsLocked = !this.sidebarIsLocked;
+   }
+
+   public toggleMetadata(): void {
+      this.showMetadata = !this.showMetadata;
+   }
+
+   public setDebugLevel(level: number): void {
+      this.debugLevel = Math.max(0, Math.min(level, 3)); // Limitar entre 0 y 3
+   }
 }
 
-export let settingsModel = $state(new SettingsModel());
+export const settingsModel = $state(new SettingsModel());
