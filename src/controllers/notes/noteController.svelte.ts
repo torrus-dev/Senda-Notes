@@ -1,5 +1,5 @@
 import { FocusTarget } from "@projectTypes/ui/uiTypes";
-import type { Note, NoteStats } from "@projectTypes/noteTypes";
+import type { Note, NoteStats } from "@projectTypes/core/noteTypes";
 
 import { noteModel } from "@model/notes/noteModel.svelte";
 import {

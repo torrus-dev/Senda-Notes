@@ -1,4 +1,4 @@
-import { Settings } from "@projectTypes/settingsTypes";
+import { Settings } from "@projectTypes/core/settingsTypes";
 
 const SETTINGS_STORAGE_KEY = "settings"; // Ajusta esta clave según tu aplicación
 

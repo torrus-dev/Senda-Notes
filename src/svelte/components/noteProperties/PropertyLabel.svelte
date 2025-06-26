@@ -1,6 +1,9 @@
 <script lang="ts">
-import type { Note } from "@projectTypes/noteTypes";
-import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
+import type { Note } from "@projectTypes/core/noteTypes";
+import type {
+   GlobalProperty,
+   NoteProperty,
+} from "@projectTypes/core/propertyTypes";
 import type { MenuItem } from "@projectTypes/ui/contextMenuTypes";
 
 import { SquarePenIcon, TextCursorInputIcon, Trash2Icon } from "lucide-svelte";

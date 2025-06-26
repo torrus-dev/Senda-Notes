@@ -21,7 +21,7 @@ import { getEditorContextMenuItems } from "@utils/editorMenuItems";
 import Toolbar from "@components/note/editor/Toolbar.svelte";
 
 import type { Coordinates } from "@projectTypes/ui/contextMenuTypes";
-import type { NoteStats } from "@projectTypes/noteTypes";
+import type { NoteStats } from "@projectTypes/core/noteTypes";
 import { FocusTarget } from "@projectTypes/ui/uiTypes";
 import { editorController } from "@controllers/notes/editorController.svelte";
 import { DateTime } from "luxon";

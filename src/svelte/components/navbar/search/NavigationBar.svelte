@@ -6,7 +6,7 @@ import Button from "@components/utils/Button.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 import { searchController } from "@controllers/navigation/searchController.svelte";
 
-import type { Note } from "@projectTypes/noteTypes";
+import type { Note } from "@projectTypes/core/noteTypes";
 import type { SearchResult } from "@projectTypes/uiTypes";
 
 import { tick } from "svelte";

@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { NumberProperty } from "@projectTypes/propertyTypes";
+import type { NumberProperty } from "@projectTypes/core/propertyTypes";
 
 let {
    property,

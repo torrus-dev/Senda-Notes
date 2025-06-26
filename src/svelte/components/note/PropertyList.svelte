@@ -2,7 +2,7 @@
 </style>
 
 <script lang="ts">
-import type { NoteProperty as PropertyType } from "@projectTypes/propertyTypes";
+import type { NoteProperty as PropertyType } from "@projectTypes/core/propertyTypes";
 
 import { SlidersHorizontalIcon, PlusIcon, ShapesIcon } from "lucide-svelte";
 

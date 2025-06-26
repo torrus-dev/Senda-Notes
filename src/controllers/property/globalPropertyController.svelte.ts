@@ -1,5 +1,8 @@
-import type { Note } from "@projectTypes/noteTypes";
-import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
+import type { Note } from "@projectTypes/core/noteTypes";
+import type {
+   GlobalProperty,
+   NoteProperty,
+} from "@projectTypes/core/propertyTypes";
 import { globalPropertiesModel } from "@model/application/globalPropertiesModel.svelte";
 import { generateGlobalProperty } from "@utils/propertyUtils";
 import { removeDiacritics } from "@utils/searchUtils";

@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { Note } from "@projectTypes/noteTypes";
+import type { Note } from "@projectTypes/core/noteTypes";
 import NavigationButtons from "@components/navbar/NavigationButtons.svelte";
 import SidebarToogle from "@components/sidebar/SidebarToogle.svelte";
 import NavigationBar from "@components/navbar/search/NavigationBar.svelte";

@@ -7,7 +7,7 @@ import Modal from "@components/modals/Modal.svelte";
 import NoteContent from "@components/note/NoteContent.svelte";
 import FloatingMenu from "@components/floating/floatingMenu/FloatingMenu.svelte";
 
-import type { Note } from "@projectTypes/noteTypes";
+import type { Note } from "@projectTypes/core/noteTypes";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 import Notifications from "@components/floating/notifications/Notifications.svelte";
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { Note } from "@projectTypes/noteTypes";
+import type { Note } from "@projectTypes/core/noteTypes";
 
 import Collapsible from "@components/utils/Collapsible.svelte";
 import { favoriteController } from "@controllers/notes/favoritesController.svelte";

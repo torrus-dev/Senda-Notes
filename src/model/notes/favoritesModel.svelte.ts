@@ -1,4 +1,4 @@
-import type { Note } from "@projectTypes/noteTypes";
+import type { Note } from "@projectTypes/core/noteTypes";
 
 const FAVORITES_STORAGE_KEY = "favorites";
 

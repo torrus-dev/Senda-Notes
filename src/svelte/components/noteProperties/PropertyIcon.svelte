@@ -1,6 +1,6 @@
 <script lang="ts">
 import { getPropertyIcon } from "@utils/propertyUtils";
-import type { NoteProperty } from "@projectTypes/propertyTypes";
+import type { NoteProperty } from "@projectTypes/core/propertyTypes";
 
 let { propertyType = "text" }: { propertyType?: NoteProperty["type"] } =
    $props();

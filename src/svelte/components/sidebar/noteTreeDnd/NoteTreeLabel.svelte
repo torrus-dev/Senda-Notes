@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import type { SvelteComponent } from "svelte";
-import type { Note } from "@projectTypes/noteTypes";
+import type { Note } from "@projectTypes/core/noteTypes";
 import { noteController } from "@controllers/notes/noteController.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 import {

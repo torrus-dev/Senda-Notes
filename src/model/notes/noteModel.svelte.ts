@@ -1,4 +1,4 @@
-import type { Note } from "@projectTypes/noteTypes";
+import type { Note } from "@projectTypes/core/noteTypes";
 import { updateModifiedMetadata } from "@utils/noteUtils";
 import { settingsModel } from "../application/settingsModel.svelte";
 import { DateTime } from "luxon";

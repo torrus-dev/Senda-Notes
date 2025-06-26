@@ -1,5 +1,5 @@
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
-import type { Note } from "@projectTypes/noteTypes";
+import type { Note } from "@projectTypes/core/noteTypes";
 import { favoritesModel } from "@model/notes/favoritesModel.svelte";
 
 class FavoriteController {

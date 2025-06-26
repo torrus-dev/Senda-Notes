@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { Note } from "@projectTypes/noteTypes";
+import type { Note } from "@projectTypes/core/noteTypes";
 
 import { settingsController } from "@controllers/application/settingsController.svelte";
 import { searchController } from "@controllers/navigation/searchController.svelte";

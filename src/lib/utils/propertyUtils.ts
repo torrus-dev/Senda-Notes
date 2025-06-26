@@ -6,9 +6,12 @@ import {
    CalendarIcon,
    CalendarClockIcon,
 } from "lucide-svelte";
-import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
+import type {
+   GlobalProperty,
+   NoteProperty,
+} from "@projectTypes/core/propertyTypes";
 import { DateTime } from "luxon";
-import type { Note } from "@projectTypes/noteTypes";
+import type { Note } from "@projectTypes/core/noteTypes";
 
 // Seleccionar el icono según el tipo de propiedad
 export function getPropertyIcon(type: string) {

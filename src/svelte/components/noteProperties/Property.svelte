@@ -4,7 +4,7 @@
 <script lang="ts">
 import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";
 
-import type { NoteProperty } from "@projectTypes/propertyTypes";
+import type { NoteProperty } from "@projectTypes/core/propertyTypes";
 import { globalPropertyController } from "@controllers/property/globalPropertyController.svelte";
 
 import PropertyValue from "@components/noteProperties/PropertyValue.svelte";

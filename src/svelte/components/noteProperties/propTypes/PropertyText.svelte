@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { TextProperty } from "@projectTypes/propertyTypes";
+import type { TextProperty } from "@projectTypes/core/propertyTypes";
 let {
    property,
    onUpdate,

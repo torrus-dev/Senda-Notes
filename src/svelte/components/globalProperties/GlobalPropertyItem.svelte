@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { GlobalProperty } from "@projectTypes/propertyTypes";
+import type { GlobalProperty } from "@projectTypes/core/propertyTypes";
 import type { MenuItem } from "@projectTypes/ui/contextMenuTypes";
 import {
    getPropertyIcon,

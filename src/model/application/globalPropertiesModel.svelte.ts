@@ -1,4 +1,4 @@
-import type { GlobalProperty } from "@projectTypes/propertyTypes";
+import type { GlobalProperty } from "@projectTypes/core/propertyTypes";
 import { settingsModel } from "@model/application/settingsModel.svelte";
 
 class GlobalPropertiesModel {

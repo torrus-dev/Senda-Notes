@@ -1,5 +1,5 @@
-import type { NoteProperty } from "@projectTypes/propertyTypes";
-import type { Note } from "@projectTypes/noteTypes";
+import type { NoteProperty } from "@projectTypes/core/propertyTypes";
+import type { Note } from "@projectTypes/core/noteTypes";
 
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 import { globalPropertyController } from "@controllers/property/globalPropertyController.svelte";

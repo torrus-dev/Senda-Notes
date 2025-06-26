@@ -1,4 +1,4 @@
-import type { Note } from "@projectTypes/noteTypes";
+import type { Note } from "@projectTypes/core/noteTypes";
 import { noteModel } from "@model/notes/noteModel.svelte";
 import { getDescendantsId } from "@utils/noteUtils";
 import { noteNavigationController } from "@controllers/navigation/noteNavigationController.svelte";

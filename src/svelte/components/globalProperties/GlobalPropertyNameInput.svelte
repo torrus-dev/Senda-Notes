@@ -1,7 +1,10 @@
 <script lang="ts">
 import { globalPropertyController } from "@controllers/property/globalPropertyController.svelte";
 import { onClickOutside } from "@directives/onClickOutside";
-import type { GlobalProperty, NoteProperty } from "@projectTypes/propertyTypes";
+import type {
+   GlobalProperty,
+   NoteProperty,
+} from "@projectTypes/core/propertyTypes";
 import { onMount, tick } from "svelte";
 
 let {

@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { Note, NoteMetadata } from "@projectTypes/noteTypes";
+import { Note, NoteMetadata } from "@projectTypes/core/noteTypes";
 
 // notes
 

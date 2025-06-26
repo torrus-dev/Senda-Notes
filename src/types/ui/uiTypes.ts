@@ -1,4 +1,4 @@
-import type { Note } from "@projectTypes/noteTypes";
+import type { Note } from "@projectTypes/core/noteTypes";
 
 // UI MODE
 export type UiModeType = "light" | "dark" | "system";
