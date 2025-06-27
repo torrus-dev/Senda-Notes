@@ -76,6 +76,7 @@ function createWindow() {
 
    // Configurar IPC handlers para sistema de archivos
    ipcMain.handle("fs:saveJson", async (_, filename: string, data: any) => {
+      console.log("guardando settings");
       try {
          const configDir = await ensureConfigDirectory();
          const filePath = path.join(configDir, `${filename}.json`);

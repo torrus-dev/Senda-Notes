@@ -3,7 +3,7 @@ import { PersistentModel } from "@model/persistentModel.svelte";
 
 class SettingsModel extends PersistentModel<Settings> {
    constructor() {
-      super("settings"); // nombre del archivo JSON
+      super("sendasettings"); // nombre del archivo JSON
    }
 
    protected getDefaultData(): Settings {

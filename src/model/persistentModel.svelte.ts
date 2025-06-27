@@ -18,6 +18,7 @@ export abstract class PersistentModel<T> {
       $effect.root(() => {
          $effect(() => {
             if (this.isInitialized) {
+               Object.values(this.data as object);
                this.debouncedSave();
             }
          });
@@ -39,12 +40,16 @@ export abstract class PersistentModel<T> {
 
    private async saveData() {
       try {
+         const serializableData = $state.snapshot(this.data);
+
          const result = await window.electronAPI.fs.saveJson(
             this.filename,
-            this.data,
+            serializableData,
          );
          if (!result.success) {
             console.error(`Error al guardar ${this.filename}:`, result.error);
+         } else {
+            console.log(`Guardado archivo ${this.filename}`);
          }
       } catch (error) {
          console.error(`Error al guardar ${this.filename}:`, error);
