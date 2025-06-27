@@ -30,7 +30,9 @@
       "src/**/*.ts",
       "src/**/*.svelte",
       "src/svelte/i18n.ts",
-      "src/svelte/i18n.ts"
+      "src/svelte/i18n.ts",
+      "appAlias.js",
+      "appAlias.js"
    ],
    "exclude": ["node_modules", "output"]
 }

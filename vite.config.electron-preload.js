@@ -1,28 +1,17 @@
 import { defineConfig } from "vite";
 import path from "path";
+import { viteAlias } from "./appAlias";
 
 export default defineConfig({
    base: "./",
    resolve: {
-      alias: {
-         "@projectTypes": path.resolve(__dirname, "src/types"),
-         "@electron": path.resolve(__dirname, "src/electron"),
-         "@utils": path.resolve(__dirname, "src/lib/utils"),
-         "@lib": path.resolve(__dirname, "src/lib"),
-         "@controllers": path.resolve(__dirname, "src/controllers"),
-         "@model": path.resolve(__dirname, "src/model"),
-         "@directives": path.resolve(__dirname, "src/directives"),
-         "@fonts": path.resolve(__dirname, "src/fonts"),
-         "@components": path.resolve(__dirname, "src/svelte/components"),
-         "@assets": path.resolve(__dirname, "src/svelte/assets"),
-         "@i18n": path.resolve(__dirname, "src/i18n"),
-         "@css": path.resolve(__dirname, "src/svelte/css"),
-      },
+      alias: viteAlias,
    },
    build: {
       outDir: path.resolve(__dirname, "output/electron/preload"),
       assetsDir: ".",
-      target: "esnext",
+      target: "node22",
+      ssr: true,
       minify: "esbuild",
       rollupOptions: {
          input: path.resolve(__dirname, "src/electron/preload/preload.ts"),
@@ -36,6 +25,9 @@ export default defineConfig({
          treeshake: {
             moduleSideEffects: true,
          },
+      },
+      define: {
+         "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
       },
    },
 });
