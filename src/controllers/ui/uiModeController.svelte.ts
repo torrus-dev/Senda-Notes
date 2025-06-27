@@ -1,4 +1,4 @@
-import { uiModeModel } from "@model/uiModeModel.svelte";
+import { uiModeModel } from "@model/ui/uiModeModel.svelte";
 import type { UiModeType } from "@projectTypes/ui/uiTypes";
 
 class UiModeController {

@@ -48,23 +48,6 @@ class SettingsModel extends PersistentModel<Settings> {
    set debugLevel(value: Settings["debugLevel"]) {
       this.data.debugLevel = value;
    }
-
-   // Métodos adicionales específicos para settings
-   public toggleEditorToolbar(): void {
-      this.showEditorToolbar = !this.showEditorToolbar;
-   }
-
-   public toggleSidebarLock(): void {
-      this.sidebarIsLocked = !this.sidebarIsLocked;
-   }
-
-   public toggleMetadata(): void {
-      this.showMetadata = !this.showMetadata;
-   }
-
-   public setDebugLevel(level: number): void {
-      this.debugLevel = Math.max(0, Math.min(level, 3)); // Limitar entre 0 y 3
-   }
 }
 
 export const settingsModel = $state(new SettingsModel());

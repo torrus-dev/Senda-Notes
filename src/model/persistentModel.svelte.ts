@@ -14,7 +14,7 @@ export abstract class PersistentModel<T> {
       await this.loadData();
       this.isInitialized = true;
 
-      // Configurar auto-guardado reactivo
+      // Configurar auto-guardado al detectar cambios
       $effect.root(() => {
          $effect(() => {
             if (this.isInitialized) {
@@ -66,6 +66,7 @@ export abstract class PersistentModel<T> {
       }
    }
 
+   // Funciones Publicas Auxiliares
    // Método público para forzar guardado inmediato
    public async forceSave(): Promise<void> {
       if (this.saveTimeout) {
