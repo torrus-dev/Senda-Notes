@@ -18,7 +18,7 @@ export abstract class PersistentModel<T> {
       $effect.root(() => {
          $effect(() => {
             if (this.isInitialized) {
-               Object.values(this.data as object);
+               JSON.stringify(this.data);
                this.debouncedSave();
             }
          });
