@@ -1,4 +1,4 @@
-import { uiModeModel } from "@model/ui/uiModeModel.svelte";
+import { settingsModel } from "@model/application/settingsModel.svelte";
 import type { UiModeType } from "@projectTypes/ui/uiTypes";
 
 class UiModeController {
@@ -50,11 +50,11 @@ class UiModeController {
    }
 
    get uiMode() {
-      return uiModeModel.settings.uiMode;
+      return settingsModel.data.uiMode;
    }
 
    set uiMode(theme) {
-      uiModeModel.settings.uiMode = theme;
+      settingsModel.data.uiMode = theme;
       this.applyTheme();
    }
 }

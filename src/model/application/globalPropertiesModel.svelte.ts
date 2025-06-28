@@ -1,5 +1,5 @@
 import type { GlobalProperty } from "@projectTypes/core/propertyTypes";
-import { settingsModel } from "@model/application/settingsModel.svelte";
+import { settingsController } from "@controllers/application/settingsController.svelte";
 
 class GlobalPropertiesModel {
    private static readonly STORAGE_KEY = "GlobalProperties";
@@ -9,7 +9,7 @@ class GlobalPropertiesModel {
 
    constructor() {
       this.globalProperties = this.loadFromStorage();
-      if (settingsModel.debugLevel > 0) {
+      if (settingsController.debugLevel > 0) {
          console.log(
             "propiedades globales cargadas: ",
             $state.snapshot(this.globalProperties),
@@ -34,7 +34,7 @@ class GlobalPropertiesModel {
             GlobalPropertiesModel.STORAGE_KEY,
             JSON.stringify(this.globalProperties),
          );
-         if (settingsModel.debugLevel > 0) {
+         if (settingsController.debugLevel > 0) {
             console.log(
                "guardando propiedades globales",
                $state.snapshot(this.globalProperties),

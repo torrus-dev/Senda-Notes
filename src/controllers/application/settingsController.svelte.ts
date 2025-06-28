@@ -3,27 +3,36 @@ import { settingsModel } from "@model/application/settingsModel.svelte";
 class SettingsController {
    // lock sidebar
    toggleLockSidebar = () => {
-      settingsModel.sidebarIsLocked = !settingsModel.sidebarIsLocked;
+      settingsModel.data.sidebarIsLocked = !settingsModel.data.sidebarIsLocked;
    };
-   getLockSidebar = () => settingsModel.sidebarIsLocked;
+   get lockSidebar() {
+      return settingsModel.data.sidebarIsLocked;
+   }
 
    // show metadata
    toggleShowMetadata = (): void => {
-      settingsModel.showMetadata = !settingsModel.showMetadata;
+      settingsModel.data.showMetadata = !settingsModel.data.showMetadata;
    };
-   getShowMetadata = () => settingsModel.showMetadata;
+   get showMetadata() {
+      return settingsModel.data.showMetadata;
+   }
 
    // show editor toolbar
-   toogleShowEditorToolbar = (): void => {
-      settingsModel.showEditorToolbar = !settingsModel.showEditorToolbar;
-   };
-   getShowEditorToolbar = () => settingsModel.showEditorToolbar;
+   toogleShowEditorToolbar(): void {
+      settingsModel.data.showEditorToolbar =
+         !settingsModel.data.showEditorToolbar;
+   }
+   get showEditorToolbar() {
+      return settingsModel.data.showEditorToolbar;
+   }
 
    // debug level
-   setDebugLevel = (value: number) => {
-      settingsModel.debugLevel = value;
-   };
-   getDebugLevel = () => settingsModel.debugLevel;
+   set debugLevel(value: number) {
+      settingsModel.data.debugLevel = value;
+   }
+   get debugLevel() {
+      return settingsModel.data.debugLevel;
+   }
 }
 
 export const settingsController = $state(new SettingsController());

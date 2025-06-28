@@ -1,6 +1,4 @@
 <script lang="ts">
-import { settingsController } from "@controllers/application/settingsController.svelte";
-
 import Sidebar from "@components/sidebar/Sidebar.svelte";
 import NavBar from "@components/navbar/NavBar.svelte";
 import Modal from "@components/modals/Modal.svelte";

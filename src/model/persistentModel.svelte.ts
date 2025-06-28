@@ -1,6 +1,6 @@
 // models/PersistentModel.ts
 export abstract class PersistentModel<T> {
-   protected data: T = $state() as T;
+   data: T = $state() as T;
    private isInitialized = false;
    private saveTimeout: number | null = null;
    private readonly DEBOUNCE_DELAY = 500; // ms
@@ -89,10 +89,5 @@ export abstract class PersistentModel<T> {
    // Método público para resetear a valores por defecto
    public resetToDefaults(): void {
       this.data = this.getDefaultData();
-   }
-
-   // Getter para acceder a los datos (útil para debugging)
-   public getData(): T {
-      return this.data;
    }
 }

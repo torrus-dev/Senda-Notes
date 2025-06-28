@@ -28,32 +28,32 @@ let searchQuery = $state("");
       <div class="flex items-center justify-between py-2">
          <span>Lock Sidebar on large screens</span>
          <Slider
-            value={settingsController.getLockSidebar()}
+            value={settingsController.lockSidebar}
             onChange={() => settingsController.toggleLockSidebar()} />
       </div>
       <div class="flex items-center justify-between py-2">
          <span>Show note metadata on the editor</span>
          <Slider
-            value={settingsController.getShowMetadata()}
+            value={settingsController.showMetadata}
             onChange={() => settingsController.toggleShowMetadata()} />
       </div>
       <div class="flex items-center justify-between py-2">
          <span>Enable Editor Toolbar</span>
          <Slider
-            value={settingsController.getShowEditorToolbar()}
+            value={settingsController.showEditorToolbar}
             onChange={() => settingsController.toogleShowEditorToolbar()} />
       </div>
       <div class="flex items-center justify-between py-2">
          <span>Debug Level: 0 none, 1 errors, 2 all</span>
          <input
             type="number"
-            value={settingsController.getDebugLevel()}
+            value={settingsController.debugLevel}
             min="0"
             max="2"
             oninput={(event) => {
                const target = event.target as HTMLInputElement;
                if (target?.value) {
-                  settingsController.setDebugLevel(Number(target.value));
+                  settingsController.debugLevel = Number(target.value);
                }
             }} />
       </div>
