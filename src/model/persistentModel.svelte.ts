@@ -1,7 +1,6 @@
-// models/PersistentModel.ts
 export abstract class PersistentModel<T> {
    data: T = $state() as T;
-   private isInitialized = false;
+   public isInitialized = $state(false);
    private saveTimeout: number | null = null;
    private readonly DEBOUNCE_DELAY = 500; // ms
 

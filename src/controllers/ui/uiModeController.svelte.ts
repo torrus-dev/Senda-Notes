@@ -5,7 +5,8 @@ class UiModeController {
    prefersDarkColorScheme = window.matchMedia("(prefers-color-scheme: dark)");
 
    isDarkMode: boolean = $derived(
-      this.uiMode === "dark" || this.prefersDarkColorScheme.matches,
+      this.uiMode === "dark" ||
+         (this.uiMode === "system" && this.prefersDarkColorScheme.matches),
    );
 
    get uiMode() {
@@ -15,7 +16,6 @@ class UiModeController {
    set uiMode(theme) {
       console.log("actualizando variable uiMode en modelo");
       settingsModel.data.uiMode = theme;
-      this.applyTheme();
    }
 
    private checkMode(): Exclude<UiModeType, "system"> {
@@ -26,32 +26,43 @@ class UiModeController {
          return this.uiMode as Exclude<UiModeType, "system">;
       }
    }
+
    applyTheme() {
-      let newUiMode = this.checkMode();
+      const newUiMode = this.checkMode();
       document.documentElement.dataset.uiMode = newUiMode;
    }
 
    constructor() {
       $effect.root(() => {
-         // Effect para escuchar cambios en la preferencia del sistema
+         // Aplica el tema cuando settingsModel está listo y reacciona a cambios posteriores
          $effect(() => {
-            if (uiModeController.uiMode !== "system") return;
+            if (!settingsModel.isInitialized) return;
 
-            const handleChange = (event: MediaQueryListEvent) => {
-               if (uiModeController.uiMode === "system") {
+            // Track uiMode para reactividad
+            settingsModel.data.uiMode;
+            this.applyTheme();
+         });
+
+         // Effect para cambios en preferencia del sistema
+         $effect(() => {
+            if (!settingsModel.isInitialized || this.uiMode !== "system")
+               return;
+
+            const handleSystemThemeChange = (event: MediaQueryListEvent) => {
+               if (this.uiMode === "system") {
                   this.applyTheme();
                }
             };
 
             this.prefersDarkColorScheme.addEventListener(
                "change",
-               handleChange,
+               handleSystemThemeChange,
             );
 
             return () => {
                this.prefersDarkColorScheme.removeEventListener(
                   "change",
-                  handleChange,
+                  handleSystemThemeChange,
                );
             };
          });
@@ -59,4 +70,4 @@ class UiModeController {
    }
 }
 
-export let uiModeController = $state(new UiModeController());
+export const uiModeController = $state(new UiModeController());
