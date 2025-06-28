@@ -42,7 +42,7 @@ export abstract class PersistentModel<T> {
       try {
          const serializableData = $state.snapshot(this.data);
 
-         const result = await window.electronAPI.fs.saveJson(
+         const result = await window.electronAPI.fs.saveUserConfigJson(
             this.filename,
             serializableData,
          );
@@ -58,10 +58,14 @@ export abstract class PersistentModel<T> {
 
    private async loadData() {
       try {
-         const result = await window.electronAPI.fs.loadJson(this.filename);
+         const result = await window.electronAPI.fs.loadUserConfigJson(
+            this.filename,
+         );
          if (result.success && result.data) {
             // Combinar datos cargados con valores por defecto para manejar nuevas propiedades
+            console.log("Resultados de cargar json: ", result.data);
             this.data = { ...this.getDefaultData(), ...result.data };
+            console.log("Data: ", this.data);
          } else if (result.error !== "FILE_NOT_FOUND") {
             console.error(`Error al cargar ${this.filename}:`, result.error);
          }

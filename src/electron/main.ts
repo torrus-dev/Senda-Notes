@@ -4,14 +4,11 @@ import fs from "fs/promises";
 
 const isDev = !app.isPackaged;
 
-// Obtener el directorio de datos de usuario
-function getUserDataPath(): string {
-   return app.getPath("userData");
-}
-
 // Crear el directorio de configuración si no existe
 async function ensureConfigDirectory(): Promise<string> {
-   const configDir = path.join(getUserDataPath(), "config");
+   const userDataPath = app.getPath("userData");
+   const configDir = path.join(userDataPath, "config");
+
    try {
       await fs.mkdir(configDir, { recursive: true });
    } catch (error: unknown) {
@@ -75,26 +72,33 @@ function createWindow() {
    });
 
    // Configurar IPC handlers para sistema de archivos
-   ipcMain.handle("fs:saveJson", async (_, filename: string, data: any) => {
-      console.log("guardando settings");
-      try {
-         const configDir = await ensureConfigDirectory();
-         const filePath = path.join(configDir, `${filename}.json`);
-         await fs.writeFile(filePath, JSON.stringify(data, null, 2), "utf-8");
-         return { success: true };
-      } catch (error: unknown) {
-         let msg: string;
-         if (error instanceof Error) {
-            msg = error.message;
-         } else {
-            msg = String(error);
+   ipcMain.handle(
+      "fs:saveUserConfigJson",
+      async (_, filename: string, data: any) => {
+         console.log("guardando settings");
+         try {
+            const configDir = await ensureConfigDirectory();
+            const filePath = path.join(configDir, `${filename}.json`);
+            await fs.writeFile(
+               filePath,
+               JSON.stringify(data, null, 2),
+               "utf-8",
+            );
+            return { success: true };
+         } catch (error: unknown) {
+            let msg: string;
+            if (error instanceof Error) {
+               msg = error.message;
+            } else {
+               msg = String(error);
+            }
+            console.error(`Error guardando ${filename}.json:`, msg);
+            return { success: false, error: msg };
          }
-         console.error(`Error guardando ${filename}.json:`, msg);
-         return { success: false, error: msg };
-      }
-   });
+      },
+   );
 
-   ipcMain.handle("fs:loadJson", async (_, filename: string) => {
+   ipcMain.handle("fs:loadUserConfigJson", async (_, filename: string) => {
       try {
          const configDir = await ensureConfigDirectory();
          const filePath = path.join(configDir, `${filename}.json`);
@@ -117,7 +121,7 @@ function createWindow() {
       }
    });
 
-   ipcMain.handle("fs:exists", async (_, filename: string) => {
+   ipcMain.handle("fs:userConfigExists", async (_, filename: string) => {
       try {
          const configDir = await ensureConfigDirectory();
          const filePath = path.join(configDir, `${filename}.json`);
@@ -166,7 +170,7 @@ app.on("before-quit", () => {
    ipcMain.removeAllListeners("window:close");
    ipcMain.removeAllListeners("window:isMaximized");
    // Limpiar handlers de sistema de archivos
-   ipcMain.removeAllListeners("fs:saveJson");
-   ipcMain.removeAllListeners("fs:loadJson");
-   ipcMain.removeAllListeners("fs:exists");
+   ipcMain.removeAllListeners("fs:saveUserConfigJson");
+   ipcMain.removeAllListeners("fs:loadUserConfigJson");
+   ipcMain.removeAllListeners("fs:userConfigExists");
 });

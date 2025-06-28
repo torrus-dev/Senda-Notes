@@ -2,12 +2,21 @@ import { settingsModel } from "@model/application/settingsModel.svelte";
 import type { UiModeType } from "@projectTypes/ui/uiTypes";
 
 class UiModeController {
-   showOptions: boolean = $state(false);
    prefersDarkColorScheme = window.matchMedia("(prefers-color-scheme: dark)");
 
    isDarkMode: boolean = $derived(
       this.uiMode === "dark" || this.prefersDarkColorScheme.matches,
    );
+
+   get uiMode() {
+      return settingsModel.data.uiMode;
+   }
+
+   set uiMode(theme) {
+      console.log("actualizando variable uiMode en modelo");
+      settingsModel.data.uiMode = theme;
+      this.applyTheme();
+   }
 
    private checkMode(): Exclude<UiModeType, "system"> {
       if (this.uiMode === "system") {
@@ -47,15 +56,6 @@ class UiModeController {
             };
          });
       });
-   }
-
-   get uiMode() {
-      return settingsModel.data.uiMode;
-   }
-
-   set uiMode(theme) {
-      settingsModel.data.uiMode = theme;
-      this.applyTheme();
    }
 }
 

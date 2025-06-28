@@ -1,6 +1,6 @@
 import type { UiModeType } from "@projectTypes/ui/uiTypes";
 
-export type Settings = {
+export type AppSettings = {
    uiMode: UiModeType;
    showEditorToolbar: boolean;
    sidebarIsLocked: boolean;

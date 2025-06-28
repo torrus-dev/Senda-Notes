@@ -10,11 +10,12 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
    // Sistema de archivos para configuración
    fs: {
-      saveJson: (filename: string, data: any) =>
-         ipcRenderer.invoke("fs:saveJson", filename, data),
-      loadJson: (filename: string) =>
-         ipcRenderer.invoke("fs:loadJson", filename),
-      exists: (filename: string) => ipcRenderer.invoke("fs:exists", filename),
+      saveUserConfigJson: (filename: string, data: any) =>
+         ipcRenderer.invoke("fs:saveUserConfigJson", filename, data),
+      loadUserConfigJson: (filename: string) =>
+         ipcRenderer.invoke("fs:loadUserConfigJson", filename),
+      userConfigExists: (filename: string) =>
+         ipcRenderer.invoke("fs:userConfigExists", filename),
    },
 
    // Información del sistema

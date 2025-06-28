@@ -8,14 +8,14 @@ export interface ElectronAPI {
 
    // Sistema de archivos
    fs: {
-      saveJson: (
+      saveUserConfigJson: (
          filename: string,
          data: any,
       ) => Promise<{ success: boolean; error?: string }>;
-      loadJson: (
+      loadUserConfigJson: (
          filename: string,
       ) => Promise<{ success: boolean; data?: any; error?: string }>;
-      exists: (filename: string) => Promise<boolean>;
+      userConfigExists: (filename: string) => Promise<boolean>;
    };
 
    // Información del sistema
