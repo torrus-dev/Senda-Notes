@@ -19,7 +19,6 @@
          "@controllers/*": ["controllers/*"],
          "@model/*": ["model/*"],
          "@directives/*": ["directives/*"],
-         "@fonts/*": ["fonts/*"],
          "@components/*": ["svelte/components/*"],
          "@assets/*": ["svelte/assets/*"],
          "@i18n/*": ["i18n/*"],

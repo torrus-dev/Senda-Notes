@@ -65,14 +65,14 @@ input {
 
 @font-face {
    font-family: "Adwaita Sans";
-   src: url("/fonts/AdwaitaSans-Regular.ttf") format("truetype");
+   src: url("assets/fonts/AdwaitaSans-Regular.ttf") format("truetype");
    font-weight: 1 999;
    font-style: normal;
 }
 
 @font-face {
    font-family: "Adwaita Sans";
-   src: url("/fonts/AdwaitaSans-Italic.ttf") format("truetype");
+   src: url("assets/fonts/AdwaitaSans-Italic.ttf") format("truetype");
    font-weight: 1 999;
    font-style: italic;
 }

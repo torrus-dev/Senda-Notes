@@ -10,14 +10,14 @@ class NoteModel {
 
    constructor() {
       this.notes = this.loadFromStorage();
-      if (settingsModel.debugLevel > 0) {
+      if (settingsModel.data.debugLevel > 0) {
          console.log("notas cargadas: ", $state.snapshot(this.notes));
       }
 
       $effect.root(() => {
          $effect(() => {
             this.saveToStorage(this.notes);
-            if (settingsModel.debugLevel > 0) {
+            if (settingsModel.data.debugLevel > 0) {
                console.log("guardando notas", $state.snapshot(this.notes));
             }
          });
