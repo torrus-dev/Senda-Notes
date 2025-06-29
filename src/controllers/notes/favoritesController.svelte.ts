@@ -5,29 +5,31 @@ import { favoritesModel } from "@model/notes/favoritesModel.svelte";
 class FavoriteController {
    // Comprobar si una nota está en favoritos
    isFavorite(noteId: string): boolean {
-      return favoritesModel.favorites.some(
+      return favoritesModel.data.favorites.some(
          (favoriteId) => favoriteId === noteId,
       );
    }
 
    getFavorites() {
-      return favoritesModel.favorites;
+      return favoritesModel.data.favorites;
    }
 
    getFavoritesAsNotes() {
-      return noteQueryController.getNotesByIdList(favoritesModel.favorites);
+      return noteQueryController.getNotesByIdList(
+         favoritesModel.data.favorites,
+      );
    }
 
    // Añadir nota a favoritos
    addToFavorites = (noteId: Note["id"]): void => {
       if (!this.isFavorite(noteId)) {
-         favoritesModel.favorites.push(noteId);
+         favoritesModel.data.favorites.push(noteId);
       }
    };
 
    // Eliminar nota de favoritos
    removeFromFavorites = (noteId: string): void => {
-      favoritesModel.favorites = favoritesModel.favorites.filter(
+      favoritesModel.data.favorites = favoritesModel.data.favorites.filter(
          (favoriteId) => favoriteId !== noteId,
       );
    };
