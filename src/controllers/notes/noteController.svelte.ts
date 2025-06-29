@@ -48,7 +48,7 @@ class NoteController {
          }));
       }
 
-      noteNavigationController.setActiveNoteId(newNote.id);
+      noteNavigationController.activeNoteId = newNote.id;
       focusController.requestFocus(FocusTarget.TITLE);
    };
 
@@ -146,7 +146,7 @@ class NoteController {
       });
 
       // Limpiar nota activa si fue eliminada
-      const activeNoteId = noteNavigationController.getActiveNoteId();
+      const activeNoteId = noteNavigationController.activeNoteId;
       if (activeNoteId && idsToDelete.has(activeNoteId)) {
          noteNavigationController.unsetActiveNoteId();
       }

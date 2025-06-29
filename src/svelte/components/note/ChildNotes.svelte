@@ -27,7 +27,7 @@ let { children }: { children: string[] } = $props();
                   size="small"
                   shape="rect"
                   onclick={() =>
-                     noteNavigationController.setActiveNoteId(childId)}
+                     (noteNavigationController.activeNoteId = childId)}
                   title="Abrir nota">
                   {noteQueryController.getNoteById(childId)?.title}
                </Button>

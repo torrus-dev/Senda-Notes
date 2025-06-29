@@ -54,7 +54,7 @@ $effect(() => {
 function handleResultSelect(result: SearchResult) {
    // Navegar a la nota seleccionada
    if (result.note && result.note.id) {
-      noteNavigationController.setActiveNoteId(result.note.id);
+      noteNavigationController.activeNoteId = result.note.id;
       searchController.isSearching = false;
    }
 }

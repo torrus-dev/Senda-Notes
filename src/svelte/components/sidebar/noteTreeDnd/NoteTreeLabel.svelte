@@ -38,7 +38,7 @@ let {
    toggleEditTitleMode: () => void;
 } = $props();
 
-let isActive = $derived(note.id === noteNavigationController.getActiveNoteId());
+let isActive = $derived(note.id === noteNavigationController.activeNoteId);
 let childrenCount = $derived(noteQueryController.getChildrenCount(note.id));
 let hasChildren = $derived(childrenCount > 0);
 
@@ -48,7 +48,7 @@ const handleSelectTitle = (event: KeyboardEvent | MouseEvent) => {
    if (!isEditingTitle) {
       if (("key" in event && event.key === "Enter") || event.type === "click") {
          // Solo seleccionar la nota si no estamos en modo edición
-         noteNavigationController.setActiveNoteId(note.id);
+         noteNavigationController.activeNoteId = note.id;
       }
    }
 };

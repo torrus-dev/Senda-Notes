@@ -1,46 +1,25 @@
 import { noteNavigationModel } from "@model/navigation/noteNavigationModel.svelte";
 
 class NoteNavigationController {
-   getActiveNoteId() {
-      return noteNavigationModel.activeNoteId;
+   get activeNoteId(): string | undefined {
+      return noteNavigationModel.data.activeNoteId;
    }
 
-   setActiveNoteId(newId: string) {
-      noteNavigationModel.previousActiveNoteId =
-         noteNavigationModel.activeNoteId;
-      noteNavigationModel.activeNoteId = newId;
+   set activeNoteId(newId: string) {
+      // Guardar el ID anterior antes de cambiar al nuevo
+      noteNavigationModel.data.previousActiveNoteId =
+         noteNavigationModel.data.activeNoteId;
+      noteNavigationModel.data.activeNoteId = newId;
    }
 
    unsetActiveNoteId() {
-      noteNavigationModel.previousActiveNoteId =
-         noteNavigationModel.activeNoteId;
-      noteNavigationModel.activeNoteId = undefined;
+      noteNavigationModel.data.previousActiveNoteId =
+         noteNavigationModel.data.activeNoteId;
+      noteNavigationModel.data.activeNoteId = undefined;
    }
 
-   getPreviousActiveNoteId() {
-      return noteNavigationModel.previousActiveNoteId;
-   }
-
-   goToPreviousNote() {
-      if (noteNavigationModel.previousActiveNoteId) {
-         const temp = noteNavigationModel.activeNoteId;
-         noteNavigationModel.activeNoteId =
-            noteNavigationModel.previousActiveNoteId;
-         noteNavigationModel.previousActiveNoteId = temp;
-      }
-   }
-
-   hasActiveNote() {
-      return noteNavigationModel.activeNoteId !== undefined;
-   }
-
-   hasPreviousNote() {
-      return noteNavigationModel.previousActiveNoteId !== undefined;
-   }
-
-   // Getter para acceso directo al estado del modelo
-   get state() {
-      return noteNavigationModel.data;
+   get previousActiveNoteId() {
+      return noteNavigationModel.data.previousActiveNoteId;
    }
 }
 

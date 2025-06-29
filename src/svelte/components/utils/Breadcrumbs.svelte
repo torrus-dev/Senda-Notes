@@ -45,7 +45,7 @@ let path: { id: string; title: string }[] = $derived(
                      size="small"
                      shape="rect"
                      onclick={(event: Event) => {
-                        noteNavigationController.setActiveNoteId(crumb.id);
+                        noteNavigationController.activeNoteId = crumb.id;
                         event.stopPropagation();
                      }}
                      title="Open note">

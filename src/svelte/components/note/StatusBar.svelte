@@ -18,7 +18,7 @@ let lineCount = $derived(editorController.lineCount);
    </div>
 
    <div class="text-muted-content flex items-center gap-3">
-      {#if noteNavigationController.getActiveNoteId() !== undefined}
+      {#if noteNavigationController.activeNoteId !== undefined}
          <p>Char {characterCount}</p>
          <p>Words {wordCount}</p>
          <p>Lines {lineCount}</p>

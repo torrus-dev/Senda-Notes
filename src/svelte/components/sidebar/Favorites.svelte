@@ -37,7 +37,7 @@ let favorites: Note[] = $derived(favoriteController.getFavoritesAsNotes());
                },
             ]}
             onclick={() => {
-               noteNavigationController.setActiveNoteId(favorite.id);
+               noteNavigationController.activeNoteId = favorite.id;
             }}>
             {favorite.title}
          </Button>

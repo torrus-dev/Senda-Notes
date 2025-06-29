@@ -19,7 +19,7 @@ class NoteQueryController {
    }
 
    getActiveNote(): Note | undefined {
-      const activeNoteId = noteNavigationController.getActiveNoteId();
+      const activeNoteId = noteNavigationController.activeNoteId;
       return activeNoteId ? this.getNoteById(activeNoteId) : undefined;
    }
 
