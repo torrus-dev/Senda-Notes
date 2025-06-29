@@ -1,47 +1,29 @@
-const STORAGE_KEY = "collapsible-states";
+import { PersistentLocalStorageModel } from "@model/persistentLocalStorage.svelte";
 
 type CollapsibleStates = {
    [key: string]: boolean;
 };
 
-class CollapsibleModel {
-   states: CollapsibleStates = $state({});
-
+class CollapsibleModel extends PersistentLocalStorageModel<CollapsibleStates> {
    constructor() {
-      this.loadFromStorage();
-
-      // Auto-guardar cuando cambien los estados
-      $effect.root(() => {
-         $effect(() => {
-            this.saveToStorage();
-         });
-      });
+      super("collapsible-states");
    }
 
-   private loadFromStorage(): void {
-      try {
-         const stored = localStorage.getItem(STORAGE_KEY);
-         if (stored) {
-            this.states = JSON.parse(stored);
-         }
-      } catch (error) {
-         console.warn(
-            "Error loading collapsible states from localStorage:",
-            error,
-         );
-         this.states = {};
-      }
+   protected getDefaultData(): CollapsibleStates {
+      return {};
    }
 
-   private saveToStorage(): void {
-      try {
-         localStorage.setItem(STORAGE_KEY, JSON.stringify(this.states));
-      } catch (error) {
-         console.warn(
-            "Error saving collapsible states to localStorage:",
-            error,
-         );
-      }
+   // Métodos específicos para este modelo
+   public toggle(key: string): void {
+      this.data[key] = !this.data[key];
+   }
+
+   public isCollapsed(key: string): boolean {
+      return this.data[key] ?? false;
+   }
+
+   public setCollapsed(key: string, collapsed: boolean): void {
+      this.data[key] = collapsed;
    }
 }
 

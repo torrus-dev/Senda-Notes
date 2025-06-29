@@ -3,12 +3,12 @@ import { collapsibleModel } from "@model/ui/collapsibleModel.svelte";
 class CollapsibleController {
    register(id: string, defaultCollapsed: boolean = false): boolean {
       // Si ya existe, devolver su estado actual
-      if (id in collapsibleModel.states) {
-         return collapsibleModel.states[id];
+      if (id in collapsibleModel.data) {
+         return collapsibleModel.data[id];
       }
 
       // Si no existe, usar el valor por defecto
-      collapsibleModel.states[id] = defaultCollapsed;
+      collapsibleModel.data[id] = defaultCollapsed;
       return defaultCollapsed;
    }
 
@@ -16,45 +16,45 @@ class CollapsibleController {
     * Obtiene el estado actual de un collapsible
     */
    getState(id: string): boolean {
-      return collapsibleModel.states[id] ?? false;
+      return collapsibleModel.data[id] ?? false;
    }
 
    /**
     * Cambia el estado de un collapsible específico
     */
    toggle(id: string): void {
-      if (!(id in collapsibleModel.states)) {
+      if (!(id in collapsibleModel.data)) {
          console.warn(`Collapsible with id "${id}" is not registered`);
          return;
       }
 
-      collapsibleModel.states[id] = !collapsibleModel.states[id];
+      collapsibleModel.data[id] = !collapsibleModel.data[id];
    }
 
    /**
     * Establece el estado de un collapsible específico
     */
    setState(id: string, collapsed: boolean): void {
-      if (!(id in collapsibleModel.states)) {
+      if (!(id in collapsibleModel.data)) {
          console.warn(`Collapsible with id "${id}" is not registered`);
          return;
       }
 
-      collapsibleModel.states[id] = collapsed;
+      collapsibleModel.data[id] = collapsed;
    }
 
    /**
     * Resetea el estado de un collapsible específico
     */
    reset(id: string, defaultState: boolean = false): void {
-      collapsibleModel.states[id] = defaultState;
+      collapsibleModel.data[id] = defaultState;
    }
 
    /**
     * Obtiene todos los IDs registrados
     */
    getRegisteredIds(): string[] {
-      return Object.keys(collapsibleModel.states);
+      return Object.keys(collapsibleModel.data);
    }
 }
 
