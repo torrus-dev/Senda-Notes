@@ -3,15 +3,15 @@
 
 <script lang="ts">
 import { dndController } from "@controllers/ui/dndController.svelte";
+import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 import {
    createNoteTreeNodeDndHandlers,
    checkDraggingBranch,
 } from "@utils/dnd/noteTreeDndEvents.svelte";
 
-import NoteTreeNode from "./NoteTreeNode.svelte";
-import NoteTreeLine from "./NoteTreeLine.svelte";
-import NoteTreeLabel from "./NoteTreeLabel.svelte";
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import NoteTreeNode from "@components/sidebar/noteTreeDnd/NoteTreeNode.svelte";
+import NoteTreeLine from "@components/sidebar/noteTreeDnd/NoteTreeLine.svelte";
+import NoteTreeLabel from "@components/sidebar/noteTreeDnd/NoteTreeLabel.svelte";
 
 let { note, position } = $props();
 

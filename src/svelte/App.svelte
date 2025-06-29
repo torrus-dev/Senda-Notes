@@ -3,7 +3,7 @@
 
 <script lang="ts">
 import { uiModeController } from "@controllers/ui/uiModeController.svelte";
-import MainView from "./components/MainView.svelte";
+import MainView from "@components/MainView.svelte";
 import { Settings } from "luxon";
 
 Settings.defaultLocale = "es-ES";

@@ -1,6 +1,6 @@
 <script lang="ts">
 import Button from "@components/utils/Button.svelte";
-import Popover from "./Popover.svelte";
+import Popover from "@components/floating/Popover.svelte";
 import { TextIcon } from "lucide-svelte";
 
 interface suggestion {

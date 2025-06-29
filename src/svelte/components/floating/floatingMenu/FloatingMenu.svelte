@@ -6,7 +6,7 @@ import type {
 } from "@projectTypes/ui/contextMenuTypes";
 
 import { floatingMenuController } from "@controllers/menu/floatingMenuController.svelte";
-import { setupKeyboardNavigation } from "./keyboardNavigation";
+import { setupKeyboardNavigation } from "@components/floating/floatingMenu/keyboardNavigation";
 
 import {
    createCoordinateReference,
@@ -14,9 +14,9 @@ import {
 } from "@utils/floatingPositionUtils";
 
 import { tick } from "svelte";
-import ActionMenuItem from "./menuItems/ActionMenuItem.svelte";
-import GroupMenuItem from "./menuItems/GroupMenuItem.svelte";
-import SeparatorMenuItem from "./menuItems/SeparatorMenuItem.svelte";
+import ActionMenuItem from "@components/floating/floatingMenu//menuItems/ActionMenuItem.svelte";
+import GroupMenuItem from "@components/floating/floatingMenu//menuItems/GroupMenuItem.svelte";
+import SeparatorMenuItem from "@components/floating/floatingMenu//menuItems/SeparatorMenuItem.svelte";
 import { onPressEsc } from "@directives/onPressEsc";
 import { onClickOutside } from "@directives/onClickOutside";
 

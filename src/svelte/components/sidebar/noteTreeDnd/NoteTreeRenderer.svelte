@@ -1,11 +1,10 @@
 <script lang="ts">
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 
-import NoteTreeLine from "./NoteTreeLine.svelte";
-import NoteTreeNode from "./NoteTreeNode.svelte";
+import NoteTreeLine from "@components/sidebar/noteTreeDnd/NoteTreeLine.svelte";
+import NoteTreeNode from "@components/sidebar/noteTreeDnd/NoteTreeNode.svelte";
+import NotesSectionHeader from "@components/sidebar/noteTreeDnd/NotesSectionHeader.svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";
-
-import NotesSectionHeader from "./NotesSectionHeader.svelte";
 
 let rootNotes = $derived(noteQueryController.getRootNotes());
 let isDragedOver = $state();

@@ -11,8 +11,9 @@ ul {
 
 <script lang="ts">
 import { noteNavigationController } from "@controllers/navigation/noteNavigationController.svelte";
-import Button from "./Button.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+
+import Button from "@components/utils/Button.svelte";
 import { HomeIcon } from "lucide-svelte";
 
 let { noteId, showHome }: { showHome: boolean; noteId: string } = $props();

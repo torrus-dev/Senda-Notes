@@ -1,5 +1,5 @@
 import type { DateTime } from "luxon";
-import type { Note } from "./noteTypes";
+import type { Note } from "@projectTypes/core/noteTypes";
 
 interface BaseProperty {
    id: string; // con crypto.randomUUID()

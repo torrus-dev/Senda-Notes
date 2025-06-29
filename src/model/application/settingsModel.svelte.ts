@@ -1,7 +1,7 @@
 import { AppSettings } from "@projectTypes/core/settingsTypes";
-import { PersistentModel } from "@model/persistentModel.svelte";
+import { PersistentJsonFileModel } from "@model/persistentJsonFileModel.svelte";
 
-class SettingsModel extends PersistentModel<AppSettings> {
+class SettingsModel extends PersistentJsonFileModel<AppSettings> {
    constructor() {
       // nombre del archivo JSON
       super("app-settings");

@@ -10,7 +10,7 @@ import { noteQueryController } from "@controllers/notes/noteQueryController.svel
 import Notifications from "@components/floating/notifications/Notifications.svelte";
 
 import StatusBar from "@components/note/StatusBar.svelte";
-import ConfirmationDialog from "./dialog/ConfirmationDialog.svelte";
+import ConfirmationDialog from "@components/dialog/ConfirmationDialog.svelte";
 
 const activeNote: Note | undefined = $derived(
    noteQueryController.getActiveNote(),
