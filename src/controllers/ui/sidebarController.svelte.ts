@@ -1,30 +1,30 @@
 import { sidebarModel } from "@model/ui/sidebarModel.svelte";
 
 class SidebarController {
-   setWidth(newWidth: number) {
+   set width(newWidth: number) {
       if (typeof newWidth === "number") {
-         sidebarModel.width = newWidth;
+         sidebarModel.data.width = newWidth;
       }
    }
 
-   getWidth() {
-      return sidebarModel.width;
+   get width(): number | null {
+      return sidebarModel.data.width;
    }
 
    toggle() {
-      sidebarModel.isOpen = !sidebarModel.isOpen;
+      sidebarModel.data.isOpen = !sidebarModel.data.isOpen;
    }
 
    close() {
-      sidebarModel.isOpen = false;
+      sidebarModel.data.isOpen = false;
    }
 
    open() {
-      sidebarModel.isOpen = true;
+      sidebarModel.data.isOpen = true;
    }
 
-   isOpen() {
-      return sidebarModel.isOpen;
+   get isOpen() {
+      return sidebarModel.data.isOpen;
    }
 }
 

@@ -12,10 +12,10 @@ import Favorites from "@components/sidebar/Favorites.svelte";
 import { sidebarController } from "@controllers/ui/sidebarController.svelte";
 import { modalController } from "@controllers/menu/modalController.svelte";
 
-let width = $state(sidebarController.getWidth());
+let width = $state(sidebarController.width);
 let isMobile = $derived(screenSizeController.isMobile);
 let isSidebarOpen = $derived(
-   sidebarController.isOpen() || settingsController.lockSidebar,
+   sidebarController.isOpen || settingsController.lockSidebar,
 );
 let isResizing = $state(false);
 

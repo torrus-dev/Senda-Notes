@@ -5,7 +5,7 @@ import { onDestroy } from "svelte";
 // Propiedades del componente
 let { disabled = false, updateWidth, onResizeStart, onResizeEnd } = $props();
 
-const savedWidth = sidebarController.getWidth();
+const savedWidth = sidebarController.width;
 const minWidth = 8;
 const maxWidth = 30;
 
@@ -48,7 +48,7 @@ function stopDragging() {
    document.removeEventListener("mousemove", handleDrag);
    document.removeEventListener("mouseup", stopDragging);
    document.body.classList.remove("cursor-col-resize", "select-none");
-   sidebarController.setWidth(width);
+   sidebarController.width = width;
    onResizeEnd();
 }
 
