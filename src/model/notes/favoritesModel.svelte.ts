@@ -6,10 +6,6 @@ interface FavoritesState {
 }
 
 class FavoritesModel extends PersistentLocalStorageModel<FavoritesState> {
-   data: FavoritesState = $state({
-      favorites: [],
-   });
-
    constructor() {
       super("Favorites");
    }
