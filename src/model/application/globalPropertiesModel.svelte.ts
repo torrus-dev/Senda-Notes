@@ -1,91 +1,42 @@
 import type { GlobalProperty } from "@projectTypes/core/propertyTypes";
-import { settingsController } from "@controllers/application/settingsController.svelte";
+import { PersistentLocalStorageModel } from "@model/persistentLocalStorage.svelte";
 
-class GlobalPropertiesModel {
-   private static readonly STORAGE_KEY = "GlobalProperties";
+interface GlobalPropertiesData {
+   globalProperties: GlobalProperty[];
+}
 
-   // registro de propiedades (nombre, tipo) para saber que propiedades hay creadas globalmente en la aplicación
-   private globalProperties = $state<GlobalProperty[]>([]);
-
+class GlobalPropertiesModel extends PersistentLocalStorageModel<GlobalPropertiesData> {
    constructor() {
-      this.globalProperties = this.loadFromStorage();
-      if (settingsController.debugLevel > 0) {
-         console.log(
-            "propiedades globales cargadas: ",
-            $state.snapshot(this.globalProperties),
-         );
-      }
+      super("GlobalProperties");
    }
 
-   // MÉTODOS PRIVADOS DE STORAGE
-   private loadFromStorage(): GlobalProperty[] {
-      try {
-         const stored = localStorage.getItem(GlobalPropertiesModel.STORAGE_KEY);
-         return stored ? JSON.parse(stored) : [];
-      } catch (error) {
-         console.error("Error al cargar propiedades globales:", error);
-         return [];
-      }
+   protected getDefaultData(): GlobalPropertiesData {
+      return {
+         globalProperties: [],
+      };
    }
-
-   private saveToStorage(): void {
-      try {
-         localStorage.setItem(
-            GlobalPropertiesModel.STORAGE_KEY,
-            JSON.stringify(this.globalProperties),
-         );
-         if (settingsController.debugLevel > 0) {
-            console.log(
-               "guardando propiedades globales",
-               $state.snapshot(this.globalProperties),
-            );
-         }
-      } catch (error) {
-         console.error("Error al guardar propiedades globales:", error);
-      }
-   }
-
    // MÉTODOS PÚBLICOS PARA GLOBAL PROPERTIES
 
    createGlobalProperty(globalProperty: GlobalProperty): void {
-      this.globalProperties.push(globalProperty);
-      this.saveToStorage();
+      this.data.globalProperties.push(globalProperty);
    }
 
    deleteGlobalProperty(id: GlobalProperty["id"]): void {
-      this.globalProperties = this.globalProperties.filter(
+      this.data.globalProperties = this.data.globalProperties.filter(
          (globalProperty) => globalProperty.id !== id,
       );
-      this.saveToStorage();
    }
 
    updateGlobalPropertyById(
       id: GlobalProperty["id"],
       updater: (globalProperty: GlobalProperty) => GlobalProperty,
    ): void {
-      const index = this.globalProperties.findIndex((n) => n.id === id);
+      const index = this.data.globalProperties.findIndex((n) => n.id === id);
       if (index !== -1) {
-         this.globalProperties[index] = updater(this.globalProperties[index]);
+         this.data.globalProperties[index] = updater(
+            this.data.globalProperties[index],
+         );
       }
-      this.saveToStorage();
-   }
-
-   getGlobalProperties(): GlobalProperty[] {
-      return this.globalProperties;
-   }
-
-   getGlobalPropertyById(id: GlobalProperty["id"]): GlobalProperty | undefined {
-      return this.globalProperties.find(
-         (globalProperty) => globalProperty.id === id,
-      );
-   }
-
-   getGlobalPropertyByName(
-      name: GlobalProperty["name"],
-   ): GlobalProperty | undefined {
-      return this.globalProperties.find(
-         (globalProperty) => globalProperty.name === name,
-      );
    }
 }
 

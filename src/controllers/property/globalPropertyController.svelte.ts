@@ -10,11 +10,15 @@ import { notePropertyController } from "@controllers/property/notePropertyContro
 
 class GlobalPropertyController {
    getGlobalPropertyById(id: GlobalProperty["id"]): GlobalProperty | undefined {
-      return globalPropertiesModel.getGlobalPropertyById(id);
+      return globalPropertiesModel.data.globalProperties.find(
+         (globalProperty) => globalProperty.id === id,
+      );
    }
 
    getGlobalPropertyByName(name: GlobalProperty["name"]) {
-      return globalPropertiesModel.getGlobalPropertyByName(name);
+      return globalPropertiesModel.data.globalProperties.find(
+         (globalProperty) => globalProperty.name === name,
+      );
    }
 
    createGlobalProperty(
@@ -34,7 +38,7 @@ class GlobalPropertyController {
       id: GlobalProperty["id"],
       updates: Partial<GlobalProperty>,
    ) {
-      const globalProperty = globalPropertiesModel.getGlobalPropertyById(id);
+      const globalProperty = this.getGlobalPropertyById(id);
       if (!globalProperty) return;
       globalPropertiesModel.updateGlobalPropertyById(id, (globalProperty) => ({
          ...globalProperty,
@@ -86,7 +90,7 @@ class GlobalPropertyController {
    }
 
    getGlobalProperties() {
-      return globalPropertiesModel.getGlobalProperties();
+      return globalPropertiesModel.data.globalProperties;
    }
 
    getGlobalPropertiesSuggestions(
@@ -99,7 +103,7 @@ class GlobalPropertyController {
          : "";
 
       // Recorremos las propiedades globales filtrandolas
-      return globalPropertiesModel.getGlobalProperties().filter((property) => {
+      return globalPropertiesModel.data.globalProperties.filter((property) => {
          if (
             noteId &&
             property.linkedProperties.some((link) => link.noteId === noteId)

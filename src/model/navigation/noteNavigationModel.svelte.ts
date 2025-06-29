@@ -1,16 +1,16 @@
 import { PersistentLocalStorageModel } from "@model/persistentLocalStorage.svelte";
 
-interface NoteNavigationState {
+interface NoteNavigationData {
    activeNoteId: string | undefined;
    previousActiveNoteId: string | undefined;
 }
 
-class NoteNavigationModel extends PersistentLocalStorageModel<NoteNavigationState> {
+class NoteNavigationModel extends PersistentLocalStorageModel<NoteNavigationData> {
    constructor() {
       super("NoteNavigation");
    }
 
-   protected getDefaultData(): NoteNavigationState {
+   protected getDefaultData(): NoteNavigationData {
       return {
          activeNoteId: undefined,
          previousActiveNoteId: undefined,
