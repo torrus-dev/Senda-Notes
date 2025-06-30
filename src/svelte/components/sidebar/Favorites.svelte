@@ -6,7 +6,7 @@ import { favoriteController } from "@controllers/notes/favoritesController.svelt
 
 import { StarIcon, StarOffIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
-import { noteNavigationController } from "@controllers/navigation/noteNavigationController.svelte";
+import { workspaceController } from "@controllers/navigation/noteNavigationController.svelte";
 
 let favorites: Note[] = $derived(favoriteController.getFavoritesAsNotes());
 </script>
@@ -37,7 +37,7 @@ let favorites: Note[] = $derived(favoriteController.getFavoritesAsNotes());
                },
             ]}
             onclick={() => {
-               noteNavigationController.activeNoteId = favorite.id;
+               workspaceController.activeNoteId = favorite.id;
             }}>
             {favorite.title}
          </Button>

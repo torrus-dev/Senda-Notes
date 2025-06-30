@@ -1,6 +1,6 @@
 <script lang="ts">
 import { editorController } from "@controllers/notes/editorController.svelte";
-import { noteNavigationController } from "@controllers/navigation/noteNavigationController.svelte";
+import { workspaceController } from "@controllers/navigation/noteNavigationController.svelte";
 
 let contentSaved = $derived(editorController.contentSaved);
 let characterCount = $derived(editorController.characterCount);
@@ -18,7 +18,7 @@ let lineCount = $derived(editorController.lineCount);
    </div>
 
    <div class="text-muted-content flex items-center gap-3">
-      {#if noteNavigationController.activeNoteId !== undefined}
+      {#if workspaceController.activeNoteId !== undefined}
          <p>Char {characterCount}</p>
          <p>Words {wordCount}</p>
          <p>Lines {lineCount}</p>

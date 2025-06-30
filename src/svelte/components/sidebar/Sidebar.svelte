@@ -44,12 +44,12 @@ let widthStyle = $derived(isMobile ? "90%" : `${width}em`);
       updateWidth={updateWidth}
       onResizeStart={handleResizeStart}
       onResizeEnd={handleResizeEnd} />
-   <div class="flex flex-col gap-6 p-2">
+   <div class="flex h-full flex-col gap-2 p-2">
       <NoteTreeRenderer />
       <Favorites />
       <div>
          <!-- notas en favoritos y en papelera  -->
-         <ul class="my-4 flex w-full flex-col p-2">
+         <ul class="my-4 flex w-full flex-col">
             <li>
                <Button class="w-full">
                   <Trash2Icon size="1.125em"></Trash2Icon>Papelera

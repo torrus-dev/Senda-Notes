@@ -13,7 +13,7 @@ import { tick } from "svelte";
 import { DeleteIcon, XIcon } from "lucide-svelte";
 import { onClickOutside } from "@directives/onClickOutside";
 import { onPressEsc } from "@directives/onPressEsc";
-import { noteNavigationController } from "@controllers/navigation/noteNavigationController.svelte";
+import { workspaceController } from "@controllers/navigation/noteNavigationController.svelte";
 
 let { note }: { note: Note | undefined } = $props();
 
@@ -54,7 +54,7 @@ $effect(() => {
 function handleResultSelect(result: SearchResult) {
    // Navegar a la nota seleccionada
    if (result.note && result.note.id) {
-      noteNavigationController.activeNoteId = result.note.id;
+      workspaceController.activeNoteId = result.note.id;
       searchController.isSearching = false;
    }
 }

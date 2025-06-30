@@ -1,7 +1,7 @@
 import type { Note } from "@projectTypes/core/noteTypes";
 import { noteModel } from "@model/notes/noteModel.svelte";
 import { getDescendantsId } from "@utils/noteUtils";
-import { noteNavigationController } from "@controllers/navigation/noteNavigationController.svelte";
+import { workspaceController } from "@controllers/navigation/noteNavigationController.svelte";
 
 class NoteQueryController {
    getNoteById = noteModel.getNoteById.bind(noteModel);
@@ -19,7 +19,7 @@ class NoteQueryController {
    }
 
    getActiveNote(): Note | undefined {
-      const activeNoteId = noteNavigationController.activeNoteId;
+      const activeNoteId = workspaceController.activeNoteId;
       return activeNoteId ? this.getNoteById(activeNoteId) : undefined;
    }
 

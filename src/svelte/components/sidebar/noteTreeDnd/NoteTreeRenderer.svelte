@@ -21,12 +21,12 @@ let isDragedOver = $state();
    {isDragedOver ? 'highlight' : ''}"
    hasSeparator={true}
    chevronPosition="left">
-   <ul class="max-h-[50vh] w-full overflow-auto px-2">
+   <ul class="max-h-[70vh] w-full overflow-auto px-2">
       {#if rootNotes && rootNotes.length > 0}
          {#each rootNotes as note, index (note.id)}
             <NoteTreeNode note={note} position={index} />
          {/each}
-         <NoteTreeLine position={rootNotes.length} />
+         <NoteTreeLine position={rootNotes.length} first={true} />
       {/if}
    </ul>
 </Collapsible>

@@ -1,6 +1,6 @@
 <script lang="ts">
 import Button from "@components/utils/Button.svelte";
-import { noteNavigationController } from "@controllers/navigation/noteNavigationController.svelte";
+import { workspaceController } from "@controllers/navigation/noteNavigationController.svelte";
 import { ArrowLeftIcon, ArrowRightIcon, HomeIcon } from "lucide-svelte";
 </script>
 
@@ -11,5 +11,4 @@ import { ArrowLeftIcon, ArrowRightIcon, HomeIcon } from "lucide-svelte";
    <Button onclick={() => {}} title="Go forward">
       <ArrowRightIcon size="1.125em" />
    </Button>
-   
 </div>

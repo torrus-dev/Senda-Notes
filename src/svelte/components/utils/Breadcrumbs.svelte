@@ -10,7 +10,7 @@ ul {
 </style>
 
 <script lang="ts">
-import { noteNavigationController } from "@controllers/navigation/noteNavigationController.svelte";
+import { workspaceController } from "@controllers/navigation/noteNavigationController.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 
 import Button from "@components/utils/Button.svelte";
@@ -29,7 +29,7 @@ let path: { id: string; title: string }[] = $derived(
          <div class="flex items-center">
             <Button
                onclick={() => {
-                  noteNavigationController.unsetActiveNoteId();
+                  workspaceController.unsetActiveNoteId();
                }}
                title="Home">
                <HomeIcon size="1.0625em" />
@@ -45,7 +45,7 @@ let path: { id: string; title: string }[] = $derived(
                      size="small"
                      shape="rect"
                      onclick={(event: Event) => {
-                        noteNavigationController.activeNoteId = crumb.id;
+                        workspaceController.activeNoteId = crumb.id;
                         event.stopPropagation();
                      }}
                      title="Open note">

@@ -15,7 +15,7 @@ import { noteTreeController } from "@controllers/notes/noteTreeController.svelte
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 import { notificationController } from "@controllers/application/notificationController.svelte";
 import { globalConfirmationDialog } from "@controllers/menu/confirmationDialogController.svelte";
-import { noteNavigationController } from "@controllers/navigation/noteNavigationController.svelte";
+import { workspaceController } from "@controllers/navigation/noteNavigationController.svelte";
 
 class NoteController {
    setAllNotes = noteModel.setAllNotes.bind(noteModel);
@@ -48,7 +48,7 @@ class NoteController {
          }));
       }
 
-      noteNavigationController.activeNoteId = newNote.id;
+      workspaceController.activeNoteId = newNote.id;
       focusController.requestFocus(FocusTarget.TITLE);
    };
 
@@ -146,9 +146,9 @@ class NoteController {
       });
 
       // Limpiar nota activa si fue eliminada
-      const activeNoteId = noteNavigationController.activeNoteId;
+      const activeNoteId = workspaceController.activeNoteId;
       if (activeNoteId && idsToDelete.has(activeNoteId)) {
-         noteNavigationController.unsetActiveNoteId();
+         workspaceController.unsetActiveNoteId();
       }
 
       notificationController.addNotification({
