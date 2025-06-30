@@ -2,6 +2,7 @@
 import { dropdownMenu } from "@directives/floatingMenuDirective.svelte";
 import type { MenuItem } from "@projectTypes/ui/contextMenuTypes";
 import type { Snippet } from "svelte";
+import type { HTMLButtonAttributes } from "svelte/elements";
 
 let {
    class: userClass = "",
@@ -23,7 +24,7 @@ let {
    dropdownMenuItems?: MenuItem[] | undefined;
    buttonElement?: HTMLElement;
    disabled?: boolean;
-} = $props();
+} & HTMLButtonAttributes = $props();
 
 // Define los estilos por tamaño
 let sizeStyle = { small: "", medium: "", large: "" };
