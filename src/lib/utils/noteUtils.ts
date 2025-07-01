@@ -1,5 +1,9 @@
 import { DateTime } from "luxon";
-import { Note, NoteMetadata } from "@projectTypes/core/noteTypes";
+import type {
+   Note,
+   NoteMetadata,
+   NoteReference,
+} from "@projectTypes/core/noteTypes";
 
 // notes
 
@@ -42,9 +46,16 @@ export function createDefaultMetadata(): NoteMetadata {
    };
 }
 
-// -------------------
+// Note Reference
+export function createNoteReference(note: Note): NoteReference {
+   return {
+      noteId: note.id,
+      title: note.title,
+      icon: note.icon,
+   };
+}
+
 // Relaciones hijos y padres
-// -------------------
 
 export function getDescendantsId(notes: Note[], parentId: string): string[] {
    const parent = notes.find((note) => note.id === parentId);

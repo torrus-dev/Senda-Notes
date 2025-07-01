@@ -1,8 +1,8 @@
 import type { NoteProperty } from "@projectTypes/core/propertyTypes";
 import type { DateTime } from "luxon";
 
-export interface Reference {
-   id: string;
+export interface NoteReference {
+   noteId: string;
    title: string;
    icon?: string;
 }
@@ -22,8 +22,8 @@ export interface Note {
 export interface NoteMetadata {
    created: DateTime;
    modified: DateTime;
-   outgoingLinks: Reference[];
-   incomingLinks: Reference[];
+   outgoingLinks: NoteReference[];
+   incomingLinks: NoteReference[];
    aliases: string[];
 }
 

@@ -1,8 +1,13 @@
 import { PersistentLocalStorageModel } from "@model/persistentLocalStorage.svelte";
-import type { Note } from "@projectTypes/core/noteTypes";
+import type { NoteReference } from "@projectTypes/core/noteTypes";
+
+export interface Tab {
+   noteReference: NoteReference;
+   id: string;
+}
 
 interface WorkspaceData {
-   tabs: Note["id"][]; // Array de pestañas abiertas
+   tabs: Tab[];
    activeTabId: string | undefined;
 }
 

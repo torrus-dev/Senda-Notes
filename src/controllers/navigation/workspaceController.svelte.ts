@@ -1,59 +1,107 @@
-import { workspaceModel } from "@model/navigation/workspaceModel.svelte";
-import type { Note } from "@projectTypes/core/noteTypes";
+import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import {
+   type Tab,
+   workspaceModel,
+} from "@model/navigation/workspaceModel.svelte";
+import type { Note, NoteReference } from "@projectTypes/core/noteTypes";
+import { createNoteReference } from "@utils/noteUtils";
 
 class WorkspaceController {
-   // Getter para mantener compatibilidad con el código existente
-   get activeNoteId(): string | undefined {
-      return workspaceModel.data.activeTabId;
+   getTabByTabId(tabId: Tab["id"]): Tab | undefined {
+      return workspaceModel.data.tabs.find((tab: Tab) => tab.id === tabId);
+   }
+   getTabByNoteId(noteId: Note["id"]): Tab | undefined {
+      return workspaceModel.data.tabs.find(
+         (tab: Tab) => tab.noteReference.noteId === noteId,
+      );
+   }
+   getActiveTab() {
+      const activeId = workspaceModel.data.activeTabId;
+      if (activeId) {
+         return this.getTabByTabId(activeId);
+      }
+      return undefined;
    }
 
-   // Setter que actualiza tanto la pestaña activa como añade la nota a las pestañas si no existe
-   set activeNoteId(newId: string) {
-      this.openNoteInTab(newId);
+   findTabIndexByTabId(tabId: string): number {
+      return workspaceModel.data.tabs.findIndex((tab: Tab) => tab.id === tabId);
+   }
+   findTabIndexByNoteId(noteId: Note["id"]): number {
+      return workspaceModel.data.tabs.findIndex(
+         (tab: Tab) => tab.noteReference.noteId === noteId,
+      );
    }
 
-   // Método para abrir una nota en una nueva pestaña o activar una existente
-   openNoteInTab(noteId: string) {
-      const tabs = workspaceModel.data.tabs;
-
-      // Si la nota ya está en una pestaña, simplemente la activamos
-      if (tabs.includes(noteId)) {
-         workspaceModel.data.activeTabId = noteId;
+   // metodo para cuando hacemos click normal sobre una nota para abrirla, el lo gestiona todo.
+   openNote(noteId: Note["id"]) {
+      const activeTabId = workspaceModel.data.activeTabId;
+      if (activeTabId !== undefined) {
+         if (this.isNoteOpenInTab(noteId)) {
+            this.activateTab(noteId);
+         } else {
+            this.switchActiveTabNote(noteId);
+         }
       } else {
-         // Si no existe, la añadimos a las pestañas y la activamos
-         tabs.push(noteId);
-         workspaceModel.data.activeTabId = noteId;
+         this.openNoteInNewTab(noteId);
+      }
+   }
+   // poner tab que contiene la nota como principal
+   activateTab(noteId: Note["id"]) {
+      const tab = this.getTabByNoteId(noteId);
+      if (!tab) return;
+      workspaceModel.data.activeTabId = tab.id;
+   }
+   // cambiar la nota de la tab activa
+   switchActiveTabNote(noteId: Note["id"]) {
+      if (!workspaceModel.data.activeTabId) return;
+      this.switchTabNote(noteId, workspaceModel.data.activeTabId);
+   }
+   private switchTabNote(noteId: Note["id"], tabId: string) {
+      const note = noteQueryController.getNoteById(noteId);
+      const tabIndex = this.findTabIndexByTabId(tabId);
+      if (!note || tabIndex !== -1) return;
+      const newReference = createNoteReference(note);
+
+      workspaceModel.data.tabs[tabIndex].noteReference = newReference;
+   }
+   // crear una nueva tab con una referencia
+   openNoteInNewTab(noteId: Note["id"]) {
+      const note = noteQueryController.getNoteById(noteId);
+      if (!note) return;
+      if (!this.isNoteOpenInTab(noteId)) {
+         const newTab = {
+            id: crypto.randomUUID(),
+            noteReference: createNoteReference(note),
+         };
+         // Añadir tab y convertirla en la activa
+         workspaceModel.data.tabs.push(newTab);
+         workspaceModel.data.activeTabId = newTab.id;
+      } else {
+         this.activateTab(noteId);
       }
    }
 
-   // Cerrar una pestaña específica
-   closeTab(noteId: string) {
-      const tabs = workspaceModel.data.tabs;
-      const tabIndex = tabs.indexOf(noteId);
+   closeTab(tabId: Tab["id"]) {
+      const tabIndex = this.findTabIndexByTabId(tabId);
+      if (tabIndex === -1) return;
 
-      if (tabIndex === -1) return; // La pestaña no existe
+      workspaceModel.data.tabs.splice(tabIndex, 1);
 
-      // Eliminar la pestaña del array
-      tabs.splice(tabIndex, 1);
-
-      // Si cerramos la pestaña activa, necesitamos activar otra
-      if (workspaceModel.data.activeTabId === noteId) {
-         if (tabs.length === 0) {
+      if (workspaceModel.data.activeTabId === tabId) {
+         if (workspaceModel.data.tabs.length === 0) {
             // No quedan pestañas
             workspaceModel.data.activeTabId = undefined;
          } else {
             // Activar la pestaña anterior o la primera disponible
-            const newActiveIndex = Math.max(0, tabIndex - 1);
-            workspaceModel.data.activeTabId = tabs[newActiveIndex];
+            const newActiveTabIndex = Math.max(0, tabIndex - 1);
+            workspaceModel.data.activeTabId =
+               workspaceModel.data.tabs[newActiveTabIndex].id;
          }
       }
    }
 
-   // Activar una pestaña específica
-   activateTab(noteId: string) {
-      if (workspaceModel.data.tabs.includes(noteId)) {
-         workspaceModel.data.activeTabId = noteId;
-      }
+   isNoteOpenInTab(noteId: Note["id"]): boolean {
+      return this.findTabIndexByNoteId(noteId) !== -1;
    }
 
    // Cerrar todas las pestañas
@@ -124,11 +172,6 @@ class WorkspaceController {
       const currentIndex = this.activeTabIndex;
       const prevIndex = currentIndex <= 0 ? tabs.length - 1 : currentIndex - 1;
       this.activateTab(tabs[prevIndex]);
-   }
-
-   // Verificar si una nota está abierta en una pestaña
-   isNoteOpenInTab(noteId: string): boolean {
-      return workspaceModel.data.tabs.includes(noteId);
    }
 }
 
