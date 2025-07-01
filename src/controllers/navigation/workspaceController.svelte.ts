@@ -35,13 +35,16 @@ class WorkspaceController {
    // metodo para cuando hacemos click normal sobre una nota para abrirla, el lo gestiona todo.
    openNote(noteId: Note["id"]) {
       const activeTabId = workspaceModel.data.activeTabId;
-      if (activeTabId !== undefined) {
+      if (activeTabId) {
          if (this.isNoteOpenInTab(noteId)) {
+            console.log("activate existing tab");
             this.activateTabByNoteId(noteId);
          } else {
+            console.log("switch active tab");
             this.switchActiveTabNote(noteId);
          }
       } else {
+         console.log("open note in new tab");
          this.openNoteInNewTab(noteId);
       }
    }
@@ -67,16 +70,15 @@ class WorkspaceController {
       const { activeTabId } = workspaceModel.data;
       if (!activeTabId) return;
       const tabIndex = this.findTabIndexByTabId(activeTabId);
-      if (tabIndex !== -1) return;
+      if (tabIndex === -1) return;
 
       workspaceModel.data.tabs[tabIndex].noteReference = undefined;
    }
    private switchTabNote(noteId: Note["id"], tabId: string) {
       const note = noteQueryController.getNoteById(noteId);
       const tabIndex = this.findTabIndexByTabId(tabId);
-      if (!note || tabIndex !== -1) return;
+      if (!note || tabIndex === -1) return;
       const newReference = createNoteReference(note);
-
       workspaceModel.data.tabs[tabIndex].noteReference = newReference;
    }
 

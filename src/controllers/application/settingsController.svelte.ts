@@ -33,6 +33,14 @@ class SettingsController {
    get debugLevel() {
       return settingsModel.data.debugLevel;
    }
+
+   //permanentTabBar
+   tooglePermanentTabBar(): void {
+      settingsModel.data.permanentTabBar = !settingsModel.data.permanentTabBar;
+   }
+   get permanentTabBar(): boolean {
+      return settingsModel.data.permanentTabBar;
+   }
 }
 
 export const settingsController = $state(new SettingsController());

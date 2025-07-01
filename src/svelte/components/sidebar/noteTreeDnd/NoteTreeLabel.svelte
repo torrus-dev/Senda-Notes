@@ -17,6 +17,8 @@ import {
    FilePlusIcon,
    StarIcon,
    StarOffIcon,
+   ArrowUpRight,
+   SquarePlusIcon,
 } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
 import InlineTitleEditor from "@components/note/InlineTitleEditor.svelte";
@@ -52,9 +54,6 @@ const handleSelectTitle = (event: KeyboardEvent | MouseEvent) => {
       }
    }
 };
-
-// Referencia al componente InlineTitleEditor para acceder a su elemento DOM
-let editableElement: SvelteComponent;
 </script>
 
 <div
@@ -66,8 +65,16 @@ let editableElement: SvelteComponent;
    use:contextMenu={[
       {
          type: "action",
-         label: "New Note",
-         icon: FilePlusIcon,
+         label: "Abrir en pestaña nueva",
+         icon: ArrowUpRight,
+         action: () => {
+            workspaceController.openNoteInNewTab(note.id);
+         },
+      },
+      {
+         type: "action",
+         label: "New Child Note",
+         icon: SquarePlusIcon,
          action: () => {
             noteController.createNote(note.id);
          },
@@ -116,7 +123,6 @@ let editableElement: SvelteComponent;
 
       <!-- Usando InlineTitleEditor y bindando la referencia al elemento -->
       <InlineTitleEditor
-         bind:this={editableElement}
          noteId={note.id}
          noteTitle={note.title}
          isEditing={isEditingTitle}

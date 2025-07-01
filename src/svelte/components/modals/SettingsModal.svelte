@@ -57,6 +57,12 @@ let searchQuery = $state("");
                }
             }} />
       </div>
+      <div class="flex items-center justify-between py-2">
+         <span>Always show Tab Bar</span>
+         <Slider
+            value={settingsController.permanentTabBar}
+            onChange={() => settingsController.toogleShowEditorToolbar()} />
+      </div>
       <GlobalPropertyMenu />
    </div>
 </aside>

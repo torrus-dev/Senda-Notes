@@ -3,14 +3,23 @@
 
 <script lang="ts">
 import { dndController } from "@controllers/ui/dndController.svelte";
+import type { Note } from "@projectTypes/core/noteTypes";
 import {
    createNoteTreeLineDndHandlers,
    checkDraggingBranch,
 } from "@utils/dnd/noteTreeDndEvents.svelte";
 
-let { position, parentId = undefined, first } = $props();
+let {
+   position,
+   parentId = undefined,
+   first,
+}: {
+   position: number;
+   parentId: Note["id"] | undefined;
+   first?: boolean;
+} = $props();
 let isDragedOver = $state(false);
-let branchDragging = $derived(checkDraggingBranch(parentId));
+let branchDragging = $derived(checkDraggingBranch(parentId ?? ""));
 
 // Setup drag and drop
 const { handleDragOver, handleDragLeave, handleDrop } =

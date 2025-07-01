@@ -1,5 +1,14 @@
-import { AppSettings } from "@projectTypes/core/settingsTypes";
 import { PersistentJsonFileModel } from "@model/persistentJsonFileModel.svelte";
+import type { UiModeType } from "@projectTypes/ui/uiTypes";
+
+type AppSettings = {
+   uiMode: UiModeType;
+   showEditorToolbar: boolean;
+   sidebarIsLocked: boolean;
+   showMetadata: boolean;
+   debugLevel: number;
+   permanentTabBar: boolean;
+};
 
 class SettingsModel extends PersistentJsonFileModel<AppSettings> {
    constructor() {
@@ -14,6 +23,7 @@ class SettingsModel extends PersistentJsonFileModel<AppSettings> {
          sidebarIsLocked: false,
          showMetadata: false,
          debugLevel: 0,
+         permanentTabBar: true,
       };
    }
 }

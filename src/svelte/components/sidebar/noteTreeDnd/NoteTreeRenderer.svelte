@@ -21,7 +21,7 @@ let isDragedOver = $state();
    {isDragedOver ? 'highlight' : ''}"
    hasSeparator={true}
    chevronPosition="left">
-   <ul class="max-h-[70vh] w-full overflow-auto px-2">
+   <ul class="max-h-[70vh] w-full overflow-x-hidden overflow-y-auto px-2">
       {#if rootNotes && rootNotes.length > 0}
          {#each rootNotes as note, index (note.id)}
             <NoteTreeNode note={note} position={index} />
