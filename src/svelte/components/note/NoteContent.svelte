@@ -3,14 +3,13 @@ import type { Note } from "@projectTypes/core/noteTypes";
 
 import { settingsController } from "@controllers/application/settingsController.svelte";
 import { searchController } from "@controllers/navigation/searchController.svelte";
-import { noteController } from "@controllers/notes/noteController.svelte";
 
-import Button from "@components/utils/Button.svelte";
 import Title from "@components/note/Title.svelte";
-import Metadata from "@components/note/Metadata.svelte";
-import PropertyList from "@components/note/PropertyList.svelte";
-import ChildNotes from "@components/note/ChildNotes.svelte";
+import Metadata from "@components/note/widgets/Metadata.svelte";
+import PropertyList from "@components/note/widgets/PropertyList.svelte";
+import ChildNotes from "@components/note/widgets/ChildNotes.svelte";
 import Editor from "@components/note/editor/Editor.svelte";
+import HomePanel from "./HomePanel.svelte";
 
 let { note }: { note: Note | undefined } = $props();
 </script>
@@ -43,28 +42,7 @@ let { note }: { note: Note | undefined } = $props();
             <Editor noteId={note.id} content={note.content} />
          </section>
       {:else}
-         <section class="flex h-full w-full content-center">
-            <div class="m-auto text-center">
-               <header class="">
-                  <h1 class="my-4 text-center text-3xl font-bold">
-                     No note is open
-                  </h1>
-               </header>
-               <ul class="flex flex-col gap-0.5">
-                  <li>
-                     <Button onclick={() => noteController.createNote()}>
-                        Create new note
-                     </Button>
-                  </li>
-                  <li>
-                     <Button
-                        onclick={() => (searchController.isSearching = true)}>
-                        Search note
-                     </Button>
-                  </li>
-               </ul>
-            </div>
-         </section>
+         <HomePanel/>
       {/if}
    </article>
 </div>
