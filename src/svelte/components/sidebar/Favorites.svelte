@@ -6,7 +6,7 @@ import { favoriteController } from "@controllers/notes/favoritesController.svelt
 
 import { StarIcon, StarOffIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
-import { workspaceController } from "@controllers/navigation/noteNavigationController.svelte";
+import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 
 let favorites: Note[] = $derived(favoriteController.getFavoritesAsNotes());
 </script>

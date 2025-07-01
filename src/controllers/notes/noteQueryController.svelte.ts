@@ -1,7 +1,7 @@
 import type { Note } from "@projectTypes/core/noteTypes";
 import { noteModel } from "@model/notes/noteModel.svelte";
 import { getDescendantsId } from "@utils/noteUtils";
-import { workspaceController } from "@controllers/navigation/noteNavigationController.svelte";
+import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 
 class NoteQueryController {
    getNoteById = noteModel.getNoteById.bind(noteModel);

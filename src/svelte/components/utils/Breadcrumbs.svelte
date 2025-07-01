@@ -10,7 +10,7 @@ ul {
 </style>
 
 <script lang="ts">
-import { workspaceController } from "@controllers/navigation/noteNavigationController.svelte";
+import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 
 import Button from "@components/utils/Button.svelte";

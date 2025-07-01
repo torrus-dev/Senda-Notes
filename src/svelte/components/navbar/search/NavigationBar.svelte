@@ -13,7 +13,7 @@ import { tick } from "svelte";
 import { DeleteIcon, XIcon } from "lucide-svelte";
 import { onClickOutside } from "@directives/onClickOutside";
 import { onPressEsc } from "@directives/onPressEsc";
-import { workspaceController } from "@controllers/navigation/noteNavigationController.svelte";
+import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 
 let { note }: { note: Note | undefined } = $props();
 

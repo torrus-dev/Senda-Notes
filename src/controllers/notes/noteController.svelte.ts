@@ -15,7 +15,7 @@ import { noteTreeController } from "@controllers/notes/noteTreeController.svelte
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 import { notificationController } from "@controllers/application/notificationController.svelte";
 import { globalConfirmationDialog } from "@controllers/menu/confirmationDialogController.svelte";
-import { workspaceController } from "@controllers/navigation/noteNavigationController.svelte";
+import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 
 class NoteController {
    setAllNotes = noteModel.setAllNotes.bind(noteModel);

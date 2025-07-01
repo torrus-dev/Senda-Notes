@@ -22,7 +22,7 @@ import Button from "@components/utils/Button.svelte";
 import InlineTitleEditor from "@components/note/InlineTitleEditor.svelte";
 import { contextMenu } from "@directives/floatingMenuDirective.svelte";
 import { favoriteController } from "@controllers/notes/favoritesController.svelte";
-import { workspaceController } from "@controllers/navigation/noteNavigationController.svelte";
+import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 
 let {
    note,
