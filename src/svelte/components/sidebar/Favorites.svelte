@@ -37,7 +37,7 @@ let favorites: Note[] = $derived(favoriteController.getFavoritesAsNotes());
                },
             ]}
             onclick={() => {
-               workspaceController.activeNoteId = favorite.id;
+               workspaceController.openNote(favorite.id);
             }}>
             {favorite.title}
          </Button>

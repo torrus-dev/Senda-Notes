@@ -26,7 +26,7 @@ let { children }: { children: string[] } = $props();
                <Button
                   size="small"
                   shape="rect"
-                  onclick={() => (workspaceController.activeNoteId = childId)}
+                  onclick={() => workspaceController.openNote(childId)}
                   title="Abrir nota">
                   {noteQueryController.getNoteById(childId)?.title}
                </Button>

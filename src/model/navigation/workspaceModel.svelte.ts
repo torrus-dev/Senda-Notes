@@ -2,7 +2,7 @@ import { PersistentLocalStorageModel } from "@model/persistentLocalStorage.svelt
 import type { NoteReference } from "@projectTypes/core/noteTypes";
 
 export interface Tab {
-   noteReference: NoteReference;
+   noteReference: NoteReference | undefined;
    id: string;
 }
 

@@ -54,7 +54,7 @@ $effect(() => {
 function handleResultSelect(result: SearchResult) {
    // Navegar a la nota seleccionada
    if (result.note && result.note.id) {
-      workspaceController.activeNoteId = result.note.id;
+      workspaceController.openNote(result.note.id);
       searchController.isSearching = false;
    }
 }

@@ -48,7 +48,7 @@ class NoteController {
          }));
       }
 
-      workspaceController.activeNoteId = newNote.id;
+      workspaceController.openNote(newNote.id);
       focusController.requestFocus(FocusTarget.TITLE);
    };
 
@@ -148,7 +148,7 @@ class NoteController {
       // Limpiar nota activa si fue eliminada
       const activeNoteId = workspaceController.activeNoteId;
       if (activeNoteId && idsToDelete.has(activeNoteId)) {
-         workspaceController.unsetActiveNoteId();
+         workspaceController.closeTabByTabId(activeNoteId);
       }
 
       notificationController.addNotification({

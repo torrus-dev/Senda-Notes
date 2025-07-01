@@ -4,8 +4,6 @@ import NavigationButtons from "@components/navbar/NavigationButtons.svelte";
 import SidebarToogle from "@components/sidebar/SidebarToogle.svelte";
 import NavigationBar from "@components/navbar/search/NavigationBar.svelte";
 import WindowControls from "@components/navbar/WindowControls.svelte";
-import { noteController } from "@controllers/notes/noteController.svelte";
-import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 
 let note = $derived(noteQueryController.getActiveNote());

@@ -1,23 +1,10 @@
 <style>
-.highlight {
-   /* Aquí puedes agregar tus estilos personalizados para la pestaña activa */
-   position: relative;
-}
-
-.highlight::after {
-   content: "";
-   position: absolute;
-   bottom: 0;
-   left: 0;
-   right: 0;
-   height: 2px;
-   background: hsl(var(--p));
-}
 </style>
 
 <script lang="ts">
 import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { MoreVerticalIcon, PlusIcon, XIcon } from "lucide-svelte";
 
 // Variables para drag & drop
 let draggedTabIndex = $state<number | null>(null);
@@ -35,14 +22,19 @@ function truncateText(text: string, maxLength: number = 20): string {
 }
 
 // Handler para activar pestaña
-function handleTabClick(noteId: string) {
-   workspaceController.activateTab(noteId);
+function handleTabClick(tabId: string) {
+   workspaceController.activateTabByTabId(tabId);
+}
+
+// Handler para crear nueva pestaña vacia
+function handleNewTab() {
+   workspaceController.newEmptyTab();
 }
 
 // Handler para cerrar pestaña
-function handleCloseTab(event: MouseEvent, noteId: string) {
+function handleCloseTab(event: MouseEvent, tabId: string) {
    event.stopPropagation();
-   workspaceController.closeTab(noteId);
+   workspaceController.closeTabByTabId(tabId);
 }
 
 // Solo mostrar si hay más de una pestaña
@@ -54,8 +46,9 @@ let shouldShow = $derived(workspaceController.tabs.length > 1);
       class="bg-base-200 border-base-300 flex h-10 w-full items-center border-b px-4">
       <!-- Pestañas -->
       <div class="flex flex-1 items-center gap-1">
-         {#each workspaceController.tabs as tabId, index (tabId)}
-            {@const isActive = workspaceController.activeNoteId === tabId}
+         {#each workspaceController.tabs as tab, index (tab)}
+            {@const isActive =
+               workspaceController.getActiveTab()?.id === tab.id}
             {@const isDragging = draggedTabIndex === index}
             {@const isDragOver = dragOverIndex === index}
 
@@ -68,16 +61,20 @@ let shouldShow = $derived(workspaceController.tabs.length > 1);
                role="tab"
                tabindex="0"
                aria-selected={isActive}
-               onclick={() => handleTabClick(tabId)}
+               onclick={() => handleTabClick(tab.id)}
                onkeydown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                      e.preventDefault();
-                     handleTabClick(tabId);
+                     handleTabClick(tab.id);
                   }
                }}>
                <!-- Título de la pestaña -->
                <span class="min-w-0 flex-1 truncate text-sm">
-                  {truncateText(getNoteTitle(tabId))}
+                  {#if tab.noteReference?.noteId}
+                     {truncateText(getNoteTitle(tab.noteReference?.noteId))}
+                  {:else}
+                     Nueva Pestaña
+                  {/if}
                </span>
 
                <!-- Botón de cerrar -->
@@ -85,21 +82,17 @@ let shouldShow = $derived(workspaceController.tabs.length > 1);
                   class="text-base-content/60 hover:text-base-content hover:bg-base-300 ml-2 flex h-4 w-4 items-center justify-center rounded-sm opacity-0 transition-all group-hover:opacity-100
                   {isActive ? 'opacity-100' : ''}"
                   aria-label="Cerrar pestaña"
-                  onclick={(e) => handleCloseTab(e, tabId)}>
-                  <svg
-                     class="h-3 w-3"
-                     fill="none"
-                     stroke="currentColor"
-                     viewBox="0 0 24 24">
-                     <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  onclick={(event) => handleCloseTab(event, tab.id)}>
+                  <XIcon />
                </button>
             </div>
          {/each}
+      </div>
+      <div
+         onclick={() => {
+            handleNewTab();
+         }}>
+         <PlusIcon />
       </div>
 
       <!-- Botón de overflow (sin funcionalidad por ahora) -->
@@ -108,17 +101,7 @@ let shouldShow = $derived(workspaceController.tabs.length > 1);
             class="text-base-content/60 hover:text-base-content hover:bg-base-300 flex h-6 w-6 items-center justify-center rounded-sm transition-colors"
             aria-label="Más opciones"
             disabled>
-            <svg
-               class="h-4 w-4"
-               fill="none"
-               stroke="currentColor"
-               viewBox="0 0 24 24">
-               <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-            </svg>
+            <MoreVerticalIcon />
          </button>
       </div>
    </div>

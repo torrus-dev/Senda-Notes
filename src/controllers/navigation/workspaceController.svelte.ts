@@ -12,7 +12,7 @@ class WorkspaceController {
    }
    getTabByNoteId(noteId: Note["id"]): Tab | undefined {
       return workspaceModel.data.tabs.find(
-         (tab: Tab) => tab.noteReference.noteId === noteId,
+         (tab: Tab) => tab.noteReference?.noteId === noteId,
       );
    }
    getActiveTab() {
@@ -28,7 +28,7 @@ class WorkspaceController {
    }
    findTabIndexByNoteId(noteId: Note["id"]): number {
       return workspaceModel.data.tabs.findIndex(
-         (tab: Tab) => tab.noteReference.noteId === noteId,
+         (tab: Tab) => tab.noteReference?.noteId === noteId,
       );
    }
 
@@ -37,7 +37,7 @@ class WorkspaceController {
       const activeTabId = workspaceModel.data.activeTabId;
       if (activeTabId !== undefined) {
          if (this.isNoteOpenInTab(noteId)) {
-            this.activateTab(noteId);
+            this.activateTabByNoteId(noteId);
          } else {
             this.switchActiveTabNote(noteId);
          }
@@ -46,15 +46,30 @@ class WorkspaceController {
       }
    }
    // poner tab que contiene la nota como principal
-   activateTab(noteId: Note["id"]) {
+   activateTabByNoteId(noteId: Note["id"]) {
       const tab = this.getTabByNoteId(noteId);
       if (!tab) return;
       workspaceModel.data.activeTabId = tab.id;
    }
+   activateTabByTabId(tabId: Tab["id"]) {
+      const tab = this.getTabByTabId(tabId);
+      if (!tab) return;
+      workspaceModel.data.activeTabId = tab.id;
+   }
+
    // cambiar la nota de la tab activa
    switchActiveTabNote(noteId: Note["id"]) {
       if (!workspaceModel.data.activeTabId) return;
       this.switchTabNote(noteId, workspaceModel.data.activeTabId);
+   }
+
+   unsetActiveTabNoteReference() {
+      const { activeTabId } = workspaceModel.data;
+      if (!activeTabId) return;
+      const tabIndex = this.findTabIndexByTabId(activeTabId);
+      if (tabIndex !== -1) return;
+
+      workspaceModel.data.tabs[tabIndex].noteReference = undefined;
    }
    private switchTabNote(noteId: Note["id"], tabId: string) {
       const note = noteQueryController.getNoteById(noteId);
@@ -64,6 +79,20 @@ class WorkspaceController {
 
       workspaceModel.data.tabs[tabIndex].noteReference = newReference;
    }
+
+   addTabAndSetActive(newTab: Tab) {
+      workspaceModel.data.tabs.push(newTab);
+      workspaceModel.data.activeTabId = newTab.id;
+   }
+
+   newEmptyTab() {
+      const newTab = {
+         id: crypto.randomUUID(),
+         noteReference: undefined,
+      };
+      this.addTabAndSetActive(newTab);
+   }
+
    // crear una nueva tab con una referencia
    openNoteInNewTab(noteId: Note["id"]) {
       const note = noteQueryController.getNoteById(noteId);
@@ -73,15 +102,13 @@ class WorkspaceController {
             id: crypto.randomUUID(),
             noteReference: createNoteReference(note),
          };
-         // Añadir tab y convertirla en la activa
-         workspaceModel.data.tabs.push(newTab);
-         workspaceModel.data.activeTabId = newTab.id;
+         this.addTabAndSetActive(newTab);
       } else {
-         this.activateTab(noteId);
+         this.activateTabByNoteId(noteId);
       }
    }
 
-   closeTab(tabId: Tab["id"]) {
+   closeTabByTabId(tabId: Tab["id"]) {
       const tabIndex = this.findTabIndexByTabId(tabId);
       if (tabIndex === -1) return;
 
@@ -99,6 +126,13 @@ class WorkspaceController {
          }
       }
    }
+   closeTabByNoteId(noteId: Note["id"]) {
+      const tabIndex = this.findTabIndexByNoteId(noteId);
+      if (tabIndex === -1) return;
+
+      const tabId = workspaceModel.data.tabs[tabIndex].id;
+      this.closeTabByTabId(tabId);
+   }
 
    isNoteOpenInTab(noteId: Note["id"]): boolean {
       return this.findTabIndexByNoteId(noteId) !== -1;
@@ -111,12 +145,10 @@ class WorkspaceController {
    }
 
    // Cerrar todas las pestañas excepto la activa
-   closeOtherTabs() {
-      const activeId = workspaceModel.data.activeTabId;
-      if (activeId) {
-         workspaceModel.data.tabs = [activeId];
-      } else {
-         this.closeAllTabs();
+   closeOtherTabs(tabId: Tab["id"]) {
+      const tab = this.getTabByTabId(tabId);
+      if (tab) {
+         workspaceModel.data.tabs = [tab];
       }
    }
 
@@ -136,13 +168,12 @@ class WorkspaceController {
       tabs.splice(toIndex, 0, movedTab);
    }
 
-   // Método de compatibilidad para limpiar la nota activa
-   unsetActiveNoteId() {
-      this.closeAllTabs();
+   // Getters útiles para el sistema de pestañas
+   get activeNoteId(): Note["id"] | undefined {
+      return this.getActiveTab()?.noteReference?.noteId;
    }
 
-   // Getters útiles para el sistema de pestañas
-   get tabs(): Note["id"][] {
+   get tabs(): Tab[] {
       return workspaceModel.data.tabs;
    }
 
@@ -150,9 +181,12 @@ class WorkspaceController {
       return workspaceModel.data.tabs.length > 0;
    }
 
-   get activeTabIndex(): number {
-      const activeId = workspaceModel.data.activeTabId;
-      return activeId ? workspaceModel.data.tabs.indexOf(activeId) : -1;
+   get activeTabIndex(): number | undefined {
+      const activeTabId = workspaceModel.data.activeTabId;
+      if (activeTabId) {
+         return this.findTabIndexByTabId(activeTabId);
+      }
+      return undefined;
    }
 
    // Navegación entre pestañas
@@ -161,8 +195,10 @@ class WorkspaceController {
       if (tabs.length <= 1) return;
 
       const currentIndex = this.activeTabIndex;
-      const nextIndex = (currentIndex + 1) % tabs.length;
-      this.activateTab(tabs[nextIndex]);
+      if (currentIndex) {
+         const nextIndex = (currentIndex + 1) % tabs.length;
+         this.activateTabByNoteId(tabs[nextIndex].id);
+      }
    }
 
    previousTab() {
@@ -170,8 +206,11 @@ class WorkspaceController {
       if (tabs.length <= 1) return;
 
       const currentIndex = this.activeTabIndex;
-      const prevIndex = currentIndex <= 0 ? tabs.length - 1 : currentIndex - 1;
-      this.activateTab(tabs[prevIndex]);
+      if (currentIndex) {
+         const prevIndex =
+            currentIndex <= 0 ? tabs.length - 1 : currentIndex - 1;
+         this.activateTabByNoteId(tabs[prevIndex].id);
+      }
    }
 }
 

@@ -48,7 +48,7 @@ const handleSelectTitle = (event: KeyboardEvent | MouseEvent) => {
    if (!isEditingTitle) {
       if (("key" in event && event.key === "Enter") || event.type === "click") {
          // Solo seleccionar la nota si no estamos en modo edición
-         workspaceController.activeNoteId = note.id;
+         workspaceController.openNote(note.id);
       }
    }
 };

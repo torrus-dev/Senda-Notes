@@ -29,7 +29,7 @@ let path: { id: string; title: string }[] = $derived(
          <div class="flex items-center">
             <Button
                onclick={() => {
-                  workspaceController.unsetActiveNoteId();
+                  workspaceController.unsetActiveTabNoteReference();
                }}
                title="Home">
                <HomeIcon size="1.0625em" />
@@ -45,7 +45,7 @@ let path: { id: string; title: string }[] = $derived(
                      size="small"
                      shape="rect"
                      onclick={(event: Event) => {
-                        workspaceController.activeNoteId = crumb.id;
+                        workspaceController.openNote(crumb.id);
                         event.stopPropagation();
                      }}
                      title="Open note">
