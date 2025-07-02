@@ -2,69 +2,80 @@ import { noteQueryController } from "@controllers/notes/noteQueryController.svel
 import { removeDiacritics } from "@utils/searchUtils";
 import type { SearchResult } from "@projectTypes/ui/uiTypes";
 
+interface SearchContext {
+   term: string;
+   normalizedTerm: string;
+   isHierarchical: boolean;
+   isExactPath: boolean;
+   basePath: string;
+   searchFragment: string;
+}
+
 class SearchController {
-   // Almacena los últimos resultados de búsqueda
    isSearching: boolean = $state(false);
 
-   // Busca notas según un término de búsqueda
+   // Función principal de búsqueda
    searchNotes(searchTerm: string, limit: number = -1): SearchResult[] {
-      // Limpiar término de búsqueda
+      const context = this.parseSearchTerm(searchTerm);
+      if (!context) return [];
+
+      const results = context.isHierarchical
+         ? this.performHierarchicalSearch(context)
+         : this.performSimpleSearch(context);
+
+      return this.limitResults(this.sortResults(results), limit);
+   }
+
+   // Parsear y preparar el término de búsqueda
+   private parseSearchTerm(searchTerm: string): SearchContext | null {
       const term = searchTerm.trim();
-      if (!term) {
-         return [];
-      }
+      if (!term) return null;
 
-      // Normalizar el término de búsqueda
       const normalizedTerm = removeDiacritics(term.toLowerCase());
+      const isHierarchical = term.includes("/");
+      const isExactPath = isHierarchical && normalizedTerm.endsWith("/");
 
-      // Seleccionar tipo de búsqueda
-      const results = term.includes("/")
-         ? this.hierarchicalSearch(normalizedTerm)
-         : this.simpleSearch(normalizedTerm);
+      let basePath = "";
+      let searchFragment = normalizedTerm;
 
-      // Ordenar y limitar resultados
-      const sortedResults = this.sortResults(results);
-      if (limit === -1) {
-         return sortedResults;
-      } else if (limit > 0) {
-         const limitedResults = sortedResults.slice(0, limit);
-         return limitedResults;
-      } else {
-         return [];
+      if (isHierarchical) {
+         const lastSlashIndex = normalizedTerm.lastIndexOf("/");
+         basePath = normalizedTerm.substring(0, lastSlashIndex);
+         searchFragment = isExactPath
+            ? ""
+            : normalizedTerm.substring(lastSlashIndex + 1);
       }
+
+      return {
+         term,
+         normalizedTerm,
+         isHierarchical,
+         isExactPath,
+         basePath,
+         searchFragment,
+      };
    }
 
    // Búsqueda simple: encuentra notas cuyo título o alias contenga el término
-   private simpleSearch(normalizedTerm: string): SearchResult[] {
+   private performSimpleSearch(context: SearchContext): SearchResult[] {
       const results: SearchResult[] = [];
       const allNotes = noteQueryController.getAllNotes() || [];
 
       for (const note of allNotes) {
-         // Normalizar y buscar que coincida el título de cada nota
-         const normalizedTitle = removeDiacritics(note.title.toLowerCase());
-         if (normalizedTitle.includes(normalizedTerm)) {
-            results.push({
-               note,
-               matchType: "title",
-               matchedText: note.title,
-               path: noteQueryController.getPathAsString(note.id),
-            });
+         // Buscar en título
+         const titleMatch = this.searchInText(
+            note.title,
+            context.normalizedTerm,
+         );
+         if (titleMatch) {
+            results.push(this.createSearchResult(note, "title", note.title));
             continue;
          }
 
          // Buscar en aliases
-         const aliases = note.metadata?.aliases || [];
-         for (const alias of aliases) {
-            const normalizedAlias = removeDiacritics(alias.toLowerCase());
-            if (normalizedAlias.includes(normalizedTerm)) {
-               results.push({
-                  note,
-                  matchType: "alias",
-                  matchedText: alias,
-                  path: noteQueryController.getPathAsString(note.id),
-               });
-               break;
-            }
+         const aliasMatch = this.searchInAliases(note, context.normalizedTerm);
+         if (aliasMatch) {
+            results.push(this.createSearchResult(note, "alias", aliasMatch));
          }
       }
 
@@ -72,83 +83,101 @@ class SearchController {
    }
 
    // Búsqueda jerárquica: encuentra notas dentro de una ruta específica
-   private hierarchicalSearch(normalizedTerm: string): SearchResult[] {
+   private performHierarchicalSearch(context: SearchContext): SearchResult[] {
       const results: SearchResult[] = [];
-
-      // Determinar si es búsqueda exacta de directorio
-      const isExactPathSearch = normalizedTerm.endsWith("/");
-
-      // Obtener ruta base y término de búsqueda
-      const lastSlashIndex = normalizedTerm.lastIndexOf("/");
-      const basePath = normalizedTerm.substring(0, lastSlashIndex);
-      const searchFragment = isExactPathSearch
-         ? ""
-         : normalizedTerm.substring(lastSlashIndex + 1);
-
-      // Obtener todas las notas
       const allNotes = noteQueryController.getAllNotes() || [];
 
       for (const note of allNotes) {
-         // Obtener y normalizar la ruta de la nota
-         const notePath = removeDiacritics(
-            noteQueryController.getPathAsString(note.id).toLowerCase(),
-         );
+         const notePath = this.getNormalizedNotePath(note.id);
 
-         // Para búsqueda exacta de directorio
-         if (isExactPathSearch) {
-            const searchPath = normalizedTerm.slice(0, -1); // Quitar la barra final
-            if (
-               notePath === searchPath ||
-               notePath.startsWith(searchPath + "/")
-            ) {
-               results.push({
-                  note,
-                  matchType: "title",
-                  matchedText: note.title,
-                  path: noteQueryController.getPathAsString(note.id),
-               });
-            }
+         // Verificar si la nota está en la ruta correcta
+         if (!this.isNoteInTargetPath(notePath, context)) {
             continue;
          }
 
-         // Para búsqueda con ruta parcial
-         if (
-            basePath &&
-            !notePath.startsWith(basePath + "/") &&
-            notePath !== basePath
-         ) {
-            continue; // No está en la ruta especificada
+         // Para búsqueda exacta de directorio, agregar todas las notas en esa ruta
+         if (context.isExactPath) {
+            results.push(this.createSearchResult(note, "title", note.title));
+            continue;
          }
 
          // Buscar en título
-         const normalizedTitle = removeDiacritics(note.title.toLowerCase());
-         if (normalizedTitle.includes(searchFragment)) {
-            results.push({
-               note,
-               matchType: "title",
-               matchedText: note.title,
-               path: noteQueryController.getPathAsString(note.id),
-            });
+         const titleMatch = this.searchInText(
+            note.title,
+            context.searchFragment,
+         );
+         if (titleMatch) {
+            results.push(this.createSearchResult(note, "title", note.title));
             continue;
          }
 
          // Buscar en aliases
-         const aliases = note.metadata?.aliases || [];
-         for (const alias of aliases) {
-            const normalizedAlias = removeDiacritics(alias.toLowerCase());
-            if (normalizedAlias.includes(searchFragment)) {
-               results.push({
-                  note,
-                  matchType: "alias",
-                  matchedText: alias,
-                  path: noteQueryController.getPathAsString(note.id),
-               });
-               break;
-            }
+         const aliasMatch = this.searchInAliases(note, context.searchFragment);
+         if (aliasMatch) {
+            results.push(this.createSearchResult(note, "alias", aliasMatch));
          }
       }
 
       return results;
+   }
+
+   // Verificar si una nota está en la ruta objetivo
+   private isNoteInTargetPath(
+      notePath: string,
+      context: SearchContext,
+   ): boolean {
+      if (context.isExactPath) {
+         const searchPath = context.normalizedTerm.slice(0, -1); // Quitar barra final
+         return (
+            notePath === searchPath || notePath.startsWith(searchPath + "/")
+         );
+      }
+
+      if (!context.basePath) return true;
+
+      return (
+         notePath.startsWith(context.basePath + "/") ||
+         notePath === context.basePath
+      );
+   }
+
+   // Buscar término en texto normalizado
+   private searchInText(text: string, searchTerm: string): boolean {
+      return removeDiacritics(text.toLowerCase()).includes(searchTerm);
+   }
+
+   // Buscar en aliases de una nota
+   private searchInAliases(note: any, searchTerm: string): string | null {
+      const aliases = note.metadata?.aliases || [];
+
+      for (const alias of aliases) {
+         if (this.searchInText(alias, searchTerm)) {
+            return alias;
+         }
+      }
+
+      return null;
+   }
+
+   // Obtener ruta normalizada de una nota
+   private getNormalizedNotePath(noteId: string): string {
+      return removeDiacritics(
+         noteQueryController.getPathAsString(noteId).toLowerCase(),
+      );
+   }
+
+   // Crear resultado de búsqueda
+   private createSearchResult(
+      note: any,
+      matchType: "title" | "alias",
+      matchedText: string,
+   ): SearchResult {
+      return {
+         note,
+         matchType,
+         matchedText,
+         path: noteQueryController.getPathAsString(note.id),
+      };
    }
 
    // Ordenar resultados por relevancia
@@ -166,6 +195,16 @@ class SearchController {
          // Prioridad 3: Orden alfabético
          return a.matchedText.localeCompare(b.matchedText);
       });
+   }
+
+   // Aplicar límite a los resultados
+   private limitResults(
+      results: SearchResult[],
+      limit: number,
+   ): SearchResult[] {
+      if (limit === -1) return results;
+      if (limit <= 0) return [];
+      return results.slice(0, limit);
    }
 }
 

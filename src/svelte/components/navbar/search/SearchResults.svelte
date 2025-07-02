@@ -2,7 +2,6 @@
 </style>
 
 <script lang="ts">
-import { noteController } from "@controllers/notes/noteController.svelte";
 import type { SearchResult } from "@projectTypes/ui/uiTypes";
 import { CornerDownLeft, FileIcon } from "lucide-svelte";
 import { tick } from "svelte";
@@ -28,15 +27,17 @@ function handleKeyDown(event: KeyboardEvent) {
 
    if (results.length === 0) return;
 
-   event.preventDefault();
    if (key === "ArrowDown") {
+      event.preventDefault();
       selectedIndex = (selectedIndex + 1) % results.length;
       scrollSelectedIntoView();
    } else if (key === "ArrowUp") {
+      event.preventDefault();
       selectedIndex =
          selectedIndex <= 0 ? results.length - 1 : selectedIndex - 1;
       scrollSelectedIntoView();
    } else if (key === "Enter") {
+      event.preventDefault();
       if (selectedIndex >= 0) {
          select(results[selectedIndex]);
       } else {

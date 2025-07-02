@@ -6,16 +6,7 @@ import Button from "@components/utils/Button.svelte";
 import { settingsController } from "@controllers/application/settingsController.svelte";
 import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
-import {
-   ChevronDownIcon,
-   MoreVerticalIcon,
-   PlusIcon,
-   XIcon,
-} from "lucide-svelte";
-
-// Variables para drag & drop
-let draggedTabIndex = $state<number | null>(null);
-let dragOverIndex = $state<number | null>(null);
+import { ChevronDownIcon, PlusIcon, XIcon } from "lucide-svelte";
 
 // Función para obtener el título de una nota por su ID
 function getNoteTitle(noteId: string): string {
@@ -68,8 +59,8 @@ let shouldShow = $derived(
                   {isActive ? 'bg-base-300' : ''} 
                   hover:bg-base-300 group w-full min-w-6
                   "
+                  size="small"
                   aria-selected={isActive}>
-                  {tab.id}
                   <!-- Título de la pestaña -->
                   <span class="flex-1 truncate text-sm">
                      {#if tab.noteReference?.noteId}
@@ -80,13 +71,15 @@ let shouldShow = $derived(
                   </span>
 
                   <!-- Botón de cerrar -->
-                  <button
-                     class="text-base-content/60 hover:text-base-content hover:bg-base-300 ml-2 flex h-4 w-4 items-center justify-center rounded-sm opacity-0 transition-all group-hover:opacity-100
-                  {isActive ? 'opacity-100' : ''}"
-                     aria-label="Cerrar pestaña"
-                     onclick={(event) => handleCloseTab(event, tab.id)}>
-                     <XIcon />
-                  </button>
+                  <Button
+                     class="opacity-0 transition-all group-hover:opacity-100 
+                     {isActive ? 'opacity-100' : ''}"
+                     size="small"
+                     onclick={(event: MouseEvent) =>
+                        handleCloseTab(event, tab.id)}
+                     aria-label="Cerrar pestaña">
+                     <XIcon size="1.125em" />
+                  </Button>
                </Button>
             </li>
          {/each}

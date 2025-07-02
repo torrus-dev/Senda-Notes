@@ -61,7 +61,7 @@ let searchQuery = $state("");
          <span>Always show Tab Bar</span>
          <Slider
             value={settingsController.permanentTabBar}
-            onChange={() => settingsController.toogleShowEditorToolbar()} />
+            onChange={() => settingsController.tooglePermanentTabBar()} />
       </div>
       <GlobalPropertyMenu />
    </div>
