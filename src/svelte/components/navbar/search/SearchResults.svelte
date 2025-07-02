@@ -2,6 +2,7 @@
 </style>
 
 <script lang="ts">
+import { noteController } from "@controllers/notes/noteController.svelte";
 import type { SearchResult } from "@projectTypes/ui/uiTypes";
 import { CornerDownLeft, FileIcon } from "lucide-svelte";
 import { tick } from "svelte";
@@ -27,18 +28,23 @@ function handleKeyDown(event: KeyboardEvent) {
 
    if (results.length === 0) return;
 
+   event.preventDefault();
    if (key === "ArrowDown") {
-      event.preventDefault();
       selectedIndex = (selectedIndex + 1) % results.length;
       scrollSelectedIntoView();
    } else if (key === "ArrowUp") {
-      event.preventDefault();
       selectedIndex =
          selectedIndex <= 0 ? results.length - 1 : selectedIndex - 1;
       scrollSelectedIntoView();
-   } else if (key === "Enter" && selectedIndex >= 0) {
-      event.preventDefault();
-      select(results[selectedIndex]);
+   } else if (key === "Enter") {
+      if (selectedIndex >= 0) {
+         select(results[selectedIndex]);
+      } else {
+         if (searchValue !== "" && results.length === 0) {
+            // procesar jerarquia y cadena de texto
+            // noteController.createNote({})
+         }
+      }
    }
 }
 
@@ -159,20 +165,22 @@ function highlightMatch(text: string, query: string): string {
       </div>
    {/if}
    <div class="flex justify-center gap-8 p-2 text-xs">
-      <p class="flex">
-         <kbd class="bg-base-200 rounded-selector flex items-center gap-1 p-0.5"
-            ><CornerDownLeft size="1.125em" /></kbd> para abrir
+      <p class="flex items-center gap-1">
+         <kbd
+            class="bg-base-200 rounded-selector flex items-center gap-1 p-0.5">
+            <CornerDownLeft size="1.125em" /></kbd> para abrir
       </p>
-      <p class="flex">
-         <kbd class="bg-base-200 rounded-selector flex items-center gap-1 p-0.5"
-            >ctrl + <CornerDownLeft size="1.125em" /></kbd> para abrir en nueva pestaña
+      <p class="flex items-center gap-1">
+         <kbd
+            class="bg-base-200 rounded-selector flex items-center gap-1 p-0.5">
+            ctrl + <CornerDownLeft size="1.125em" /></kbd> para abrir en nueva pestaña
       </p>
-      <p class="flex">
+      <p class="flex items-center gap-1">
          <kbd
             class="bg-base-200 rounded-selector flex items-center gap-1 p-0.5">
             shift + <CornerDownLeft size="1.125em" /></kbd> para crear
       </p>
-      <p>
+      <p class="flex items-center gap-1">
          <kbd class="bg-base-200 rounded-selector p-0.5">esc</kbd>
          para salir
       </p>

@@ -69,6 +69,7 @@ let shouldShow = $derived(
                   hover:bg-base-300 group w-full min-w-6
                   "
                   aria-selected={isActive}>
+                  {tab.id}
                   <!-- Título de la pestaña -->
                   <span class="flex-1 truncate text-sm">
                      {#if tab.noteReference?.noteId}
