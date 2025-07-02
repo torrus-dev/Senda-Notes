@@ -16,21 +16,153 @@ import { noteQueryController } from "@controllers/notes/noteQueryController.svel
 import { notificationController } from "@controllers/application/notificationController.svelte";
 import { globalConfirmationDialog } from "@controllers/menu/confirmationDialogController.svelte";
 import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
+import { normalizeText } from "@utils/searchUtils";
+
+// Tipos simplificados
+interface PathResolution {
+   existingNotes: Note[];
+   missingSegments: string[];
+   lastParentId?: string;
+}
 
 class NoteController {
    setAllNotes = noteModel.setAllNotes.bind(noteModel);
 
+   // === FUNCIONES PÚBLICAS ===
+
+   /**
+    * Crea notas desde un path jerárquico como "proyecto/backend/auth"
+    */
+   createNoteFromPath = (path: string): string | null => {
+      try {
+         const segments = this.parseNotePath(path);
+         if (!segments.length) return null;
+
+         const resolution = this.resolveNotePath(segments);
+         const targetNoteId = this.executeNoteCreation(resolution, segments);
+
+         if (targetNoteId) {
+            this.openAndFocusNote(targetNoteId);
+         }
+
+         return targetNoteId;
+      } catch (error) {
+         console.error("Error creating note from path:", error);
+         return null;
+      }
+   };
+
+   /**
+    * Función legacy para compatibilidad
+    */
    createNote = (parentId?: string, noteParts?: Partial<Note>): void => {
-      // Validación previa si hay padre
-      if (parentId && !noteQueryController.getNoteById(parentId)) {
-         console.error(`Parent note with id ${parentId} not found`);
-         return;
+      if (parentId && !this.validateParentExists(parentId)) return;
+
+      const noteId = this.createSingleNote(parentId, noteParts);
+
+      if (noteId) {
+         this.openAndFocusNote(noteId);
+      }
+   };
+
+   // === LÓGICA DE PATHS ===
+
+   private parseNotePath(path: string): string[] {
+      if (!path?.trim()) return [];
+
+      return path
+         .split("/")
+         .map((segment) => sanitizeTitle(segment.trim()))
+         .filter(Boolean);
+   }
+
+   private resolveNotePath(segments: string[]): PathResolution {
+      const resolution: PathResolution = {
+         existingNotes: [],
+         missingSegments: [],
+         lastParentId: undefined,
+      };
+
+      let currentParentId: string | undefined;
+
+      for (const segment of segments) {
+         const existingNote = this.findNoteByTitleAndParent(
+            segment,
+            currentParentId,
+         );
+
+         if (existingNote) {
+            resolution.existingNotes.push(existingNote);
+            currentParentId = existingNote.id;
+         } else {
+            // Primer segmento faltante - guardar resto y salir
+            const currentIndex = resolution.existingNotes.length;
+            resolution.missingSegments = segments.slice(currentIndex);
+            resolution.lastParentId = currentParentId;
+            break;
+         }
       }
 
-      // crear función para extraer el parentId a partir de valor de busqueda, sera el ultimo valor antes del / en la jerarquia.
+      return resolution;
+   }
 
-      // Generar campos por defecto y sobrescribir con noteParts si existen
-      const newNote: Note = {
+   private executeNoteCreation(
+      resolution: PathResolution,
+      originalSegments: string[],
+   ): string | null {
+      if (!resolution.missingSegments.length) {
+         // Todas las notas existen - retornar la última
+         return (
+            resolution.existingNotes[resolution.existingNotes.length - 1]?.id ||
+            null
+         );
+      }
+
+      return this.createMissingNotes(resolution);
+   }
+
+   private createMissingNotes(resolution: PathResolution): string | null {
+      let currentParentId = resolution.lastParentId;
+      let lastCreatedId: string | null = null;
+
+      for (const segment of resolution.missingSegments) {
+         const noteId = this.createSingleNote(currentParentId, {
+            title: segment,
+         });
+
+         if (!noteId) {
+            console.error(`Failed to create note: ${segment}`);
+            break;
+         }
+
+         lastCreatedId = noteId;
+         currentParentId = noteId;
+      }
+
+      return lastCreatedId;
+   }
+
+   // === CREACIÓN DE NOTAS ===
+
+   private createSingleNote(
+      parentId?: string,
+      noteParts?: Partial<Note>,
+   ): string | null {
+      try {
+         const newNote: Note = this.buildNoteObject(parentId, noteParts);
+
+         noteModel.createNote(newNote);
+         this.updateParentChildren(parentId, newNote.id);
+
+         return newNote.id;
+      } catch (error) {
+         console.error("Error creating note:", error);
+         return null;
+      }
+   }
+
+   private buildNoteObject(parentId?: string, noteParts?: Partial<Note>): Note {
+      return {
          id: noteParts?.id ?? crypto.randomUUID(),
          title: generateUniqueTitle(noteModel.getAllNotes(), noteParts?.title),
          children: noteParts?.children ?? [],
@@ -41,21 +173,51 @@ class NoteController {
          icon: noteParts?.icon,
          stats: noteParts?.stats,
       };
+   }
 
-      // Añadir la nueva nota
-      noteModel.createNote(newNote);
+   private updateParentChildren(
+      parentId: string | undefined,
+      childId: string,
+   ): void {
+      if (!parentId) return;
 
-      // Si tiene padre, actualizar su array children
-      if (parentId) {
-         noteModel.updateNote(parentId, (parent) => ({
-            ...parent,
-            children: [...parent.children, newNote.id],
-         }));
+      noteModel.updateNote(parentId, (parent) => ({
+         ...parent,
+         children: [...parent.children, childId],
+      }));
+   }
+
+   // === FUNCIONES AUXILIARES ===
+
+   private validateParentExists(parentId: string): boolean {
+      if (!noteQueryController.getNoteById(parentId)) {
+         console.error(`Parent note with id ${parentId} not found`);
+         return false;
       }
+      return true;
+   }
 
-      workspaceController.openNote(newNote.id);
+   private findNoteByTitleAndParent(
+      title: string,
+      parentId?: string,
+   ): Note | null {
+      const normalizedTitle = normalizeText(title);
+
+      return (
+         noteModel.getAllNotes().find((note) => {
+            const matchesParent = (note.parentId || undefined) === parentId;
+            const matchesTitle = normalizeText(note.title) === normalizedTitle;
+            return matchesParent && matchesTitle;
+         }) || null
+      );
+   }
+
+   private openAndFocusNote(noteId: string): void {
+      workspaceController.openNote(noteId);
       focusController.requestFocus(FocusTarget.TITLE);
-   };
+   }
+
+   // === FUNCIONES EXISTENTES (sin cambios) ===
 
    updateNote = (noteId: string, updates: Partial<Note>): void => {
       if (!noteQueryController.getNoteById(noteId)) {
