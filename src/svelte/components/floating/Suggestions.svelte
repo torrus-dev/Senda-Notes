@@ -124,6 +124,20 @@ function handleMouseEnter(index: number) {
                </Button>
             </li>
          {/each}
+         <div>
+            <p>
+               <kbd>ENTER</kbd> para abrir
+            </p>
+            <p>
+               <kbd>CTRL + ENTER</kbd> para abrir en nueva pestaña
+            </p>
+            <p>
+               <kbd>SHIFT + ENTER</kbd> para crear
+            </p>
+            <p>
+               <kbd>ESC</kbd> para salir
+            </p>
+         </div>
       </ul>
    </Popover>
 {/if}
