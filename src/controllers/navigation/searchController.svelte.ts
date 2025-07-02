@@ -4,20 +4,13 @@ import type { SearchResult } from "@projectTypes/ui/uiTypes";
 
 class SearchController {
    // Almacena los últimos resultados de búsqueda
-   private lastResults: SearchResult[] = $state([]);
    isSearching: boolean = $state(false);
-
-   // Obtiene los resultados de la última búsqueda
-   getLastResults(): SearchResult[] {
-      return this.lastResults;
-   }
 
    // Busca notas según un término de búsqueda
    searchNotes(searchTerm: string, limit: number = -1): SearchResult[] {
       // Limpiar término de búsqueda
       const term = searchTerm.trim();
       if (!term) {
-         this.lastResults = [];
          return [];
       }
 
@@ -32,14 +25,11 @@ class SearchController {
       // Ordenar y limitar resultados
       const sortedResults = this.sortResults(results);
       if (limit === -1) {
-         this.lastResults = sortedResults;
          return sortedResults;
       } else if (limit > 0) {
          const limitedResults = sortedResults.slice(0, limit);
-         this.lastResults = limitedResults;
          return limitedResults;
       } else {
-         this.lastResults = [];
          return [];
       }
    }
@@ -50,7 +40,7 @@ class SearchController {
       const allNotes = noteQueryController.getAllNotes() || [];
 
       for (const note of allNotes) {
-         // Buscar en título
+         // Normalizar y buscar que coincida el título de cada nota
          const normalizedTitle = removeDiacritics(note.title.toLowerCase());
          if (normalizedTitle.includes(normalizedTerm)) {
             results.push({

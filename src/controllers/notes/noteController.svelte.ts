@@ -17,6 +17,27 @@ import { notificationController } from "@controllers/application/notificationCon
 import { globalConfirmationDialog } from "@controllers/menu/confirmationDialogController.svelte";
 import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 
+interface PathResolutionResult {
+   existingNotes: Note[];
+   missingSegments: string[];
+   targetParentId?: string;
+   fullPath: string[];
+}
+
+interface NoteCreationContext {
+   segment: string;
+   parentId?: string;
+   depth: number;
+   isTarget: boolean; // true si es la nota final que quería crear el usuario
+}
+
+interface ParsedNotePath {
+   segments: string[];
+   targetTitle: string;
+   parentPath: string;
+   fullPath: string;
+}
+
 class NoteController {
    setAllNotes = noteModel.setAllNotes.bind(noteModel);
 
@@ -37,7 +58,8 @@ class NoteController {
       // Generar campos por defecto y sobrescribir con noteParts si existen
       const newNote: Note = {
          id: noteParts?.id ?? crypto.randomUUID(),
-         title: noteParts?.title ?? generateUniqueTitle(noteModel.getAllNotes()),
+         title:
+            noteParts?.title ?? generateUniqueTitle(noteModel.getAllNotes()),
          children: noteParts?.children ?? [],
          content: noteParts?.content ?? "",
          metadata: noteParts?.metadata ?? createDefaultMetadata(),
