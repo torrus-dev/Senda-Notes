@@ -1,5 +1,5 @@
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
-import { removeDiacritics } from "@utils/searchUtils";
+import { normalizeText } from "@utils/searchUtils";
 import type { SearchResult } from "@projectTypes/ui/uiTypes";
 
 interface SearchContext {
@@ -27,11 +27,11 @@ class SearchController {
    }
 
    // Parsear y preparar el término de búsqueda
-   private parseSearchTerm(searchTerm: string): SearchContext | null {
+   public parseSearchTerm(searchTerm: string): SearchContext | null {
       const term = searchTerm.trim();
       if (!term) return null;
 
-      const normalizedTerm = removeDiacritics(term.toLowerCase());
+      const normalizedTerm = normalizeText(term);
       const isHierarchical = term.includes("/");
       const isExactPath = isHierarchical && normalizedTerm.endsWith("/");
 
@@ -143,7 +143,7 @@ class SearchController {
 
    // Buscar término en texto normalizado
    private searchInText(text: string, searchTerm: string): boolean {
-      return removeDiacritics(text.toLowerCase()).includes(searchTerm);
+      return normalizeText(text).includes(searchTerm);
    }
 
    // Buscar en aliases de una nota
@@ -161,9 +161,7 @@ class SearchController {
 
    // Obtener ruta normalizada de una nota
    private getNormalizedNotePath(noteId: string): string {
-      return removeDiacritics(
-         noteQueryController.getPathAsString(noteId).toLowerCase(),
-      );
+      return normalizeText(noteQueryController.getPathAsString(noteId));
    }
 
    // Crear resultado de búsqueda

@@ -15,15 +15,17 @@ export function sanitizeTitle(title: string): string {
       .slice(0, 100); // Limitar a 100 caracteres
 }
 
-export function generateUniqueTitle(notes: Note[]): string {
-   const titleBase = "Nota Nueva";
-
+export function generateUniqueTitle(
+   notes: Note[],
+   titleBase: string | undefined,
+): string {
+   const base = titleBase ?? "Nueva Nota";
    const currentTitles = new Set(notes.map((note) => note.title));
-   if (!currentTitles.has(titleBase)) return titleBase;
+   if (!currentTitles.has(base)) return base;
    let index = 1;
-   while (currentTitles.has(`${titleBase} ${index}`)) index++;
+   while (currentTitles.has(`${base} ${index}`)) index++;
 
-   return `${titleBase} ${index}`;
+   return `${base} ${index}`;
 }
 
 export function updateModifiedMetadata(note: Note): Note {

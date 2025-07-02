@@ -1,101 +1,53 @@
 import type { Note } from "@projectTypes/core/noteTypes";
 import { updateModifiedMetadata } from "@utils/noteUtils";
-import { settingsModel } from "../application/settingsModel.svelte";
-import { DateTime } from "luxon";
+import { PersistentLocalStorageModel } from "@model/persistentLocalStorage.svelte";
 
-const NOTES_STORAGE_KEY = "notes";
+interface NoteData {
+   notes: Note[];
+}
 
-class NoteModel {
-   private notes = $state<Note[]>([]);
-
+class NoteModel extends PersistentLocalStorageModel<NoteData> {
    constructor() {
-      this.notes = this.loadFromStorage();
-      if (settingsModel.data.debugLevel > 0) {
-         console.log("notas cargadas: ", $state.snapshot(this.notes));
-      }
-
-      $effect.root(() => {
-         $effect(() => {
-            this.saveToStorage(this.notes);
-            if (settingsModel.data.debugLevel > 0) {
-               console.log("guardando notas", $state.snapshot(this.notes));
-            }
-         });
-      });
+      super("notes");
    }
 
-   // Métodos de persistencia integrados
-   private loadFromStorage(): Note[] {
-      const stored = localStorage.getItem(NOTES_STORAGE_KEY);
-      if (stored) {
-         try {
-            const parsedNotes = JSON.parse(stored);
-            return parsedNotes.map((note: any) => ({
-               ...note,
-               metadata: {
-                  ...note.metadata,
-                  created: DateTime.fromISO(note.metadata.created),
-                  modified: DateTime.fromISO(note.metadata.modified),
-               },
-            }));
-         } catch (error) {
-            console.error("Error al parsear notas desde localStorage:", error);
-            return [];
-         }
-      }
-      return [];
-   }
-
-   private saveToStorage(notes: Note[]): void {
-      try {
-         const serializedNotes = notes.map((note) => ({
-            ...note,
-            metadata: {
-               ...note.metadata,
-               created: note.metadata.created.toISO(),
-               modified: note.metadata.modified.toISO(),
-            },
-         }));
-         localStorage.setItem(
-            NOTES_STORAGE_KEY,
-            JSON.stringify(serializedNotes),
-         );
-      } catch (error) {
-         console.error("Error al guardar notas en localStorage:", error);
-      }
+   protected getDefaultData(): NoteData {
+      return { notes: [] };
    }
 
    // get/set
 
    getNoteById(id: string): Note | undefined {
-      return this.notes.find((note) => note.id === id);
+      return this.data.notes.find((note) => note.id === id);
    }
 
    getAllNotes(): Note[] {
-      return this.notes;
+      return this.data.notes;
    }
 
    setAllNotes(newNotes: Note[]) {
-      this.notes = newNotes;
+      this.data.notes = newNotes;
    }
 
    // crud
    createNote(note: Note): void {
-      this.notes = [...this.notes, note];
+      this.data.notes = [...this.data.notes, note];
    }
 
    updateNote(id: string, updater: (note: Note) => Note): void {
-      const index = this.notes.findIndex((n) => n.id === id);
+      const index = this.data.notes.findIndex((n) => n.id === id);
       if (index !== -1) {
-         this.notes[index] = updateModifiedMetadata(updater(this.notes[index]));
+         this.data.notes[index] = updateModifiedMetadata(
+            updater(this.data.notes[index]),
+         );
       }
    }
    updateAllNotes(updater: (notes: Note[]) => Note[]): void {
-      this.notes = updater(this.notes);
+      this.data.notes = updater(this.data.notes);
    }
 
-   removeNote(id: string): void {
-      this.notes = this.notes.filter((note) => note.id !== id);
+   deleteNote(id: string): void {
+      this.data.notes = this.data.notes.filter((note) => note.id !== id);
    }
 }
 

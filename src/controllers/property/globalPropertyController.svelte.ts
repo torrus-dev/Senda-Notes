@@ -5,7 +5,7 @@ import type {
 } from "@projectTypes/core/propertyTypes";
 import { globalPropertiesModel } from "@model/application/globalPropertiesModel.svelte";
 import { generateGlobalProperty } from "@utils/propertyUtils";
-import { removeDiacritics } from "@utils/searchUtils";
+import { normalizeText } from "@utils/searchUtils";
 import { notePropertyController } from "@controllers/property/notePropertyController.svelte";
 
 class GlobalPropertyController {
@@ -98,9 +98,7 @@ class GlobalPropertyController {
       noteId?: Note["id"],
    ): GlobalProperty[] {
       // Preparar el término de búsqueda normalizado (si existe)
-      const searchTerm = name?.trim()
-         ? removeDiacritics(name.toLowerCase())
-         : "";
+      const searchTerm = name?.trim() ? normalizeText(name) : "";
 
       // Recorremos las propiedades globales filtrandolas
       return globalPropertiesModel.data.globalProperties.filter((property) => {
@@ -116,9 +114,7 @@ class GlobalPropertyController {
          if (!searchTerm) return true;
 
          // Comprobamos si la propiedad global despues de preparar el nombre coincide con el termino de busqueda
-         return removeDiacritics(property.name.toLowerCase()).includes(
-            searchTerm,
-         );
+         return normalizeText(property.name).includes(searchTerm);
       });
    }
 
