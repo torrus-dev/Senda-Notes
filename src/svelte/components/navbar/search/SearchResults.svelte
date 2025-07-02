@@ -3,7 +3,7 @@
 
 <script lang="ts">
 import type { SearchResult } from "@projectTypes/ui/uiTypes";
-import { FileIcon } from "lucide-svelte";
+import { CornerDownLeft, FileIcon } from "lucide-svelte";
 import { tick } from "svelte";
 
 // Props
@@ -158,4 +158,23 @@ function highlightMatch(text: string, query: string): string {
          {/if}
       </div>
    {/if}
+   <div class="flex justify-center gap-8 p-2 text-xs">
+      <p class="flex">
+         <kbd class="bg-base-200 rounded-selector flex items-center gap-1 p-0.5"
+            ><CornerDownLeft size="1.125em" /></kbd> para abrir
+      </p>
+      <p class="flex">
+         <kbd class="bg-base-200 rounded-selector flex items-center gap-1 p-0.5"
+            >ctrl + <CornerDownLeft size="1.125em" /></kbd> para abrir en nueva pestaña
+      </p>
+      <p class="flex">
+         <kbd
+            class="bg-base-200 rounded-selector flex items-center gap-1 p-0.5">
+            shift + <CornerDownLeft size="1.125em" /></kbd> para crear
+      </p>
+      <p>
+         <kbd class="bg-base-200 rounded-selector p-0.5">esc</kbd>
+         para salir
+      </p>
+   </div>
 </div>
