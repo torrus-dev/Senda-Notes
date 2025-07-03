@@ -8,42 +8,43 @@ import { tick } from "svelte";
 
 // Props
 const {
-   results = [],
+   searchResults = [],
    searchValue = "",
    select,
 }: {
-   results: SearchResult[];
+   searchResults: SearchResult[];
    searchValue: string;
    select: (result: SearchResult) => void;
 } = $props();
 
 // Estado
 let selectedIndex = $state(-1);
-let resultElements: HTMLElement[] = $state(Array(results.length).fill(null));
+let resultElements: HTMLElement[] = $state(
+   Array(searchResults.length).fill(null),
+);
 
 // Función para manejar la navegación por teclado
 function handleKeyDown(event: KeyboardEvent) {
    const key = event.key;
 
-   if (results.length === 0) return;
+   if (searchResults.length === 0) return;
 
    if (key === "ArrowDown") {
       event.preventDefault();
-      selectedIndex = (selectedIndex + 1) % results.length;
+      selectedIndex = (selectedIndex + 1) % searchResults.length;
       scrollSelectedIntoView();
    } else if (key === "ArrowUp") {
       event.preventDefault();
       selectedIndex =
-         selectedIndex <= 0 ? results.length - 1 : selectedIndex - 1;
+         selectedIndex <= 0 ? searchResults.length - 1 : selectedIndex - 1;
       scrollSelectedIntoView();
    } else if (key === "Enter") {
       event.preventDefault();
       if (selectedIndex >= 0) {
-         select(results[selectedIndex]);
+         select(searchResults[selectedIndex]);
       } else {
-         if (searchValue !== "" && results.length === 0) {
-            // procesar jerarquia y cadena de texto
-            // noteController.createNote({})
+         if (searchValue !== "" && searchResults.length === 0) {
+            // si no hay resultados creamos la nota con el valor de busqueda original (procesndo el path)
          }
       }
    }
@@ -62,9 +63,9 @@ async function scrollSelectedIntoView() {
 
 // Reset del índice seleccionado cuando cambian los resultados
 $effect(() => {
-   if (results) {
-      selectedIndex = results.length > 0 ? 0 : -1;
-      resultElements = Array(results.length).fill(null);
+   if (searchResults) {
+      selectedIndex = searchResults.length > 0 ? 0 : -1;
+      resultElements = Array(searchResults.length).fill(null);
    }
 });
 
@@ -98,13 +99,13 @@ function highlightMatch(text: string, query: string): string {
 
 <div
    class="bg-base-100 rounded-box border-base-300 absolute top-full left-0 z-100 mt-2 max-h-[calc(95vh-3.5rem)] w-full overflow-y-auto border shadow-xl">
-   {#if results.length > 0}
+   {#if searchResults.length > 0}
       <div
          class="text-muted-content border-base-300 bg-base-100 sticky top-0 border-b px-4 py-1.5 text-sm">
-         Resultados: {results.length}
+         Resultados: {searchResults.length}
       </div>
       <ul class="scroll-auto p-0">
-         {#each results as result, index}
+         {#each searchResults as result, index}
             <li
                bind:this={resultElements[index]}
                class="search-result-item

@@ -2,6 +2,10 @@ import type { Note } from "@projectTypes/core/noteTypes";
 import { noteController } from "@controllers/notes/noteController.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 
+/**
+ * Controlador especializado en operaciones del árbol jerárquico
+ * Se enfoca en movimientos, reordenamiento y validaciones de estructura
+ */
 class NoteTreeController {
    /**
     * Mueve una nota a una nueva posición en el árbol
@@ -32,45 +36,8 @@ class NoteTreeController {
       }
    };
 
-   /**
-    * Obtiene todos los IDs descendientes de una nota (excluyendo la nota misma)
-    */
-   getDescendantIds = (noteId: string): Set<string> => {
-      const descendants = new Set<string>();
-      const allNotes = noteQueryController.getAllNotes();
+   // === MÉTODOS DE VALIDACIÓN ===
 
-      const collectDescendants = (currNoteId: string) => {
-         descendants.add(currNoteId);
-         allNotes.forEach((note) => {
-            if (note.parentId === currNoteId) {
-               collectDescendants(note.id);
-            }
-         });
-      };
-
-      // Recoger descendientes pero NO incluir el noteId inicial
-      allNotes.forEach((note) => {
-         if (note.parentId === noteId) {
-            collectDescendants(note.id);
-         }
-      });
-
-      return descendants;
-   };
-
-   /**
-    * Verifica si mover una nota crearía un ciclo
-    */
-   wouldCreateCycle = (parentId: string, childId: string): boolean => {
-      let current = noteQueryController.getNoteById(parentId);
-      while (current?.parentId) {
-         if (current.parentId === childId) return true;
-         current = noteQueryController.getNoteById(current.parentId);
-      }
-      return false;
-   };
-
-   // Métodos de validación y auxiliares
    validateParentRelationship(newParentId: string, noteId: string): void {
       noteQueryController.requireNote(newParentId, "New parent note");
 
@@ -78,10 +45,12 @@ class NoteTreeController {
          throw new Error("Cannot move note to itself");
       }
 
-      if (this.wouldCreateCycle(newParentId, noteId)) {
+      if (noteQueryController.wouldCreateCycle(newParentId, noteId)) {
          throw new Error("Cannot move note to its own descendant");
       }
    }
+
+   // === MÉTODOS DE MANIPULACIÓN DEL ÁRBOL ===
 
    removeFromPreviousParent(note: Note): void {
       if (note.parentId) {

@@ -11,10 +11,15 @@ interface SearchContext {
    searchFragment: string;
 }
 
+/**
+ * Controlador de búsqueda de notas
+ * Se enfoca exclusivamente en la lógica de búsqueda y filtrado
+ */
 class SearchController {
    isSearching: boolean = $state(false);
 
-   // Función principal de búsqueda
+   // === FUNCIÓN PRINCIPAL DE BÚSQUEDA ===
+
    searchNotes(searchTerm: string, limit: number = -1): SearchResult[] {
       const context = this.parseSearchTerm(searchTerm);
       if (!context) return [];
@@ -26,7 +31,8 @@ class SearchController {
       return this.limitResults(this.sortResults(results), limit);
    }
 
-   // Parsear y preparar el término de búsqueda
+   // === PARSEO DE TÉRMINOS DE BÚSQUEDA ===
+
    public parseSearchTerm(searchTerm: string): SearchContext | null {
       const term = searchTerm.trim();
       if (!term) return null;
@@ -56,7 +62,8 @@ class SearchController {
       };
    }
 
-   // Búsqueda simple: encuentra notas cuyo título o alias contenga el término
+   // === TIPOS DE BÚSQUEDA ===
+
    private performSimpleSearch(context: SearchContext): SearchResult[] {
       const results: SearchResult[] = [];
       const allNotes = noteQueryController.getAllNotes() || [];
@@ -82,7 +89,6 @@ class SearchController {
       return results;
    }
 
-   // Búsqueda jerárquica: encuentra notas dentro de una ruta específica
    private performHierarchicalSearch(context: SearchContext): SearchResult[] {
       const results: SearchResult[] = [];
       const allNotes = noteQueryController.getAllNotes() || [];
@@ -121,7 +127,8 @@ class SearchController {
       return results;
    }
 
-   // Verificar si una nota está en la ruta objetivo
+   // === MÉTODOS AUXILIARES DE BÚSQUEDA ===
+
    private isNoteInTargetPath(
       notePath: string,
       context: SearchContext,
@@ -141,12 +148,10 @@ class SearchController {
       );
    }
 
-   // Buscar término en texto normalizado
    private searchInText(text: string, searchTerm: string): boolean {
       return normalizeText(text).includes(searchTerm);
    }
 
-   // Buscar en aliases de una nota
    private searchInAliases(note: any, searchTerm: string): string | null {
       const aliases = note.metadata?.aliases || [];
 
@@ -159,12 +164,12 @@ class SearchController {
       return null;
    }
 
-   // Obtener ruta normalizada de una nota
    private getNormalizedNotePath(noteId: string): string {
       return normalizeText(noteQueryController.getPathAsString(noteId));
    }
 
-   // Crear resultado de búsqueda
+   // === CREACIÓN Y ORDENAMIENTO DE RESULTADOS ===
+
    private createSearchResult(
       note: any,
       matchType: "title" | "alias",
@@ -178,7 +183,6 @@ class SearchController {
       };
    }
 
-   // Ordenar resultados por relevancia
    private sortResults(results: SearchResult[]): SearchResult[] {
       return [...results].sort((a, b) => {
          // Prioridad 1: Coincidencias de título sobre alias
@@ -195,7 +199,6 @@ class SearchController {
       });
    }
 
-   // Aplicar límite a los resultados
    private limitResults(
       results: SearchResult[],
       limit: number,

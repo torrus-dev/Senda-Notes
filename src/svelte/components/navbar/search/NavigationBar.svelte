@@ -85,7 +85,7 @@ function handleResultSelect(result: SearchResult) {
 
          <!-- Componente de resultados de búsqueda -->
          <SearchResults
-            results={searchResults}
+            searchResults={searchResults}
             searchValue={searchValue}
             select={handleResultSelect} />
          <div class="flex items-center">
