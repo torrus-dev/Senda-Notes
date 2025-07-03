@@ -20,7 +20,7 @@ let { children }: { children: string[] } = $props();
       id="child-notes"
       headingContent={headingContent}
       chevronPosition="floating-left">
-      <ul class="rounded-field mb-2">
+      <ul class="rounded-field mb-2 list-disc">
          {#each children as childId}
             <li>
                <Button
@@ -32,7 +32,7 @@ let { children }: { children: string[] } = $props();
                </Button>
             </li>
          {/each}
-         <li>
+         <li class="list-none">
             <Button
                size="small"
                shape="rect"

@@ -50,9 +50,9 @@ let shouldShow = $derived(
                workspaceController.getActiveTab()?.id === tab.id}
             <!-- Vertical separator -->
             {#if index > 0}
-               <div class="bg-base-300 h-8 w-1 self-center"></div>
+               <div class="bg-base-300 h-8 w-0.5 self-center"></div>
             {/if}
-            <li class="w-full">
+            <li class="max-w-full min-w-16">
                <Button
                   onclick={() => handleTabClick(tab.id)}
                   class="

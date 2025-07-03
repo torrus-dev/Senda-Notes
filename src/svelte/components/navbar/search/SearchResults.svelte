@@ -2,6 +2,7 @@
 </style>
 
 <script lang="ts">
+import { searchController } from "@controllers/navigation/searchController.svelte";
 import { noteController } from "@controllers/notes/noteController.svelte";
 import type { SearchResult } from "@projectTypes/ui/uiTypes";
 import { CornerDownLeft, FileIcon } from "lucide-svelte";
@@ -53,26 +54,31 @@ function handleKeyDown(event: KeyboardEvent) {
          if (!exactMatch) {
             const noteId = noteController.createNoteFromPath(searchValue);
             if (noteId) {
-               // Opcional: cerrar el modal de búsqueda o limpiar
-               // closeSearchModal();
+               // Cerrar el modal de búsqueda o limpiar
+               searchController.isSearching = false;
+
                // IMPORTANTE: Falta mostrar la nota que acabamos de crear en la pestaña activa
             }
          }
          return; // Importante: salir aquí para evitar que se ejecuten otras condiciones
       }
+      // Caso 2: Ctrl + Enter - abrir nota en nueva pestaña
+      if (event.ctrlKey) {
+         select(searchResults[selectedIndex]);
+         return;
+      }
 
-      // Caso 2: Hay resultados y uno seleccionado
+      // Caso 3: Hay resultados y uno seleccionado
       if (selectedIndex >= 0 && searchResults.length > 0) {
          select(searchResults[selectedIndex]);
          return;
       }
 
-      // Caso 3: No hay resultados - crear nota con el valor de búsqueda
+      // Caso 4: No hay resultados - crear nota con el valor de búsqueda
       if (searchValue !== "" && searchResults.length === 0) {
          const noteId = noteController.createNoteFromPath(searchValue);
          if (noteId) {
-            // Opcional: cerrar el modal de búsqueda o limpiar
-            // closeSearchModal();
+            searchController.isSearching = false;
          }
          return;
       }
@@ -102,11 +108,8 @@ $effect(() => {
 function highlightMatch(text: string, query: string): string {
    if (!query) return text;
 
-   // Para búsquedas jerárquicas, solo usamos la parte después de la última /
-   const searchTerm = query.includes("/")
-      ? query.substring(query.lastIndexOf("/") + 1)
-      : query;
-
+   // Extrae el término de búsqueda después del último "/"
+   const searchTerm = query.split("/").pop() || "";
    if (!searchTerm) return text;
 
    try {
@@ -114,10 +117,7 @@ function highlightMatch(text: string, query: string): string {
          `(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
          "gi",
       );
-      return text.replace(
-         regex,
-         '<span class="bg-accent text-accent-content">$1</span>',
-      );
+      return text.replace(regex, '<span class="highlight">$1</span>');
    } catch {
       return text;
    }
@@ -184,9 +184,14 @@ function highlightMatch(text: string, query: string): string {
             <p class="mb-3 text-lg font-bold">
                No se han encontrado resultados
             </p>
-            <p class="text-muted-content">
+            <div class="text-muted-content">
                No hay coincidencias para "{searchValue}"
-            </p>
+            </div>
+            <div>
+               Pulsa <kbd
+                  class="bg-base-200 rounded-selector inline-flex items-center gap-1 p-0.5">
+                  <CornerDownLeft size="1.125em" /></kbd> para crear la nota
+            </div>
          {:else}
             <p class="mb-3 text-lg font-bold">
                Comienza a escribir para buscar
