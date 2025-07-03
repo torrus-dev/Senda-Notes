@@ -16,7 +16,7 @@ const {
 }: {
    searchResults: SearchResult[];
    searchValue: string;
-   select: (result: SearchResult) => void;
+   select: (event: MouseEvent | KeyboardEvent, result: SearchResult) => void;
 } = $props();
 
 // Estado
@@ -64,13 +64,13 @@ function handleKeyDown(event: KeyboardEvent) {
       }
       // Caso 2: Ctrl + Enter - abrir nota en nueva pestaña
       if (event.ctrlKey) {
-         select(searchResults[selectedIndex]);
+         select(event, searchResults[selectedIndex]);
          return;
       }
 
       // Caso 3: Hay resultados y uno seleccionado
       if (selectedIndex >= 0 && searchResults.length > 0) {
-         select(searchResults[selectedIndex]);
+         select(event, searchResults[selectedIndex]);
          return;
       }
 
@@ -141,7 +141,7 @@ function highlightMatch(text: string, query: string): string {
                {selectedIndex === index ? 'bg-base-200' : ''}">
                <button
                   class="hover:bg-base-200 flex w-full cursor-pointer flex-col items-start p-2 transition-colors"
-                  onclick={() => select(result)}
+                  onclick={(event: MouseEvent) => select(event, result)}
                   onmouseenter={() => {
                      selectedIndex = index;
                   }}>

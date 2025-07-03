@@ -51,10 +51,17 @@ $effect(() => {
 });
 
 // Maneja la selección de un resultado
-function handleResultSelect(result: SearchResult) {
-   // Navegar a la nota seleccionada
+function handleResultSelect(
+   event: MouseEvent | KeyboardEvent,
+   result: SearchResult,
+) {
    if (result.note && result.note.id) {
-      workspaceController.openNote(result.note.id);
+      // Navegar a la nota seleccionada
+      if (!event.ctrlKey) {
+         workspaceController.openNote(result.note.id);
+      } else {
+         workspaceController.openNoteInNewTab(result.note.id);
+      }
       searchController.isSearching = false;
    }
 }

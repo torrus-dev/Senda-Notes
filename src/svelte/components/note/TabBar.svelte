@@ -49,20 +49,19 @@ let shouldShow = $derived(
             {@const isActive =
                workspaceController.getActiveTab()?.id === tab.id}
             <!-- Vertical separator -->
-            {#if index > 0}
-               <div class="bg-base-300 h-8 w-0.5 self-center"></div>
-            {/if}
+            <!-- {#if index > 0}
+               <div class="bg-base-300 h-5 w-0.5 self-center"></div>
+            {/if} -->
             <li class="max-w-full min-w-16">
                <Button
                   onclick={() => handleTabClick(tab.id)}
                   class="
                   {isActive ? 'bg-base-300' : ''} 
-                  hover:bg-base-300 group w-full min-w-6
+                  hover:bg-base-300 group w-full min-w-6 px-0 py-0.75
                   "
-                  size="small"
                   aria-selected={isActive}>
                   <!-- Título de la pestaña -->
-                  <span class="flex-1 truncate text-sm">
+                  <span class="flex-1 truncate px-2 text-sm">
                      {#if tab.noteReference?.noteId}
                         {truncateText(getNoteTitle(tab.noteReference?.noteId))}
                      {:else}
@@ -72,13 +71,14 @@ let shouldShow = $derived(
 
                   <!-- Botón de cerrar -->
                   <Button
-                     class="opacity-0 transition-all group-hover:opacity-100 
-                     {isActive ? 'opacity-100' : ''}"
+                     class="transition-all group-hover:opacity-100 
+                     {isActive ? 'opacity-100' : 'opacity-5'}"
                      size="small"
+                     shape="square"
                      onclick={(event: MouseEvent) =>
                         handleCloseTab(event, tab.id)}
                      aria-label="Cerrar pestaña">
-                     <XIcon size="1.125em" />
+                     <XIcon size="1em" />
                   </Button>
                </Button>
             </li>
