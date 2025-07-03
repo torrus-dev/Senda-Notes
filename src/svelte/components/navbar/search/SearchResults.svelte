@@ -2,6 +2,7 @@
 </style>
 
 <script lang="ts">
+import { noteController } from "@controllers/notes/noteController.svelte";
 import type { SearchResult } from "@projectTypes/ui/uiTypes";
 import { CornerDownLeft, FileIcon } from "lucide-svelte";
 import { tick } from "svelte";
@@ -27,24 +28,50 @@ let resultElements: HTMLElement[] = $state(
 function handleKeyDown(event: KeyboardEvent) {
    const key = event.key;
 
-   if (searchResults.length === 0) return;
-
    if (key === "ArrowDown") {
       event.preventDefault();
+      if (searchResults.length === 0) return;
       selectedIndex = (selectedIndex + 1) % searchResults.length;
       scrollSelectedIntoView();
    } else if (key === "ArrowUp") {
       event.preventDefault();
+      if (searchResults.length === 0) return;
       selectedIndex =
          selectedIndex <= 0 ? searchResults.length - 1 : selectedIndex - 1;
       scrollSelectedIntoView();
    } else if (key === "Enter") {
       event.preventDefault();
-      if (selectedIndex >= 0) {
+
+      // Caso 1: Hay resultados y uno seleccionado
+      if (selectedIndex >= 0 && searchResults.length > 0) {
          select(searchResults[selectedIndex]);
-      } else {
-         if (searchValue !== "" && searchResults.length === 0) {
-            // si no hay resultados creamos la nota con el valor de busqueda original (procesndo el path)
+         return;
+      }
+
+      // Caso 2: No hay resultados - crear nota con el valor de búsqueda
+      if (searchValue !== "" && searchResults.length === 0) {
+         const noteId = noteController.createNoteFromPath(searchValue);
+         if (noteId) {
+            // Opcional: cerrar el modal de búsqueda o limpiar
+            // closeSearchModal();
+         }
+         return;
+      }
+
+      // Caso 3: Shift + Enter - crear nota aunque haya resultados si no coincide exactamente
+      if (event.shiftKey && searchValue !== "") {
+         const exactMatch = searchResults.some(
+            (result) =>
+               result.matchType === "title" &&
+               result.matchedText.toLowerCase() === searchValue.toLowerCase(),
+         );
+
+         if (!exactMatch) {
+            const noteId = noteController.createNoteFromPath(searchValue);
+            if (noteId) {
+               // Opcional: cerrar el modal de búsqueda o limpiar
+               // closeSearchModal();
+            }
          }
       }
    }
