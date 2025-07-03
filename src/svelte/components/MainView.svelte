@@ -12,11 +12,15 @@ import Notifications from "@components/floating/notifications/Notifications.svel
 import StatusBar from "@components/note/StatusBar.svelte";
 import ConfirmationDialog from "@components/dialog/ConfirmationDialog.svelte";
 import NoteContent from "@components/note/NoteContent.svelte";
-import HomePanel from "@components/note/HomePanel.svelte";
-import TabBar from "./note/TabBar.svelte";
+import EmptyTab from "@components/note/EmptyTab.svelte";
+import TabBar from "@components/note/TabBar.svelte";
+import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 
-const activeNote: Note | undefined = $derived(
-   noteQueryController.getActiveNote(),
+let tab = workspaceController.getActiveTab();
+let note: Note | undefined = $derived(
+   tab?.noteReference?.noteId
+      ? noteQueryController.getNoteById(tab.noteReference.noteId)
+      : undefined,
 );
 </script>
 
@@ -47,10 +51,12 @@ const activeNote: Note | undefined = $derived(
                         class="bg-base-100/60 absolute top-0 left-0 z-90 h-full w-full">
                      </div>
                   {/if}
-                  {#if activeNote}
-                     <NoteContent note={activeNote} />
-                  {:else}
-                     <HomePanel />
+                  {#if tab}
+                     {#if note}
+                        <NoteContent note={note} />
+                     {:else}
+                        <EmptyTab tab={tab} />
+                     {/if}
                   {/if}
                </article>
             </div>

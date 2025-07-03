@@ -1,7 +1,11 @@
 <script lang="ts">
 import Button from "@components/utils/Button.svelte";
 import { searchController } from "@controllers/navigation/searchController.svelte";
+import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 import { noteController } from "@controllers/notes/noteController.svelte";
+import type { Tab } from "@model/navigation/workspaceModel.svelte";
+
+let { tab }: { tab: Tab } = $props();
 </script>
 
 <section class="flex h-full w-full content-center">
@@ -18,6 +22,11 @@ import { noteController } from "@controllers/notes/noteController.svelte";
          <li>
             <Button onclick={() => (searchController.isSearching = true)}>
                Search note
+            </Button>
+         </li>
+         <li>
+            <Button onclick={() => workspaceController.closeTabByTabId(tab.id)}>
+               Close Tab
             </Button>
          </li>
       </ul>
