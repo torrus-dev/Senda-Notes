@@ -42,23 +42,7 @@ function handleKeyDown(event: KeyboardEvent) {
    } else if (key === "Enter") {
       event.preventDefault();
 
-      // Caso 1: Hay resultados y uno seleccionado
-      if (selectedIndex >= 0 && searchResults.length > 0) {
-         select(searchResults[selectedIndex]);
-         return;
-      }
-
-      // Caso 2: No hay resultados - crear nota con el valor de búsqueda
-      if (searchValue !== "" && searchResults.length === 0) {
-         const noteId = noteController.createNoteFromPath(searchValue);
-         if (noteId) {
-            // Opcional: cerrar el modal de búsqueda o limpiar
-            // closeSearchModal();
-         }
-         return;
-      }
-
-      // Caso 3: Shift + Enter - crear nota aunque haya resultados si no coincide exactamente
+      // Caso 1: Shift + Enter - crear nota aunque haya resultados si no coincide exactamente
       if (event.shiftKey && searchValue !== "") {
          const exactMatch = searchResults.some(
             (result) =>
@@ -71,8 +55,26 @@ function handleKeyDown(event: KeyboardEvent) {
             if (noteId) {
                // Opcional: cerrar el modal de búsqueda o limpiar
                // closeSearchModal();
+               // IMPORTANTE: Falta mostrar la nota que acabamos de crear en la pestaña activa
             }
          }
+         return; // Importante: salir aquí para evitar que se ejecuten otras condiciones
+      }
+
+      // Caso 2: Hay resultados y uno seleccionado
+      if (selectedIndex >= 0 && searchResults.length > 0) {
+         select(searchResults[selectedIndex]);
+         return;
+      }
+
+      // Caso 3: No hay resultados - crear nota con el valor de búsqueda
+      if (searchValue !== "" && searchResults.length === 0) {
+         const noteId = noteController.createNoteFromPath(searchValue);
+         if (noteId) {
+            // Opcional: cerrar el modal de búsqueda o limpiar
+            // closeSearchModal();
+         }
+         return;
       }
    }
 }
