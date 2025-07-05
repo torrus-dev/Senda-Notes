@@ -5,6 +5,7 @@ import {
    SETTING_CATEGORIES,
    SETTINGS_SCHEMA,
    getSettingsByCategory,
+   type AppSettingDefinition,
 } from "@schema/settingsSchema";
 import { settingsController } from "@controllers/application/settingsController.svelte";
 
@@ -17,7 +18,7 @@ let importError = $state("");
 
 // Filtrar configuraciones por búsqueda y categoría
 let filteredSettings = $derived(() => {
-   let settings = [...SETTINGS_SCHEMA];
+   let settings: AppSettingDefinition[] = [...SETTINGS_SCHEMA];
 
    if (selectedCategory !== "all") {
       settings = getSettingsByCategory(selectedCategory);
@@ -38,7 +39,7 @@ let filteredSettings = $derived(() => {
 
 // Agrupar configuraciones por categoría para mostrar
 let settingsByCategory = $derived(() => {
-   const groups: Record<string, typeof filteredSettings> = {};
+   const groups: Record<string, AppSettingDefinition[]> = {};
 
    for (const setting of filteredSettings) {
       const category = setting.category || "general";

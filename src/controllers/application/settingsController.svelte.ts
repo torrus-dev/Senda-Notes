@@ -1,72 +1,88 @@
-// settingsController.svelte.ts
 import { settingsModel } from "@model/application/settingsModel.svelte";
-import type { AppSettings } from "@schema/settingsSchema";
+import { settingsSchema, type AppSettings } from "@schema/settingsSchema";
 
 class SettingsController {
    // Método genérico para obtener cualquier valor
    get<K extends keyof AppSettings>(key: K): AppSettings[K] {
-      return settingsModel.getValue(key);
+      return settingsModel.data[key];
    }
 
    // Método genérico para establecer cualquier valor
-   set<K extends keyof AppSettings>(key: K, value: AppSettings[K]): boolean {
-      return settingsModel.setValue(key, value);
+   set<K extends keyof AppSettings>(key: K, value: AppSettings[K]): void {
+      settingsModel.data[key] = value;
    }
 
-   // Método genérico para alternar booleanos
-   toggle<K extends keyof AppSettings>(key: K): boolean {
-      return settingsModel.toggleBoolean(key);
+   // Método para toggle de valores boolean
+   toggle<K extends keyof AppSettings>(key: K): void {
+      const setting = settingsSchema[key];
+
+      if (setting.type !== "boolean") {
+         throw new Error(`Cannot toggle non-boolean setting: ${String(key)}`);
+      }
+
+      (settingsModel.data[key] as any) = !settingsModel.data[key];
    }
 
-   // Método para obtener todas las configuraciones
-   getAllSettings(): AppSettings {
-      return settingsModel.getAllSettings();
+   // Método para incrementar valores numéricos
+   increment<K extends keyof AppSettings>(key: K, amount: number = 1): void {
+      const setting = settingsSchema[key];
+
+      if (setting.type !== "number") {
+         throw new Error(`Cannot increment non-number setting: ${String(key)}`);
+      }
+
+      const currentValue = settingsModel.data[key] as number;
+      const newValue = currentValue + amount;
+
+      // Aplicar límites si están definidos
+      if (setting.max !== undefined && newValue > setting.max) {
+         (settingsModel.data[key] as any) = setting.max;
+      } else if (setting.min !== undefined && newValue < setting.min) {
+         (settingsModel.data[key] as any) = setting.min;
+      } else {
+         (settingsModel.data[key] as any) = newValue;
+      }
    }
 
-   // Método para resetear configuraciones
-   resetToDefaults(): void {
+   // Método para decrementar valores numéricos
+   decrement<K extends keyof AppSettings>(key: K, amount: number = 1): void {
+      this.increment(key, -amount);
+   }
+
+   // Método para resetear un valor específico a su default
+   reset<K extends keyof AppSettings>(key: K): void {
+      const setting = settingsSchema[key];
+      this.set(key, setting.defaultValue);
+   }
+
+   // Método para resetear todos los valores
+   resetAll(): void {
       settingsModel.resetToDefaults();
    }
 
-   // Método para forzar guardado
-   async forceSave(): Promise<void> {
-      await settingsModel.forceSave();
+   // Método para obtener metadatos de una configuración
+   getSettingMeta<K extends keyof AppSettings>(key: K) {
+      return settingsSchema[key];
    }
 
-   // Método para recargar configuraciones
-   async reload(): Promise<void> {
-      await settingsModel.reload();
-   }
+   // Método para validar si un valor es válido para una configuración
+   isValidValue<K extends keyof AppSettings>(key: K, value: any): boolean {
+      const setting = settingsSchema[key];
 
-   // Método para exportar configuraciones
-   exportSettings(): string {
-      return JSON.stringify(settingsModel.data, null, 2);
-   }
-
-   // Método para importar configuraciones
-   async importSettings(jsonString: string): Promise<boolean> {
-      try {
-         const settings = JSON.parse(jsonString);
-         let hasErrors = false;
-
-         // Validar cada configuración antes de importar
-         for (const [key, value] of Object.entries(settings)) {
-            const typedKey = key as keyof AppSettings;
-            // Optionally, add validation for value type here
-            if (!this.set(typedKey, value as AppSettings[typeof typedKey])) {
-               hasErrors = true;
-               console.warn(`Failed to import setting: ${key}`);
-            }
-         }
-
-         if (!hasErrors) {
-            await this.forceSave();
-         }
-
-         return !hasErrors;
-      } catch (error) {
-         console.error("Error importing settings:", error);
-         return false;
+      switch (setting.type) {
+         case "boolean":
+            return typeof value === "boolean";
+         case "number":
+            if (typeof value !== "number") return false;
+            if (setting.min !== undefined && value < setting.min) return false;
+            if (setting.max !== undefined && value > setting.max) return false;
+            return true;
+         case "string":
+            return typeof value === "string";
+         case "select":
+            return setting.options?.includes(value) ?? false;
+         default:
+            return false;
       }
    }
 }
