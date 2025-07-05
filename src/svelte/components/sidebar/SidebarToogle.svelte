@@ -7,7 +7,7 @@ import { PanelLeftOpenIcon, PanelLeftCloseIcon } from "lucide-svelte";
 import { sidebarController } from "@controllers/ui/sidebarController.svelte";
 
 let isSidebarOpen: boolean = $derived(sidebarController.isOpen);
-let isSidebarLocked: boolean = $derived(settingsController.lockSidebar);
+let isSidebarLocked: boolean = $derived(settingsController.get("lockSidebar"));
 let isMobile = $derived(screenSizeController.isMobile);
 </script>
 

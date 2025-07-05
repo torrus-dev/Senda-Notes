@@ -1,0 +1,61 @@
+{
+  "scope": "Workspace",
+  "tasks": {
+    "ZJAPBAOpDx58svXYkKLAP": {
+      "id": "ZJAPBAOpDx58svXYkKLAP",
+      "description": "Hacer que SettingsModal.svelte se genere automaticamente y no haya que hace llamadas manuales al controlador\n",
+      "columnId": "column-todo",
+      "color": "#a03434"
+    },
+    "AfqjbFpRXsd8ic8AdDWAo": {
+      "id": "AfqjbFpRXsd8ic8AdDWAo",
+      "description": "Hacer que te autocomplete las keys al llamar al controlador",
+      "columnId": "column-todo"
+    },
+    "jvl3meUtnEhTnNqQ2ddVG": {
+      "id": "jvl3meUtnEhTnNqQ2ddVG",
+      "description": "Cambiar los tipados para que tenga mas granularidad y hacer lo de los key que pongo arriba",
+      "columnId": "column-todo"
+    },
+    "FSnPkMziz4Q2W7eHAAZvQ": {
+      "id": "FSnPkMziz4Q2W7eHAAZvQ",
+      "description": "Añadir mas parametros al schema como descripción, categoria y demas",
+      "columnId": "column-todo"
+    },
+    "Jz0hRn6kRiux0vZpFe1T_": {
+      "id": "Jz0hRn6kRiux0vZpFe1T_",
+      "description": "Ver por que no funcionan las settings con el nuevo sistema\n",
+      "columnId": "column-todo",
+      "color": "#808080"
+    },
+    "YNB2CZJMD3uuT9_l7jtAV": {
+      "id": "YNB2CZJMD3uuT9_l7jtAV",
+      "description": "",
+      "columnId": "column-todo"
+    }
+  },
+  "columns": [
+    {
+      "id": "column-todo",
+      "title": "To do",
+      "tasksIds": [
+        "ZJAPBAOpDx58svXYkKLAP",
+        "AfqjbFpRXsd8ic8AdDWAo",
+        "jvl3meUtnEhTnNqQ2ddVG",
+        "FSnPkMziz4Q2W7eHAAZvQ",
+        "Jz0hRn6kRiux0vZpFe1T_",
+        "YNB2CZJMD3uuT9_l7jtAV"
+      ]
+    },
+    {
+      "id": "column-doing",
+      "title": "Doing",
+      "tasksIds": []
+    },
+    {
+      "id": "column-done",
+      "title": "Done",
+      "tasksIds": []
+    }
+  ]
+}

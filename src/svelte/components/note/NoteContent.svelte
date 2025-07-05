@@ -19,7 +19,7 @@ let { note }: { note: Note | undefined } = $props();
    </section>
    <section class="mx-auto w-full max-w-2xl">
       <div class="mb-8 flex flex-col gap-4">
-         {#if settingsController.showMetadata}
+         {#if settingsController.get("showMetadata")}
             <Metadata noteId={note.id} metadata={note.metadata} />
          {/if}
          <PropertyList noteId={note.id} />

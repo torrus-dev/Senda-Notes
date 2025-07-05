@@ -37,7 +37,7 @@ function handleCloseTab(event: MouseEvent, tabId: string) {
 
 // Solo mostrar si hay más de una pestaña
 let shouldShow = $derived(
-   workspaceController.tabs.length > 1 || settingsController.permanentTabBar,
+   workspaceController.tabs.length > 1 || settingsController.get("permanentTabBar"),
 );
 </script>
 

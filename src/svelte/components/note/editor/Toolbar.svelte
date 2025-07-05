@@ -12,7 +12,7 @@ import { getEditorToolbarMenuItems } from "@utils/editorMenuItems";
 
 let { editorBox }: { editorBox: { current: Editor } } = $props();
 let showToolbar = $derived(
-   screenSizeController.isMobile || settingsController.showEditorToolbar,
+   screenSizeController.isMobile || settingsController.get("showEditorToolbar"),
 );
 let toolbarItems = $derived(getEditorToolbarMenuItems(editorBox));
 </script>
