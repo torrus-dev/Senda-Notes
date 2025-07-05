@@ -18,6 +18,7 @@
          "@lib/*": ["lib/*"],
          "@controllers/*": ["controllers/*"],
          "@model/*": ["model/*"],
+         "@schema/*": ["schema/*"],
          "@directives/*": ["directives/*"],
          "@components/*": ["svelte/components/*"],
          "@assets/*": ["svelte/assets/*"],

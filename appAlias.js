@@ -6,6 +6,7 @@ export const viteAlias = {
    "@lib": path.resolve(__dirname, "src/lib"),
    "@controllers": path.resolve(__dirname, "src/controllers"),
    "@model": path.resolve(__dirname, "src/model"),
+   "@schema": path.resolve(__dirname, "src/schema"),
    "@directives": path.resolve(__dirname, "src/directives"),
    "@components": path.resolve(__dirname, "src/svelte/components"),
    "@assets": path.resolve(__dirname, "src/svelte/assets"),
