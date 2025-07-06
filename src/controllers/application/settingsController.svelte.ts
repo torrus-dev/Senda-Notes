@@ -1,19 +1,23 @@
 import { settingsModel } from "@model/application/settingsModel.svelte";
-import { settingsSchema, type AppSettings } from "@schema/settingsSchema";
+import {
+   settingsSchema,
+   type AppSettings,
+   type SettingsKey,
+} from "@schema/settingsSchema";
 
 class SettingsController {
    // Método genérico para obtener cualquier valor
-   get<K extends keyof AppSettings>(key: K): AppSettings[K] {
+   get<K extends SettingsKey>(key: K): AppSettings[K] {
       return settingsModel.data[key];
    }
 
    // Método genérico para establecer cualquier valor
-   set<K extends keyof AppSettings>(key: K, value: AppSettings[K]): void {
+   set<K extends SettingsKey>(key: K, value: AppSettings[K]): void {
       settingsModel.data[key] = value;
    }
 
    // Método para toggle de valores boolean
-   toggle<K extends keyof AppSettings>(key: K): void {
+   toggle<K extends SettingsKey>(key: K): void {
       const setting = settingsSchema[key];
 
       if (setting.type !== "boolean") {
@@ -24,7 +28,7 @@ class SettingsController {
    }
 
    // Método para incrementar valores numéricos
-   increment<K extends keyof AppSettings>(key: K, amount: number = 1): void {
+   increment<K extends SettingsKey>(key: K, amount: number = 1): void {
       const setting = settingsSchema[key];
 
       if (setting.type !== "number") {
@@ -45,14 +49,14 @@ class SettingsController {
    }
 
    // Método para decrementar valores numéricos
-   decrement<K extends keyof AppSettings>(key: K, amount: number = 1): void {
+   decrement<K extends SettingsKey>(key: K, amount: number = 1): void {
       this.increment(key, -amount);
    }
 
    // Método para resetear un valor específico a su default
-   reset<K extends keyof AppSettings>(key: K): void {
+   reset<K extends SettingsKey>(key: K): void {
       const setting = settingsSchema[key];
-      this.set(key, setting.defaultValue);
+      this.set(key, setting.defaultValue as AppSettings[K]);
    }
 
    // Método para resetear todos los valores
@@ -61,12 +65,12 @@ class SettingsController {
    }
 
    // Método para obtener metadatos de una configuración
-   getSettingMeta<K extends keyof AppSettings>(key: K) {
+   getSettingMeta<K extends SettingsKey>(key: K) {
       return settingsSchema[key];
    }
 
    // Método para validar si un valor es válido para una configuración
-   isValidValue<K extends keyof AppSettings>(key: K, value: any): boolean {
+   isValidValue<K extends SettingsKey>(key: K, value: any): boolean {
       const setting = settingsSchema[key];
 
       switch (setting.type) {
