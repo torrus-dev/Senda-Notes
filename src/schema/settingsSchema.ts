@@ -5,11 +5,12 @@ export type SettingType = "boolean" | "number" | "string" | "select";
 
 export interface SettingDefinition<T = any> {
    type: SettingType;
+   title: string;
+   description: string;
    defaultValue: T;
    options?: string[]; // Para tipo 'select'
    min?: number; // Para tipo 'number'
    max?: number; // Para tipo 'number'
-   i18nKey?: string; // Para futura internacionalización
 }
 
 export interface SettingsSchema {
@@ -19,37 +20,45 @@ export interface SettingsSchema {
 // Schema de configuración - aquí defines todo una sola vez
 export const settingsSchema = {
    uiMode: {
+      title: "UI Mode",
+      description: "Select the appearance mode for the application",
       type: "select",
       defaultValue: "system" as UiModeType,
       options: ["system", "light", "dark"] as UiModeType[],
-      i18nKey: "settings.uiMode",
    } as SettingDefinition<UiModeType>,
    showEditorToolbar: {
+      title: "Show Editor Toolbar",
+      description: "Display the formatting toolbar in the note editor",
       type: "boolean",
       defaultValue: false,
-      i18nKey: "settings.showEditorToolbar",
    } as SettingDefinition<boolean>,
    sidebarIsLocked: {
+      title: "Lock sidebar on large screens",
+      description:
+         "Sidebar becomes fixed on larger screens, removing the toggle button",
       type: "boolean",
       defaultValue: false,
-      i18nKey: "settings.sidebarIsLocked",
    } as SettingDefinition<boolean>,
    showMetadata: {
+      title: "Show Metadata",
+      description: "Show note metadata in note view",
       type: "boolean",
       defaultValue: false,
-      i18nKey: "settings.showMetadata",
    } as SettingDefinition<boolean>,
    debugLevel: {
+      title: "Debug Level",
+      description:
+         "Choose application debug level for warning and error messages",
       type: "number",
       defaultValue: 0,
       min: 0,
       max: 5,
-      i18nKey: "settings.debugLevel",
    } as SettingDefinition<number>,
    permanentTabBar: {
+      title: "Always show Tab bar",
+      description: "Show tabs even with none or only one tab open",
       type: "boolean",
       defaultValue: true,
-      i18nKey: "settings.permanentTabBar",
    } as SettingDefinition<boolean>,
 } as const;
 
