@@ -10,12 +10,12 @@
     "AfqjbFpRXsd8ic8AdDWAo": {
       "id": "AfqjbFpRXsd8ic8AdDWAo",
       "description": "Hacer que te autocomplete las keys al llamar al controlador",
-      "columnId": "column-todo"
+      "columnId": "column-doing"
     },
     "jvl3meUtnEhTnNqQ2ddVG": {
       "id": "jvl3meUtnEhTnNqQ2ddVG",
       "description": "Cambiar los tipados para que tenga mas granularidad y hacer lo de los key que pongo arriba",
-      "columnId": "column-todo"
+      "columnId": "column-doing"
     },
     "FSnPkMziz4Q2W7eHAAZvQ": {
       "id": "FSnPkMziz4Q2W7eHAAZvQ",
@@ -25,13 +25,8 @@
     "Jz0hRn6kRiux0vZpFe1T_": {
       "id": "Jz0hRn6kRiux0vZpFe1T_",
       "description": "Ver por que no funcionan las settings con el nuevo sistema\n",
-      "columnId": "column-todo",
+      "columnId": "column-done",
       "color": "#808080"
-    },
-    "YNB2CZJMD3uuT9_l7jtAV": {
-      "id": "YNB2CZJMD3uuT9_l7jtAV",
-      "description": "",
-      "columnId": "column-todo"
     }
   },
   "columns": [
@@ -40,22 +35,23 @@
       "title": "To do",
       "tasksIds": [
         "ZJAPBAOpDx58svXYkKLAP",
-        "AfqjbFpRXsd8ic8AdDWAo",
-        "jvl3meUtnEhTnNqQ2ddVG",
-        "FSnPkMziz4Q2W7eHAAZvQ",
-        "Jz0hRn6kRiux0vZpFe1T_",
-        "YNB2CZJMD3uuT9_l7jtAV"
+        "FSnPkMziz4Q2W7eHAAZvQ"
       ]
     },
     {
       "id": "column-doing",
       "title": "Doing",
-      "tasksIds": []
+      "tasksIds": [
+        "AfqjbFpRXsd8ic8AdDWAo",
+        "jvl3meUtnEhTnNqQ2ddVG"
+      ]
     },
     {
       "id": "column-done",
       "title": "Done",
-      "tasksIds": []
+      "tasksIds": [
+        "Jz0hRn6kRiux0vZpFe1T_"
+      ]
     }
   ]
 }

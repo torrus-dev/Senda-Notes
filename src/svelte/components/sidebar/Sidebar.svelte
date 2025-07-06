@@ -15,8 +15,9 @@ import { modalController } from "@controllers/menu/modalController.svelte";
 let width = $state(sidebarController.width);
 let isMobile = $derived(screenSizeController.isMobile);
 let isSidebarOpen = $derived(
-   sidebarController.isOpen || settingsController.get("lockSidebar"),
+   sidebarController.isOpen || settingsController.get("sidebarIsLocked"),
 );
+
 let isResizing = $state(false);
 
 function updateWidth(newWidth: number) {
