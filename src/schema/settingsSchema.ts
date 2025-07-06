@@ -6,7 +6,7 @@ export type SettingType = "boolean" | "number" | "string" | "select";
 export interface SettingDefinition<T = any> {
    type: SettingType;
    defaultValue: T;
-   options?: T[]; // Para tipo 'select'
+   options?: string[]; // Para tipo 'select'
    min?: number; // Para tipo 'number'
    max?: number; // Para tipo 'number'
    i18nKey?: string; // Para futura internacionalización

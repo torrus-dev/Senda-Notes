@@ -1,3 +1,4 @@
+import { settingsController } from "@controllers/application/settingsController.svelte";
 import { settingsModel } from "@model/application/settingsModel.svelte";
 import type { UiModeType } from "@projectTypes/ui/uiTypes";
 
@@ -15,7 +16,7 @@ class UiModeController {
 
    set uiMode(theme) {
       console.log("actualizando variable uiMode en modelo");
-      settingsModel.data.uiMode = theme;
+      settingsController.set("uiMode", theme);
    }
 
    private checkMode(): Exclude<UiModeType, "system"> {
