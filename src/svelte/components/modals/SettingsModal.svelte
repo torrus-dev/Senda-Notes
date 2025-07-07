@@ -2,66 +2,73 @@
 import GlobalPropertyMenu from "@components/globalProperties/GlobalPropertyMenu.svelte";
 import Slider from "@components/utils/Slider.svelte";
 import { settingsController } from "@controllers/application/settingsController.svelte";
-import type { UiModeType } from "@projectTypes/ui/uiTypes";
+import { settingsSchema, type SettingsKey } from "@schema/settingsSchema";
 
 let searchQuery = $state("");
+
+// Obtener todas las keys del schema para iteración
+const settingsKeys = Object.keys(settingsSchema) as SettingsKey[];
 </script>
 
 <aside class="gap-4">
    <h2 class="mb-8 py-2 text-2xl font-bold">Settings</h2>
    <div class="flex w-full flex-col gap-4">
-      <div class="flex items-center justify-between py-2">
-         <span>UI Mode</span>
-         <select
-            class="ml-4 rounded border px-2 py-1"
-            value={settingsController.get("uiMode")}
-            onchange={(event: Event) => {
-               const target = event.target as HTMLSelectElement;
-               settingsController.set("uiMode", target.value as UiModeType);
-            }}>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-            <option value="system">System</option>
-         </select>
-      </div>
-      <div class="flex items-center justify-between py-2">
-         <span>Lock Sidebar on large screens</span>
-         <Slider
-            value={settingsController.get("sidebarIsLocked")}
-            onChange={() => settingsController.toggle("sidebarIsLocked")} />
-      </div>
-      <div class="flex items-center justify-between py-2">
-         <span>Show note metadata on the editor</span>
-         <Slider
-            value={settingsController.get("showMetadata")}
-            onChange={() => settingsController.toggle("showMetadata")} />
-      </div>
-      <div class="flex items-center justify-between py-2">
-         <span>Enable Editor Toolbar</span>
-         <Slider
-            value={settingsController.get("showEditorToolbar")}
-            onChange={() => settingsController.toggle("showEditorToolbar")} />
-      </div>
-      <div class="flex items-center justify-between py-2">
-         <span>Debug Level: 0 none, 1 errors, 2 all</span>
-         <input
-            type="number"
-            value={settingsController.get("debugLevel")}
-            min="0"
-            max="5"
-            oninput={(event) => {
-               const target = event.target as HTMLInputElement;
-               if (target?.value) {
-                  settingsController.set("debugLevel", Number(target.value));
-               }
-            }} />
-      </div>
-      <div class="flex items-center justify-between py-2">
-         <span>Always show Tab Bar</span>
-         <Slider
-            value={settingsController.get("permanentTabBar")}
-            onChange={() => settingsController.toggle("permanentTabBar")} />
-      </div>
+      {#each settingsKeys as key}
+         {@const setting = settingsSchema[key]}
+         <div class="flex flex-col gap-1 py-2">
+            <div class="flex items-center justify-between">
+               <div class="flex flex-col">
+                  <span class="font-medium">{setting.title}</span>
+                  <span class="text-sm text-gray-600"
+                     >{setting.description}</span>
+               </div>
+
+               {#if setting.type === "boolean"}
+                  <Slider
+                     value={Boolean(settingsController.get(key))}
+                     onChange={() => settingsController.toggle(key)} />
+               {:else if setting.type === "select"}
+                  <select
+                     class="ml-4 rounded border px-2 py-1"
+                     value={settingsController.get(key)}
+                     onchange={(event) => {
+                        const target = event.target as HTMLSelectElement;
+                        settingsController.set(key, target.value as any);
+                     }}>
+                     {#each setting.options || [] as option}
+                        <option value={option}>{option}</option>
+                     {/each}
+                  </select>
+               {:else if setting.type === "number"}
+                  <input
+                     type="number"
+                     class="ml-4 w-20 rounded border px-2 py-1"
+                     value={settingsController.get(key)}
+                     min={setting.min}
+                     max={setting.max}
+                     oninput={(event) => {
+                        const target = event.target as HTMLInputElement;
+                        if (target?.value) {
+                           settingsController.set(
+                              key,
+                              Number(target.value) as any,
+                           );
+                        }
+                     }} />
+               {:else if setting.type === "string"}
+                  <input
+                     type="text"
+                     class="ml-4 rounded border px-2 py-1"
+                     value={settingsController.get(key)}
+                     oninput={(event) => {
+                        const target = event.target as HTMLInputElement;
+                        settingsController.set(key, target.value as any);
+                     }} />
+               {/if}
+            </div>
+         </div>
+      {/each}
+
       <GlobalPropertyMenu />
    </div>
 </aside>
