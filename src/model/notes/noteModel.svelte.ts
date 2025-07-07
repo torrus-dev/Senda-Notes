@@ -1,6 +1,7 @@
 import type { Note } from "@projectTypes/core/noteTypes";
 import { updateModifiedMetadata } from "@utils/noteUtils";
 import { PersistentLocalStorageModel } from "@model/persistentLocalStorage.svelte";
+import { DateTime } from "luxon";
 
 interface NoteData {
    notes: Note[];
@@ -13,6 +14,30 @@ class NoteModel extends PersistentLocalStorageModel<NoteData> {
 
    protected getDefaultData(): NoteData {
       return { notes: [] };
+   }
+
+   // Override de deserialización para manejar DateTime
+   protected deserializeData(data: any): NoteData {
+      if (!data.notes || !Array.isArray(data.notes)) {
+         return { notes: [] };
+      }
+
+      return {
+         notes: data.notes.map((note: any) => ({
+            ...note,
+            metadata: {
+               ...note.metadata,
+               created:
+                  typeof note.metadata.created === "string"
+                     ? DateTime.fromISO(note.metadata.created)
+                     : note.metadata.created,
+               modified:
+                  typeof note.metadata.modified === "string"
+                     ? DateTime.fromISO(note.metadata.modified)
+                     : note.metadata.modified,
+            },
+         })),
+      };
    }
 
    // get/set

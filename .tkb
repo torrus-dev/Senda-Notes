@@ -53,6 +53,11 @@
       "id": "8Beemf3cD-SQw2DWd2sPa",
       "description": "Ver por que la toolbar del editor no aparece al instante y tarda bastante\n",
       "columnId": "column-doing"
+    },
+    "dFZs-NmrvNb0-SbYeNTFC": {
+      "id": "dFZs-NmrvNb0-SbYeNTFC",
+      "description": "Arreglar bug por el que el contenido de la nota no cambia al cambiar la nota de la pestaña actual, ni al abrir en una nueva pestaña o simplemente cambiar de pestaña. El titulo si cambia",
+      "columnId": "column-todo"
     }
   },
   "columns": [
@@ -60,7 +65,8 @@
       "id": "column-todo",
       "title": "To do",
       "tasksIds": [
-        "8LQnQaMoZPPSqCr3ncV_x"
+        "8LQnQaMoZPPSqCr3ncV_x",
+        "dFZs-NmrvNb0-SbYeNTFC"
       ]
     },
     {

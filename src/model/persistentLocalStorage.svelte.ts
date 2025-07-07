@@ -25,9 +25,18 @@ export abstract class PersistentLocalStorageModel<T> {
    // Método abstracto que deben implementar las clases hijas
    protected abstract getDefaultData(): T;
 
+   // Métodos opcionales para serialización/deserialización personalizada
+   protected serializeData(data: T): any {
+      return $state.snapshot(data);
+   }
+
+   protected deserializeData(data: any): T {
+      return { ...this.getDefaultData(), ...data };
+   }
+
    private saveData(): void {
       try {
-         const serializableData = $state.snapshot(this.data);
+         const serializableData = this.serializeData(this.data);
          localStorage.setItem(
             this.storageKey,
             JSON.stringify(serializableData),
@@ -40,13 +49,12 @@ export abstract class PersistentLocalStorageModel<T> {
       }
    }
 
-   private loadData(): void {
+   protected loadData(): void {
       try {
          const stored = localStorage.getItem(this.storageKey);
          if (stored) {
             const parsedData = JSON.parse(stored);
-            // Combinar datos cargados con valores por defecto para manejar nuevas propiedades
-            this.data = { ...this.getDefaultData(), ...parsedData };
+            this.data = this.deserializeData(parsedData);
          }
       } catch (error) {
          console.warn(
