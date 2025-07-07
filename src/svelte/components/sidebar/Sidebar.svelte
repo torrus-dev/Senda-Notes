@@ -66,7 +66,7 @@ let widthStyle = $derived(isMobile ? "90%" : `${width}em`);
             <li>
                <Button
                   onclick={() => {
-                     modalController.open(SettingsModal);
+                     modalController.open("Settings", SettingsModal);
                   }}>
                   <SettingsIcon size="1.5rem"></SettingsIcon>
                </Button>
@@ -74,7 +74,7 @@ let widthStyle = $derived(isMobile ? "90%" : `${width}em`);
             <li>
                <Button
                   onclick={() => {
-                     modalController.open(AboutModal);
+                     modalController.open("About", AboutModal);
                   }}>
                   <InfoIcon size="1.5rem"></InfoIcon>
                </Button>

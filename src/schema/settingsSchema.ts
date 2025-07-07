@@ -2,12 +2,14 @@ import type { UiModeType } from "@projectTypes/ui/uiTypes";
 
 // Tipos para el schema
 export type SettingType = "boolean" | "number" | "string" | "select";
+export type SettingCategory = "ui" | "dev" | "app";
 
 export interface SettingDefinition<T = any> {
    type: SettingType;
    title: string;
    description: string;
    defaultValue: T;
+   category: SettingCategory;
    options?: string[]; // Para tipo 'select'
    min?: number; // Para tipo 'number'
    max?: number; // Para tipo 'number'
@@ -23,6 +25,7 @@ export const settingsSchema = {
       title: "UI Mode",
       description: "Select the appearance mode for the application",
       type: "select",
+      category: "ui",
       defaultValue: "system" as UiModeType,
       options: ["system", "light", "dark"] as UiModeType[],
    } as SettingDefinition<UiModeType>,
@@ -30,6 +33,7 @@ export const settingsSchema = {
       title: "Show Editor Toolbar",
       description: "Display the formatting toolbar in the note editor",
       type: "boolean",
+      category: "ui",
       defaultValue: false,
    } as SettingDefinition<boolean>,
    sidebarIsLocked: {
@@ -37,29 +41,33 @@ export const settingsSchema = {
       description:
          "Sidebar becomes fixed on larger screens, removing the toggle button",
       type: "boolean",
+      category: "ui",
       defaultValue: false,
    } as SettingDefinition<boolean>,
    showMetadata: {
       title: "Show Metadata",
       description: "Show note metadata in note view",
       type: "boolean",
+      category: "ui",
       defaultValue: false,
+   } as SettingDefinition<boolean>,
+   permanentTabBar: {
+      title: "Always show Tab bar",
+      description: "Show tabs even with none or only one tab open",
+      type: "boolean",
+      category: "ui",
+      defaultValue: true,
    } as SettingDefinition<boolean>,
    debugLevel: {
       title: "Debug Level",
       description:
          "Choose application debug level for warning and error messages",
       type: "number",
+      category: "dev",
       defaultValue: 0,
       min: 0,
       max: 5,
    } as SettingDefinition<number>,
-   permanentTabBar: {
-      title: "Always show Tab bar",
-      description: "Show tabs even with none or only one tab open",
-      type: "boolean",
-      defaultValue: true,
-   } as SettingDefinition<boolean>,
 } as const;
 
 // Tipos derivados automáticamente del schema
@@ -79,4 +87,18 @@ export function getDefaultSettings(): AppSettings {
    }
 
    return defaults;
+}
+
+// Función helper para obtener configuraciones por categoría
+export function getSettingsByCategory(category: SettingCategory): Array<{ key: SettingsKey; setting: SettingDefinition }> {
+   return Object.entries(settingsSchema)
+      .filter(([_, setting]) => setting.category === category)
+      .map(([key, setting]) => ({ key: key as SettingsKey, setting }));
+}
+
+// Función helper para obtener todas las categorías únicas
+export function getCategories(): SettingCategory[] {
+   const categories = new Set<SettingCategory>();
+   Object.values(settingsSchema).forEach(setting => categories.add(setting.category));
+   return Array.from(categories);
 }

@@ -2,36 +2,39 @@ import { Component } from "svelte";
 
 interface ModalState {
    isOpen: boolean;
+   title: string;
    content: any;
 }
 
 class ModalController {
    data: ModalState = $state({
       isOpen: false,
+      title: "",
       content: undefined,
    });
 
-   open(modalContent: Component | undefined = undefined) {
+   open(title: string, modalContent: Component | undefined = undefined) {
       this.data.isOpen = true;
+      this.data.title = title;
       this.data.content = modalContent;
    }
 
    close() {
       this.data.isOpen = false;
+      this.data.title = "";
       this.data.content = undefined;
    }
 
-   isOpen() {
+   get isOpen() {
       return this.data.isOpen;
    }
 
-   getContent() {
-      return this.data.content;
+   get title() {
+      return this.data.title;
    }
 
-   // Getter para acceso directo al estado
-   get state() {
-      return this.data;
+   get content() {
+      return this.data.content;
    }
 }
 

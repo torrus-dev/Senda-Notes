@@ -20,7 +20,7 @@
     "FSnPkMziz4Q2W7eHAAZvQ": {
       "id": "FSnPkMziz4Q2W7eHAAZvQ",
       "description": "Añadir mas parametros al schema como descripción, categoria y demas",
-      "columnId": "column-doing"
+      "columnId": "column-done"
     },
     "Jz0hRn6kRiux0vZpFe1T_": {
       "id": "Jz0hRn6kRiux0vZpFe1T_",
@@ -43,6 +43,16 @@
       "id": "8LQnQaMoZPPSqCr3ncV_x",
       "description": "Agregar busqueda en la cofiguración\n",
       "columnId": "column-todo"
+    },
+    "Vz54tZ984526DElbRVrtB": {
+      "id": "Vz54tZ984526DElbRVrtB",
+      "description": "Arreflar componente Modal y simplificar markup\n",
+      "columnId": "column-done"
+    },
+    "8Beemf3cD-SQw2DWd2sPa": {
+      "id": "8Beemf3cD-SQw2DWd2sPa",
+      "description": "Ver por que la toolbar del editor no aparece al instante y tarda bastante\n",
+      "columnId": "column-doing"
     }
   },
   "columns": [
@@ -59,13 +69,15 @@
       "tasksIds": [
         "_pDMu3f1LXgTksiuNUozg",
         "QId07WaqBy7QgENxY5jlM",
-        "FSnPkMziz4Q2W7eHAAZvQ"
+        "8Beemf3cD-SQw2DWd2sPa"
       ]
     },
     {
       "id": "column-done",
       "title": "Done",
       "tasksIds": [
+        "FSnPkMziz4Q2W7eHAAZvQ",
+        "Vz54tZ984526DElbRVrtB",
         "jvl3meUtnEhTnNqQ2ddVG",
         "AfqjbFpRXsd8ic8AdDWAo",
         "ZJAPBAOpDx58svXYkKLAP",
