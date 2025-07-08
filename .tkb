@@ -31,18 +31,13 @@
     "QId07WaqBy7QgENxY5jlM": {
       "id": "QId07WaqBy7QgENxY5jlM",
       "description": "Averiguar porque show metadata funciona a veces\n",
-      "columnId": "column-doing",
+      "columnId": "column-done",
       "color": "#808080"
     },
     "_pDMu3f1LXgTksiuNUozg": {
       "id": "_pDMu3f1LXgTksiuNUozg",
-      "description": "Ver porque algunas funciones no van y otras si",
+      "description": "",
       "columnId": "column-doing"
-    },
-    "8LQnQaMoZPPSqCr3ncV_x": {
-      "id": "8LQnQaMoZPPSqCr3ncV_x",
-      "description": "Agregar busqueda en la cofiguración\n",
-      "columnId": "column-todo"
     },
     "Vz54tZ984526DElbRVrtB": {
       "id": "Vz54tZ984526DElbRVrtB",
@@ -51,12 +46,12 @@
     },
     "8Beemf3cD-SQw2DWd2sPa": {
       "id": "8Beemf3cD-SQw2DWd2sPa",
-      "description": "Ver por que la toolbar del editor no aparece al instante y tarda bastante\n",
+      "description": "",
       "columnId": "column-doing"
     },
     "dFZs-NmrvNb0-SbYeNTFC": {
       "id": "dFZs-NmrvNb0-SbYeNTFC",
-      "description": "Arreglar bug por el que el contenido de la nota no cambia al cambiar la nota de la pestaña actual, ni al abrir en una nueva pestaña o simplemente cambiar de pestaña. El titulo si cambia",
+      "description": "",
       "columnId": "column-todo"
     }
   },
@@ -65,7 +60,6 @@
       "id": "column-todo",
       "title": "To do",
       "tasksIds": [
-        "8LQnQaMoZPPSqCr3ncV_x",
         "dFZs-NmrvNb0-SbYeNTFC"
       ]
     },
@@ -74,7 +68,6 @@
       "title": "Doing",
       "tasksIds": [
         "_pDMu3f1LXgTksiuNUozg",
-        "QId07WaqBy7QgENxY5jlM",
         "8Beemf3cD-SQw2DWd2sPa"
       ]
     },
@@ -82,6 +75,7 @@
       "id": "column-done",
       "title": "Done",
       "tasksIds": [
+        "QId07WaqBy7QgENxY5jlM",
         "FSnPkMziz4Q2W7eHAAZvQ",
         "Vz54tZ984526DElbRVrtB",
         "jvl3meUtnEhTnNqQ2ddVG",
