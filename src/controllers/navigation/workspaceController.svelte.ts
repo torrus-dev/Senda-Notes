@@ -37,14 +37,11 @@ class WorkspaceController {
       const activeTabId = workspaceModel.data.activeTabId;
       if (activeTabId) {
          if (this.isNoteOpenInTab(noteId)) {
-            console.log("activate existing tab");
             this.activateTabByNoteId(noteId);
          } else {
-            console.log("switch active tab");
             this.switchActiveTabNote(noteId);
          }
       } else {
-         console.log("open note in new tab");
          this.openNoteInNewTab(noteId);
       }
    }

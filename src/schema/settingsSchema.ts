@@ -1,4 +1,5 @@
 import type { UiModeType } from "@projectTypes/ui/uiTypes";
+import { normalizeText } from "@utils/searchUtils";
 
 // Tipos para el schema
 export type SettingType = "boolean" | "number" | "string" | "select";
@@ -90,15 +91,39 @@ export function getDefaultSettings(): AppSettings {
 }
 
 // Función helper para obtener configuraciones por categoría
-export function getSettingsByCategory(category: SettingCategory): Array<{ key: SettingsKey; setting: SettingDefinition }> {
-   return Object.entries(settingsSchema)
+export function getSettingsByCategory(
+   category: SettingCategory,
+   searchQuery?: string,
+): Array<{ key: SettingsKey; setting: SettingDefinition }> {
+   let results = Object.entries(settingsSchema)
       .filter(([_, setting]) => setting.category === category)
       .map(([key, setting]) => ({ key: key as SettingsKey, setting }));
+
+   // Si no hay query de búsqueda, devolver todos los resultados
+   if (!searchQuery || searchQuery.trim() === "") {
+      return results;
+   }
+
+   const normalizedQuery = normalizeText(searchQuery.trim());
+
+   return results.filter(({ key, setting }) => {
+      const normalizedTitle = normalizeText(setting.title);
+      const normalizedDescription = normalizeText(setting.description);
+      const normalizedKey = normalizeText(key);
+
+      return (
+         normalizedTitle.includes(normalizedQuery) ||
+         normalizedDescription.includes(normalizedQuery) ||
+         normalizedKey.includes(normalizedQuery)
+      );
+   });
 }
 
 // Función helper para obtener todas las categorías únicas
 export function getCategories(): SettingCategory[] {
    const categories = new Set<SettingCategory>();
-   Object.values(settingsSchema).forEach(setting => categories.add(setting.category));
+   Object.values(settingsSchema).forEach((setting) =>
+      categories.add(setting.category),
+   );
    return Array.from(categories);
 }

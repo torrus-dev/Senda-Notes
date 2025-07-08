@@ -1,4 +1,5 @@
 <script lang="ts">
+import type { Tab } from "@model/navigation/workspaceModel.svelte";
 import type { Note } from "@projectTypes/core/noteTypes";
 
 import Title from "@components/note/Title.svelte";
@@ -7,8 +8,14 @@ import PropertyList from "@components/note/widgets/PropertyList.svelte";
 import ChildNotes from "@components/note/widgets/ChildNotes.svelte";
 import Editor from "@components/note/editor/Editor.svelte";
 import { settingsController } from "@controllers/application/settingsController.svelte";
+import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 
-let { note }: { note: Note | undefined } = $props();
+let { tab }: { tab: Tab } = $props();
+let note: Note | undefined = $derived(
+   tab?.noteReference?.noteId
+      ? noteQueryController.getNoteById(tab.noteReference.noteId)
+      : undefined,
+);
 </script>
 
 {#if note}
