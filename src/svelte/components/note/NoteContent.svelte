@@ -25,8 +25,8 @@ let note: Note | undefined = $derived(
             noteId={note.id}
             noteTitle={note.title}
             autoEditOnClick={true}
-            id="title"
-            class="overflow-h mt-16 font-bold" />
+            id="{tab.id}-noteTitle"
+            class="overflow-h mt-16 mb-3 text-4xl font-bold" />
       </header>
    </section>
    <section class="mx-auto w-full max-w-2xl">

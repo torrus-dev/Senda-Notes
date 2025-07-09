@@ -28,14 +28,12 @@ let {
    note,
    toggleExpansion,
    isExpanded,
-   isEditingTitle,
-   toggleEditTitleMode,
+   isEditingTitle = $bindable(),
 }: {
    note: Note;
    toggleExpansion: (event: Event) => void;
    isExpanded: boolean;
    isEditingTitle: boolean;
-   toggleEditTitleMode: () => void;
 } = $props();
 
 let isActive = $derived(note.id === workspaceController.activeNoteId);
@@ -90,7 +88,7 @@ const handleSelectTitle = (event: KeyboardEvent | MouseEvent) => {
          label: "Rename Note",
          icon: PenLineIcon,
          action: () => {
-            toggleEditTitleMode();
+            isEditingTitle = true;
          },
       },
       {

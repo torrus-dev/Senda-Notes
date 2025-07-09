@@ -10,7 +10,6 @@ let {
    noteTitle,
    isEditing = $bindable(false),
    autoEditOnClick = false,
-   onEditComplete = () => {},
    id,
    class: userClass = "",
 }: {
@@ -18,7 +17,6 @@ let {
    noteTitle: string;
    isEditing?: boolean;
    autoEditOnClick?: boolean;
-   onEditComplete?: () => void;
    id?: string;
    class?: string;
 } = $props();
@@ -26,19 +24,20 @@ let {
 // Referencias y estado local
 let inputElement: HTMLInputElement | undefined = $state(undefined);
 let currentTitle = $state(noteTitle);
-let internalIsEditing = $state(false);
 let hasForbiddenChar = $state(false);
 
 // Estado de edición derivado (combina prop externa con estado interno)
-let editingState = $derived(isEditing || internalIsEditing);
+let editingState = $derived(isEditing);
 
 // Manejadores de eventos
 function startEditing() {
    if (!autoEditOnClick) return;
-   internalIsEditing = true;
+   isEditing = true;
 }
 
 function saveTitle() {
+   if (hasForbiddenChar) return;
+
    const newTitle = sanitizeTitle(currentTitle);
 
    if (newTitle && newTitle.trim() !== "") {
@@ -48,15 +47,13 @@ function saveTitle() {
       currentTitle = noteTitle;
    }
 
-   internalIsEditing = false;
-   onEditComplete();
+   isEditing = false;
 }
 
 function cancelEditing() {
    // Restaurar el título original
    currentTitle = noteTitle;
-   internalIsEditing = false;
-   onEditComplete();
+   isEditing = false;
 }
 
 function handleKeydown(event: KeyboardEvent) {
