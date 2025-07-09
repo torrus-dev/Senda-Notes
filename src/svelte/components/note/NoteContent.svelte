@@ -2,13 +2,13 @@
 import type { Tab } from "@model/navigation/workspaceModel.svelte";
 import type { Note } from "@projectTypes/core/noteTypes";
 
-import Title from "@components/note/Title.svelte";
 import Metadata from "@components/note/widgets/Metadata.svelte";
 import PropertyList from "@components/note/widgets/PropertyList.svelte";
 import ChildNotes from "@components/note/widgets/ChildNotes.svelte";
 import Editor from "@components/note/editor/Editor.svelte";
 import { settingsController } from "@controllers/application/settingsController.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import NoteTitleEditor from "./widgets/NoteTitleEditor.svelte";
 
 let { tab }: { tab: Tab } = $props();
 let note: Note | undefined = $derived(
@@ -21,7 +21,12 @@ let note: Note | undefined = $derived(
 {#if note}
    <section class="mx-auto w-full max-w-2xl">
       <header>
-         <Title noteId={note.id} noteTitle={note.title} />
+         <NoteTitleEditor
+            noteId={note.id}
+            noteTitle={note.title}
+            autoEditOnClick={true}
+            id="title"
+            class="overflow-h mt-16 font-bold" />
       </header>
    </section>
    <section class="mx-auto w-full max-w-2xl">
