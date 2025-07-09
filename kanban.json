@@ -3,13 +3,22 @@
     "cols": [
         {
             "title": "To-Do",
-            "tasks": [],
+            "tasks": [
+                {
+                    "text": "Hacer el guardado opcional en los modelos abstractos de guardado",
+                    "id": "j1wwx4cfru00cy74imhfjt0e"
+                }
+            ],
             "id": "tyg9xiamtgkzzoe17nmxma8a",
             "color": "#fcb900"
         },
         {
             "title": "Doing",
             "tasks": [
+                {
+                    "text": "Volver a añadir soporte para el title dentro de noteContent en el nuevo componente",
+                    "id": "y0inl37r8heioo8k8hevfq2v"
+                },
                 {
                     "text": "Transformar de settingsModal.svelte a una pestaña como en vscode\n",
                     "id": "vtp2r0bure3l0h8i6onefk82"
@@ -21,6 +30,10 @@
         {
             "title": "Done",
             "tasks": [
+                {
+                    "text": "Unificar componente Title y TitleInline\n",
+                    "id": "clfk0cput9144l933u13qcqn"
+                },
                 {
                     "text": "Añadir busqueda al settingsModal\n",
                     "id": "n9b9m65efn1cn4z7v9p3s87e"
@@ -44,5 +57,5 @@
     ],
     "autosave": true,
     "saveToFile": true,
-    "timestamp": 1751985172401
+    "timestamp": 1752063150603
 }
