@@ -126,81 +126,13 @@ function highlightMatch(text: string, query: string): string {
 
 <svelte:window onkeydown={handleKeyDown} />
 
-<div
-   class="bg-base-100 rounded-box border-base-300 absolute top-full left-0 z-100 mt-2 max-h-[calc(95vh-3.5rem)] w-full overflow-y-auto border shadow-xl">
-   {#if searchResults.length > 0}
-      <div
-         class="text-muted-content border-base-300 bg-base-100 sticky top-0 border-b px-4 py-1.5 text-sm">
-         Resultados: {searchResults.length}
-      </div>
-      <ul class="scroll-auto p-0">
-         {#each searchResults as result, index}
-            <li
-               bind:this={resultElements[index]}
-               class="search-result-item
-               {selectedIndex === index ? 'bg-base-200' : ''}">
-               <button
-                  class="hover:bg-base-200 flex w-full cursor-pointer flex-col items-start p-2 transition-colors"
-                  onclick={(event: MouseEvent) => select(event, result)}
-                  onmouseenter={() => {
-                     selectedIndex = index;
-                  }}>
-                  <div class="flex w-full items-center gap-3 py-1">
-                     <div class="p-2">
-                        {#if result.note.icon}
-                           <div class="text-lg">
-                              {result.note.icon}
-                           </div>
-                        {:else}
-                           <FileIcon size="1.125em" />
-                        {/if}
-                     </div>
-                     <div class="flex-1 overflow-hidden text-left">
-                        <!-- Título con destacado -->
-                        <div
-                           class="mb-1 overflow-hidden font-medium text-ellipsis whitespace-nowrap">
-                           {@html highlightMatch(
-                              result.matchedText,
-                              searchValue,
-                           )}
-                        </div>
-                        <!-- Ruta del documento -->
-                        <div
-                           class="text-faint-content overflow-hidden text-sm text-ellipsis whitespace-nowrap">
-                           {result.path}
-                        </div>
-                     </div>
-                     {#if result.matchType === "alias"}
-                        <span class="badge badge-sm badge-outline">alias</span>
-                     {/if}
-                  </div>
-               </button>
-            </li>
-         {/each}
-      </ul>
-   {:else}
-      <div class="px-6 pt-6 pb-8 text-center">
-         {#if searchValue !== ""}
-            <p class="mb-3 text-lg font-bold">
-               No se han encontrado resultados
-            </p>
-            <div class="text-muted-content">
-               No hay coincidencias para "{searchValue}"
-            </div>
-            <div>
-               Pulsa <kbd
-                  class="bg-base-200 rounded-selector inline-flex items-center gap-1 p-0.5">
-                  <CornerDownLeft size="1.125em" /></kbd> para crear la nota
-            </div>
-         {:else}
-            <p class="mb-3 text-lg font-bold">
-               Comienza a escribir para buscar
-            </p>
-            <p class="text-muted-content">La busqueda esta vacia</p>
-         {/if}
-      </div>
-   {/if}
-   <div class="flex justify-center gap-8 p-2 text-xs">
+{#snippet topContentSearch()}
+   <div class="text-muted-content px-4 text-sm">
+      Resultados: {searchResults.length}
+   </div>
+{/snippet}
+{#snippet bottomContentSearch()}
+   <div class="flex justify-center gap-8 text-sm">
       <p class="flex items-center gap-1">
          <kbd
             class="bg-base-200 rounded-selector flex items-center gap-1 p-0.5">
@@ -220,5 +152,88 @@ function highlightMatch(text: string, query: string): string {
          <kbd class="bg-base-200 rounded-selector p-0.5">esc</kbd>
          para salir
       </p>
+   </div>
+{/snippet}
+
+<div
+   class="bg-base-100 rounded-box bordered absolute top-full left-0 z-100 mt-2 max-h-[calc(95vh-3.5rem)] w-full shadow-xl">
+   <div class="border-base-300 border-b py-1">
+      // pasarle los parametros
+      {@render topContentSearch()}
+   </div>
+   <div class="w-full overflow-y-auto">
+      {#if searchResults.length > 0}
+         <ul class="scroll-auto p-0">
+            {#each searchResults as result, index}
+               <li
+                  bind:this={resultElements[index]}
+                  class="search-result-item
+               {selectedIndex === index ? 'bg-base-200' : ''}">
+                  <button
+                     class="hover:bg-base-200 flex w-full cursor-pointer flex-col items-start p-2 transition-colors"
+                     onclick={(event: MouseEvent) => select(event, result)}
+                     onmouseenter={() => {
+                        selectedIndex = index;
+                     }}>
+                     <div class="flex w-full items-center gap-3 py-1">
+                        <div class="p-2">
+                           {#if result.note.icon}
+                              <div class="text-lg">
+                                 {result.note.icon}
+                              </div>
+                           {:else}
+                              <FileIcon size="1.125em" />
+                           {/if}
+                        </div>
+                        <div class="flex-1 overflow-hidden text-left">
+                           <!-- Título con destacado -->
+                           <div
+                              class="mb-1 overflow-hidden font-medium text-ellipsis whitespace-nowrap">
+                              {@html highlightMatch(
+                                 result.matchedText,
+                                 searchValue,
+                              )}
+                           </div>
+                           <!-- Ruta del documento -->
+                           <div
+                              class="text-faint-content overflow-hidden text-sm text-ellipsis whitespace-nowrap">
+                              {result.path}
+                           </div>
+                        </div>
+                        {#if result.matchType === "alias"}
+                           <span class="badge badge-sm badge-outline"
+                              >alias</span>
+                        {/if}
+                     </div>
+                  </button>
+               </li>
+            {/each}
+         </ul>
+      {:else}
+         <div class="px-6 pt-6 pb-8 text-center">
+            {#if searchValue !== ""}
+               <p class="mb-3 text-lg font-bold">
+                  No se han encontrado resultados
+               </p>
+               <div class="text-muted-content">
+                  No hay coincidencias para "{searchValue}"
+               </div>
+               <div>
+                  Pulsa <kbd
+                     class="bg-base-200 rounded-selector inline-flex items-center gap-1 p-0.5">
+                     <CornerDownLeft size="1.125em" /></kbd> para crear la nota
+               </div>
+            {:else}
+               <p class="mb-3 text-lg font-bold">
+                  Comienza a escribir para buscar
+               </p>
+               <p class="text-muted-content">La busqueda esta vacia</p>
+            {/if}
+         </div>
+      {/if}
+      <!-- texto para informar de los controles inferior -->
+   </div>
+   <div class="text-muted-content border-base-300 border-t py-1">
+      {@render bottomContentSearch()}
    </div>
 </div>
