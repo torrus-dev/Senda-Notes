@@ -2,14 +2,21 @@ export abstract class PersistentJsonFileModel<T> {
    data: T = $state() as T;
    public isInitialized = $state(false);
    private saveTimeout: number | null = null;
-   private readonly DEBOUNCE_DELAY = 500; // ms
+   private readonly DEBOUNCE_DELAY = 500;
 
-   constructor(private filename: string) {
+   constructor(
+      private filename: string,
+      private autoInitialize: boolean = true, // Nuevo parámetro
+   ) {
       this.data = this.getDefaultData();
-      this.initializeData();
+
+      if (autoInitialize) {
+         this.initializeData();
+      }
    }
 
-   private async initializeData() {
+   // Ahora es público para permitir inicialización manual
+   public async initializeData() {
       await this.loadData();
       this.isInitialized = true;
 
@@ -24,7 +31,7 @@ export abstract class PersistentJsonFileModel<T> {
       });
    }
 
-   // Método abstracto que deben implementar las clases hijas
+   // Resto del código permanece igual...
    protected abstract getDefaultData(): T;
 
    private debouncedSave() {
@@ -47,8 +54,6 @@ export abstract class PersistentJsonFileModel<T> {
          );
          if (!result.success) {
             console.error(`Error al guardar ${this.filename}:`, result.error);
-         } else {
-            console.log(`Guardado archivo ${this.filename}`);
          }
       } catch (error) {
          console.error(`Error al guardar ${this.filename}:`, error);
@@ -61,19 +66,15 @@ export abstract class PersistentJsonFileModel<T> {
             this.filename,
          );
          if (result.success && result.data) {
-            // Combinar datos cargados con valores por defecto para manejar nuevas propiedades
             this.data = { ...this.getDefaultData(), ...result.data };
          } else if (result.error !== "FILE_NOT_FOUND") {
             console.error(`Error al cargar ${this.filename}:`, result.error);
          }
-         // Si el archivo no existe (FILE_NOT_FOUND), se mantienen los valores por defecto
       } catch (error) {
          console.error(`Error al cargar ${this.filename}:`, error);
       }
    }
 
-   // Funciones Publicas Auxiliares
-   // Método público para forzar guardado inmediato
    public async forceSave(): Promise<void> {
       if (this.saveTimeout) {
          clearTimeout(this.saveTimeout);
@@ -82,12 +83,10 @@ export abstract class PersistentJsonFileModel<T> {
       await this.saveData();
    }
 
-   // Método público para recargar datos
    public async reload(): Promise<void> {
       await this.loadData();
    }
 
-   // Método público para resetear a valores por defecto
    public resetToDefaults(): void {
       this.data = this.getDefaultData();
    }
