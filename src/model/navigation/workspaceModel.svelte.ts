@@ -1,3 +1,4 @@
+import { settingsController } from "@controllers/application/settingsController.svelte";
 import { PersistentLocalStorageModel } from "@model/persistentLocalStorage.svelte";
 import type { NoteReference } from "@projectTypes/core/noteTypes";
 
@@ -12,6 +13,7 @@ interface WorkspaceData {
 }
 
 class WorkspaceModel extends PersistentLocalStorageModel<WorkspaceData> {
+   saveTabs = $derived(settingsController.get("keepTabs"));
    constructor() {
       super("NoteNavigation");
    }

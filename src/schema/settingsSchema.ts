@@ -69,6 +69,13 @@ export const settingsSchema = {
       min: 0,
       max: 5,
    } as SettingDefinition<number>,
+   keepTabs: {
+      title: "Keep tabs open",
+      description: "Keep tabs open from sesion to sesion",
+      type: "boolean",
+      category: "app",
+      defaultValue: true,
+   } as SettingDefinition<boolean>,
 } as const;
 
 // Tipos derivados automáticamente del schema
