@@ -1,10 +1,12 @@
 <script lang="ts">
+import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { searchController } from "@controllers/navigation/searchController.svelte";
+import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
+import { onPressEsc } from "@directives/onPressEsc";
 import MoreButton from "@components/navbar/MoreButton.svelte";
 import Breadcrumbs from "@components/utils/Breadcrumbs.svelte";
 import SearchResults from "@components/navbar/search/SearchResults.svelte";
 import Button from "@components/utils/Button.svelte";
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
-import { searchController } from "@controllers/navigation/searchController.svelte";
 
 import type { Note } from "@projectTypes/core/noteTypes";
 import type { SearchResult } from "@projectTypes/ui/uiTypes";
@@ -12,8 +14,6 @@ import type { SearchResult } from "@projectTypes/ui/uiTypes";
 import { tick } from "svelte";
 import { DeleteIcon, XIcon } from "lucide-svelte";
 import { onClickOutside } from "@directives/onClickOutside";
-import { onPressEsc } from "@directives/onPressEsc";
-import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 
 let { note }: { note: Note | undefined } = $props();
 

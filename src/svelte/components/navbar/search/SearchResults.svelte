@@ -2,9 +2,9 @@
 </style>
 
 <script lang="ts">
+import type { SearchResult } from "@projectTypes/ui/uiTypes";
 import { searchController } from "@controllers/navigation/searchController.svelte";
 import { noteController } from "@controllers/notes/noteController.svelte";
-import type { SearchResult } from "@projectTypes/ui/uiTypes";
 import { CornerDownLeft, FileIcon } from "lucide-svelte";
 import { tick } from "svelte";
 
