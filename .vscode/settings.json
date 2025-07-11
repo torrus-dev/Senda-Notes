@@ -3,5 +3,6 @@
    "search.exclude": {
       "**/node_modules": true,
       "**/output": true
-   }
+   },
+   "mayank1513.trello-kanban.Workspace.filePath": ".tkb"
 }

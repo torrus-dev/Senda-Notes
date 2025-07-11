@@ -1,45 +1,93 @@
 import { settingsModel } from "@model/application/settingsModel.svelte";
+import {
+   settingsSchema,
+   type AppSettings,
+   type SettingsKey,
+} from "@schema/settingsSchema";
 
 class SettingsController {
-   // lock sidebar
-   toggleLockSidebar = () => {
-      settingsModel.data.sidebarIsLocked = !settingsModel.data.sidebarIsLocked;
-   };
-   get lockSidebar() {
-      return settingsModel.data.sidebarIsLocked;
+   // Método genérico para obtener cualquier valor
+   get<K extends SettingsKey>(key: K): AppSettings[K] {
+      return settingsModel.data[key];
    }
 
-   // show metadata
-   toggleShowMetadata = (): void => {
-      settingsModel.data.showMetadata = !settingsModel.data.showMetadata;
-   };
-   get showMetadata() {
-      return settingsModel.data.showMetadata;
+   // Método genérico para establecer cualquier valor
+   set<K extends SettingsKey>(key: K, value: AppSettings[K]): void {
+      settingsModel.data[key] = value;
    }
 
-   // show editor toolbar
-   toogleShowEditorToolbar(): void {
-      settingsModel.data.showEditorToolbar =
-         !settingsModel.data.showEditorToolbar;
-   }
-   get showEditorToolbar() {
-      return settingsModel.data.showEditorToolbar;
+   // Método para toggle de valores boolean
+   toggle<K extends SettingsKey>(key: K): void {
+      const setting = settingsSchema[key];
+
+      if (setting.type !== "boolean") {
+         throw new Error(`Cannot toggle non-boolean setting: ${String(key)}`);
+      }
+
+      (settingsModel.data[key] as any) = !settingsModel.data[key];
    }
 
-   // debug level
-   set debugLevel(value: number) {
-      settingsModel.data.debugLevel = value;
-   }
-   get debugLevel() {
-      return settingsModel.data.debugLevel;
+   // Método para incrementar valores numéricos
+   increment<K extends SettingsKey>(key: K, amount: number = 1): void {
+      const setting = settingsSchema[key];
+
+      if (setting.type !== "number") {
+         throw new Error(`Cannot increment non-number setting: ${String(key)}`);
+      }
+
+      const currentValue = settingsModel.data[key] as number;
+      const newValue = currentValue + amount;
+
+      // Aplicar límites si están definidos
+      if (setting.max !== undefined && newValue > setting.max) {
+         (settingsModel.data[key] as any) = setting.max;
+      } else if (setting.min !== undefined && newValue < setting.min) {
+         (settingsModel.data[key] as any) = setting.min;
+      } else {
+         (settingsModel.data[key] as any) = newValue;
+      }
    }
 
-   //permanentTabBar
-   tooglePermanentTabBar(): void {
-      settingsModel.data.permanentTabBar = !settingsModel.data.permanentTabBar;
+   // Método para decrementar valores numéricos
+   decrement<K extends SettingsKey>(key: K, amount: number = 1): void {
+      this.increment(key, -amount);
    }
-   get permanentTabBar(): boolean {
-      return settingsModel.data.permanentTabBar;
+
+   // Método para resetear un valor específico a su default
+   reset<K extends SettingsKey>(key: K): void {
+      const setting = settingsSchema[key];
+      this.set(key, setting.defaultValue as AppSettings[K]);
+   }
+
+   // Método para resetear todos los valores
+   resetAll(): void {
+      settingsModel.resetToDefaults();
+   }
+
+   // Método para obtener metadatos de una configuración
+   getSettingMeta<K extends SettingsKey>(key: K) {
+      return settingsSchema[key];
+   }
+
+   // Método para validar si un valor es válido para una configuración
+   isValidValue<K extends SettingsKey>(key: K, value: any): boolean {
+      const setting = settingsSchema[key];
+
+      switch (setting.type) {
+         case "boolean":
+            return typeof value === "boolean";
+         case "number":
+            if (typeof value !== "number") return false;
+            if (setting.min !== undefined && value < setting.min) return false;
+            if (setting.max !== undefined && value > setting.max) return false;
+            return true;
+         case "string":
+            return typeof value === "string";
+         case "select":
+            return setting.options?.includes(value) ?? false;
+         default:
+            return false;
+      }
    }
 }
 

@@ -1,14 +1,7 @@
 <script lang="ts">
 export let value: boolean = false;
-export let onChange: (newValue: boolean) => void = () => {};
+export let onChange: () => void = () => {};
 export let disabled: boolean = false;
-
-function handleToggle() {
-   if (!disabled) {
-      const newValue = !value;
-      onChange(newValue);
-   }
-}
 </script>
 
 <button
@@ -17,7 +10,7 @@ function handleToggle() {
       : 'cursor-pointer'} {value ? 'bg-blue-500' : 'bg-base-400'}"
    disabled={disabled}
    aria-label="slider"
-   onclick={handleToggle}>
+   onclick={onChange}>
    <span
       class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out
       {value ? 'translate-x-5' : 'translate-x-0'}"></span>

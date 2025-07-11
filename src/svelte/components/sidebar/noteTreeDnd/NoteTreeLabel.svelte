@@ -5,7 +5,6 @@
 </style>
 
 <script lang="ts">
-import type { SvelteComponent } from "svelte";
 import type { Note } from "@projectTypes/core/noteTypes";
 import { noteController } from "@controllers/notes/noteController.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
@@ -14,30 +13,27 @@ import {
    PlusIcon,
    PenLineIcon,
    Trash2Icon,
-   FilePlusIcon,
    StarIcon,
    StarOffIcon,
    ArrowUpRight,
    SquarePlusIcon,
 } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
-import InlineTitleEditor from "@components/note/InlineTitleEditor.svelte";
 import { contextMenu } from "@directives/floatingMenuDirective.svelte";
 import { favoriteController } from "@controllers/notes/favoritesController.svelte";
 import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
+import NoteTitleEditor from "@components/note/widgets/NoteTitleEditor.svelte";
 
 let {
    note,
    toggleExpansion,
    isExpanded,
-   isEditingTitle,
-   toggleEditTitleMode,
+   isEditingTitle = $bindable(),
 }: {
    note: Note;
    toggleExpansion: (event: Event) => void;
    isExpanded: boolean;
    isEditingTitle: boolean;
-   toggleEditTitleMode: () => void;
 } = $props();
 
 let isActive = $derived(note.id === workspaceController.activeNoteId);
@@ -92,7 +88,7 @@ const handleSelectTitle = (event: KeyboardEvent | MouseEvent) => {
          label: "Rename Note",
          icon: PenLineIcon,
          action: () => {
-            toggleEditTitleMode();
+            isEditingTitle = true;
          },
       },
       {
@@ -121,15 +117,11 @@ const handleSelectTitle = (event: KeyboardEvent | MouseEvent) => {
          <span class="w-4"></span>
       {/if}
 
-      <!-- Usando InlineTitleEditor y bindando la referencia al elemento -->
-      <InlineTitleEditor
+      <NoteTitleEditor
          noteId={note.id}
          noteTitle={note.title}
-         isEditing={isEditingTitle}
          class="truncate {!isExpanded ? 'text-muted-content' : ''}"
-         onEditComplete={() => {
-            toggleEditTitleMode();
-         }} />
+         bind:isEditing={isEditingTitle} />
    </div>
    <div class="flex items-center">
       <Button

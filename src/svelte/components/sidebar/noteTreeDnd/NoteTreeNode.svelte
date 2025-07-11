@@ -45,9 +45,6 @@ const toggleExpansion = (event: Event) => {
    isExpanded = !isExpanded;
 };
 
-function toggleEditTitleMode() {
-   isEditingTitle = !isEditingTitle;
-}
 </script>
 
 <NoteTreeLine position={position} parentId={note.parentId} />
@@ -66,8 +63,7 @@ function toggleEditTitleMode() {
       note={note}
       toggleExpansion={toggleExpansion}
       isExpanded={isExpanded}
-      isEditingTitle={isEditingTitle}
-      toggleEditTitleMode={toggleEditTitleMode} />
+      bind:isEditingTitle={isEditingTitle} />
 
    {#if isExpanded && note.children && note.children.length > 0}
       <ul class="border-base-400/60 ml-2.5 border-l-2">

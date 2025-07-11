@@ -1,0 +1,88 @@
+{
+  "scope": "Workspace",
+  "tasks": {
+    "ZJAPBAOpDx58svXYkKLAP": {
+      "id": "ZJAPBAOpDx58svXYkKLAP",
+      "description": "Hacer que SettingsModal.svelte se genere automaticamente y no haya que hace llamadas manuales al controlador\n",
+      "columnId": "column-done",
+      "color": "#a03434"
+    },
+    "AfqjbFpRXsd8ic8AdDWAo": {
+      "id": "AfqjbFpRXsd8ic8AdDWAo",
+      "description": "Hacer que te autocomplete las keys al llamar al controlador",
+      "columnId": "column-done"
+    },
+    "jvl3meUtnEhTnNqQ2ddVG": {
+      "id": "jvl3meUtnEhTnNqQ2ddVG",
+      "description": "Cambiar los tipados para que tenga mas granularidad y hacer lo de los key que pongo arriba",
+      "columnId": "column-done"
+    },
+    "FSnPkMziz4Q2W7eHAAZvQ": {
+      "id": "FSnPkMziz4Q2W7eHAAZvQ",
+      "description": "Añadir mas parametros al schema como descripción, categoria y demas",
+      "columnId": "column-done"
+    },
+    "Jz0hRn6kRiux0vZpFe1T_": {
+      "id": "Jz0hRn6kRiux0vZpFe1T_",
+      "description": "Ver por que no funcionan las settings con el nuevo sistema\n",
+      "columnId": "column-done",
+      "color": "#808080"
+    },
+    "QId07WaqBy7QgENxY5jlM": {
+      "id": "QId07WaqBy7QgENxY5jlM",
+      "description": "Averiguar porque show metadata funciona a veces\n",
+      "columnId": "column-done",
+      "color": "#808080"
+    },
+    "_pDMu3f1LXgTksiuNUozg": {
+      "id": "_pDMu3f1LXgTksiuNUozg",
+      "description": "",
+      "columnId": "column-doing"
+    },
+    "Vz54tZ984526DElbRVrtB": {
+      "id": "Vz54tZ984526DElbRVrtB",
+      "description": "Arreflar componente Modal y simplificar markup\n",
+      "columnId": "column-done"
+    },
+    "8Beemf3cD-SQw2DWd2sPa": {
+      "id": "8Beemf3cD-SQw2DWd2sPa",
+      "description": "",
+      "columnId": "column-doing"
+    },
+    "dFZs-NmrvNb0-SbYeNTFC": {
+      "id": "dFZs-NmrvNb0-SbYeNTFC",
+      "description": "",
+      "columnId": "column-todo"
+    }
+  },
+  "columns": [
+    {
+      "id": "column-todo",
+      "title": "To do",
+      "tasksIds": [
+        "dFZs-NmrvNb0-SbYeNTFC"
+      ]
+    },
+    {
+      "id": "column-doing",
+      "title": "Doing",
+      "tasksIds": [
+        "_pDMu3f1LXgTksiuNUozg",
+        "8Beemf3cD-SQw2DWd2sPa"
+      ]
+    },
+    {
+      "id": "column-done",
+      "title": "Done",
+      "tasksIds": [
+        "QId07WaqBy7QgENxY5jlM",
+        "FSnPkMziz4Q2W7eHAAZvQ",
+        "Vz54tZ984526DElbRVrtB",
+        "jvl3meUtnEhTnNqQ2ddVG",
+        "AfqjbFpRXsd8ic8AdDWAo",
+        "ZJAPBAOpDx58svXYkKLAP",
+        "Jz0hRn6kRiux0vZpFe1T_"
+      ]
+    }
+  ]
+}

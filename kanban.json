@@ -1,0 +1,61 @@
+{
+    "title": "Kanban",
+    "cols": [
+        {
+            "title": "To-Do",
+            "tasks": [
+                {
+                    "text": "Hacer el guardado opcional en los modelos abstractos de guardado",
+                    "id": "j1wwx4cfru00cy74imhfjt0e"
+                }
+            ],
+            "id": "tyg9xiamtgkzzoe17nmxma8a",
+            "color": "#fcb900"
+        },
+        {
+            "title": "Doing",
+            "tasks": [
+                {
+                    "text": "Volver a añadir soporte para el title dentro de noteContent en el nuevo componente",
+                    "id": "y0inl37r8heioo8k8hevfq2v"
+                },
+                {
+                    "text": "Transformar de settingsModal.svelte a una pestaña como en vscode\n",
+                    "id": "vtp2r0bure3l0h8i6onefk82"
+                }
+            ],
+            "id": "d94iulf2itt24xd9iftn7g3t",
+            "color": "#0693e3"
+        },
+        {
+            "title": "Done",
+            "tasks": [
+                {
+                    "text": "Unificar componente Title y TitleInline\n",
+                    "id": "clfk0cput9144l933u13qcqn"
+                },
+                {
+                    "text": "Añadir busqueda al settingsModal\n",
+                    "id": "n9b9m65efn1cn4z7v9p3s87e"
+                },
+                {
+                    "text": "Ver porque no todas las opciones se muestran al instante\n",
+                    "id": "pzubr9dgfzxmxlc7uaj0cxj9"
+                },
+                {
+                    "text": "Ver porque el toolbar del editor no se muestra al instante cuando activamos la opción\n",
+                    "id": "j56tlpjyy49gqu5eb9vdc7cc"
+                },
+                {
+                    "text": "Ver porque el contenido no cambia, a pesar de que la pestaña si lo haga, problema de reactividad",
+                    "id": "kwj4h7qykm2koopwb1n0ek0y"
+                }
+            ],
+            "id": "e3fi8nf9mbygmjm4mveco6il",
+            "color": "#00d084"
+        }
+    ],
+    "autosave": true,
+    "saveToFile": true,
+    "timestamp": 1752063150603
+}

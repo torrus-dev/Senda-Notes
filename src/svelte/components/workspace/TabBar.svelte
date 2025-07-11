@@ -37,7 +37,8 @@ function handleCloseTab(event: MouseEvent, tabId: string) {
 
 // Solo mostrar si hay más de una pestaña
 let shouldShow = $derived(
-   workspaceController.tabs.length > 1 || settingsController.permanentTabBar,
+   workspaceController.tabs.length > 1 ||
+      settingsController.get("permanentTabBar"),
 );
 </script>
 
@@ -57,7 +58,7 @@ let shouldShow = $derived(
                   onclick={() => handleTabClick(tab.id)}
                   class="
                   {isActive ? 'bg-base-300' : ''} 
-                  hover:bg-base-300 group w-full min-w-6 px-0 py-0.75
+                  hover:bg-base-300 bg-base-200 group w-full min-w-6 px-0 py-0.75
                   "
                   aria-selected={isActive}>
                   <!-- Título de la pestaña -->
@@ -72,7 +73,7 @@ let shouldShow = $derived(
                   <!-- Botón de cerrar -->
                   <Button
                      class="transition-all group-hover:opacity-100 
-                     {isActive ? 'opacity-100' : 'opacity-5'}"
+                     {isActive ? 'opacity-100' : 'opacity-50'}"
                      size="small"
                      shape="square"
                      onclick={(event: MouseEvent) =>

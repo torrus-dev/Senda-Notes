@@ -62,9 +62,7 @@ export abstract class PersistentJsonFileModel<T> {
          );
          if (result.success && result.data) {
             // Combinar datos cargados con valores por defecto para manejar nuevas propiedades
-            console.log("Resultados de cargar json: ", result.data);
             this.data = { ...this.getDefaultData(), ...result.data };
-            console.log("Data: ", this.data);
          } else if (result.error !== "FILE_NOT_FOUND") {
             console.error(`Error al cargar ${this.filename}:`, result.error);
          }

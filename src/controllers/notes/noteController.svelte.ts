@@ -40,9 +40,6 @@ class NoteController {
       return targetNoteId;
    };
 
-   /**
-    * Función legacy para compatibilidad
-    */
    createNote = (parentId?: string, noteParts?: Partial<Note>): void => {
       if (parentId && !noteQueryController.validateParentExists(parentId))
          return;
