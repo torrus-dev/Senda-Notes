@@ -1,4 +1,4 @@
-import { PersistentLocalStorageModel } from "@model/persistentLocalStorage.svelte";
+import { PersistentLocalStorageModel } from "@model/persistentLocalStorageModel.svelte";
 import type { Note } from "@projectTypes/core/noteTypes";
 
 interface FavoritesState {

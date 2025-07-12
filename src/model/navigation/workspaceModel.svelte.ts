@@ -1,6 +1,6 @@
 // workspaceModel.svelte.ts
 import { settingsController } from "@controllers/application/settingsController.svelte";
-import { PersistentLocalStorageModel } from "@model/persistentLocalStorage.svelte";
+import { PersistentLocalStorageModel } from "@model/persistentLocalStorageModel.svelte";
 import type { NoteReference } from "@projectTypes/core/noteTypes";
 
 export interface Tab {

@@ -1,4 +1,4 @@
-import { PersistentLocalStorageModel } from "@model/persistentLocalStorage.svelte";
+import { PersistentLocalStorageModel } from "@model/persistentLocalStorageModel.svelte";
 
 type CollapsibleStates = {
    [key: string]: boolean;

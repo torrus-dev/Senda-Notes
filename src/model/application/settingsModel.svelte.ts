@@ -1,5 +1,11 @@
 import { PersistentJsonFileModel } from "@model/persistentJsonFileModel.svelte";
-import { getDefaultSettings, type AppSettings } from "@schema/settingsSchema";
+
+interface AppSettings {
+   uiMode: "dark" | "light" | "system";
+   showEditorToolbar: boolean;
+   showMetadata: boolean;
+   keepTabs: boolean;
+}
 
 class SettingsModel extends PersistentJsonFileModel<AppSettings> {
    constructor() {
@@ -7,7 +13,12 @@ class SettingsModel extends PersistentJsonFileModel<AppSettings> {
    }
 
    protected getDefaultData(): AppSettings {
-      return getDefaultSettings();
+      return {
+         uiMode: "dark",
+         showEditorToolbar: false,
+         showMetadata: false,
+         keepTabs: true,
+      };
    }
 }
 

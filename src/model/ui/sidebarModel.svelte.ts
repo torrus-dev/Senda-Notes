@@ -1,4 +1,4 @@
-import { PersistentLocalStorageModel } from "@model/persistentLocalStorage.svelte";
+import { PersistentLocalStorageModel } from "@model/persistentLocalStorageModel.svelte";
 
 interface SidebarState {
    isOpen: boolean;

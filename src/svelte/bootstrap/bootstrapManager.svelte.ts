@@ -1,4 +1,3 @@
-// bootstrapManager.svelte.ts
 import { settingsModel } from "@model/application/settingsModel.svelte";
 import { workspaceModel } from "@model/navigation/workspaceModel.svelte";
 

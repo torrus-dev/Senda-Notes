@@ -1,5 +1,5 @@
 import type { GlobalProperty } from "@projectTypes/core/propertyTypes";
-import { PersistentLocalStorageModel } from "@model/persistentLocalStorage.svelte";
+import { PersistentLocalStorageModel } from "@model/persistentLocalStorageModel.svelte";
 
 interface GlobalPropertiesData {
    globalProperties: GlobalProperty[];

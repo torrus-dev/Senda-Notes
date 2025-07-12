@@ -1,6 +1,6 @@
 import type { Note } from "@projectTypes/core/noteTypes";
 import { updateModifiedMetadata } from "@utils/noteUtils";
-import { PersistentLocalStorageModel } from "@model/persistentLocalStorage.svelte";
+import { PersistentLocalStorageModel } from "@model/persistentLocalStorageModel.svelte";
 import { DateTime } from "luxon";
 
 interface NoteData {
