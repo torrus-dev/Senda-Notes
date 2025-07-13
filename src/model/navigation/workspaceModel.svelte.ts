@@ -1,5 +1,5 @@
 import type { Tab } from "@projectTypes/ui/uiTypes";
-import { settingsController } from "@controllers/application/settingsController.svelte";
+import { getSettingsController } from "@controllers/application/settingsController.svelte";
 import { PersistentLocalStorageModel } from "@model/persistentLocalStorageModel.svelte";
 
 interface WorkspaceData {
@@ -10,7 +10,7 @@ interface WorkspaceData {
 export class WorkspaceModel extends PersistentLocalStorageModel<WorkspaceData> {
    constructor() {
       super("NoteNavigation");
-      if (settingsController.get("keepTabs") === false) {
+      if (getSettingsController().get("keepTabs") === false) {
          this.data = this.getDefaultData();
       }
    }

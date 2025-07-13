@@ -100,13 +100,7 @@ let _instance: SettingsController | null = null;
 
 export function getSettingsController(): SettingsController {
    if (!_instance) {
-      _instance = $state(new SettingsController());
+      _instance = new SettingsController();
    }
    return _instance;
 }
-
-export const settingsController = {
-   get instance() {
-      return getSettingsController();
-   },
-};
