@@ -1,5 +1,4 @@
 import { settingsController } from "@controllers/application/settingsController.svelte";
-import { settingsModel } from "@model/application/settingsModel.svelte";
 import type { UiModeType } from "@projectTypes/ui/uiTypes";
 
 class UiModeController {
@@ -11,11 +10,10 @@ class UiModeController {
    );
 
    get uiMode() {
-      return settingsModel.data.uiMode;
+      return settingsController.get("uiMode");
    }
 
    set uiMode(theme) {
-      console.log("actualizando variable uiMode en modelo");
       settingsController.set("uiMode", theme);
    }
 
@@ -28,30 +26,26 @@ class UiModeController {
       }
    }
 
-   applyTheme() {
+   applyThemeToHTMLDocument() {
       const newUiMode = this.checkMode();
       document.documentElement.dataset.uiMode = newUiMode;
    }
 
    constructor() {
       $effect.root(() => {
-         // Aplica el tema cuando settingsModel está listo y reacciona a cambios posteriores
          $effect(() => {
-            if (!settingsModel.isInitialized) return;
-
-            // Track uiMode para reactividad
-            settingsModel.data.uiMode;
-            this.applyTheme();
+            if (settingsController.get("uiMode")) {
+               this.applyThemeToHTMLDocument();
+            }
          });
 
          // Effect para cambios en preferencia del sistema
          $effect(() => {
-            if (!settingsModel.isInitialized || this.uiMode !== "system")
-               return;
+            if (this.uiMode !== "system") return;
 
             const handleSystemThemeChange = (event: MediaQueryListEvent) => {
                if (this.uiMode === "system") {
-                  this.applyTheme();
+                  this.applyThemeToHTMLDocument();
                }
             };
 

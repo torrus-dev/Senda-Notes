@@ -1,14 +1,15 @@
 <script lang="ts">
-import type { Tab } from "@model/navigation/workspaceModel.svelte";
 import type { Note } from "@projectTypes/core/noteTypes";
+import type { Tab } from "@projectTypes/ui/uiTypes";
+
+import { settingsController } from "@controllers/application/settingsController.svelte";
+import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 
 import Metadata from "@components/note/widgets/Metadata.svelte";
 import PropertyList from "@components/note/widgets/PropertyList.svelte";
 import ChildNotes from "@components/note/widgets/ChildNotes.svelte";
 import Editor from "@components/note/editor/Editor.svelte";
-import { settingsController } from "@controllers/application/settingsController.svelte";
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
-import NoteTitleEditor from "./widgets/NoteTitleEditor.svelte";
+import NoteTitleEditor from "@components/note/widgets/NoteTitleEditor.svelte";
 
 let { tab }: { tab: Tab } = $props();
 let note: Note | undefined = $derived(

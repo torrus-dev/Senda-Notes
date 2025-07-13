@@ -1,8 +1,10 @@
 import type { Note } from "@projectTypes/core/noteTypes";
-import { noteModel } from "@model/notes/noteModel.svelte";
 import { getDescendantsId } from "@utils/noteUtils";
 import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 import { normalizeText } from "@utils/searchUtils";
+
+import { startupManager } from "@model/startup/startupManager.svelte";
+import { NoteModel } from "@model/notes/noteModel.svelte";
 
 // Tipos para resolución de paths
 interface PathResolution {
@@ -12,12 +14,15 @@ interface PathResolution {
 }
 
 class NoteQueryController {
-   getNoteById = noteModel.getNoteById.bind(noteModel);
-   getAllNotes = noteModel.getAllNotes.bind(noteModel);
+   private get noteModel(): NoteModel {
+      return startupManager.getModel("noteModel");
+   }
+   getNoteById = this.noteModel.getNoteById.bind(this.noteModel);
+   getAllNotes = this.noteModel.getAllNotes.bind(this.noteModel);
 
    // === MÉTODOS BÁSICOS ===
    getRootNotes() {
-      return noteModel.getAllNotes().filter((note) => !note.parentId);
+      return this.noteModel.getAllNotes().filter((note) => !note.parentId);
    }
 
    getNotesByIdList(idList: string[]): Note[] {

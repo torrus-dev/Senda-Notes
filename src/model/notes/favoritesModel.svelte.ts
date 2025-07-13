@@ -5,7 +5,7 @@ interface FavoritesState {
    favorites: Note["id"][];
 }
 
-class FavoritesModel extends PersistentLocalStorageModel<FavoritesState> {
+export class FavoritesModel extends PersistentLocalStorageModel<FavoritesState> {
    constructor() {
       super("Favorites");
    }
@@ -16,5 +16,3 @@ class FavoritesModel extends PersistentLocalStorageModel<FavoritesState> {
       };
    }
 }
-
-export let favoritesModel = $state(new FavoritesModel());

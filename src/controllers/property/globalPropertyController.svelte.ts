@@ -3,20 +3,24 @@ import type {
    GlobalProperty,
    NoteProperty,
 } from "@projectTypes/core/propertyTypes";
-import { globalPropertiesModel } from "@model/application/globalPropertiesModel.svelte";
 import { generateGlobalProperty } from "@utils/propertyUtils";
 import { normalizeText } from "@utils/searchUtils";
 import { notePropertyController } from "@controllers/property/notePropertyController.svelte";
+import { startupManager } from "@model/startup/startupManager.svelte";
+import { GlobalPropertiesModel } from "@model/application/globalPropertiesModel.svelte";
 
 class GlobalPropertyController {
+   private get globalPropertiesModel(): GlobalPropertiesModel {
+      return startupManager.getModel("globalPropertiesModel");
+   }
    getGlobalPropertyById(id: GlobalProperty["id"]): GlobalProperty | undefined {
-      return globalPropertiesModel.data.globalProperties.find(
+      return this.globalPropertiesModel.data.globalProperties.find(
          (globalProperty) => globalProperty.id === id,
       );
    }
 
    getGlobalPropertyByName(name: GlobalProperty["name"]) {
-      return globalPropertiesModel.data.globalProperties.find(
+      return this.globalPropertiesModel.data.globalProperties.find(
          (globalProperty) => globalProperty.name === name,
       );
    }
@@ -28,7 +32,7 @@ class GlobalPropertyController {
    ) {
       // Generar y registrar la propiedad global
       const newGlobalProperty = generateGlobalProperty(name, type);
-      globalPropertiesModel.createGlobalProperty(newGlobalProperty);
+      this.globalPropertiesModel.createGlobalProperty(newGlobalProperty);
 
       // Vincular la propiedad de nota que crea la propiedad global a esta
       this.linkToGlobalProperty(noteProperty, newGlobalProperty);
@@ -39,11 +43,14 @@ class GlobalPropertyController {
       updates: Partial<GlobalProperty>,
    ) {
       const globalProperty = this.getGlobalPropertyById(id);
-      if (!globalProperty) return;
-      globalPropertiesModel.updateGlobalPropertyById(id, (globalProperty) => ({
-         ...globalProperty,
-         ...updates,
-      }));
+      if (globalProperty !== undefined) return;
+      this.globalPropertiesModel.updateGlobalPropertyById(
+         id,
+         (globalProperty) => ({
+            ...globalProperty,
+            ...updates,
+         }),
+      );
    }
 
    updateGlobalPropertyType(
@@ -85,12 +92,12 @@ class GlobalPropertyController {
       if (globalProperty.linkedProperties.length > 0) {
          console.warn("Cannot delete global property in use!");
       } else {
-         globalPropertiesModel.deleteGlobalProperty(id);
+         this.globalPropertiesModel.deleteGlobalProperty(id);
       }
    }
 
    getGlobalProperties() {
-      return globalPropertiesModel.data.globalProperties;
+      return this.globalPropertiesModel.data.globalProperties;
    }
 
    getGlobalPropertiesSuggestions(
@@ -101,21 +108,23 @@ class GlobalPropertyController {
       const searchTerm = name?.trim() ? normalizeText(name) : "";
 
       // Recorremos las propiedades globales filtrandolas
-      return globalPropertiesModel.data.globalProperties.filter((property) => {
-         if (
-            noteId &&
-            property.linkedProperties.some((link) => link.noteId === noteId)
-         ) {
-            // Si hay noteId y la nota ya contiene una propiedad enlazada a la propiedad global actual, no la sugerimos
-            return false;
-         }
+      return this.globalPropertiesModel.data.globalProperties.filter(
+         (property) => {
+            if (
+               noteId &&
+               property.linkedProperties.some((link) => link.noteId === noteId)
+            ) {
+               // Si hay noteId y la nota ya contiene una propiedad enlazada a la propiedad global actual, no la sugerimos
+               return false;
+            }
 
-         // Si no hay termino de busqueda sugerimos la propiedad global actual
-         if (!searchTerm) return true;
+            // Si no hay termino de busqueda sugerimos la propiedad global actual
+            if (!searchTerm) return true;
 
-         // Comprobamos si la propiedad global despues de preparar el nombre coincide con el termino de busqueda
-         return normalizeText(property.name).includes(searchTerm);
-      });
+            // Comprobamos si la propiedad global despues de preparar el nombre coincide con el termino de busqueda
+            return normalizeText(property.name).includes(searchTerm);
+         },
+      );
    }
 
    linkToGlobalProperty(

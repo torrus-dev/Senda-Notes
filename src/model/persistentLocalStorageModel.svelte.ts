@@ -2,7 +2,9 @@ export abstract class PersistentLocalStorageModel<T> {
    data: T = $state() as T;
    public isInitialized = $state(false);
 
-   constructor(private storageKey: string) {
+   constructor(private storageKey: string) {}
+
+   public initialize() {
       this.initializeData();
    }
 

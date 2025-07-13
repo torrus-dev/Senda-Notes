@@ -4,7 +4,7 @@ type CollapsibleStates = {
    [key: string]: boolean;
 };
 
-class CollapsibleModel extends PersistentLocalStorageModel<CollapsibleStates> {
+export class CollapsibleModel extends PersistentLocalStorageModel<CollapsibleStates> {
    constructor() {
       super("collapsible-states");
    }
@@ -26,5 +26,3 @@ class CollapsibleModel extends PersistentLocalStorageModel<CollapsibleStates> {
       this.data[key] = collapsed;
    }
 }
-
-export const collapsibleModel = new CollapsibleModel();

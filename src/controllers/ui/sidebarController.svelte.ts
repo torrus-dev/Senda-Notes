@@ -1,30 +1,34 @@
-import { sidebarModel } from "@model/ui/sidebarModel.svelte";
+import { startupManager } from "@model/startup/startupManager.svelte";
+import { SidebarModel } from "@model/ui/sidebarModel.svelte";
 
 class SidebarController {
+   private get sidebarModel(): SidebarModel {
+      return startupManager.getModel("sidebarModel");
+   }
    set width(newWidth: number) {
       if (typeof newWidth === "number") {
-         sidebarModel.data.width = newWidth;
+         this.sidebarModel.data.width = newWidth;
       }
    }
 
    get width(): number | null {
-      return sidebarModel.data.width;
+      return this.sidebarModel.data.width;
    }
 
    toggle() {
-      sidebarModel.data.isOpen = !sidebarModel.data.isOpen;
+      this.sidebarModel.data.isOpen = !this.sidebarModel.data.isOpen;
    }
 
    close() {
-      sidebarModel.data.isOpen = false;
+      this.sidebarModel.data.isOpen = false;
    }
 
    open() {
-      sidebarModel.data.isOpen = true;
+      this.sidebarModel.data.isOpen = true;
    }
 
    get isOpen() {
-      return sidebarModel.data.isOpen;
+      return this.sidebarModel.data.isOpen;
    }
 }
 

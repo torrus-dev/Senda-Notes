@@ -1,7 +1,6 @@
 import { FocusTarget } from "@projectTypes/ui/uiTypes";
 import type { Note, NoteStats } from "@projectTypes/core/noteTypes";
 
-import { noteModel } from "@model/notes/noteModel.svelte";
 import {
    createDefaultMetadata,
    generateUniqueTitle,
@@ -17,12 +16,18 @@ import { notificationController } from "@controllers/application/notificationCon
 import { globalConfirmationDialog } from "@controllers/menu/confirmationDialogController.svelte";
 import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 
+import { startupManager } from "@model/startup/startupManager.svelte";
+import { NoteModel } from "@model/notes/noteModel.svelte";
+
 /**
  * Controlador principal de notas
  * Se enfoca en operaciones CRUD básicas y coordinación con otros controladores
  */
 class NoteController {
-   setAllNotes = noteModel.setAllNotes.bind(noteModel);
+   private get noteModel(): NoteModel {
+      return startupManager.getModel("noteModel");
+   }
+   setAllNotes = this.noteModel.setAllNotes.bind(this.noteModel);
 
    // === FUNCIONES PÚBLICAS DE CREACIÓN ===
 
@@ -64,7 +69,7 @@ class NoteController {
       try {
          const newNote: Note = this.buildNoteObject(parentId, noteParts);
 
-         noteModel.createNote(newNote);
+         this.noteModel.createNote(newNote);
          this.updateParentChildren(parentId, newNote.id);
 
          return newNote.id;
@@ -77,7 +82,10 @@ class NoteController {
    private buildNoteObject(parentId?: string, noteParts?: Partial<Note>): Note {
       return {
          id: noteParts?.id ?? crypto.randomUUID(),
-         title: generateUniqueTitle(noteModel.getAllNotes(), noteParts?.title),
+         title: generateUniqueTitle(
+            this.noteModel.getAllNotes(),
+            noteParts?.title,
+         ),
          children: noteParts?.children ?? [],
          content: noteParts?.content ?? "",
          metadata: noteParts?.metadata ?? createDefaultMetadata(),
@@ -94,7 +102,7 @@ class NoteController {
    ): void {
       if (!parentId) return;
 
-      noteModel.updateNote(parentId, (parent) => ({
+      this.noteModel.updateNote(parentId, (parent) => ({
          ...parent,
          children: [...parent.children, childId],
       }));
@@ -108,7 +116,7 @@ class NoteController {
          return;
       }
 
-      noteModel.updateNote(noteId, (note) => ({ ...note, ...updates }));
+      this.noteModel.updateNote(noteId, (note) => ({ ...note, ...updates }));
    };
 
    updateNoteTitle = (noteId: string, title: string): void => {
@@ -174,7 +182,7 @@ class NoteController {
       idsToDelete.add(id);
 
       // Batch update: eliminar notas y limpiar referencias en una sola operación
-      noteModel.updateAllNotes((notes) => {
+      this.noteModel.updateAllNotes((notes) => {
          // Filtrar notas eliminadas
          const remainingNotes = notes.filter(
             (note) => !idsToDelete.has(note.id),

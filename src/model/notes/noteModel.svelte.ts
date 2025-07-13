@@ -7,7 +7,7 @@ interface NoteData {
    notes: Note[];
 }
 
-class NoteModel extends PersistentLocalStorageModel<NoteData> {
+export class NoteModel extends PersistentLocalStorageModel<NoteData> {
    constructor() {
       super("notes");
    }
@@ -75,5 +75,3 @@ class NoteModel extends PersistentLocalStorageModel<NoteData> {
       this.data.notes = this.data.notes.filter((note) => note.id !== id);
    }
 }
-
-export const noteModel = $state(new NoteModel());

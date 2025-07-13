@@ -1,19 +1,20 @@
 <script lang="ts">
-import { uiModeController } from "@controllers/ui/uiModeController.svelte";
-import MainView from "@components/MainView.svelte";
+// import { uiModeController } from "@controllers/ui/uiModeController.svelte";
+import { startupManager } from "../model/startup/startupManager.svelte";
+// import MainView from "@components/MainView.svelte";
 import { Settings } from "luxon";
-import { startupManager } from "./startup/startupManager.svelte";
 import LoadingScreen from "@components/LoadingScreen.svelte";
-
-Settings.defaultLocale = "es-ES";
 
 startupManager.launchApp();
 
-uiModeController.applyTheme();
+Settings.defaultLocale = "es-ES";
+
+// uiModeController.applyThemeToHTMLDocument();
 </script>
 
-{#if !startupManger.isReady}
+{#if !startupManager.isReady}
    <LoadingScreen />
 {:else}
-   <MainView />
+   PATO
+   <!-- <MainView /> -->
 {/if}

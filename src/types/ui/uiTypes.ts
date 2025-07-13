@@ -1,4 +1,4 @@
-import type { Note } from "@projectTypes/core/noteTypes";
+import type { Note, NoteReference } from "@projectTypes/core/noteTypes";
 
 // UI MODE
 export type UiModeType = "light" | "dark" | "system";
@@ -52,4 +52,10 @@ export interface SearchResult {
    matchType: "title" | "alias";
    matchedText: string;
    path: string;
+}
+
+// WORKSPACE
+export interface Tab {
+   noteReference: NoteReference | undefined;
+   id: string;
 }

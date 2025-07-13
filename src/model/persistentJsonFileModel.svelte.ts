@@ -5,9 +5,7 @@ export abstract class PersistentJsonFileModel<T> {
    private readonly DEBOUNCE_DELAY = 500; // ms
    private initializationPromise: Promise<void> | null = null;
 
-   constructor(private filename: string) {
-      this.initialize()
-   }
+   constructor(private filename: string) {}
 
    public async initialize(): Promise<void> {
       if (this.initializationPromise) {
@@ -20,16 +18,8 @@ export abstract class PersistentJsonFileModel<T> {
 
    private async initializeData(): Promise<void> {
       try {
-         console.log(
-            `PersistentJsonFileModel: Iniciando carga de ${this.filename}`,
-         );
-
          await this.loadData();
          this.isInitialized = true;
-
-         console.log(
-            `PersistentJsonFileModel: ${this.filename} inicializado correctamente`,
-         );
 
          // Configurar auto-guardado al detectar cambios
          $effect.root(() => {
@@ -67,26 +57,30 @@ export abstract class PersistentJsonFileModel<T> {
    private async saveData() {
       try {
          const serializableData = $state.snapshot(this.data);
-
-         console.log(`PersistentJsonFileModel: Guardando ${this.filename}...`);
          const result = await window.electronAPI.fs.saveUserConfigJson(
             this.filename,
             serializableData,
          );
          if (!result.success) {
-            console.error(`Error al guardar ${this.filename}:`, result.error);
+            console.error(
+               `PersistentJsonFileModel: Error al guardar ${this.filename}:`,
+               result.error,
+            );
          } else {
-            console.log(`Guardado archivo ${this.filename}`);
+            console.log(
+               `PersistentJsonFileModel: Guardado archivo ${this.filename}`,
+            );
          }
       } catch (error) {
-         console.error(`Error al guardar ${this.filename}:`, error);
+         console.error(
+            `PersistentJsonFileModel: Error al guardar ${this.filename}:`,
+            error,
+         );
       }
    }
 
    private async loadData() {
       try {
-         console.log(`PersistentJsonFileModel: Cargando ${this.filename}...`);
-
          const result = await window.electronAPI.fs.loadUserConfigJson(
             this.filename,
          );
@@ -99,15 +93,21 @@ export abstract class PersistentJsonFileModel<T> {
                this.data,
             );
          } else if (result.error !== "FILE_NOT_FOUND") {
-            console.error(`Error al cargar ${this.filename}:`, result.error);
+            console.error(
+               `PersistentJsonFileModel: Error al cargar ${this.filename}:`,
+               result.error,
+            );
          } else {
-            console.log(
+            console.warn(
                `PersistentJsonFileModel: Archivo ${this.filename} no encontrado, usando defaults`,
             );
          }
          // Si el archivo no existe (FILE_NOT_FOUND), se mantienen los valores por defecto
       } catch (error) {
-         console.error(`Error al cargar ${this.filename}:`, error);
+         console.error(
+            `PersistentJsonFileModel: Error al cargar ${this.filename}:`,
+            error,
+         );
          throw error;
       }
    }

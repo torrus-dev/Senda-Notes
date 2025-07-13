@@ -26,6 +26,12 @@ export function createMainWindow(): BrowserWindow {
       },
    });
 
+   // para facilitar el desarrollo
+   if (isDev) {
+      mainWindow.maximize(); // Maximiza la ventana
+      mainWindow.webContents.openDevTools();
+   }
+
    // Configurar los handlers de ventana
    setupWindowHandlers(mainWindow);
 

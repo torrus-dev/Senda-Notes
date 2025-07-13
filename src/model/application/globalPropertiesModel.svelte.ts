@@ -5,7 +5,7 @@ interface GlobalPropertiesData {
    globalProperties: GlobalProperty[];
 }
 
-class GlobalPropertiesModel extends PersistentLocalStorageModel<GlobalPropertiesData> {
+export class GlobalPropertiesModel extends PersistentLocalStorageModel<GlobalPropertiesData> {
    constructor() {
       super("GlobalProperties");
    }
@@ -39,5 +39,3 @@ class GlobalPropertiesModel extends PersistentLocalStorageModel<GlobalProperties
       }
    }
 }
-
-export let globalPropertiesModel = $state(new GlobalPropertiesModel());

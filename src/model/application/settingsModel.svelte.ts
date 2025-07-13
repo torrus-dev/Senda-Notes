@@ -1,7 +1,7 @@
 import { PersistentJsonFileModel } from "@model/persistentJsonFileModel.svelte";
 import { getDefaultSettings, type AppSettings } from "@schema/settingsSchema";
 
-class SettingsModel extends PersistentJsonFileModel<AppSettings> {
+export class SettingsModel extends PersistentJsonFileModel<AppSettings> {
    constructor() {
       super("app-settings");
    }
@@ -10,5 +10,3 @@ class SettingsModel extends PersistentJsonFileModel<AppSettings> {
       return getDefaultSettings();
    }
 }
-
-export const settingsModel = $state(new SettingsModel());

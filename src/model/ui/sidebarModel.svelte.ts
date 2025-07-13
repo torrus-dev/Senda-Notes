@@ -5,7 +5,7 @@ interface SidebarState {
    width: number | null;
 }
 
-class SidebarModel extends PersistentLocalStorageModel<SidebarState> {
+export class SidebarModel extends PersistentLocalStorageModel<SidebarState> {
    constructor() {
       super("Sidebar");
    }
@@ -17,5 +17,3 @@ class SidebarModel extends PersistentLocalStorageModel<SidebarState> {
       };
    }
 }
-
-export const sidebarModel = $state(new SidebarModel());
