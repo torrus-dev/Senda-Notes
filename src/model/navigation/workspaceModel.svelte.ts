@@ -1,4 +1,3 @@
-// workspaceModel.svelte.ts
 import { settingsController } from "@controllers/application/settingsController.svelte";
 import { PersistentLocalStorageModel } from "@model/persistentLocalStorageModel.svelte";
 import type { NoteReference } from "@projectTypes/core/noteTypes";
@@ -16,6 +15,9 @@ interface WorkspaceData {
 class WorkspaceModel extends PersistentLocalStorageModel<WorkspaceData> {
    constructor() {
       super("NoteNavigation");
+      if (settingsController.get("keepTabs") === false) {
+         this.data = this.getDefaultData();
+      }
    }
 
    protected getDefaultData(): WorkspaceData {
@@ -23,13 +25,6 @@ class WorkspaceModel extends PersistentLocalStorageModel<WorkspaceData> {
          tabs: [],
          activeTabId: undefined,
       };
-   }
-
-   // Método público para reinicializar después de que settings esté listo
-   public reinitializeWithSettings(): void {
-      if (settingsController.get("keepTabs") === false) {
-         this.data = this.getDefaultData();
-      }
    }
 }
 

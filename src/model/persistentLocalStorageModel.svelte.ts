@@ -3,7 +3,6 @@ export abstract class PersistentLocalStorageModel<T> {
    public isInitialized = $state(false);
 
    constructor(private storageKey: string) {
-      this.data = this.getDefaultData();
       this.initializeData();
    }
 

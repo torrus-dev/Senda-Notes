@@ -6,7 +6,7 @@ export abstract class PersistentJsonFileModel<T> {
    private initializationPromise: Promise<void> | null = null;
 
    constructor(private filename: string) {
-      this.initializeData();
+      this.initialize()
    }
 
    public async initialize(): Promise<void> {
