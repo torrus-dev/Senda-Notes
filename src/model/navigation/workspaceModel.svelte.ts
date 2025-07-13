@@ -1,6 +1,7 @@
 import type { Tab } from "@projectTypes/ui/uiTypes";
-import { getSettingsController } from "@controllers/application/settingsController.svelte";
+import { settingsController } from "@controllers/application/settingsController.svelte";
 import { PersistentLocalStorageModel } from "@model/persistentLocalStorageModel.svelte";
+import { startupManager } from "@model/startup/startupManager.svelte";
 
 interface WorkspaceData {
    tabs: Tab[];
@@ -8,11 +9,38 @@ interface WorkspaceData {
 }
 
 export class WorkspaceModel extends PersistentLocalStorageModel<WorkspaceData> {
+   settingsAplied = false;
    constructor() {
       super("NoteNavigation");
-      if (getSettingsController().get("keepTabs") === false) {
-         this.data = this.getDefaultData();
-      }
+      // No acceder a settings aquí
+   }
+
+   // Override initialize para aplicar la lógica de settings después de cargar
+   public initialize() {
+      super.initialize();
+
+      // Aplicar lógica después de inicializar
+      $effect.root(() => {
+         $effect(() => {
+            if (
+               !this.settingsAplied &&
+               this.isInitialized &&
+               startupManager.isReady
+            ) {
+               this.settingsAplied = true;
+               try {
+                  if (settingsController.get("keepTabs") === false) {
+                     this.data = this.getDefaultData();
+                  }
+               } catch (error) {
+                  console.warn(
+                     "Error al acceder a settings en WorkspaceModel:",
+                     error,
+                  );
+               }
+            }
+         });
+      });
    }
 
    protected getDefaultData(): WorkspaceData {

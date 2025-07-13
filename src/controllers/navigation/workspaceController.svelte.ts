@@ -6,11 +6,10 @@ import { noteQueryController } from "@controllers/notes/noteQueryController.svel
 import { createNoteReference } from "@utils/noteUtils";
 import { WorkspaceModel } from "@model/navigation/workspaceModel.svelte";
 
-
 class WorkspaceController {
    private get workspaceModel(): WorkspaceModel {
-         return startupManager.getModel("workspaceModel");
-      }
+      return startupManager.getModel("workspaceModel");
+   }
    getTabByTabId(tabId: Tab["id"]): Tab | undefined {
       return this.workspaceModel.data.tabs.find((tab: Tab) => tab.id === tabId);
    }
@@ -28,7 +27,9 @@ class WorkspaceController {
    }
 
    findTabIndexByTabId(tabId: string): number {
-      return this.workspaceModel.data.tabs.findIndex((tab: Tab) => tab.id === tabId);
+      return this.workspaceModel.data.tabs.findIndex(
+         (tab: Tab) => tab.id === tabId,
+      );
    }
    findTabIndexByNoteId(noteId: Note["id"]): number {
       return this.workspaceModel.data.tabs.findIndex(

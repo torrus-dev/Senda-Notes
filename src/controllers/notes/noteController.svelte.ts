@@ -225,4 +225,15 @@ class NoteController {
    }
 }
 
-export const noteController = $state(new NoteController());
+let instance: NoteController | null = null;
+
+export const noteController = new Proxy(
+   {},
+   {
+      get(_, prop) {
+         if (!instance) instance = new NoteController();
+         const value = instance[prop as keyof NoteController];
+         return typeof value === "function" ? value.bind(instance) : value;
+      },
+   },
+) as NoteController;

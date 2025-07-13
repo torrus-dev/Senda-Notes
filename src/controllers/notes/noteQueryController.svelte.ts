@@ -17,6 +17,7 @@ class NoteQueryController {
    private get noteModel(): NoteModel {
       return startupManager.getModel("noteModel");
    }
+
    getNoteById = this.noteModel.getNoteById.bind(this.noteModel);
    getAllNotes = this.noteModel.getAllNotes.bind(this.noteModel);
 
@@ -165,4 +166,15 @@ class NoteQueryController {
    }
 }
 
-export const noteQueryController = new NoteQueryController();
+let instance: NoteQueryController | null = null;
+
+export const noteQueryController = new Proxy(
+   {},
+   {
+      get(_, prop) {
+         if (!instance) instance = new NoteQueryController();
+         const value = instance[prop as keyof NoteQueryController];
+         return typeof value === "function" ? value.bind(instance) : value;
+      },
+   },
+) as NoteQueryController;

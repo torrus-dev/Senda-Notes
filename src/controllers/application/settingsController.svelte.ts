@@ -11,6 +11,9 @@ class SettingsController {
       return startupManager.getModel("settingsModel");
    }
 
+   get isReady(): boolean {
+      return this.settingsModel.isInitialized;
+   }
    // Método genérico para obtener cualquier valor
    get<K extends SettingsKey>(key: K): AppSettings[K] {
       return this.settingsModel.data[key];
@@ -96,11 +99,15 @@ class SettingsController {
    }
 }
 
-let _instance: SettingsController | null = null;
+let instance: SettingsController | null = null;
 
-export function getSettingsController(): SettingsController {
-   if (!_instance) {
-      _instance = new SettingsController();
-   }
-   return _instance;
-}
+export const settingsController = new Proxy(
+   {},
+   {
+      get(_, prop) {
+         if (!instance) instance = new SettingsController();
+         const value = instance[prop as keyof SettingsController];
+         return typeof value === "function" ? value.bind(instance) : value;
+      },
+   },
+) as SettingsController;

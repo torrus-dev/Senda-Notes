@@ -65,4 +65,15 @@ class UiModeController {
    }
 }
 
-export const uiModeController = $state(new UiModeController());
+let instance: UiModeController | null = null;
+
+export const uiModeController = new Proxy(
+   {},
+   {
+      get(_, prop) {
+         if (!instance) instance = new UiModeController();
+         const value = instance[prop as keyof UiModeController];
+         return typeof value === "function" ? value.bind(instance) : value;
+      },
+   },
+) as UiModeController;
