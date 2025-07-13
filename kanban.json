@@ -16,6 +16,10 @@
             "title": "Doing",
             "tasks": [
                 {
+                    "text": "Prompt:\nEres un desarrollador experto en Svelte 5, typescript y patrones.\n\nEstoy haciendo una aplicación de notas local con Vite + Svelte 5 + Typescript que usa el patrón MVC para organizarse.\n\nCree dos modelos abstractos para estandarizar y simplificar el guardado:\n\npesistentLocalStorageModel.svelte.ts (sincrono)\n\npersistentJsonFileModel.svelte.ts (asincrono)\n\nTenia problemas en la interacción de modelos al intentar acceder a modelos que guardan en JSON como settingsModel me encontraba que los datos no se habian cargado todavia.\n\nworkspaceModel.svelte.ts\n\nsettingsModel.svelte.ts\n\nLuego tuve que adaptar algunos controllers que se importaban durante el comienzo de la aplicación o cargaban con la importación al comienzo para que no se auto inicializasen al llamar a su modulo al no tener lazy loading\n\nsettingsController.svelte.ts (que tuve que adaptar para que tuviese lazy initializatio)\n\nPara centralizar y ordenar la inicialización con ayuda de Claude cree este archivo startupManager.svelte.ts\n\nLa idea era inicializar de forma explicita ordenada y uno tras otro los modelos para evitar estos problemas. Quiero tener algo mucho mas estricto que bloquee la aplicación o hilo principal hasta que no este todo bien cargado y forzarse la instancia secuencial en los modelos.\n\nAsí me evitaria el tener que usar $effect y workarrounds en workspaceModel por ahora el unico modelo que guarda en JSON que hay es settingsModel\n\nTambien no se si settingsController deberia tener sus metodos principales set y get asincronos o no se.\n\nQuiero que revises todo este sistema.\n\nEste este es el componente raiz \n\nApp.svelte",
+                    "id": "gksv6iku10qc05q76i1df6uq"
+                },
+                {
                     "text": "Volver a añadir soporte para el title dentro de noteContent en el nuevo componente",
                     "id": "y0inl37r8heioo8k8hevfq2v"
                 },
@@ -57,5 +61,5 @@
     ],
     "autosave": true,
     "saveToFile": true,
-    "timestamp": 1752063150603
+    "timestamp": 1752445321839
 }

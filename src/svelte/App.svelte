@@ -15,7 +15,7 @@ Settings.defaultLocale = "es-ES";
 {#if !isReady}
    <LoadingScreen />
 {:else}
-   <!-- Modificar uiModeController internamente para que se aplique lo que tenga "system" hasta que esten disponibles las settings y volver a cargar con un effect cuando startupManager.isReady para no darle un flashazo al usuario -->
+   <!-- En el futuro modificar uiModeController internamente para que se aplique lo que tenga "system" hasta que esten disponibles las settings y volver a cargar con un effect cuando startupManager.isReady para no darle un flashazo al usuario -->
    {uiModeController.applyThemeToHTMLDocument()}
    <MainView />
 {/if}

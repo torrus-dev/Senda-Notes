@@ -19,7 +19,6 @@ class StartupManager {
    public models: Record<string, any> = {};
 
    private async setupSteps() {
-
       const steps: StartupStep[] = [
          {
             name: "Inicializando configuración...",
@@ -131,13 +130,3 @@ class StartupManager {
 }
 
 export const startupManager = new StartupManager();
-
-// export const settingsModel = $derived(startupManager.settingsModel);
-// export const workspaceModel = $derived(startupManager.workspaceModel);
-// export const noteModel = $derived(startupManager.noteModel);
-// export const globalPropertiesModel = $derived(
-//    startupManager.globalPropertiesModel,
-// );
-// export const favoritesModel = $derived(startupManager.favoritesModel);
-// export const collapsibleModel = $derived(startupManager.collapsibleModel);
-// export const sidebarModel = $derived(startupManager.sidebarModel);
