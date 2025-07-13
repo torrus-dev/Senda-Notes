@@ -6,10 +6,9 @@ export abstract class PersistentJsonFileModel<T> {
    private initializationPromise: Promise<void> | null = null;
 
    constructor(private filename: string) {
-      this.data = this.getDefaultData();
+      this.initializeData();
    }
 
-   // Método público para inicializar desde bootstrap
    public async initialize(): Promise<void> {
       if (this.initializationPromise) {
          return this.initializationPromise;
@@ -46,6 +45,7 @@ export abstract class PersistentJsonFileModel<T> {
             `PersistentJsonFileModel: Error inicializando ${this.filename}:`,
             error,
          );
+         this.data = this.getDefaultData();
          this.isInitialized = true; // Marcar como inicializado aunque falle
          throw error;
       }

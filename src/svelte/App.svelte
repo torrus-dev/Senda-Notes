@@ -28,7 +28,7 @@ $effect(() => {
 </script>
 
 {#if !bootstrapManager.isReady}
-   <LoadingScreen appName="Notas App" />
+   <LoadingScreen />
 {:else}
    <MainView />
 {/if}
