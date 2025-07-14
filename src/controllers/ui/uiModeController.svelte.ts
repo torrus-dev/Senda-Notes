@@ -1,52 +1,39 @@
 import { settingsController } from "@controllers/application/settingsController.svelte";
+import { startupManager } from "@model/startup/startupManager.svelte";
 import type { UiModeType } from "@projectTypes/ui/uiTypes";
 
 class UiModeController {
-   prefersDarkColorScheme = window.matchMedia("(prefers-color-scheme: dark)");
+   private prefersDarkColorScheme = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+   );
+
+   uiMode: UiModeType = $derived(
+      startupManager.isReady ? settingsController.get("uiMode") : "system",
+   );
 
    isDarkMode: boolean = $derived(
       this.uiMode === "dark" ||
          (this.uiMode === "system" && this.prefersDarkColorScheme.matches),
    );
 
-   get uiMode() {
-      return settingsController.get("uiMode");
-   }
-
-   set uiMode(theme) {
-      settingsController.set("uiMode", theme);
-   }
-
-   private checkMode(): Exclude<UiModeType, "system"> {
-      if (this.uiMode === "system") {
-         // Comprobar que modo esta usando el dispositivo
-         return this.prefersDarkColorScheme.matches ? "dark" : "light";
-      } else {
-         return this.uiMode as Exclude<UiModeType, "system">;
-      }
-   }
-
-   applyThemeToHTMLDocument() {
-      const newUiMode = this.checkMode();
-      document.documentElement.dataset.uiMode = newUiMode;
-   }
-
    constructor() {
+      // al instanciarlo aplicamos el tema que sera "system" para evitar dar un flash al usuario
+      this.applyThemeToHTMLDocument();
+
       $effect.root(() => {
          $effect(() => {
-            if (settingsController.get("uiMode")) {
+            // Hacer que el effect sea reactivo al valor de uiMode
+            if (startupManager.isReady && this.uiMode) {
                this.applyThemeToHTMLDocument();
             }
          });
 
-         // Effect para cambios en preferencia del sistema
+         // Effect para cambios en preferencia del sistema cuando el valor es "system"
          $effect(() => {
             if (this.uiMode !== "system") return;
 
             const handleSystemThemeChange = (event: MediaQueryListEvent) => {
-               if (this.uiMode === "system") {
-                  this.applyThemeToHTMLDocument();
-               }
+               this.applyThemeToHTMLDocument();
             };
 
             this.prefersDarkColorScheme.addEventListener(
@@ -63,17 +50,16 @@ class UiModeController {
          });
       });
    }
+
+   applyThemeToHTMLDocument() {
+      let newUiMode: Exclude<UiModeType, "system">;
+      if (this.uiMode === "system") {
+         newUiMode = this.prefersDarkColorScheme.matches ? "dark" : "light";
+      } else {
+         newUiMode = this.uiMode;
+      }
+      document.documentElement.dataset.uiMode = newUiMode;
+   }
 }
 
-let instance: UiModeController | null = null;
-
-export const uiModeController = new Proxy(
-   {},
-   {
-      get(_, prop) {
-         if (!instance) instance = new UiModeController();
-         const value = instance[prop as keyof UiModeController];
-         return typeof value === "function" ? value.bind(instance) : value;
-      },
-   },
-) as UiModeController;
+export let uiModeController = $state(new UiModeController());

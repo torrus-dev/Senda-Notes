@@ -10,7 +10,6 @@ export class WorkspaceModel extends PersistentLocalStorageModel<WorkspaceData> {
    settingsAplied = false;
    constructor() {
       super("NoteNavigation");
-      // No acceder a settings aquí
    }
 
    protected getDefaultData(): WorkspaceData {

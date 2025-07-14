@@ -9,13 +9,14 @@ startupManager.launchApp();
 
 let isReady = $derived(startupManager.isReady);
 
+// llamar a uiModeController para que se inicialice
+uiModeController;
+
 Settings.defaultLocale = "es-ES";
 </script>
 
 {#if !isReady}
    <LoadingScreen />
 {:else}
-   <!-- En el futuro modificar uiModeController internamente para que se aplique lo que tenga "system" hasta que esten disponibles las settings y volver a cargar con un effect cuando startupManager.isReady para no darle un flashazo al usuario -->
-   {uiModeController.applyThemeToHTMLDocument()}
    <MainView />
 {/if}
