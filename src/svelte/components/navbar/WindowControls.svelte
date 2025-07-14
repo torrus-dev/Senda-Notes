@@ -1,15 +1,8 @@
 <script lang="ts">
-import {
-   Maximize,
-   MaximizeIcon,
-   Minimize,
-   MinimizeIcon,
-   MinusIcon,
-   XIcon,
-} from "lucide-svelte";
+import { MaximizeIcon, MinimizeIcon, MinusIcon, XIcon } from "lucide-svelte";
 import { onMount } from "svelte";
 
-let isMaximized = $state(false);
+let isMaximized = $state(true);
 let platform = $state("");
 
 onMount(async () => {
@@ -41,13 +34,13 @@ async function handleClose() {
 </script>
 
 <button
-   class="flex cursor-pointer items-center justify-center border-0 bg-transparent p-3 transition-colors hover:bg-black/10"
+   class="bg-interactive cursor-pointer border-0 p-3 transition-colors"
    onclick={handleMinimize}
    aria-label="Minimizar">
    <MinusIcon size={20} />
 </button>
 <button
-   class="flex cursor-pointer items-center justify-center border-0 bg-transparent p-3 transition-colors hover:bg-black/10"
+   class="bg-interactive cursor-pointer border-0 p-3 transition-colors"
    onclick={handleMaximize}
    aria-label="Maximizar">
    {#if isMaximized}
@@ -57,7 +50,7 @@ async function handleClose() {
    {/if}
 </button>
 <button
-   class="flexcursor-pointer items-center justify-center border-0 bg-transparent p-3 transition-colors hover:bg-red-500/80 hover:text-white"
+   class="cursor-pointer border-0 p-3 transition-colors hover:bg-red-500/80 hover:text-white"
    onclick={handleClose}
    aria-label="Cerrar">
    <XIcon size={20} />
