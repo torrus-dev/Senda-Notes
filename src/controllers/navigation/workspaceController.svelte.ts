@@ -5,11 +5,27 @@ import { startupManager } from "@model/startup/startupManager.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 import { createNoteReference } from "@utils/noteUtils";
 import { WorkspaceModel } from "@model/navigation/workspaceModel.svelte";
+import { settingsController } from "@controllers/application/settingsController.svelte";
 
 class WorkspaceController {
    private get workspaceModel(): WorkspaceModel {
       return startupManager.getModel("workspaceModel");
    }
+
+   private settingsAplied = false;
+   constructor() {
+      $effect.root(() => {
+         $effect(() => {
+            if (!this.settingsAplied && settingsController.isReady) {
+               if (settingsController.get("keepTabs") === false) {
+                  this.closeAllTabs();
+               }
+               this.settingsAplied = true;
+            }
+         });
+      });
+   }
+
    getTabByTabId(tabId: Tab["id"]): Tab | undefined {
       return this.workspaceModel.data.tabs.find((tab: Tab) => tab.id === tabId);
    }
@@ -218,4 +234,15 @@ class WorkspaceController {
    }
 }
 
-export const workspaceController = $state(new WorkspaceController());
+let instance: WorkspaceController | null = null;
+
+export const workspaceController = new Proxy(
+   {},
+   {
+      get(_, prop) {
+         if (!instance) instance = new WorkspaceController();
+         const value = instance[prop as keyof WorkspaceController];
+         return typeof value === "function" ? value.bind(instance) : value;
+      },
+   },
+) as WorkspaceController;
