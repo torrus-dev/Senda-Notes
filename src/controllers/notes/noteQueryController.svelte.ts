@@ -38,7 +38,7 @@ class NoteQueryController {
    }
 
    // === MÉTODOS DE PATH ===
-   getPathAsArray(noteId: string): Array<{ id: string; title: string }> {
+   getNotePathAsArray(noteId: string): Array<{ id: string; title: string }> {
       const path: Array<{ id: string; title: string }> = [];
       let currentNote = this.getNoteById(noteId);
 
@@ -52,8 +52,8 @@ class NoteQueryController {
       return path;
    }
 
-   getPathAsString(noteId: string): string {
-      return this.getPathAsArray(noteId)
+   getNotePathAsString(noteId: string): string {
+      return this.getNotePathAsArray(noteId)
          .map((p) => p.title)
          .join("/");
    }
@@ -119,7 +119,7 @@ class NoteQueryController {
 
    // === MÉTODOS DE DESCENDIENTES ===
    /**
-    * Obtiene todos los IDs descendientes de una nota (excluyendo la nota misma)
+    * Obtiene todos los IDs descendientes (directos e indirectos) de una nota (excluyendo la nota misma)
     */
    getDescendantIds(noteId: string): Set<string> {
       const descendants = new Set<string>();
@@ -138,6 +138,30 @@ class NoteQueryController {
       return descendants;
    }
 
+   getDirectDescendantsId(noteId: string): Set<Note["id"]> {
+      const descendants = new Set<Note["id"]>();
+
+      this.getAllNotes().forEach((note) => {
+         if (note.parentId === noteId) {
+            descendants.add(note.id);
+         }
+      });
+
+      return descendants;
+   }
+
+   getDirectDescendants(noteId: string): Note[] {
+      const descendants: Note[] = [];
+
+      this.getAllNotes().forEach((note) => {
+         if (note.parentId === noteId) {
+            descendants.push(note);
+         }
+      });
+
+      return descendants;
+   }
+
    // === MÉTODOS DE VALIDACIÓN ===
    requireNote(id: string, context = "Note"): Note {
       const note = this.getNoteById(id);
@@ -151,18 +175,6 @@ class NoteQueryController {
          return false;
       }
       return true;
-   }
-
-   /**
-    * Verifica si mover una nota crearía un ciclo
-    */
-   wouldCreateCycle(parentId: string, childId: string): boolean {
-      let current = this.getNoteById(parentId);
-      while (current?.parentId) {
-         if (current.parentId === childId) return true;
-         current = this.getNoteById(current.parentId);
-      }
-      return false;
    }
 }
 

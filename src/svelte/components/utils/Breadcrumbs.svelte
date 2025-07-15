@@ -19,7 +19,7 @@ import { HomeIcon } from "lucide-svelte";
 let { noteId, showHome }: { showHome: boolean; noteId: string } = $props();
 
 let path: { id: string; title: string }[] = $derived(
-   noteId ? noteQueryController.getPathAsArray(noteId) : [],
+   noteId ? noteQueryController.getNotePathAsArray(noteId) : [],
 );
 </script>
 

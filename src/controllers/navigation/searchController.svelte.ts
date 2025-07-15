@@ -165,7 +165,7 @@ class SearchController {
    }
 
    private getNormalizedNotePath(noteId: string): string {
-      return normalizeText(noteQueryController.getPathAsString(noteId));
+      return normalizeText(noteQueryController.getNotePathAsString(noteId));
    }
 
    // === CREACIÓN Y ORDENAMIENTO DE RESULTADOS ===
@@ -179,7 +179,7 @@ class SearchController {
          note,
          matchType,
          matchedText,
-         path: noteQueryController.getPathAsString(note.id),
+         path: noteQueryController.getNotePathAsString(note.id),
       };
    }
 

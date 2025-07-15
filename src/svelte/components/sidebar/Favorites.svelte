@@ -29,7 +29,6 @@ let favorites: Note[] = $derived(favoriteController.getFavoritesAsNotes());
          {@const favoriteMenuItems: MenuItem[] = getCommonNoteMenuItems({
                noteId:favoriteNote.id,
                showCreateChild: false,
-               showRename: true,
                showDelete: false
             })}
          <Button
@@ -40,6 +39,7 @@ let favorites: Note[] = $derived(favoriteController.getFavoritesAsNotes());
             }}>
             {favoriteNote.title}
          </Button>
+         
       {/each}
    </ul>
 </Collapsible>

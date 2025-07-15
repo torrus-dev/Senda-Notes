@@ -45,9 +45,21 @@ class NoteTreeController {
          throw new Error("Cannot move note to itself");
       }
 
-      if (noteQueryController.wouldCreateCycle(newParentId, noteId)) {
+      if (this.wouldCreateCycle(newParentId, noteId)) {
          throw new Error("Cannot move note to its own descendant");
       }
+   }
+
+   /**
+    * Verifica si mover una nota crearía un ciclo
+    */
+   wouldCreateCycle(parentId: string, childId: string): boolean {
+      let current = noteQueryController.getNoteById(parentId);
+      while (current?.parentId) {
+         if (current.parentId === childId) return true;
+         current = noteQueryController.getNoteById(current.parentId);
+      }
+      return false;
    }
 
    // === MÉTODOS DE MANIPULACIÓN DEL ÁRBOL ===
@@ -61,12 +73,12 @@ class NoteTreeController {
    }
 
    insertIntoParent(parentId: string, noteId: string, position: number): void {
-      const parent = noteQueryController.requireNote(parentId);
-      const children = [...parent.children];
+      const parentNote: Note = noteQueryController.requireNote(parentId);
+      const childrenIds: Note["id"][] = [...parentNote.children];
 
       // Filtrar el noteId si ya existe
-      const filtered = children.filter((id) => id !== noteId);
-      const originalIndex = children.indexOf(noteId);
+      const filtered = childrenIds.filter((id) => id !== noteId);
+      const originalIndex = childrenIds.indexOf(noteId);
 
       // Calcular posición ajustada usando la lógica original
       const adjustedPosition = this.getAdjustedPosition(

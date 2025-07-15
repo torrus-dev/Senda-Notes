@@ -18,7 +18,7 @@ import { onClickOutside } from "@directives/onClickOutside";
 let { note }: { note: Note | undefined } = $props();
 
 const getNotePath = () =>
-   note?.id ? noteQueryController.getPathAsString(note?.id) : "";
+   note?.id ? noteQueryController.getNotePathAsString(note?.id) : "";
 
 let searchValue: string = $state("");
 let searchElement: HTMLInputElement | undefined = $state(undefined);

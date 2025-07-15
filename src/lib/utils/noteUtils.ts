@@ -5,8 +5,6 @@ import type {
    NoteReference,
 } from "@projectTypes/core/noteTypes";
 
-// notes
-
 export function sanitizeTitle(title: string): string {
    return title
       .replace(/[\/]/g, "") // Eliminar barras diagonales "/"
