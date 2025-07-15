@@ -19,7 +19,11 @@ export function generateUniqueTitle(
 ): string {
    const base = titleBase ?? "Nueva Nota";
    const currentTitles = new Set(notes.map((note) => note.title));
+
+   // Si el título base no existe, devolverlo tal como está
    if (!currentTitles.has(base)) return base;
+
+   // Si existe, buscar el siguiente número disponible
    let index = 1;
    while (currentTitles.has(`${base} ${index}`)) index++;
 

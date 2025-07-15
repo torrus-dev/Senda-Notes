@@ -1,6 +1,7 @@
 import type { Note } from "@projectTypes/core/noteTypes";
 import { noteController } from "@controllers/notes/noteController.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { generateUniqueTitle } from "@lib/utils/noteUtils";
 
 /**
  * Controlador especializado en operaciones del árbol jerárquico
@@ -67,8 +68,12 @@ class NoteTreeController {
    removeFromPreviousParent(note: Note): void {
       if (note.parentId) {
          const parent = noteQueryController.requireNote(note.parentId);
-         const newChildren = parent.children.filter((id) => id !== note.id);
-         noteController.updateNote(note.parentId, { children: newChildren });
+         const updatedParentChildren = parent.children.filter(
+            (id) => id !== note.id,
+         );
+         noteController.updateNote(note.parentId, {
+            children: updatedParentChildren,
+         });
       }
    }
 
@@ -79,6 +84,18 @@ class NoteTreeController {
       // Filtrar el noteId si ya existe
       const filtered = childrenIds.filter((id) => id !== noteId);
       const originalIndex = childrenIds.indexOf(noteId);
+
+      // Validar y actualizar título si es necesario
+      const noteToMove = noteQueryController.requireNote(noteId);
+      const siblingNotes = noteQueryController.getDirectDescendants(parentId);
+      /*.filter((note) => note.id !== noteId); // Excluir la nota que se está moviendo*/
+
+      const uniqueTitle = generateUniqueTitle(siblingNotes, noteToMove.title);
+
+      // Actualizar el título si cambió
+      if (uniqueTitle !== noteToMove.title) {
+         noteController.updateNote(noteId, { title: uniqueTitle });
+      }
 
       // Calcular posición ajustada usando la lógica original
       const adjustedPosition = this.getAdjustedPosition(
@@ -106,6 +123,15 @@ class NoteTreeController {
       const filteredRootNotes = rootNotes.filter((note) => note.id !== noteId);
       const movedNote = noteQueryController.requireNote(noteId);
 
+      // Validar y actualizar título si es necesario
+      const uniqueTitle = generateUniqueTitle(rootNotes, movedNote.title);
+
+      // Actualizar el título si cambió
+      if (uniqueTitle !== movedNote.title) {
+         noteController.updateNote(noteId, { title: uniqueTitle });
+      }
+      const updatedNote = noteQueryController.requireNote(noteId);
+
       // Calcular posición original y ajustada
       const originalIndex = rootNotes.findIndex((note) => note.id === noteId);
       const adjustedPosition = this.getAdjustedPosition(
@@ -117,7 +143,7 @@ class NoteTreeController {
       // Crear nuevo array de root notes con la nota en la posición correcta
       const newRootNotes = [
          ...filteredRootNotes.slice(0, adjustedPosition),
-         movedNote,
+         updatedNote,
          ...filteredRootNotes.slice(adjustedPosition),
       ];
 
