@@ -7,6 +7,8 @@ import { favoriteController } from "@controllers/notes/favoritesController.svelt
 import { StarIcon, StarOffIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
 import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
+import { getCommonNoteMenuItems } from "@lib/menuItems/noteMenuItems..svelte";
+import type { MenuItem } from "@projectTypes/ui/contextMenuTypes";
 
 let favorites: Note[] = $derived(favoriteController.getFavoritesAsNotes());
 </script>
@@ -23,23 +25,20 @@ let favorites: Note[] = $derived(favoriteController.getFavoritesAsNotes());
    headingClass="border-base-400 rounded-field"
    chevronPosition="left">
    <ul class="pl-2">
-      {#each favorites as favorite}
+      {#each favorites as favoriteNote}
+         {@const favoriteMenuItems: MenuItem[] = getCommonNoteMenuItems({
+               noteId:favoriteNote.id,
+               showCreateChild: false,
+               showRename: true,
+               showDelete: false
+            })}
          <Button
             class="w-full"
-            dropdownMenuItems={[
-               {
-                  type: "action",
-                  label: "Remove from favorites",
-                  icon: StarOffIcon,
-                  action: () => {
-                     favoriteController.removeFromFavorites(favorite.id);
-                  },
-               },
-            ]}
+            dropdownMenuItems={favoriteMenuItems}
             onclick={() => {
-               workspaceController.openNote(favorite.id);
+               workspaceController.openNote(favoriteNote.id);
             }}>
-            {favorite.title}
+            {favoriteNote.title}
          </Button>
       {/each}
    </ul>

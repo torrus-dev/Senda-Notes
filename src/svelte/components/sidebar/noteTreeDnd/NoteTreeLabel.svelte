@@ -23,6 +23,7 @@ import { contextMenu } from "@directives/floatingMenuDirective.svelte";
 import { favoriteController } from "@controllers/notes/favoritesController.svelte";
 import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 import NoteTitleEditor from "@components/note/widgets/NoteTitleEditor.svelte";
+import { getCommonNoteMenuItems } from "@lib/menuItems/noteMenuItems..svelte";
 
 let {
    note,
@@ -58,47 +59,13 @@ const handleSelectTitle = (event: KeyboardEvent | MouseEvent) => {
       {isEditingTitle ? 'outline-interactive-accent-focus outline-2' : ''}"
    role="button"
    tabindex="0"
-   use:contextMenu={[
-      {
-         type: "action",
-         label: "Abrir en pestaña nueva",
-         icon: ArrowUpRight,
-         action: () => {
-            workspaceController.openNoteInNewTab(note.id);
-         },
+   use:contextMenu={getCommonNoteMenuItems({
+      noteId: note.id,
+      showRename: true,
+      onRename: () => {
+         isEditingTitle = true;
       },
-      {
-         type: "action",
-         label: "New Child Note",
-         icon: SquarePlusIcon,
-         action: () => {
-            noteController.createNote(note.id);
-         },
-      },
-      {
-         type: "action",
-         label: !isFavorited ? "Add to favorites" : "Remove from favorites",
-         icon: !isFavorited ? StarIcon : StarOffIcon,
-         action: () => {
-            favoriteController.toggleFavorite(note.id);
-         },
-      },
-      {
-         type: "action",
-         label: "Rename Note",
-         icon: PenLineIcon,
-         action: () => {
-            isEditingTitle = true;
-         },
-      },
-      {
-         type: "action",
-         label: "Delete Note",
-         icon: Trash2Icon,
-         action: () => noteController.deleteNoteWithConfirmation(note.id),
-         class: "text-error",
-      },
-   ]}
+   })}
    onclick={handleSelectTitle}
    onkeydown={handleSelectTitle}>
    <div class="flex flex-grow-1 gap-1">

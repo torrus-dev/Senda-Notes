@@ -1,6 +1,5 @@
 import { floatingMenuController } from "@controllers/menu/floatingMenuController.svelte";
-import type { MenuItem } from "@projectTypes/ui/contextMenuTypes";
-import type { Coordinates } from "@projectTypes/ui/contextMenuTypes";
+import type { Coordinates, MenuItem } from "@projectTypes/ui/contextMenuTypes";
 
 function checkValid(menuItems: MenuItem[] | undefined) {
    if (menuItems && Array.isArray(menuItems) && menuItems.length > 0) {
@@ -70,7 +69,12 @@ export function dropdownMenu(
       rightClickDisabled?: boolean;
    },
 ) {
-   let { menuItems, leftClickDisabled, rightClickDisabled } = params;
+   let {
+      menuItems,
+      leftClickDisabled = false,
+      rightClickDisabled = false,
+   } = params;
+   let isDestroyed = false;
 
    // Si no hay menuItems, devolver un objeto de directiva "noop"
    if (!checkValid(menuItems)) {
@@ -81,13 +85,13 @@ export function dropdownMenu(
    }
 
    function handleClick(event: MouseEvent) {
-      if (leftClickDisabled) return;
+      if (isDestroyed || leftClickDisabled) return;
       event.preventDefault();
       event.stopPropagation();
 
       const triggerElement = floatingMenuController.getTriggerElement();
 
-      if (menuItems && !(triggerElement === node)) {
+      if (menuItems && checkValid(menuItems) && !(triggerElement === node)) {
          floatingMenuController.openDropdownMenu(node, menuItems);
       } else {
          floatingMenuController.closeMenu();
@@ -95,14 +99,14 @@ export function dropdownMenu(
    }
 
    function handleContextMenu(event: MouseEvent) {
-      if (rightClickDisabled) return; // Solo procesar si está habilitado el clic derecho
+      if (isDestroyed || rightClickDisabled) return;
 
       event.preventDefault();
       event.stopPropagation();
 
       const triggerElement = floatingMenuController.getTriggerElement();
 
-      if (menuItems && !(triggerElement === node)) {
+      if (menuItems && checkValid(menuItems) && !(triggerElement === node)) {
          floatingMenuController.openDropdownMenu(node, menuItems);
       } else {
          floatingMenuController.closeMenu();
@@ -114,18 +118,18 @@ export function dropdownMenu(
    node.addEventListener("contextmenu", handleContextMenu);
 
    return {
-      // Actualizar las opciones si cambian
       update(newParams: {
-         newMenuItems: MenuItem[] | undefined;
+         menuItems: MenuItem[] | undefined;
          leftClickDisabled?: boolean;
          rightClickDisabled?: boolean;
       }) {
-         const { newMenuItems, leftClickDisabled, rightClickDisabled } =
-            newParams;
-
          const wasValid = checkValid(menuItems);
-         const isValid = checkValid(newMenuItems);
-         menuItems = newMenuItems;
+
+         menuItems = newParams.menuItems;
+         leftClickDisabled = newParams.leftClickDisabled ?? false;
+         rightClickDisabled = newParams.rightClickDisabled ?? false;
+
+         const isValid = checkValid(menuItems);
 
          if (wasValid && !isValid) {
             node.removeEventListener("click", handleClick);
@@ -136,6 +140,7 @@ export function dropdownMenu(
          }
       },
       destroy() {
+         isDestroyed = true;
          node.removeEventListener("click", handleClick);
          node.removeEventListener("contextmenu", handleContextMenu);
       },

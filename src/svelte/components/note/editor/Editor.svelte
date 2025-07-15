@@ -16,7 +16,7 @@ import { floatingMenuController } from "@controllers/menu/floatingMenuController
 import { screenSizeController } from "@controllers/application/screenSizeController.svelte";
 import { CleanPasteExtension } from "@lib/editorExtensions/cleanPasteExtension";
 
-import { getEditorContextMenuItems } from "@utils/editorMenuItems";
+import { getEditorContextMenuItems } from "@lib/menuItems/editorMenuItems.svelte";
 import Toolbar from "@components/note/editor/Toolbar.svelte";
 
 import type { Coordinates } from "@projectTypes/ui/contextMenuTypes";

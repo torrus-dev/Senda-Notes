@@ -1,63 +1,20 @@
 <script lang="ts">
-import { focusController } from "@controllers/ui/focusController.svelte";
-import { noteController } from "@controllers/notes/noteController.svelte";
-import { FocusTarget } from "@projectTypes/ui/uiTypes";
-import type { MenuItem } from "@projectTypes/ui/contextMenuTypes";
-import {
-   MoreVerticalIcon,
-   Trash2Icon,
-   PenLineIcon,
-   FileSearchIcon,
-   StarIcon,
-   StarOffIcon,
-} from "lucide-svelte";
+import { MoreVerticalIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
-import { favoriteController } from "@controllers/notes/favoritesController.svelte";
+import { getCommonNoteMenuItems } from "@lib/menuItems/noteMenuItems..svelte";
 
 let { noteId } = $props();
-
-let isFavorited = $derived(favoriteController.isFavorite(noteId));
-
-const noteOptionsItems: MenuItem[] = $derived([
-   {
-      type: "action",
-      label: "Rename Note",
-      icon: PenLineIcon,
-      action: () => {
-         focusController.requestFocus(FocusTarget.TITLE);
-      },
-   },
-   {
-      type: "action",
-      label: !isFavorited ? "Add to favorites" : "Remove from favorites",
-      icon: !isFavorited ? StarIcon : StarOffIcon,
-      action: () => {
-         favoriteController.toggleFavorite(noteId);
-      },
-   },
-   {
-      type: "action",
-      label: "Delete Note",
-      icon: Trash2Icon,
-      action: () => noteController.deleteNoteWithConfirmation(noteId),
-      class: "text-error",
-   },
-   { type: "separator" },
-   {
-      type: "action",
-      label: "Search in Note",
-      icon: FileSearchIcon,
-      action: () => {},
-   },
-   {
-      type: "action",
-      label: "Replace in Note",
-      icon: FileSearchIcon,
-      action: () => {},
-   },
-]);
 </script>
 
-<Button dropdownMenuItems={noteOptionsItems} title="More options">
+<Button
+   dropdownMenuItems={getCommonNoteMenuItems({
+      noteId,
+      showCreateChild: false,
+      showOpenInNewTab: false,
+      showSearch: true,
+      showReplace: true,
+      showRename: true,
+   })}
+   title="More options">
    <MoreVerticalIcon size="1.25em" />
 </Button>
