@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 
 // Persistencia Core que vive en los modelos, dejando fuera paretes de la UI que mantendre en localStorage / JSON Files
+// cada uno en el modelo que le corresponde...
 let notes: Note[];
 let globalProperties: GlobalProperty[];
 let favorites: NoteReference[];
