@@ -1,0 +1,12 @@
+# Forzar LF como salto de línea para los tipos de archivo de tu proyecto
+*.ts     text eol=lf
+*.svelte text eol=lf
+*.js     text eol=lf
+*.json   text eol=lf
+*.sql    text eol=lf
+*.md     text eol=lf
+*.html   text eol=lf
+*.css    text eol=lf
+
+# Normaliza todos los archivos de texto por defecto
+* text=auto
