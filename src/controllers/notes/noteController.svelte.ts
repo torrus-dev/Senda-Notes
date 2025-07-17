@@ -65,7 +65,7 @@ class NoteController {
 
       if (note) {
          note.updateTitle(title);
-         const noteRepositoryService: NoteRepository =
+         const noteRepositoryService =
             startupManager.getService("noteRepository");
          noteRepositoryService.update(noteId, note);
          this.updateReactiveState();

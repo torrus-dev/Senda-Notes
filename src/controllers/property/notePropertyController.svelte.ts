@@ -1,27 +1,30 @@
 import type { NoteProperty } from "@projectTypes/core/propertyTypes";
-import type { Note } from "@projectTypes/core/noteTypes";
-
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import type { Note } from "@domain/Note";
 import { globalPropertyController } from "@controllers/property/globalPropertyController.svelte";
-import { noteController } from "@controllers/notes/noteController.svelte";
-
+import { startupManager } from "@model/startup/startupManager.svelte";
 import { generateProperty } from "@utils/propertyUtils";
 import { normalizeText } from "@utils/searchUtils";
 
 class NotePropertyController {
-   private addPropertyToNote = (
-      noteId: Note["id"],
-      newProperty: NoteProperty,
-   ) => {
-      const note = noteQueryController.getNoteById(noteId);
+   private get noteRepository() {
+      return startupManager.getService("noteRepository");
+   }
+
+   private get queryRepository() {
+      return startupManager.getService("noteQueryRepository");
+   }
+
+   private addPropertyToNote = (noteId: string, newProperty: NoteProperty) => {
+      const note = this.queryRepository.findById(noteId);
       if (!note) return;
-      const updatedProperties = [...note.properties, newProperty];
-      noteController.updateNote(noteId, { properties: updatedProperties });
+
+      note.addProperty(newProperty);
+      this.noteRepository.update(noteId, note);
    };
 
    /** Devuelve true si ya existe en la nota otra propiedad con ese nombre */
    isDuplicateName(
-      noteId: Note["id"],
+      noteId: string,
       name: string,
       excludePropertyId?: NoteProperty["id"],
    ): boolean {
@@ -46,14 +49,15 @@ class NotePropertyController {
 
       // Generamos la nueva propiedad
       const newProperty = generateProperty(noteId, name, type);
+
       // Agregamos la nueva propiedad a la nota
       this.addPropertyToNote(noteId, newProperty);
 
       // Importante: si no hacemos lo de arriba primero, la nota no "existira" y fallara la vinculación
-
       // Comprobamos si existe propiedad global con ese nombre
       const existingGlobalProperty =
          globalPropertyController.getGlobalPropertyByName(name);
+
       if (existingGlobalProperty) {
          // Vinculamos a la propiedad global si existe
          globalPropertyController.linkToGlobalProperty(
@@ -67,17 +71,17 @@ class NotePropertyController {
    };
 
    deletePropertyFromNote = (
-      noteId: Note["id"],
+      noteId: string,
       propertyToDeleteId: NoteProperty["id"],
    ) => {
       const propertyToDelete = this.getPropertyById(noteId, propertyToDeleteId);
       if (!propertyToDelete) return;
-      const note = noteQueryController.getNoteById(noteId);
+
+      const note = this.queryRepository.findById(noteId);
       if (!note) return;
-      const updatedNoteProperties = note.properties.filter(
-         (property) => property.id !== propertyToDeleteId,
-      );
-      noteController.updateNote(noteId, { properties: updatedNoteProperties });
+
+      note.removeProperty(propertyToDeleteId);
+      this.noteRepository.update(noteId, note);
 
       // Comprobamos si hay una propiedad global con ese nombre y la desvinculamos
       const existingGlobalProperty =
@@ -85,52 +89,46 @@ class NotePropertyController {
             propertyToDelete.name,
          );
       if (!existingGlobalProperty) return;
+
       globalPropertyController.unlinkFromGlobalProperty(propertyToDelete);
    };
 
    updatePropertyFromNote = (
-      noteId: Note["id"],
+      noteId: string,
       propertyId: NoteProperty["id"],
       updatedProperty: Partial<NoteProperty>,
    ): void => {
-      const note = noteQueryController.getNoteById(noteId);
+      const note = this.queryRepository.findById(noteId);
       if (!note) return;
 
-      const updatedProperties: NoteProperty[] = note.properties.map((prop) => {
-         if (prop.id === propertyId) {
-            return {
-               ...prop,
-               ...updatedProperty,
-            } as NoteProperty;
-         }
-         return prop;
-      });
-
-      noteController.updateNote(noteId, { properties: updatedProperties });
+      note.updateProperty(propertyId, updatedProperty);
+      this.noteRepository.update(noteId, note);
    };
 
    getPropertyById = (
       noteId: string,
       propertyId: string,
    ): NoteProperty | undefined => {
-      const note = noteQueryController.getNoteById(noteId);
+      const note = this.queryRepository.findById(noteId);
       if (!note) return undefined;
+
       return note.properties.find((property) => property.id === propertyId);
    };
 
    renameNotePropertyById(
-      noteId: Note["id"],
+      noteId: string,
       propertyId: NoteProperty["id"],
       newPropertyName: NoteProperty["name"],
    ) {
       const propertyToUpdate = this.getPropertyById(noteId, propertyId);
       if (!propertyToUpdate) return;
+
       propertyToUpdate.name = newPropertyName;
       this.updatePropertyFromNote(noteId, propertyId, propertyToUpdate);
    }
 
    handleNotePropertyRename(
-      noteId: Note["id"],
+      noteId: string,
       propertyId: NoteProperty["id"],
       newPropertyName: NoteProperty["name"],
    ) {
@@ -144,6 +142,7 @@ class NotePropertyController {
       // Buscamos que exista una propiedad por esos Ids y la renombramos
       const propertyToUpdate = this.getPropertyById(noteId, propertyId);
       if (!propertyToUpdate) return;
+
       this.renameNotePropertyById(noteId, propertyId, newPropertyName);
 
       // Comprobamos si existe propiedad global con el nuevo nombre
@@ -167,7 +166,7 @@ class NotePropertyController {
    }
 
    changeNotePropertyType(
-      noteId: Note["id"],
+      noteId: string,
       propertyId: NoteProperty["id"],
       newPropertyType: NoteProperty["type"],
    ) {
@@ -177,7 +176,6 @@ class NotePropertyController {
       // Comprobamos si hay una propiedad global con ese nombre
       const existingGlobalProperty =
          globalPropertyController.getGlobalPropertyByName(property.name);
-
       if (!existingGlobalProperty) return;
 
       // Actualizamos la propiedad
@@ -198,10 +196,10 @@ class NotePropertyController {
       newPosition: number,
    ): void => {
       // Verificamos que la propiedad exista
-      const note = noteQueryController.getNoteById(noteId);
+      const note = this.queryRepository.findById(noteId);
       if (!note) return;
-      const properties = [...note.properties];
 
+      const properties = [...note.properties];
       const currentIndex = properties.findIndex((p) => p.id === propertyId);
 
       // Validar que la nueva posición no sea negativa
@@ -227,7 +225,8 @@ class NotePropertyController {
       // Insertar la propiedad en la nueva posición
       properties.splice(newPosition, 0, propertyToMove);
 
-      noteController.updateNote(noteId, { properties: properties });
+      note.updateProperties(properties);
+      this.noteRepository.update(noteId, note);
    };
 
    updateNotePropertyValue = (
@@ -239,7 +238,7 @@ class NotePropertyController {
    };
 
    getNoteProperties = (noteId: string): NoteProperty[] => {
-      const note = noteQueryController.getNoteById(noteId);
+      const note = this.queryRepository.findById(noteId);
       return note ? note.properties : [];
    };
 }

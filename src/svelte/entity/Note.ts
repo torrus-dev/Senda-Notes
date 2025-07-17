@@ -23,7 +23,7 @@ export class NoteEntity {
       id: string,
       title: string,
       content: string,
-      metadata: NoteEntity["metadata"],
+      metadata: NoteEntity["_metadata"],
       properties: NoteProperty[],
       children: string[] = [],
       parentId?: string,
@@ -137,7 +137,7 @@ export class NoteEntity {
       children: string[];
       parentId?: string;
       stats?: NoteStats;
-      metadata: NoteEntity["metadata"];
+      metadata: NoteEntity["_metadata"];
       properties: NoteProperty[];
    } {
       return {
