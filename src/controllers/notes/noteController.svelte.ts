@@ -60,9 +60,7 @@ class NoteController {
     * Actualiza el título de una nota
     */
    updateNoteTitle(noteId: string, title: string): void {
-      const queryRepo: NoteQueryRepository = startupManager.getService(
-         "noteQueryRepository",
-      );
+      const queryRepo = startupManager.getService("noteQueryRepository");
       const note = queryRepo.findById(noteId);
 
       if (note) {
@@ -86,9 +84,7 @@ class NoteController {
     * Elimina una nota con confirmación
     */
    deleteNoteWithConfirmation(noteId: string): void {
-      const queryRepo: NoteQueryRepository = startupManager.getService(
-         "noteQueryRepository",
-      );
+      const queryRepo = startupManager.getService("noteQueryRepository");
       const note = queryRepo.findById(noteId);
 
       if (!note) return;
@@ -106,9 +102,7 @@ class NoteController {
     * Elimina una nota
     */
    private deleteNote(noteId: string): void {
-      const queryRepo: NoteQueryRepository = startupManager.getService(
-         "noteQueryRepository",
-      );
+      const queryRepo = startupManager.getService("noteQueryRepository");
       const note = queryRepo.findById(noteId);
 
       if (!note) return;
@@ -151,9 +145,7 @@ class NoteController {
     * Actualiza el estado reactivo
     */
    private updateReactiveState(): void {
-      const queryRepo: NoteQueryRepository = startupManager.getService(
-         "noteQueryRepository",
-      );
+      const queryRepo = startupManager.getService("noteQueryRepository");
       this.noteCount = queryRepo.count();
       this.lastUpdated = new Date();
    }
