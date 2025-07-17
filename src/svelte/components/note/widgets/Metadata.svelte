@@ -18,7 +18,6 @@ let { noteId, metadata }: { noteId: string; metadata: NoteMetadata } = $props();
       headingContent={headingContent}
       chevronPosition="floating-left">
       <div class="bg-base-200 rounded-field my-2 px-4 py-2.5">
-         {console.log("metadata", metadata)}
          <ul class="text-muted-content w-full gap-2">
             <li>
                #ID: {noteId}

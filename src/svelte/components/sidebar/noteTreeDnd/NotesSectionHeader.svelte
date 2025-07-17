@@ -64,7 +64,7 @@ function handleDrop(event: DragEvent) {
          <PlusIcon size="1.125em"></PlusIcon>
       </Button>
       <p class="text-faint-content ml-1">
-         {noteQueryController.getNoteCount()}
+         {noteQueryController.getStats().totalNotes}
       </p>
    </div>
 </div>

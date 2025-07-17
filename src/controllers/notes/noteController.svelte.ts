@@ -5,6 +5,8 @@ import { FocusTarget } from "@projectTypes/ui/uiTypes";
 import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 import { notificationController } from "@controllers/application/notificationController.svelte";
 import { globalConfirmationDialog } from "@controllers/menu/confirmationDialogController.svelte";
+import { NoteQueryRepository } from "@infrastructure/NoteQueryRepository";
+import { NoteRepository } from "@infrastructure/NoteRepository";
 
 /**
  * Controlador delgado para coordinar UI con casos de uso
@@ -58,12 +60,16 @@ class NoteController {
     * Actualiza el título de una nota
     */
    updateNoteTitle(noteId: string, title: string): void {
-      const queryRepo = startupManager.getService("noteQueryRepository");
+      const queryRepo: NoteQueryRepository = startupManager.getService(
+         "noteQueryRepository",
+      );
       const note = queryRepo.findById(noteId);
 
       if (note) {
          note.updateTitle(title);
-         startupManager.getService("noteRepository").update(noteId, note);
+         const noteRepositoryService: NoteRepository =
+            startupManager.getService("noteRepository");
+         noteRepositoryService.update(noteId, note);
          this.updateReactiveState();
       }
    }
@@ -80,7 +86,9 @@ class NoteController {
     * Elimina una nota con confirmación
     */
    deleteNoteWithConfirmation(noteId: string): void {
-      const queryRepo = startupManager.getService("noteQueryRepository");
+      const queryRepo: NoteQueryRepository = startupManager.getService(
+         "noteQueryRepository",
+      );
       const note = queryRepo.findById(noteId);
 
       if (!note) return;
@@ -98,7 +106,9 @@ class NoteController {
     * Elimina una nota
     */
    private deleteNote(noteId: string): void {
-      const queryRepo = startupManager.getService("noteQueryRepository");
+      const queryRepo: NoteQueryRepository = startupManager.getService(
+         "noteQueryRepository",
+      );
       const note = queryRepo.findById(noteId);
 
       if (!note) return;
@@ -141,7 +151,9 @@ class NoteController {
     * Actualiza el estado reactivo
     */
    private updateReactiveState(): void {
-      const queryRepo = startupManager.getService("noteQueryRepository");
+      const queryRepo: NoteQueryRepository = startupManager.getService(
+         "noteQueryRepository",
+      );
       this.noteCount = queryRepo.count();
       this.lastUpdated = new Date();
    }

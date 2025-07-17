@@ -56,7 +56,7 @@ function saveContentChanges() {
       };
 
       // Guardar contenido y estadísticas juntos
-      noteController.updateNoteContentWithStats(currentNoteId, content, stats);
+      noteController.updateNoteContent(currentNoteId, content, stats);
 
       // Indicar que el contenido está guardado
       editorController.contentSaved = true;

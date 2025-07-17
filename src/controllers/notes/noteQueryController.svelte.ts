@@ -2,6 +2,7 @@ import { Note } from "@domain/Note";
 import { NoteQueryRepository } from "@infrastructure/NoteQueryRepository";
 import { startupManager } from "@model/startup/startupManager.svelte";
 import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
+import { NoteTreeService } from "@domain/NoteTreeService";
 
 /**
  * Controlador de queries - coordina consultas con la UI
@@ -101,7 +102,8 @@ class NoteQueryController {
     * Cuenta descendientes
     */
    getDescendantCount(noteId: string): number {
-      const treeService = startupManager.getService("noteTreeService");
+      const treeService: NoteTreeService =
+         startupManager.getService("noteTreeService");
       const allNotes = this.getAllNotes();
       return treeService.countDescendants(noteId, allNotes);
    }

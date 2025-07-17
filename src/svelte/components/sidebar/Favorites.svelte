@@ -9,8 +9,9 @@ import Button from "@components/utils/Button.svelte";
 import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 import { getCommonNoteMenuItems } from "@lib/menuItems/noteMenuItems..svelte";
 import type { MenuItem } from "@projectTypes/ui/contextMenuTypes";
+import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 
-let favorites: Note[] = $derived(favoriteController.getFavoritesAsNotes());
+let favorites: Note["id"][] = $derived(favoriteController.getFavorites());
 </script>
 
 {#snippet headingContent()}
@@ -25,21 +26,23 @@ let favorites: Note[] = $derived(favoriteController.getFavoritesAsNotes());
    headingClass="border-base-400 rounded-field"
    chevronPosition="left">
    <ul class="pl-2">
-      {#each favorites as favoriteNote}
-         {@const favoriteMenuItems: MenuItem[] = getCommonNoteMenuItems({
-               noteId:favoriteNote.id,
+      {#each favorites as favoriteId}
+         {@const favoriteNote = noteQueryController.getNoteById(favoriteId)}
+         {#if favoriteNote}
+            {@const favoriteMenuItems: MenuItem[] = getCommonNoteMenuItems({
+               noteId:favoriteId,
                showCreateChild: false,
                showDelete: false
             })}
-         <Button
-            class="w-full"
-            dropdownMenuItems={favoriteMenuItems}
-            onclick={() => {
-               workspaceController.openNote(favoriteNote.id);
-            }}>
-            {favoriteNote.title}
-         </Button>
-         
+            <Button
+               class="w-full"
+               dropdownMenuItems={favoriteMenuItems}
+               onclick={() => {
+                  workspaceController.openNote(favoriteNote.id);
+               }}>
+               {favoriteNote.title}
+            </Button>
+         {/if}
       {/each}
    </ul>
 </Collapsible>

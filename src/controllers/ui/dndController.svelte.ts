@@ -1,8 +1,8 @@
 import { isDescendant } from "@utils/noteUtils";
 import { DragSource, DropTarget } from "@projectTypes/ui/uiTypes";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
-import { noteTreeController } from "@controllers/notes/noteTreeController.svelte";
 import { notePropertyController } from "@controllers/property/notePropertyController.svelte";
+import { noteController } from "@controllers/notes/noteController.svelte";
 
 class DndController {
    isDragging = $state<boolean>(false);
@@ -226,11 +226,7 @@ class DndController {
          console.error("IDs no definidos en dropNoteOnNote");
          return;
       }
-      noteTreeController.moveNoteToPosition(
-         draggedNoteId,
-         targetNoteId,
-         position,
-      );
+      noteController.moveNote(draggedNoteId, targetNoteId, position);
    }
 
    dropNoteOnLineIndicator(
@@ -243,7 +239,7 @@ class DndController {
          return;
       }
 
-      noteTreeController.moveNoteToPosition(draggedNoteId, parentId, position);
+      noteController.moveNote(draggedNoteId, parentId, position);
    }
 }
 

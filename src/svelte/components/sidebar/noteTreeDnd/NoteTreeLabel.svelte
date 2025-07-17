@@ -38,7 +38,7 @@ let {
 } = $props();
 
 let isActive = $derived(note.id === workspaceController.activeNoteId);
-let childrenCount = $derived(noteQueryController.getChildrenCount(note.id));
+let childrenCount = $derived(noteQueryController.getDescendantCount(note.id));
 let hasChildren = $derived(childrenCount > 0);
 
 let isFavorited = $derived(favoriteController.isFavorite(note.id));
