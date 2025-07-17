@@ -1,43 +1,52 @@
-import type { Note } from "@projectTypes/core/noteTypes";
-import { getDescendantsId } from "@utils/noteUtils";
-import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
-import { normalizeText } from "@utils/searchUtils";
-
+import { Note } from "@domain/Note";
+import { NoteQueryRepository } from "@infrastructure/NoteQueryRepository";
 import { startupManager } from "@model/startup/startupManager.svelte";
-import { NoteModel } from "@model/notes/noteModel.svelte";
+import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 
-// Tipos para resolución de paths
-interface PathResolution {
-   existingNotes: Note[];
-   missingSegments: string[];
-   lastParentId?: string;
-}
-
+/**
+ * Controlador de queries - coordina consultas con la UI
+ */
 class NoteQueryController {
-   private get noteModel(): NoteModel {
-      return startupManager.getModel("noteModel");
+   // Estado reactivo
+   searchResults = $state<Note[]>([]);
+   isSearching = $state(false);
+
+   private get queryRepository(): NoteQueryRepository {
+      return startupManager.getService("noteQueryRepository");
    }
 
-   getNoteById = this.noteModel.getNoteById.bind(this.noteModel);
-   getAllNotes = this.noteModel.getAllNotes.bind(this.noteModel);
-
-   // === MÉTODOS BÁSICOS ===
-   getRootNotes() {
-      return this.noteModel.getAllNotes().filter((note) => !note.parentId);
+   /**
+    * Obtiene una nota por ID
+    */
+   getNoteById(noteId: string): Note | undefined {
+      return this.queryRepository.findById(noteId);
    }
 
-   getNotesByIdList(idList: string[]): Note[] {
-      return idList
-         .map(this.getNoteById)
-         .filter((note): note is Note => note !== undefined);
+   /**
+    * Obtiene todas las notas
+    */
+   getAllNotes(): Note[] {
+      return this.queryRepository.findAll();
    }
 
+   /**
+    * Obtiene las notas raíz
+    */
+   getRootNotes(): Note[] {
+      return this.queryRepository.findRootNotes();
+   }
+
+   /**
+    * Obtiene la nota activa
+    */
    getActiveNote(): Note | undefined {
       const activeNoteId = workspaceController.activeNoteId;
       return activeNoteId ? this.getNoteById(activeNoteId) : undefined;
    }
 
-   // === MÉTODOS DE PATH ===
+   /**
+    * Obtiene el path de una nota
+    */
    getNotePathAsArray(noteId: string): Array<{ id: string; title: string }> {
       const path: Array<{ id: string; title: string }> = [];
       let currentNote = this.getNoteById(noteId);
@@ -52,132 +61,89 @@ class NoteQueryController {
       return path;
    }
 
+   /**
+    * Obtiene el path como string
+    */
    getNotePathAsString(noteId: string): string {
       return this.getNotePathAsArray(noteId)
          .map((p) => p.title)
          .join("/");
    }
 
-   // === MÉTODOS DE BÚSQUEDA ===
    /**
-    * Busca una nota por título exacto y padre específico
+    * Busca notas por título
     */
-   findNoteByTitleAndParent(title: string, parentId?: string): Note | null {
-      const normalizedTitle = normalizeText(title);
-
-      return (
-         this.getAllNotes().find((note) => {
-            const matchesParent = (note.parentId || undefined) === parentId;
-            const matchesTitle = normalizeText(note.title) === normalizedTitle;
-            return matchesParent && matchesTitle;
-         }) || null
-      );
+   searchByTitle(query: string): Note[] {
+      this.isSearching = true;
+      this.searchResults = this.queryRepository.findByTitle(query);
+      this.isSearching = false;
+      return this.searchResults;
    }
 
    /**
-    * Resuelve un path jerárquico y determina qué notas existen y cuáles faltan
+    * Busca notas por contenido
     */
-   resolveNotePath(pathSegments: string[]): PathResolution {
-      const resolution: PathResolution = {
-         existingNotes: [],
-         missingSegments: [],
-         lastParentId: undefined,
-      };
-
-      let currentParentId: string | undefined;
-
-      for (const segment of pathSegments) {
-         const existingNote = this.findNoteByTitleAndParent(
-            segment,
-            currentParentId,
-         );
-
-         if (existingNote) {
-            resolution.existingNotes.push(existingNote);
-            currentParentId = existingNote.id;
-         } else {
-            // Primer segmento faltante - guardar resto y salir
-            const currentIndex = resolution.existingNotes.length;
-            resolution.missingSegments = pathSegments.slice(currentIndex);
-            resolution.lastParentId = currentParentId;
-            break;
-         }
-      }
-
-      return resolution;
+   searchByContent(query: string): Note[] {
+      this.isSearching = true;
+      this.searchResults = this.queryRepository.searchByContent(query);
+      this.isSearching = false;
+      return this.searchResults;
    }
 
-   // === MÉTODOS DE ESTADÍSTICAS ===
-   getNoteCount(): number {
-      return this.getAllNotes().length;
-   }
-
-   getChildrenCount(noteId: string): number {
-      const note = this.getNoteById(noteId);
-      return note ? getDescendantsId(this.getAllNotes(), noteId).length : 0;
-   }
-
-   // === MÉTODOS DE DESCENDIENTES ===
    /**
-    * Obtiene todos los IDs descendientes (directos e indirectos) de una nota (excluyendo la nota misma)
+    * Obtiene hijos directos
     */
-   getDescendantIds(noteId: string): Set<string> {
-      const descendants = new Set<string>();
+   getDirectChildren(noteId: string): Note[] {
+      return this.queryRepository.findByParent(noteId);
+   }
+
+   /**
+    * Cuenta descendientes
+    */
+   getDescendantCount(noteId: string): number {
+      const treeService = startupManager.getService("noteTreeService");
       const allNotes = this.getAllNotes();
-
-      const collectDescendants = (currNoteId: string) => {
-         allNotes.forEach((note) => {
-            if (note.parentId === currNoteId) {
-               descendants.add(note.id);
-               collectDescendants(note.id);
-            }
-         });
-      };
-
-      collectDescendants(noteId);
-      return descendants;
+      return treeService.countDescendants(noteId, allNotes);
    }
 
-   getDirectDescendantsId(noteId: string): Set<Note["id"]> {
-      const descendants = new Set<Note["id"]>();
-
-      this.getAllNotes().forEach((note) => {
-         if (note.parentId === noteId) {
-            descendants.add(note.id);
-         }
-      });
-
-      return descendants;
-   }
-
-   getDirectDescendants(noteId: string): Note[] {
-      const descendants: Note[] = [];
-
-      this.getAllNotes().forEach((note) => {
-         if (note.parentId === noteId) {
-            descendants.push(note);
-         }
-      });
-
-      return descendants;
-   }
-
-   // === MÉTODOS DE VALIDACIÓN ===
-   requireNote(id: string, context = "Note"): Note {
-      const note = this.getNoteById(id);
-      if (!note) throw new Error(`${context} ${id} not found`);
-      return note;
-   }
-
+   /**
+    * Valida si existe un padre
+    */
    validateParentExists(parentId: string): boolean {
-      if (!this.getNoteById(parentId)) {
+      const exists = this.queryRepository.exists(parentId);
+      if (!exists) {
          console.error(`Parent note with id ${parentId} not found`);
-         return false;
       }
-      return true;
+      return exists;
+   }
+
+   /**
+    * Obtiene notas favoritas
+    */
+   getFavoriteNotes(favoriteIds: Set<string>): Note[] {
+      return this.queryRepository.findFavorites(favoriteIds);
+   }
+
+   /**
+    * Obtiene estadísticas
+    */
+   getStats() {
+      return {
+         totalNotes: this.queryRepository.count(),
+         rootNotes: this.getRootNotes().length,
+         notesWithStats: this.queryRepository.findWithStats().length,
+      };
+   }
+
+   /**
+    * Limpia resultados de búsqueda
+    */
+   clearSearchResults(): void {
+      this.searchResults = [];
    }
 }
 
+// Singleton con proxy
 let instance: NoteQueryController | null = null;
 
 export const noteQueryController = new Proxy(

@@ -2,9 +2,15 @@ import { GlobalPropertiesModel } from "@model/application/globalPropertiesModel.
 import { SettingsModel } from "@model/application/settingsModel.svelte";
 import { WorkspaceModel } from "@model/navigation/workspaceModel.svelte";
 import { FavoritesModel } from "@model/notes/favoritesModel.svelte";
-import { NoteModel } from "@model/notes/noteModel.svelte";
 import { CollapsibleModel } from "@model/ui/collapsibleModel.svelte";
 import { SidebarModel } from "@model/ui/sidebarModel.svelte";
+
+// Nueva arquitectura
+import { NoteRepository } from "@infrastructure/NoteRepository";
+import { NoteQueryRepository } from "@infrastructure/NoteQueryRepository";
+import { NoteUseCases } from "@application/NoteUseCases";
+import { NoteTreeService } from "@domain/NoteTreeService";
+import { NotePathService } from "@domain/NotePathService";
 
 interface StartupStep {
    name: string;
@@ -17,6 +23,7 @@ class StartupManager {
    public progress = $state(0);
    public error = $state<string | null>(null);
    public models: Record<string, any> = {};
+   public services: Record<string, any> = {};
 
    private async setupSteps() {
       const steps: StartupStep[] = [
@@ -49,10 +56,25 @@ class StartupManager {
             },
          },
          {
-            name: "Cargando notas...",
+            name: "Inicializando repositorios de notas...",
             initialize: async () => {
-               this.models.noteModel = new NoteModel();
-               await this.models.noteModel.initialize();
+               // Repositorios
+               this.services.noteRepository = new NoteRepository();
+               await this.services.noteRepository.initialize();
+
+               this.services.noteQueryRepository = new NoteQueryRepository(
+                  this.services.noteRepository,
+               );
+
+               // Servicios de dominio
+               this.services.noteTreeService = new NoteTreeService();
+               this.services.notePathService = new NotePathService();
+
+               // Casos de uso
+               this.services.noteUseCases = new NoteUseCases(
+                  this.services.noteRepository,
+                  this.services.noteQueryRepository,
+               );
             },
          },
          {
@@ -110,9 +132,11 @@ class StartupManager {
       this.progress = 0;
       this.error = null;
       this.models = {};
+      this.services = {};
 
       await this.launchApp();
    }
+
    // Método genérico para obtener cualquier modelo
    public getModel<T>(modelName: string): T {
       if (!this.isReady) {
@@ -126,6 +150,21 @@ class StartupManager {
       }
 
       return this.models[modelName] as T;
+   }
+
+   // Nuevo método para obtener servicios
+   public getService<T>(serviceName: string): T {
+      if (!this.isReady) {
+         throw new Error(
+            `StartupManager no está listo. servicio ${serviceName} no disponible.`,
+         );
+      }
+
+      if (!this.services[serviceName]) {
+         throw new Error(`Servicio "${serviceName}" no encontrado.`);
+      }
+
+      return this.services[serviceName] as T;
    }
 }
 
