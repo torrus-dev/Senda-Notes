@@ -1,7 +1,3 @@
-import type { NoteStats } from "@projectTypes/core/noteTypes";
-import { noteController } from "@controllers/notes/noteController.svelte";
-import { DateTime } from "luxon";
-
 class EditorController {
    private state = $state({
       contentSaved: true,

@@ -1,10 +1,10 @@
-import { PersistentLocalStorageModel } from "@model/persistentLocalStorageModel.svelte";
+import { LocalStorageAdapter } from "@infrastructure/persistence/LocalStorageAdapter.svelte";
 
 type CollapsibleStates = {
    [key: string]: boolean;
 };
 
-export class CollapsibleModel extends PersistentLocalStorageModel<CollapsibleStates> {
+export class CollapsibleModel extends LocalStorageAdapter<CollapsibleStates> {
    constructor() {
       super("collapsible-states");
    }

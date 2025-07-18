@@ -3,12 +3,11 @@
 import type { GlobalPropertiesModel } from "@model/application/globalPropertiesModel.svelte";
 import type { SettingsModel } from "@model/application/settingsModel.svelte";
 import type { WorkspaceModel } from "@model/navigation/workspaceModel.svelte";
-import type { FavoritesModel } from "@model/notes/favoritesModel.svelte";
 import type { CollapsibleModel } from "@model/ui/collapsibleModel.svelte";
 import type { SidebarModel } from "@model/ui/sidebarModel.svelte";
-import type { NoteRepository } from "@infrastructure/NoteRepository";
-import type { NoteQueryRepository } from "@infrastructure/NoteQueryRepository";
-import type { NoteUseCases } from "@application/NoteUseCases";
+import type { NoteRepository } from "@infrastructure/repositories/NoteRepository";
+import type { NoteQueryRepository } from "@infrastructure/repositories/NoteQueryRepository";
+import type { NoteUseCases } from "@application/usecases/NoteUseCases";
 import type { NoteTreeService } from "@domain/services/NoteTreeService";
 import type { NotePathService } from "@domain/services/NotePathService";
 
@@ -25,7 +24,6 @@ export interface ModelMap {
    settingsModel: SettingsModel;
    workspaceModel: WorkspaceModel;
    globalPropertiesModel: GlobalPropertiesModel;
-   favoritesModel: FavoritesModel;
    collapsibleModel: CollapsibleModel;
    sidebarModel: SidebarModel;
 }

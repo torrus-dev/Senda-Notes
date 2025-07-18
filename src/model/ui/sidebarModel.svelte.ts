@@ -1,11 +1,11 @@
-import { PersistentLocalStorageModel } from "@model/persistentLocalStorageModel.svelte";
+import { LocalStorageAdapter } from "@infrastructure/persistence/LocalStorageAdapter.svelte";
 
 interface SidebarState {
    isOpen: boolean;
    width: number | null;
 }
 
-export class SidebarModel extends PersistentLocalStorageModel<SidebarState> {
+export class SidebarModel extends LocalStorageAdapter<SidebarState> {
    constructor() {
       super("Sidebar");
    }

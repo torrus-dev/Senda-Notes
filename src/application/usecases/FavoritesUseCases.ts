@@ -1,4 +1,4 @@
-import { FavoritesRepository } from "@infrastructure/FavoritesRepository";
+import { FavoritesRepository } from "@infrastructure/repositories/FavoritesRepository";
 
 /**
  * Casos de uso simples para favoritos

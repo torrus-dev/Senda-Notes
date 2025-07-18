@@ -1,12 +1,12 @@
 import type { Tab } from "@projectTypes/ui/uiTypes";
-import { PersistentLocalStorageModel } from "@model/persistentLocalStorageModel.svelte";
+import { LocalStorageAdapter } from "@infrastructure/persistence/LocalStorageAdapter.svelte";
 
 interface WorkspaceData {
    tabs: Tab[];
    activeTabId: string | undefined;
 }
 
-export class WorkspaceModel extends PersistentLocalStorageModel<WorkspaceData> {
+export class WorkspaceModel extends LocalStorageAdapter<WorkspaceData> {
    settingsAplied = false;
    constructor() {
       super("NoteNavigation");

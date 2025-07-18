@@ -5,11 +5,11 @@ import { CollapsibleModel } from "@model/ui/collapsibleModel.svelte";
 import { SidebarModel } from "@model/ui/sidebarModel.svelte";
 
 // Nueva arquitectura
-import { NoteRepository } from "@infrastructure/NoteRepository";
-import { NoteQueryRepository } from "@infrastructure/NoteQueryRepository";
-import { FavoritesRepository } from "@infrastructure/FavoritesRepository";
-import { NoteUseCases } from "@application/NoteUseCases";
-import { FavoritesUseCases } from "@application/FavoritesUseCases";
+import { NoteRepository } from "@infrastructure/repositories/NoteRepository";
+import { NoteQueryRepository } from "@infrastructure/repositories/NoteQueryRepository";
+import { FavoritesRepository } from "@infrastructure/repositories/FavoritesRepository";
+import { NoteUseCases } from "@application/usecases/NoteUseCases";
+import { FavoritesUseCases } from "@application/usecases/FavoritesUseCases";
 import { NoteTreeService } from "@domain/services/NoteTreeService";
 import { NotePathService } from "@domain/services/NotePathService";
 

@@ -1,4 +1,4 @@
-import { PersistentLocalStorageModel } from "@model/persistentLocalStorageModel.svelte";
+import { LocalStorageAdapter } from "@infrastructure/persistence/LocalStorageAdapter.svelte";
 
 interface FavoritesData {
    favorites: string[]; // IDs de notas favoritas
@@ -8,7 +8,7 @@ interface FavoritesData {
  * Repositorio para gestionar favoritos
  * Combina queries y commands por simplicidad
  */
-export class FavoritesRepository extends PersistentLocalStorageModel<FavoritesData> {
+export class FavoritesRepository extends LocalStorageAdapter<FavoritesData> {
    constructor() {
       super("Favorites");
    }

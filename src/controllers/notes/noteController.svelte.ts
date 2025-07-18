@@ -1,12 +1,10 @@
-import { NoteUseCases } from "@application/NoteUseCases";
+import { NoteUseCases } from "@application/usecases/NoteUseCases";
 import { startupManager } from "@model/startup/startupManager.svelte";
 import { focusController } from "@controllers/ui/focusController.svelte";
 import { FocusTarget } from "@projectTypes/ui/uiTypes";
 import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 import { notificationController } from "@controllers/application/notificationController.svelte";
 import { globalConfirmationDialog } from "@controllers/menu/confirmationDialogController.svelte";
-import { NoteQueryRepository } from "@infrastructure/NoteQueryRepository";
-import { NoteRepository } from "@infrastructure/NoteRepository";
 
 /**
  * Controlador delgado para coordinar UI con casos de uso

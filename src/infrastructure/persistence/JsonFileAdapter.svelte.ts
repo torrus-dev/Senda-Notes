@@ -1,4 +1,4 @@
-export abstract class PersistentJsonFileModel<T> {
+export abstract class JsonFileAdapter<T> {
    data: T = $state() as T;
    public isInitialized = $state(false);
    private saveTimeout: number | null = null;

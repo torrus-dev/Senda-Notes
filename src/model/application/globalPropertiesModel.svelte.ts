@@ -1,11 +1,11 @@
 import type { GlobalProperty } from "@projectTypes/core/propertyTypes";
-import { PersistentLocalStorageModel } from "@model/persistentLocalStorageModel.svelte";
+import { LocalStorageAdapter } from "@infrastructure/persistence/LocalStorageAdapter.svelte";
 
 interface GlobalPropertiesData {
    globalProperties: GlobalProperty[];
 }
 
-export class GlobalPropertiesModel extends PersistentLocalStorageModel<GlobalPropertiesData> {
+export class GlobalPropertiesModel extends LocalStorageAdapter<GlobalPropertiesData> {
    constructor() {
       super("GlobalProperties");
    }

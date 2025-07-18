@@ -112,7 +112,9 @@ class NotePropertyController {
       const note = this.queryRepository.findById(noteId);
       if (!note) return undefined;
 
-      return note.properties.find((property) => property.id === propertyId);
+      return note.properties.find(
+         (property: NoteProperty) => property.id === propertyId,
+      );
    };
 
    renameNotePropertyById(

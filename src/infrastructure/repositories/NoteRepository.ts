@@ -1,5 +1,5 @@
 import { Note } from "@domain/entities/Note";
-import { PersistentLocalStorageModel } from "@model/persistentLocalStorageModel.svelte";
+import { LocalStorageAdapter } from "@infrastructure/persistence/LocalStorageAdapter.svelte";
 
 interface NoteData {
    notes: any[]; // Objetos planos para persistencia
@@ -8,7 +8,7 @@ interface NoteData {
 /**
  * Repositorio para comandos (operaciones que modifican estado)
  */
-export class NoteRepository extends PersistentLocalStorageModel<NoteData> {
+export class NoteRepository extends LocalStorageAdapter<NoteData> {
    constructor() {
       super("notes");
    }

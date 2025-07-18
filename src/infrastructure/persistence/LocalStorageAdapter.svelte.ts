@@ -1,4 +1,4 @@
-export abstract class PersistentLocalStorageModel<T> {
+export abstract class LocalStorageAdapter<T> {
    data: T = $state() as T;
    public isInitialized = $state(false);
 
