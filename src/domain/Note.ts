@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import type { NoteMetadata, NoteStats } from "@projectTypes/core/noteTypes";
-import { sanitizeTitle, updateModifiedMetadata } from "@utils/noteUtils";
+import { sanitizeTitle } from "@utils/noteUtils";
 import { NoteProperty } from "@projectTypes/data";
 
 /**

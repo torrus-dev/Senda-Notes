@@ -3,6 +3,7 @@ import { NotePathService } from "@domain/NotePathService";
 import { NoteTreeService } from "@domain/NoteTreeService";
 import { NoteRepository } from "@infrastructure/NoteRepository";
 import { NoteQueryRepository } from "@infrastructure/NoteQueryRepository";
+import { FavoritesUseCases } from "@application/FavoritesUseCases";
 import { generateUniqueTitle } from "@utils/noteUtils";
 
 /**
@@ -11,13 +12,16 @@ import { generateUniqueTitle } from "@utils/noteUtils";
 export class NoteUseCases {
    private pathService: NotePathService;
    private treeService: NoteTreeService;
+   private favoritesUseCases?: FavoritesUseCases;
 
    constructor(
       private noteRepository: NoteRepository,
       private queryRepository: NoteQueryRepository,
+      favoritesUseCases?: FavoritesUseCases,
    ) {
       this.pathService = new NotePathService();
       this.treeService = new NoteTreeService();
+      this.favoritesUseCases = favoritesUseCases;
    }
 
    /**
@@ -125,6 +129,11 @@ export class NoteUseCases {
 
       // Eliminar notas
       this.noteRepository.deleteMany(idsToDelete);
+
+      // Limpiar favoritos
+      if (this.favoritesUseCases) {
+         this.favoritesUseCases.handleNotesDeleted(idsToDelete);
+      }
    }
 
    /**

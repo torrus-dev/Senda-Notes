@@ -39,16 +39,6 @@ class EditorController {
       };
    }
 
-   // Método para guardar estadísticas en la nota
-   saveStatsToNote(noteId: string) {
-      const stats: NoteStats = {
-         ...this.state.currentStats,
-         lastCalculated: DateTime.now(),
-      };
-
-      noteController.updateNoteStats(noteId, stats);
-   }
-
    // Método para resetear estadísticas
    resetStats() {
       this.state.currentStats = {

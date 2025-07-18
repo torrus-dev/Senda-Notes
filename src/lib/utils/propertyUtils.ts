@@ -11,7 +11,7 @@ import type {
    NoteProperty,
 } from "@projectTypes/core/propertyTypes";
 import { DateTime } from "luxon";
-import type { Note } from "@projectTypes/core/noteTypes";
+import { Note } from "@domain/Note";
 
 // Seleccionar el icono según el tipo de propiedad
 export function getPropertyIcon(type: string) {

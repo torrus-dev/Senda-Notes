@@ -1,9 +1,6 @@
 import { DateTime } from "luxon";
-import type {
-   Note,
-   NoteMetadata,
-   NoteReference,
-} from "@projectTypes/core/noteTypes";
+import type { NoteMetadata, NoteReference } from "@projectTypes/core/noteTypes";
+import { Note } from "@domain/Note";
 
 export function sanitizeTitle(title: string): string {
    return title
@@ -28,16 +25,6 @@ export function generateUniqueTitle(
    while (currentTitles.has(`${base} ${index}`)) index++;
 
    return `${base} ${index}`;
-}
-
-export function updateModifiedMetadata(note: Note): Note {
-   return {
-      ...note,
-      metadata: {
-         ...note.metadata,
-         modified: DateTime.now(),
-      },
-   };
 }
 
 export function createDefaultMetadata(): NoteMetadata {

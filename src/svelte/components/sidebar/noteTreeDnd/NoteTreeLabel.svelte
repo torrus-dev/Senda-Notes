@@ -8,19 +8,10 @@
 import type { Note } from "@projectTypes/core/noteTypes";
 import { noteController } from "@controllers/notes/noteController.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
-import {
-   ChevronRightIcon,
-   PlusIcon,
-   PenLineIcon,
-   Trash2Icon,
-   StarIcon,
-   StarOffIcon,
-   ArrowUpRight,
-   SquarePlusIcon,
-} from "lucide-svelte";
+import { ChevronRightIcon, PlusIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
 import { contextMenu } from "@directives/floatingMenuDirective.svelte";
-import { favoriteController } from "@controllers/notes/favoritesController.svelte";
+import { favoritesController } from "@controllers/notes/favoritesController.svelte";
 import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 import NoteTitleEditor from "@components/note/widgets/NoteTitleEditor.svelte";
 import { getCommonNoteMenuItems } from "@lib/menuItems/noteMenuItems..svelte";
@@ -41,7 +32,7 @@ let isActive = $derived(note.id === workspaceController.activeNoteId);
 let childrenCount = $derived(noteQueryController.getDescendantCount(note.id));
 let hasChildren = $derived(childrenCount > 0);
 
-let isFavorited = $derived(favoriteController.isFavorite(note.id));
+let isFavorited = $derived(favoritesController.isFavorite(note.id));
 
 const handleSelectTitle = (event: KeyboardEvent | MouseEvent) => {
    if (!isEditingTitle) {

@@ -2,7 +2,6 @@
 import type { Note } from "@projectTypes/core/noteTypes";
 
 import Collapsible from "@components/utils/Collapsible.svelte";
-import { favoriteController } from "@controllers/notes/favoritesController.svelte";
 
 import { StarIcon, StarOffIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
@@ -10,8 +9,9 @@ import { workspaceController } from "@controllers/navigation/workspaceController
 import { getCommonNoteMenuItems } from "@lib/menuItems/noteMenuItems..svelte";
 import type { MenuItem } from "@projectTypes/ui/contextMenuTypes";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { favoritesController } from "@controllers/notes/favoritesController.svelte";
 
-let favorites: Note["id"][] = $derived(favoriteController.getFavorites());
+let favorites: Note["id"][] = $derived(favoritesController.getFavoriteIds());
 </script>
 
 {#snippet headingContent()}

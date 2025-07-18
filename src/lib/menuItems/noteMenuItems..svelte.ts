@@ -10,10 +10,11 @@ import {
 } from "lucide-svelte";
 import type { MenuItem } from "@projectTypes/ui/contextMenuTypes";
 import { noteController } from "@controllers/notes/noteController.svelte";
-import { favoriteController } from "@controllers/notes/favoritesController.svelte";
+
 import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 import { focusController } from "@controllers/ui/focusController.svelte";
 import { FocusTarget } from "@projectTypes/ui/uiTypes";
+import { favoritesController } from "@controllers/notes/favoritesController.svelte";
 
 export interface NoteMenuOptions {
    noteId: string;
@@ -40,7 +41,7 @@ export function getCommonNoteMenuItems(options: NoteMenuOptions): MenuItem[] {
       customItems = [],
    } = options;
 
-   const isFavorited = $derived(favoriteController.isFavorite(noteId));
+   const isFavorited = $derived(favoritesController.isFavorite(noteId));
    const menuItems: MenuItem[] = [];
 
    // Navegación
@@ -74,7 +75,7 @@ export function getCommonNoteMenuItems(options: NoteMenuOptions): MenuItem[] {
          label: !isFavorited ? "Agregar a favoritos" : "Quitar de favoritos",
          icon: !isFavorited ? StarIcon : StarOffIcon,
          action: () => {
-            favoriteController.toggleFavorite(noteId);
+            favoritesController.toggleFavorite(noteId);
          },
       });
    }

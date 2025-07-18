@@ -1,19 +1,17 @@
 import { GlobalPropertiesModel } from "@model/application/globalPropertiesModel.svelte";
 import { SettingsModel } from "@model/application/settingsModel.svelte";
 import { WorkspaceModel } from "@model/navigation/workspaceModel.svelte";
-import { FavoritesModel } from "@model/notes/favoritesModel.svelte";
 import { CollapsibleModel } from "@model/ui/collapsibleModel.svelte";
 import { SidebarModel } from "@model/ui/sidebarModel.svelte";
 
 // Nueva arquitectura
 import { NoteRepository } from "@infrastructure/NoteRepository";
 import { NoteQueryRepository } from "@infrastructure/NoteQueryRepository";
+import { FavoritesRepository } from "@infrastructure/FavoritesRepository";
 import { NoteUseCases } from "@application/NoteUseCases";
+import { FavoritesUseCases } from "@application/FavoritesUseCases";
 import { NoteTreeService } from "@domain/NoteTreeService";
 import { NotePathService } from "@domain/NotePathService";
-
-// Importar tipos
-import type { ServiceMap, ModelMap } from "@projectTypes/core/startupTypes";
 
 interface StartupStep {
    name: string;
@@ -25,8 +23,8 @@ class StartupManager {
    public currentStep = $state<string>("");
    public progress = $state(0);
    public error = $state<string | null>(null);
-   public models = {} as ModelMap;
-   public services = {} as ServiceMap;
+   public models: Record<string, any> = {};
+   public services: Record<string, any> = {};
 
    private async setupSteps() {
       const steps: StartupStep[] = [
@@ -54,30 +52,35 @@ class StartupManager {
          {
             name: "Cargando favoritos...",
             initialize: async () => {
-               this.models.favoritesModel = new FavoritesModel();
-               await this.models.favoritesModel.initialize();
+               this.services.favoritesRepository = new FavoritesRepository();
+               await this.services.favoritesRepository.initialize();
             },
          },
          {
             name: "Inicializando repositorios de notas...",
             initialize: async () => {
                // Repositorios
-               const noteRepository = new NoteRepository();
-               await noteRepository.initialize();
-               this.services.noteRepository = noteRepository;
+               this.services.noteRepository = new NoteRepository();
+               await this.services.noteRepository.initialize();
 
                this.services.noteQueryRepository = new NoteQueryRepository(
-                  noteRepository,
+                  this.services.noteRepository,
                );
 
                // Servicios de dominio
                this.services.noteTreeService = new NoteTreeService();
                this.services.notePathService = new NotePathService();
 
-               // Casos de uso
+               // Casos de uso de favoritos
+               this.services.favoritesUseCases = new FavoritesUseCases(
+                  this.services.favoritesRepository,
+               );
+
+               // Casos de uso de notas
                this.services.noteUseCases = new NoteUseCases(
-                  noteRepository,
+                  this.services.noteRepository,
                   this.services.noteQueryRepository,
+                  this.services.favoritesUseCases,
                );
             },
          },
@@ -135,14 +138,14 @@ class StartupManager {
       this.currentStep = "";
       this.progress = 0;
       this.error = null;
-      this.models = {} as ModelMap;
-      this.services = {} as ServiceMap;
+      this.models = {};
+      this.services = {};
 
       await this.launchApp();
    }
 
-   // Método para obtener modelos con tipos correctos
-   public getModel<K extends keyof ModelMap>(modelName: K): ModelMap[K] {
+   // Método genérico para obtener cualquier modelo
+   public getModel<T>(modelName: string): T {
       if (!this.isReady) {
          throw new Error(
             `StartupManager no está listo. modelo ${modelName} no disponible.`,
@@ -153,13 +156,11 @@ class StartupManager {
          throw new Error(`Modelo "${modelName}" no encontrado.`);
       }
 
-      return this.models[modelName];
+      return this.models[modelName] as T;
    }
 
-   // Método para obtener servicios con tipos correctos
-   public getService<K extends keyof ServiceMap>(
-      serviceName: K,
-   ): ServiceMap[K] {
+   // Nuevo método para obtener servicios
+   public getService<T>(serviceName: string): T {
       if (!this.isReady) {
          throw new Error(
             `StartupManager no está listo. servicio ${serviceName} no disponible.`,
@@ -170,7 +171,7 @@ class StartupManager {
          throw new Error(`Servicio "${serviceName}" no encontrado.`);
       }
 
-      return this.services[serviceName];
+      return this.services[serviceName] as T;
    }
 }
 
