@@ -5,7 +5,7 @@ import { noteQueryController } from "@controllers/notes/noteQueryController.svel
 import { createNoteReference } from "@utils/noteUtils";
 import { WorkspaceModel } from "@model/navigation/workspaceModel.svelte";
 import { settingsController } from "@controllers/application/settingsController.svelte";
-import { Note } from "@domain/Note";
+import { Note } from "@domain/entities/Note";
 
 class WorkspaceController {
    private get workspaceModel(): WorkspaceModel {

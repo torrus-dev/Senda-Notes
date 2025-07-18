@@ -1,4 +1,4 @@
-import { Note } from "./Note";
+import { Note } from "@domain/entities/Note";
 
 /**
  * Servicio de dominio para validaciones y operaciones del árbol de notas

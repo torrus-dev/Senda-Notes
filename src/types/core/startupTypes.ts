@@ -9,8 +9,8 @@ import type { SidebarModel } from "@model/ui/sidebarModel.svelte";
 import type { NoteRepository } from "@infrastructure/NoteRepository";
 import type { NoteQueryRepository } from "@infrastructure/NoteQueryRepository";
 import type { NoteUseCases } from "@application/NoteUseCases";
-import type { NoteTreeService } from "@domain/NoteTreeService";
-import type { NotePathService } from "@domain/NotePathService";
+import type { NoteTreeService } from "@domain/services/NoteTreeService";
+import type { NotePathService } from "@domain/services/NotePathService";
 
 // Exportar interfaces para uso externo si es necesario
 export interface ServiceMap {

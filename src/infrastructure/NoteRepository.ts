@@ -1,4 +1,4 @@
-import { Note } from "@domain/Note";
+import { Note } from "@domain/entities/Note";
 import { PersistentLocalStorageModel } from "@model/persistentLocalStorageModel.svelte";
 
 interface NoteData {

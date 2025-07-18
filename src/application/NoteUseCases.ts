@@ -1,6 +1,6 @@
-import { Note } from "@domain/Note";
-import { NotePathService } from "@domain/NotePathService";
-import { NoteTreeService } from "@domain/NoteTreeService";
+import { Note } from "@domain/entities/Note";
+import { NotePathService } from "@domain/services/NotePathService";
+import { NoteTreeService } from "@domain/services/NoteTreeService";
 import { NoteRepository } from "@infrastructure/NoteRepository";
 import { NoteQueryRepository } from "@infrastructure/NoteQueryRepository";
 import { FavoritesUseCases } from "@application/FavoritesUseCases";

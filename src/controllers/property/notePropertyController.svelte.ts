@@ -1,5 +1,5 @@
 import type { NoteProperty } from "@projectTypes/core/propertyTypes";
-import type { Note } from "@domain/Note";
+import type { Note } from "@domain/entities/Note";
 import { globalPropertyController } from "@controllers/property/globalPropertyController.svelte";
 import { startupManager } from "@model/startup/startupManager.svelte";
 import { generateProperty } from "@utils/propertyUtils";

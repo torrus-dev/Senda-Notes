@@ -1,8 +1,8 @@
-import { Note } from "@domain/Note";
+import { Note } from "@domain/entities/Note";
 import { NoteQueryRepository } from "@infrastructure/NoteQueryRepository";
 import { startupManager } from "@model/startup/startupManager.svelte";
 import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
-import { NoteTreeService } from "@domain/NoteTreeService";
+import { NoteTreeService } from "@domain/services/NoteTreeService";
 
 /**
  * Controlador de queries - coordina consultas con la UI

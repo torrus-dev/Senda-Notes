@@ -7,7 +7,7 @@ import { normalizeText } from "@utils/searchUtils";
 import { notePropertyController } from "@controllers/property/notePropertyController.svelte";
 import { startupManager } from "@model/startup/startupManager.svelte";
 import { GlobalPropertiesModel } from "@model/application/globalPropertiesModel.svelte";
-import { Note } from "@domain/Note";
+import { Note } from "@domain/entities/Note";
 
 class GlobalPropertyController {
    private get globalPropertiesModel(): GlobalPropertiesModel {

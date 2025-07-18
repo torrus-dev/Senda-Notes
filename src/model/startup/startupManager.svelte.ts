@@ -10,8 +10,28 @@ import { NoteQueryRepository } from "@infrastructure/NoteQueryRepository";
 import { FavoritesRepository } from "@infrastructure/FavoritesRepository";
 import { NoteUseCases } from "@application/NoteUseCases";
 import { FavoritesUseCases } from "@application/FavoritesUseCases";
-import { NoteTreeService } from "@domain/NoteTreeService";
-import { NotePathService } from "@domain/NotePathService";
+import { NoteTreeService } from "@domain/services/NoteTreeService";
+import { NotePathService } from "@domain/services/NotePathService";
+
+// Tipos para los modelos
+interface Models {
+   settingsModel: SettingsModel;
+   workspaceModel: WorkspaceModel;
+   globalPropertiesModel: GlobalPropertiesModel;
+   collapsibleModel: CollapsibleModel;
+   sidebarModel: SidebarModel;
+}
+
+// Tipos para los servicios
+interface Services {
+   noteRepository: NoteRepository;
+   noteQueryRepository: NoteQueryRepository;
+   favoritesRepository: FavoritesRepository;
+   noteUseCases: NoteUseCases;
+   favoritesUseCases: FavoritesUseCases;
+   noteTreeService: NoteTreeService;
+   notePathService: NotePathService;
+}
 
 interface StartupStep {
    name: string;
@@ -23,8 +43,8 @@ class StartupManager {
    public currentStep = $state<string>("");
    public progress = $state(0);
    public error = $state<string | null>(null);
-   public models: Record<string, any> = {};
-   public services: Record<string, any> = {};
+   public models = {} as Models;
+   public services = {} as Services;
 
    private async setupSteps() {
       const steps: StartupStep[] = [
@@ -138,14 +158,14 @@ class StartupManager {
       this.currentStep = "";
       this.progress = 0;
       this.error = null;
-      this.models = {};
-      this.services = {};
+      this.models = {} as Models;
+      this.services = {} as Services;
 
       await this.launchApp();
    }
 
-   // Método genérico para obtener cualquier modelo
-   public getModel<T>(modelName: string): T {
+   // Método tipado para obtener modelos
+   public getModel<K extends keyof Models>(modelName: K): Models[K] {
       if (!this.isReady) {
          throw new Error(
             `StartupManager no está listo. modelo ${modelName} no disponible.`,
@@ -156,11 +176,11 @@ class StartupManager {
          throw new Error(`Modelo "${modelName}" no encontrado.`);
       }
 
-      return this.models[modelName] as T;
+      return this.models[modelName];
    }
 
-   // Nuevo método para obtener servicios
-   public getService<T>(serviceName: string): T {
+   // Método tipado para obtener servicios
+   public getService<K extends keyof Services>(serviceName: K): Services[K] {
       if (!this.isReady) {
          throw new Error(
             `StartupManager no está listo. servicio ${serviceName} no disponible.`,
@@ -171,7 +191,7 @@ class StartupManager {
          throw new Error(`Servicio "${serviceName}" no encontrado.`);
       }
 
-      return this.services[serviceName] as T;
+      return this.services[serviceName];
    }
 }
 

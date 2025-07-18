@@ -1,4 +1,4 @@
-import { Note } from "./Note";
+import { Note } from "@domain/entities/Note";
 import { sanitizeTitle } from "@utils/noteUtils";
 import { normalizeText } from "@utils/searchUtils";
 
