@@ -1,3 +1,7 @@
+Ahora creo que podemos revisar tambien la parte de Favoritos, que es bastante sencilla y creo que sera facil de hacer.
+
+favoritesController.svelte.ts
+```
 import { startupManager } from "@model/startup/startupManager.svelte";
 import { FavoritesModel } from "@model/notes/favoritesModel.svelte";
 import { Note } from "@domain/Note";
@@ -44,3 +48,30 @@ class FavoriteController {
 }
 
 export const favoriteController = $state(new FavoriteController());
+
+```
+
+favoritesModel.svelte.ts
+```
+import { PersistentLocalStorageModel } from "@model/persistentLocalStorageModel.svelte";
+import type { Note } from "@projectTypes/core/noteTypes";
+
+interface FavoritesState {
+   favorites: Note["id"][];
+}
+
+export class FavoritesModel extends PersistentLocalStorageModel<FavoritesState> {
+   constructor() {
+      super("Favorites");
+   }
+
+   protected getDefaultData(): FavoritesState {
+      return {
+         favorites: [],
+      };
+   }
+}
+
+```
+
+Puedes hacer la implementación directamente, es bastante simple comparado con Notes. Confio en que crees la distribución de archivos optima siguiendo la arquitectura de Notes, mantenlo simple sin complicaciones

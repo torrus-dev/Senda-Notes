@@ -1,5 +1,5 @@
 export abstract class PersistentLocalStorageModel<T> {
-   protected data: T = $state() as T;
+   data: T = $state() as T;
    public isInitialized = $state(false);
 
    constructor(private storageKey: string) {}

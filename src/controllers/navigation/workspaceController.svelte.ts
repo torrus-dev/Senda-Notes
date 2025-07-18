@@ -1,4 +1,3 @@
-import type { Note } from "@projectTypes/core/noteTypes";
 import type { Tab } from "@projectTypes/ui/uiTypes";
 
 import { startupManager } from "@model/startup/startupManager.svelte";
@@ -6,6 +5,7 @@ import { noteQueryController } from "@controllers/notes/noteQueryController.svel
 import { createNoteReference } from "@utils/noteUtils";
 import { WorkspaceModel } from "@model/navigation/workspaceModel.svelte";
 import { settingsController } from "@controllers/application/settingsController.svelte";
+import { Note } from "@domain/Note";
 
 class WorkspaceController {
    private get workspaceModel(): WorkspaceModel {
