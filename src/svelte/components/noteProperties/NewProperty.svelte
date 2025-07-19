@@ -1,6 +1,6 @@
 <script lang="ts">
 import type { Note } from "@projectTypes/core/noteTypes";
-import type { GlobalProperty } from "@projectTypes/core/propertyTypes";
+import type { GlobalProperty } from "@domain/entities/GlobalProperty";
 
 import { notePropertyController } from "@controllers/property/notePropertyController.svelte";
 import PropertyIcon from "@components/noteProperties/PropertyIcon.svelte";

@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CheckProperty } from "@projectTypes/core/propertyTypes";
+import type { CheckProperty } from "@domain/entities/NoteProperty";
 
 let {
    property,

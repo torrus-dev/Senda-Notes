@@ -1,5 +1,4 @@
 <script lang="ts">
-import type { GlobalProperty } from "@projectTypes/core/propertyTypes";
 import type { MenuItem } from "@projectTypes/ui/contextMenuTypes";
 import {
    getPropertyIcon,
@@ -15,6 +14,7 @@ import Button from "@components/utils/Button.svelte";
 import { globalPropertyController } from "@controllers/property/globalPropertyController.svelte";
 import { globalConfirmationDialog } from "@controllers/menu/confirmationDialogController.svelte";
 import GlobalPropertyNameInput from "@components/globalProperties/GlobalPropertyNameInput.svelte";
+import { GlobalProperty } from "@domain/entities/GlobalProperty";
 
 let { globalProperty }: { globalProperty: GlobalProperty } = $props();
 

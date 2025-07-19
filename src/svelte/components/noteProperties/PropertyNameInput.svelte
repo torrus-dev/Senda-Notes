@@ -6,11 +6,10 @@ import { notePropertyController } from "@controllers/property/notePropertyContro
 import { propertyEditorController } from "@controllers/ui/propertyEditorController.svelte";
 import { onClickOutside } from "@directives/onClickOutside";
 import { onPressEsc } from "@directives/onPressEsc";
+import { GlobalProperty } from "@domain/entities/GlobalProperty";
+import { NoteProperty } from "@domain/entities/NoteProperty";
 import type { Note } from "@projectTypes/core/noteTypes";
-import type {
-   GlobalProperty,
-   NoteProperty,
-} from "@projectTypes/core/propertyTypes";
+
 import { getPropertyIcon } from "@utils/propertyUtils";
 import { onMount, tick } from "svelte";
 

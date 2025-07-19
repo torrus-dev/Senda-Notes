@@ -87,7 +87,7 @@ export interface DateTimeProperty extends BaseProperty {
 }
 
 /** Unión de todos los tipos de propiedad */
-export type NoteProperty =
+type NoteProperty =
    | TextProperty
    | ListProperty
    | NumberProperty
@@ -95,7 +95,7 @@ export type NoteProperty =
    | DateProperty
    | DateTimeProperty;
 
-export interface GlobalProperty {
+interface GlobalProperty {
    id: string;
    name: string;
    type: NoteProperty["type"];

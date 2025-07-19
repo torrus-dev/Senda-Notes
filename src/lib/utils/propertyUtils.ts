@@ -6,12 +6,10 @@ import {
    CalendarIcon,
    CalendarClockIcon,
 } from "lucide-svelte";
-import type {
-   GlobalProperty,
-   NoteProperty,
-} from "@projectTypes/core/propertyTypes";
 import { DateTime } from "luxon";
 import { Note } from "@domain/entities/Note";
+import { NoteProperty } from "@domain/entities/NoteProperty";
+import { GlobalProperty } from "@domain/entities/GlobalProperty";
 
 // Seleccionar el icono según el tipo de propiedad
 export function getPropertyIcon(type: string) {
@@ -89,19 +87,4 @@ export function convertPropertyValue(
 ) {
    // completar
    return getDefaultTypeValue(newtype);
-}
-
-export function generateGlobalProperty(
-   name: GlobalProperty["name"],
-   type: GlobalProperty["type"],
-): GlobalProperty {
-   const newGlobalProperty: GlobalProperty = {
-      id: crypto.randomUUID(),
-      name: name,
-      type: type,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-      linkedProperties: [],
-   };
-   return newGlobalProperty;
 }

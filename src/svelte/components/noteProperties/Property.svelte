@@ -2,16 +2,15 @@
 </style>
 
 <script lang="ts">
-import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";
-
-import type { NoteProperty } from "@projectTypes/core/propertyTypes";
 import { globalPropertyController } from "@controllers/property/globalPropertyController.svelte";
+import { propertyEditorController } from "@controllers/ui/propertyEditorController.svelte";
+import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";
+import { NoteProperty } from "@domain/entities/NoteProperty";
 
 import PropertyValue from "@components/noteProperties/PropertyValue.svelte";
 import PropertyLabel from "@components/noteProperties/PropertyLabel.svelte";
 import { TriangleAlertIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
-import { propertyEditorController } from "@controllers/ui/propertyEditorController.svelte";
 
 let {
    noteId,

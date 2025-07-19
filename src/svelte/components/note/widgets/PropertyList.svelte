@@ -2,10 +2,8 @@
 </style>
 
 <script lang="ts">
-import type { NoteProperty as PropertyType } from "@projectTypes/core/propertyTypes";
-
 import { SlidersHorizontalIcon, PlusIcon, ShapesIcon } from "lucide-svelte";
-
+import type { NoteProperty } from "@domain/entities/NoteProperty";
 import { notePropertyController } from "@controllers/property/notePropertyController.svelte";
 
 import Button from "@components/utils/Button.svelte";
@@ -16,7 +14,7 @@ import { propertyEditorController } from "@controllers/ui/propertyEditorControll
 
 let { noteId }: { noteId: string } = $props();
 
-let properties: PropertyType[] = $derived(
+let properties: NoteProperty[] = $derived(
    notePropertyController.getNoteProperties(noteId),
 );
 
@@ -60,7 +58,7 @@ let isAddingProperty = $derived(propertyEditorController.isAddingProperty());
                      event.preventDefault();
                   }}
                   title="Add property">
-                  <PlusIcon size="1.0625em" />Add Property
+                  <PlusIcon size="1.0625em" />Add PropertyComponent
                </Button>
             </li>
          {/if}

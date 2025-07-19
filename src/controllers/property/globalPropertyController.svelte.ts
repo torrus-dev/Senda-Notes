@@ -1,6 +1,7 @@
 import type { GlobalProperty } from "@domain/entities/GlobalProperty";
 import { PropertyUseCases } from "@application/usecases/PropertyUseCases";
 import { startupManager } from "@infrastructure/startup/startupManager.svelte";
+import { NoteProperty } from "@domain/entities/NoteProperty";
 
 interface ControllerState {
    isLoading: boolean;
@@ -488,16 +489,22 @@ class GlobalPropertyController {
    }
 
    /**
-    * Comprueba desajustes de tipo en una propiedad global
+    * Comprueba si hay desajuste de tipo entre una propiedad de nota y su propiedad global
     */
-   checkTypeMismatches(globalPropertyId: string) {
+   checkTypeMatch(noteProperty: NoteProperty): boolean {
+      const { globalPropertyId } = noteProperty;
+
+      if (!globalPropertyId) return false;
+
       const globalProperty = this.getGlobalPropertyById(globalPropertyId);
       if (!globalProperty) {
-         return [];
+         console.warn(
+            "No se ha encontrado ninguna propiedad global enlazada a esta propiedad",
+         );
+         return false;
       }
 
-      // Esta operación requiere acceso a todas las notas, delegar al caso de uso
-      return this.propertyUseCases.getPropertySystemStats();
+      return noteProperty.type === globalProperty.type;
    }
 }
 

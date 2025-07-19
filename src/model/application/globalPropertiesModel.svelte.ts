@@ -1,4 +1,4 @@
-import type { GlobalProperty } from "@projectTypes/core/propertyTypes";
+import { GlobalProperty } from "@domain/entities/GlobalProperty";
 import { LocalStorageAdapter } from "@infrastructure/persistence/LocalStorageAdapter.svelte";
 
 interface GlobalPropertiesData {
