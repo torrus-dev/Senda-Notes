@@ -1,4 +1,3 @@
-import { GlobalPropertiesModel } from "@model/application/globalPropertiesModel.svelte";
 import { SettingsModel } from "@model/application/settingsModel.svelte";
 import { WorkspaceModel } from "@model/navigation/workspaceModel.svelte";
 import { CollapsibleModel } from "@model/ui/collapsibleModel.svelte";
@@ -8,16 +7,19 @@ import { SidebarModel } from "@model/ui/sidebarModel.svelte";
 import { NoteRepository } from "@infrastructure/repositories/NoteRepository";
 import { NoteQueryRepository } from "@infrastructure/repositories/NoteQueryRepository";
 import { FavoritesRepository } from "@infrastructure/repositories/FavoritesRepository";
+import { GlobalPropertyRepository } from "@infrastructure/repositories/GlobalPropertyRepository";
+
 import { NoteUseCases } from "@application/usecases/NoteUseCases";
 import { FavoritesUseCases } from "@application/usecases/FavoritesUseCases";
 import { NoteTreeService } from "@domain/services/NoteTreeService";
 import { NotePathService } from "@domain/services/NotePathService";
+import { PropertyService } from "@domain/services/PropertyService";
+import { PropertyUseCases } from "@application/usecases/PropertyUseCases";
 
-// Tipos para los modelos
+// Tipos para los modelos (ya no incluye globalPropertiesModel)
 interface Models {
    settingsModel: SettingsModel;
    workspaceModel: WorkspaceModel;
-   globalPropertiesModel: GlobalPropertiesModel;
    collapsibleModel: CollapsibleModel;
    sidebarModel: SidebarModel;
 }
@@ -31,6 +33,9 @@ interface Services {
    favoritesUseCases: FavoritesUseCases;
    noteTreeService: NoteTreeService;
    notePathService: NotePathService;
+   globalPropertyRepository: GlobalPropertyRepository;
+   propertyService: PropertyService;
+   propertyUseCases: PropertyUseCases;
 }
 
 interface StartupStep {
@@ -63,14 +68,7 @@ class StartupManager {
             },
          },
          {
-            name: "Cargando propiedades globales...",
-            initialize: async () => {
-               this.models.globalPropertiesModel = new GlobalPropertiesModel();
-               await this.models.globalPropertiesModel.initialize();
-            },
-         },
-         {
-            name: "Cargando favoritos...",
+            name: "Inicializando repositorios de favoritos...",
             initialize: async () => {
                this.services.favoritesRepository = new FavoritesRepository();
                await this.services.favoritesRepository.initialize();
@@ -86,11 +84,28 @@ class StartupManager {
                this.services.noteQueryRepository = new NoteQueryRepository(
                   this.services.noteRepository,
                );
-
-               // Servicios de dominio
+            },
+         },
+         {
+            name: "Inicializando repositorios de propiedades...",
+            initialize: async () => {
+               this.services.globalPropertyRepository =
+                  new GlobalPropertyRepository();
+               await this.services.globalPropertyRepository.initialize();
+            },
+         },
+         {
+            name: "Inicializando servicios de dominio...",
+            initialize: async () => {
+               // Servicios de dominio para notas
                this.services.noteTreeService = new NoteTreeService();
                this.services.notePathService = new NotePathService();
-
+               this.services.propertyService = new PropertyService();
+            },
+         },
+         {
+            name: "Inicializando casos de uso...",
+            initialize: async () => {
                // Casos de uso de favoritos
                this.services.favoritesUseCases = new FavoritesUseCases(
                   this.services.favoritesRepository,
@@ -102,6 +117,38 @@ class StartupManager {
                   this.services.noteQueryRepository,
                   this.services.favoritesUseCases,
                );
+
+               // Casos de uso de propiedades
+               this.services.propertyUseCases = new PropertyUseCases(
+                  this.services.propertyService,
+                  this.services.globalPropertyRepository,
+                  this.services.noteRepository,
+                  this.services.noteQueryRepository,
+               );
+            },
+         },
+         {
+            name: "Validando integridad del sistema...",
+            initialize: async () => {
+               // Validar integridad de propiedades al inicio
+               try {
+                  const integrityResult =
+                     await this.services.propertyUseCases.validateIntegrity(
+                        true,
+                     );
+                  if (!integrityResult.isValid) {
+                     console.warn(
+                        "Problemas de integridad detectados y reparados:",
+                        integrityResult.issues,
+                     );
+                  }
+               } catch (error) {
+                  console.warn(
+                     "Error durante validación de integridad:",
+                     error,
+                  );
+                  // No fallar el inicio por problemas de integridad
+               }
             },
          },
          {
@@ -144,9 +191,11 @@ class StartupManager {
 
          this.currentStep = "Aplicación lista";
          this.isReady = true;
-         console.log("APLICACIÓN LISTA");
+         console.log(
+            "✅ APLICACIÓN LISTA - Sistema de propiedades migrado exitosamente",
+         );
       } catch (error) {
-         console.error("Error durante el inicio de la aplicación:", error);
+         console.error("❌ Error durante el inicio de la aplicación:", error);
          this.error = `Error durante la inicialización: ${error}`;
          this.isReady = false;
       }
@@ -168,7 +217,7 @@ class StartupManager {
    public getModel<K extends keyof Models>(modelName: K): Models[K] {
       if (!this.isReady) {
          throw new Error(
-            `StartupManager no está listo. modelo ${modelName} no disponible.`,
+            `StartupManager no está listo. Modelo ${modelName} no disponible.`,
          );
       }
 
@@ -183,7 +232,7 @@ class StartupManager {
    public getService<K extends keyof Services>(serviceName: K): Services[K] {
       if (!this.isReady) {
          throw new Error(
-            `StartupManager no está listo. servicio ${serviceName} no disponible.`,
+            `StartupManager no está listo. Servicio ${serviceName} no disponible.`,
          );
       }
 

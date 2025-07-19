@@ -1,6 +1,6 @@
 import type { GlobalProperty } from "@domain/entities/GlobalProperty";
 import { PropertyUseCases } from "@application/usecases/PropertyUseCases";
-import { startupManager } from "@model/startup/startupManager.svelte";
+import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 
 interface ControllerState {
    isLoading: boolean;
