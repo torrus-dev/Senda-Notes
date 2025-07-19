@@ -1,10 +1,10 @@
 import { DateTime } from "luxon";
 import type { NoteMetadata, NoteStats } from "@projectTypes/core/noteTypes";
 import { sanitizeTitle } from "@utils/noteUtils";
-import { NoteProperty } from "@projectTypes/data";
+import { NoteProperty } from "./NoteProperty";
 
 /**
- * Entidad rica Note con lógica de negocio
+ * Entidad rica Note con lógica de negocio (actualizada para usar NoteProperty)
  */
 export class Note {
    id: string;
@@ -113,14 +113,12 @@ export class Note {
       // Validar que sean los mismos IDs
       const currentSet = new Set(this.children);
       const newSet = new Set(orderedChildIds);
-
       if (
          currentSet.size !== newSet.size ||
          !orderedChildIds.every((id) => currentSet.has(id))
       ) {
          throw new Error("Invalid child IDs for reordering");
       }
-
       this.children = orderedChildIds;
       this.updateModified();
    }
@@ -131,7 +129,6 @@ export class Note {
    insertChildAt(childId: string, position: number): void {
       // Remover si ya existe
       this.removeChild(childId);
-
       // Insertar en la posición correcta
       const validPosition = Math.max(
          0,
@@ -164,12 +161,10 @@ export class Note {
       if (newParentId === this.id) {
          return false;
       }
-
       // Si no hay nuevo padre, siempre puede moverse a raíz
       if (!newParentId) {
          return true;
       }
-
       // No puede moverse a uno de sus descendientes
       // (esto requeriría acceso a otras notas, se validará externamente)
       return true;
@@ -186,7 +181,7 @@ export class Note {
    }
 
    /**
-    * Actualiza las propiedades de la nota
+    * Actualiza las propiedades de la nota con entidades NoteProperty
     */
    updateProperties(properties: NoteProperty[]): void {
       this.properties = properties;
@@ -194,9 +189,16 @@ export class Note {
    }
 
    /**
-    * Añade una propiedad a la nota
+    * Añade una propiedad a la nota (entidad NoteProperty)
     */
    addProperty(property: NoteProperty): void {
+      // Validar que la propiedad pertenece a esta nota
+      if (property.noteId !== this.id) {
+         throw new Error(
+            `Property noteId (${property.noteId}) does not match note id (${this.id})`,
+         );
+      }
+
       this.properties.push(property);
       this.updateModified();
    }
@@ -213,14 +215,100 @@ export class Note {
    }
 
    /**
+    * Obtiene una propiedad por ID
+    */
+   getProperty(propertyId: string): NoteProperty | undefined {
+      return this.properties.find((p) => p.id === propertyId);
+   }
+
+   /**
     * Actualiza una propiedad específica
     */
-   updateProperty(propertyId: string, updates: Partial<NoteProperty>): void {
-      const property = this.properties.find((p) => p.id === propertyId);
+   updateProperty(
+      propertyId: string,
+      updateFn: (property: NoteProperty) => void,
+   ): void {
+      const property = this.getProperty(propertyId);
       if (property) {
-         Object.assign(property, updates);
+         updateFn(property);
          this.updateModified();
       }
+   }
+
+   /**
+    * Verifica si ya existe una propiedad con el mismo nombre (normalizado)
+    */
+   hasPropertyWithName(name: string, excludePropertyId?: string): boolean {
+      const normalizedName = name.trim().toLowerCase();
+      return this.properties
+         .filter((p) => p.id !== excludePropertyId)
+         .some((p) => p.getNormalizedName() === normalizedName);
+   }
+
+   /**
+    * Obtiene propiedades vinculadas a una propiedad global específica
+    */
+   getPropertiesLinkedToGlobal(globalPropertyId: string): NoteProperty[] {
+      return this.properties.filter((p) =>
+         p.isLinkedToGlobalProperty(globalPropertyId),
+      );
+   }
+
+   /**
+    * Obtiene propiedades no vinculadas a ninguna propiedad global
+    */
+   getUnlinkedProperties(): NoteProperty[] {
+      return this.properties.filter((p) => !p.isLinkedToGlobal());
+   }
+
+   /**
+    * Reordena las propiedades
+    */
+   reorderProperties(propertyId: string, newPosition: number): void {
+      const currentIndex = this.properties.findIndex(
+         (p) => p.id === propertyId,
+      );
+      if (currentIndex === -1) {
+         throw new Error(`Property with id ${propertyId} not found`);
+      }
+
+      // Validar que la nueva posición no sea negativa
+      if (newPosition < 0) {
+         throw new Error(
+            `Invalid position: ${newPosition}. Must be greater than or equal to 0`,
+         );
+      }
+
+      // Si la posición es mayor que la longitud, colocar al final
+      if (newPosition >= this.properties.length) {
+         newPosition = this.properties.length - 1;
+      }
+
+      // No hacer nada si la posición es la misma
+      if (currentIndex === newPosition) {
+         return;
+      }
+
+      // Extraer la propiedad que se va a mover
+      const [propertyToMove] = this.properties.splice(currentIndex, 1);
+      // Insertar la propiedad en la nueva posición
+      this.properties.splice(newPosition, 0, propertyToMove);
+
+      this.updateModified();
+   }
+
+   /**
+    * Verifica si la nota tiene propiedades
+    */
+   hasProperties(): boolean {
+      return this.properties.length > 0;
+   }
+
+   /**
+    * Cuenta el número de propiedades
+    */
+   getPropertyCount(): number {
+      return this.properties.length;
    }
 
    /**
@@ -241,7 +329,7 @@ export class Note {
             incomingLinks: [...this.metadata.incomingLinks],
             aliases: [...this.metadata.aliases],
          },
-         properties: this.properties.map((p) => ({ ...p })),
+         properties: this.properties.map((p) => p.clone()),
       });
    }
 
@@ -258,7 +346,7 @@ export class Note {
          icon: this.icon,
          stats: this.stats,
          metadata: this.metadata,
-         properties: this.properties,
+         properties: this.properties.map((p) => p.toPlainObject()),
       };
    }
 
@@ -294,7 +382,9 @@ export class Note {
             incomingLinks: data.metadata.incomingLinks || [],
             aliases: data.metadata.aliases || [],
          },
-         properties: data.properties || [],
+         properties: (data.properties || []).map((p: any) =>
+            NoteProperty.fromPlainObject(p),
+         ),
       });
    }
 

@@ -1,5 +1,5 @@
 import { NoteUseCases } from "@application/usecases/NoteUseCases";
-import { startupManager } from "@model/startup/startupManager.svelte";
+import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 import { focusController } from "@controllers/ui/focusController.svelte";
 import { FocusTarget } from "@projectTypes/ui/uiTypes";
 import { workspaceController } from "@controllers/navigation/workspaceController.svelte";

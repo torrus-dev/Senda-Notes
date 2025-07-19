@@ -1,155 +1,416 @@
 import { DateTime } from "luxon";
-import type { NoteStats, NoteReference } from "@projectTypes/core/noteTypes";
-import type { NoteProperty } from "@projectTypes/data";
+import type { NoteMetadata, NoteStats } from "@projectTypes/core/noteTypes";
+import { sanitizeTitle } from "@utils/noteUtils";
+import { NoteProperty } from "@domain/entities/NoteProperty";
 
-export class NoteEntity {
-   readonly id: string;
-   private _icon?: string;
-   private _title: string;
-   private _content: string;
-   private _children: string[];
-   private _parentId?: string;
-   private _stats?: NoteStats;
-   private _metadata: {
-      created: DateTime;
-      modified: DateTime;
-      outgoingLinks: NoteReference[];
-      incomingLinks: NoteReference[];
-      aliases: string[];
-   };
-   private _properties: NoteProperty[];
+/**
+ * Entidad rica Note con lógica de negocio (actualizada para usar NoteProperty)
+ */
+export class Note {
+   id: string;
+   icon?: string;
+   title: string;
+   content: string;
+   children: string[];
+   parentId?: string;
+   stats?: NoteStats;
+   metadata: NoteMetadata;
+   properties: NoteProperty[];
 
-   private constructor(
-      id: string,
-      title: string,
-      content: string,
-      metadata: NoteEntity["_metadata"],
-      properties: NoteProperty[],
-      children: string[] = [],
-      parentId?: string,
-      icon?: string,
-      stats?: NoteStats,
-   ) {
-      this.id = id;
-      this._title = title;
-      this._content = content;
-      this._metadata = metadata;
-      this._properties = properties;
-      this._children = children;
-      this._parentId = parentId;
-      this._icon = icon;
-      this._stats = stats;
-   }
-
-   /** Fábrica para crear una nota nueva */
-   static create(
-      rawTitle: string,
-      existingTitles: Set<string>,
-      parentId?: string,
-   ): NoteEntity {
-      // Generar ID y título único
-      const id = crypto.randomUUID();
-      let title = rawTitle.trim() || "Untitled";
-      let suffix = 1;
-      while (existingTitles.has(title)) {
-         suffix += 1;
-         title = `${rawTitle.trim()} (${suffix})`;
-      }
-
-      const now = DateTime.now();
-      const metadata = {
-         created: now,
-         modified: now,
-         outgoingLinks: [],
-         incomingLinks: [],
-         aliases: [],
-      };
-
-      return new NoteEntity(id, title, "", metadata, [], [], parentId);
-   }
-
-   /** Renombrar la nota (con saneamiento y versión única) */
-   rename(newTitle: string, existingTitles: Set<string>): void {
-      const sane = newTitle.trim() || this._title;
-      let finalTitle = sane;
-      let suffix = 1;
-      while (existingTitles.has(finalTitle) && finalTitle !== this._title) {
-         suffix += 1;
-         finalTitle = `${sane} (${suffix})`;
-      }
-      if (finalTitle !== this._title) {
-         this._title = finalTitle;
-         this.touch();
-      }
-   }
-
-   /** Actualizar contenido */
-   updateContent(newContent: string): void {
-      if (newContent !== this._content) {
-         this._content = newContent;
-         this.touch();
-      }
-   }
-
-   /** Añadir o quitar hijo */
-   addChild(childId: string): void {
-      if (!this._children.includes(childId)) {
-         this._children.push(childId);
-         this.touch();
-      }
-   }
-   removeChild(childId: string): void {
-      const idx = this._children.indexOf(childId);
-      if (idx >= 0) {
-         this._children.splice(idx, 1);
-         this.touch();
-      }
-   }
-
-   /** Métodos sobre properties */
-   addProperty(prop: NoteProperty): void {
-      this._properties.push(prop);
-      this.touch();
-   }
-   updateProperty(updated: NoteProperty): void {
-      const idx = this._properties.findIndex((p) => p.id === updated.id);
-      if (idx >= 0) {
-         this._properties[idx] = updated;
-         this.touch();
-      }
-   }
-   deleteProperty(propId: string): void {
-      this._properties = this._properties.filter((p) => p.id !== propId);
-      this.touch();
-   }
-
-   /** Interno: actualizar timestamp */
-   private touch(): void {
-      this._metadata.modified = DateTime.now();
-   }
-
-   /** Exportar a DTO plano */
-   toDTO(): {
+   constructor(data: {
       id: string;
-      icon?: string;
       title: string;
       content: string;
-      children: string[];
+      children?: string[];
       parentId?: string;
+      icon?: string;
       stats?: NoteStats;
-      metadata: NoteEntity["_metadata"];
-      properties: NoteProperty[];
-   } {
+      metadata: NoteMetadata;
+      properties?: NoteProperty[];
+   }) {
+      this.id = data.id;
+      this.title = data.title;
+      this.content = data.content;
+      this.children = data.children || [];
+      this.parentId = data.parentId;
+      this.icon = data.icon;
+      this.stats = data.stats;
+      this.metadata = data.metadata;
+      this.properties = data.properties || [];
+   }
+
+   /**
+    * Actualiza el título de la nota con sanitización
+    */
+   updateTitle(newTitle: string): void {
+      const sanitized = sanitizeTitle(newTitle);
+      if (this.title !== sanitized) {
+         this.title = sanitized;
+         this.updateModified();
+      }
+   }
+
+   /**
+    * Actualiza el contenido de la nota
+    */
+   updateContent(newContent: string): void {
+      if (this.content !== newContent) {
+         this.content = newContent;
+         this.updateModified();
+      }
+   }
+
+   /**
+    * Actualiza el icono de la nota
+    */
+   updateIcon(newIcon?: string): void {
+      this.icon = newIcon;
+      this.updateModified();
+   }
+
+   /**
+    * Actualiza las estadísticas de la nota
+    */
+   updateStats(newStats: NoteStats): void {
+      this.stats = newStats;
+      this.updateModified();
+   }
+
+   /**
+    * Actualiza contenido y estadísticas en una sola operación
+    */
+   updateContentWithStats(newContent: string, newStats: NoteStats): void {
+      this.content = newContent;
+      this.stats = newStats;
+      this.updateModified();
+   }
+
+   /**
+    * Añade un hijo a la nota si no existe
+    */
+   addChild(childId: string): void {
+      if (!this.children.includes(childId)) {
+         this.children.push(childId);
+         this.updateModified();
+      }
+   }
+
+   /**
+    * Elimina un hijo de la nota
+    */
+   removeChild(childId: string): void {
+      const index = this.children.indexOf(childId);
+      if (index !== -1) {
+         this.children.splice(index, 1);
+         this.updateModified();
+      }
+   }
+
+   /**
+    * Reordena los hijos de la nota
+    */
+   reorderChildren(orderedChildIds: string[]): void {
+      // Validar que sean los mismos IDs
+      const currentSet = new Set(this.children);
+      const newSet = new Set(orderedChildIds);
+      if (
+         currentSet.size !== newSet.size ||
+         !orderedChildIds.every((id) => currentSet.has(id))
+      ) {
+         throw new Error("Invalid child IDs for reordering");
+      }
+      this.children = orderedChildIds;
+      this.updateModified();
+   }
+
+   /**
+    * Inserta un hijo en una posición específica
+    */
+   insertChildAt(childId: string, position: number): void {
+      // Remover si ya existe
+      this.removeChild(childId);
+      // Insertar en la posición correcta
+      const validPosition = Math.max(
+         0,
+         Math.min(position, this.children.length),
+      );
+      this.children.splice(validPosition, 0, childId);
+      this.updateModified();
+   }
+
+   /**
+    * Verifica si la nota es raíz (no tiene padre)
+    */
+   isRoot(): boolean {
+      return !this.parentId;
+   }
+
+   /**
+    * Verifica si la nota tiene hijos
+    */
+   hasChildren(): boolean {
+      return this.children.length > 0;
+   }
+
+   /**
+    * Verifica si la nota puede moverse a un nuevo padre
+    * (sin crear ciclos)
+    */
+   canMoveTo(newParentId: string | undefined): boolean {
+      // No puede moverse a sí misma
+      if (newParentId === this.id) {
+         return false;
+      }
+      // Si no hay nuevo padre, siempre puede moverse a raíz
+      if (!newParentId) {
+         return true;
+      }
+      // No puede moverse a uno de sus descendientes
+      // (esto requeriría acceso a otras notas, se validará externamente)
+      return true;
+   }
+
+   /**
+    * Cambia el padre de la nota
+    */
+   changeParent(newParentId?: string): void {
+      if (this.parentId !== newParentId) {
+         this.parentId = newParentId;
+         this.updateModified();
+      }
+   }
+
+   /**
+    * Actualiza las propiedades de la nota con entidades NoteProperty
+    */
+   updateProperties(properties: NoteProperty[]): void {
+      this.properties = properties;
+      this.updateModified();
+   }
+
+   /**
+    * Añade una propiedad a la nota (entidad NoteProperty)
+    */
+   addProperty(property: NoteProperty): void {
+      // Validar que la propiedad pertenece a esta nota
+      if (property.noteId !== this.id) {
+         throw new Error(
+            `Property noteId (${property.noteId}) does not match note id (${this.id})`,
+         );
+      }
+
+      this.properties.push(property);
+      this.updateModified();
+   }
+
+   /**
+    * Elimina una propiedad por ID
+    */
+   removeProperty(propertyId: string): void {
+      const index = this.properties.findIndex((p) => p.id === propertyId);
+      if (index !== -1) {
+         this.properties.splice(index, 1);
+         this.updateModified();
+      }
+   }
+
+   /**
+    * Obtiene una propiedad por ID
+    */
+   getProperty(propertyId: string): NoteProperty | undefined {
+      return this.properties.find((p) => p.id === propertyId);
+   }
+
+   /**
+    * Actualiza una propiedad específica
+    */
+   updateProperty(
+      propertyId: string,
+      updateFn: (property: NoteProperty) => void,
+   ): void {
+      const property = this.getProperty(propertyId);
+      if (property) {
+         updateFn(property);
+         this.updateModified();
+      }
+   }
+
+   /**
+    * Verifica si ya existe una propiedad con el mismo nombre (normalizado)
+    */
+   hasPropertyWithName(name: string, excludePropertyId?: string): boolean {
+      const normalizedName = name.trim().toLowerCase();
+      return this.properties
+         .filter((p) => p.id !== excludePropertyId)
+         .some((p) => p.getNormalizedName() === normalizedName);
+   }
+
+   /**
+    * Obtiene propiedades vinculadas a una propiedad global específica
+    */
+   getPropertiesLinkedToGlobal(globalPropertyId: string): NoteProperty[] {
+      return this.properties.filter((p) =>
+         p.isLinkedToGlobalProperty(globalPropertyId),
+      );
+   }
+
+   /**
+    * Obtiene propiedades no vinculadas a ninguna propiedad global
+    */
+   getUnlinkedProperties(): NoteProperty[] {
+      return this.properties.filter((p) => !p.isLinkedToGlobal());
+   }
+
+   /**
+    * Reordena las propiedades
+    */
+   reorderProperties(propertyId: string, newPosition: number): void {
+      const currentIndex = this.properties.findIndex(
+         (p) => p.id === propertyId,
+      );
+      if (currentIndex === -1) {
+         throw new Error(`Property with id ${propertyId} not found`);
+      }
+
+      // Validar que la nueva posición no sea negativa
+      if (newPosition < 0) {
+         throw new Error(
+            `Invalid position: ${newPosition}. Must be greater than or equal to 0`,
+         );
+      }
+
+      // Si la posición es mayor que la longitud, colocar al final
+      if (newPosition >= this.properties.length) {
+         newPosition = this.properties.length - 1;
+      }
+
+      // No hacer nada si la posición es la misma
+      if (currentIndex === newPosition) {
+         return;
+      }
+
+      // Extraer la propiedad que se va a mover
+      const [propertyToMove] = this.properties.splice(currentIndex, 1);
+      // Insertar la propiedad en la nueva posición
+      this.properties.splice(newPosition, 0, propertyToMove);
+
+      this.updateModified();
+   }
+
+   /**
+    * Verifica si la nota tiene propiedades
+    */
+   hasProperties(): boolean {
+      return this.properties.length > 0;
+   }
+
+   /**
+    * Cuenta el número de propiedades
+    */
+   getPropertyCount(): number {
+      return this.properties.length;
+   }
+
+   /**
+    * Clona la nota (útil para operaciones inmutables)
+    */
+   clone(): Note {
+      return new Note({
+         id: this.id,
+         title: this.title,
+         content: this.content,
+         children: [...this.children],
+         parentId: this.parentId,
+         icon: this.icon,
+         stats: this.stats ? { ...this.stats } : undefined,
+         metadata: {
+            ...this.metadata,
+            outgoingLinks: [...this.metadata.outgoingLinks],
+            incomingLinks: [...this.metadata.incomingLinks],
+            aliases: [...this.metadata.aliases],
+         },
+         properties: this.properties.map((p) => p.clone()),
+      });
+   }
+
+   /**
+    * Convierte la nota a un objeto plano (para persistencia)
+    */
+   toPlainObject() {
       return {
          id: this.id,
-         icon: this._icon,
-         title: this._title,
-         content: this._content,
-         children: [...this._children],
-         parentId: this._parentId,
-         stats: this._stats,
-         metadata: { ...this._metadata },
-         properties: [...this._properties],
+         title: this.title,
+         content: this.content,
+         children: this.children,
+         parentId: this.parentId,
+         icon: this.icon,
+         stats: this.stats,
+         metadata: this.metadata,
+         properties: this.properties.map((p) => p.toPlainObject()),
       };
+   }
+
+   /**
+    * Actualiza el timestamp de modificación
+    */
+   private updateModified(): void {
+      this.metadata.modified = DateTime.now();
+   }
+
+   /**
+    * Crea una nueva instancia de Note desde un objeto plano
+    */
+   static fromPlainObject(data: any): Note {
+      return new Note({
+         id: data.id,
+         title: data.title,
+         content: data.content,
+         children: data.children || [],
+         parentId: data.parentId,
+         icon: data.icon,
+         stats: data.stats,
+         metadata: {
+            created:
+               typeof data.metadata.created === "string"
+                  ? DateTime.fromISO(data.metadata.created)
+                  : data.metadata.created,
+            modified:
+               typeof data.metadata.modified === "string"
+                  ? DateTime.fromISO(data.metadata.modified)
+                  : data.metadata.modified,
+            outgoingLinks: data.metadata.outgoingLinks || [],
+            incomingLinks: data.metadata.incomingLinks || [],
+            aliases: data.metadata.aliases || [],
+         },
+         properties: (data.properties || []).map((p: any) =>
+            NoteProperty.fromPlainObject(p),
+         ),
+      });
+   }
+
+   /**
+    * Crea una nueva nota con valores por defecto
+    */
+   static create(params: {
+      title: string;
+      parentId?: string;
+      content?: string;
+      icon?: string;
+   }): Note {
+      const now = DateTime.now();
+      return new Note({
+         id: crypto.randomUUID(),
+         title: sanitizeTitle(params.title),
+         content: params.content || "",
+         parentId: params.parentId,
+         icon: params.icon,
+         metadata: {
+            created: now,
+            modified: now,
+            outgoingLinks: [],
+            incomingLinks: [],
+            aliases: [],
+         },
+      });
    }
 }

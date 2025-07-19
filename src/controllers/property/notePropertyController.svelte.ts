@@ -1,248 +1,431 @@
-import type { NoteProperty } from "@projectTypes/core/propertyTypes";
+import type { NoteProperty } from "@domain/entities/NoteProperty";
 import type { Note } from "@domain/entities/Note";
-import { globalPropertyController } from "@controllers/property/globalPropertyController.svelte";
-import { startupManager } from "@model/startup/startupManager.svelte";
-import { generateProperty } from "@utils/propertyUtils";
-import { normalizeText } from "@utils/searchUtils";
+import { PropertyUseCases } from "@application/usecases/PropertyUseCases";
+import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 
+interface ControllerState {
+   isLoading: boolean;
+   lastError: string | null;
+   lastSuccess: string | null;
+}
+
+/**
+ * Controlador ligero para propiedades de nota
+ * Delega toda la lógica compleja a PropertyUseCases
+ * Mantiene solo estado reactivo y métodos de conveniencia para la UI
+ */
 class NotePropertyController {
-   private get noteRepository() {
-      return startupManager.getService("noteRepository");
+   private state = $state<ControllerState>({
+      isLoading: false,
+      lastError: null,
+      lastSuccess: null,
+   });
+
+   private get propertyUseCases(): PropertyUseCases {
+      return startupManager.getService("propertyUseCases");
    }
 
-   private get queryRepository() {
+   private get noteQueryRepository() {
       return startupManager.getService("noteQueryRepository");
    }
 
-   private addPropertyToNote = (noteId: string, newProperty: NoteProperty) => {
-      const note = this.queryRepository.findById(noteId);
-      if (!note) return;
+   // ============================================================================
+   // STATE ACCESSORS - Acceso al estado reactivo
+   // ============================================================================
 
-      note.addProperty(newProperty);
-      this.noteRepository.update(noteId, note);
-   };
+   get isLoading(): boolean {
+      return this.state.isLoading;
+   }
 
-   /** Devuelve true si ya existe en la nota otra propiedad con ese nombre */
-   isDuplicateName(
+   get lastError(): string | null {
+      return this.state.lastError;
+   }
+
+   get lastSuccess(): string | null {
+      return this.state.lastSuccess;
+   }
+
+   /**
+    * Limpia mensajes de error y éxito
+    */
+   clearMessages(): void {
+      this.state.lastError = null;
+      this.state.lastSuccess = null;
+   }
+
+   // ============================================================================
+   // NOTE PROPERTY OPERATIONS - Operaciones de propiedades de nota
+   // ============================================================================
+
+   /**
+    * Crea una nueva propiedad en una nota
+    */
+   async handleCreateNoteProperty(
       noteId: string,
       name: string,
-      excludePropertyId?: NoteProperty["id"],
-   ): boolean {
-      const props = this.getNoteProperties(noteId);
-      const normalized = normalizeText(name.trim());
-      return props
-         .filter((p) => p.id !== excludePropertyId)
-         .some((p) => normalizeText(p.name.trim()) === normalized);
+      type: string,
+      value?: any,
+   ): Promise<boolean> {
+      this.state.isLoading = true;
+      this.clearMessages();
+
+      try {
+         const result = await this.propertyUseCases.createPropertyWithLinking(
+            noteId,
+            name,
+            type,
+            value,
+         );
+
+         if (result.success) {
+            this.state.lastSuccess = result.wasLinkedToExisting
+               ? `Propiedad "${name}" creada y vinculada a propiedad global existente`
+               : `Propiedad "${name}" creada con nueva propiedad global`;
+            return true;
+         } else {
+            this.state.lastError =
+               result.error || "Error desconocido al crear la propiedad";
+            return false;
+         }
+      } catch (error) {
+         this.state.lastError =
+            error instanceof Error ? error.message : "Error inesperado";
+         return false;
+      } finally {
+         this.state.isLoading = false;
+      }
    }
 
-   handleCreateNoteProperty = (
-      noteId: string,
-      name: NoteProperty["name"],
-      type: NoteProperty["type"],
-   ): void => {
-      if (this.isDuplicateName(noteId, name)) {
-         console.warn(
-            `No se puede crear: la nota ${noteId} ya tiene una propiedad "${name}".`,
-         );
-         return;
-      }
-
-      // Generamos la nueva propiedad
-      const newProperty = generateProperty(noteId, name, type);
-
-      // Agregamos la nueva propiedad a la nota
-      this.addPropertyToNote(noteId, newProperty);
-
-      // Importante: si no hacemos lo de arriba primero, la nota no "existira" y fallara la vinculación
-      // Comprobamos si existe propiedad global con ese nombre
-      const existingGlobalProperty =
-         globalPropertyController.getGlobalPropertyByName(name);
-
-      if (existingGlobalProperty) {
-         // Vinculamos a la propiedad global si existe
-         globalPropertyController.linkToGlobalProperty(
-            newProperty,
-            existingGlobalProperty,
-         );
-      } else {
-         // Creamos la propiedad global si no existe
-         globalPropertyController.createGlobalProperty(name, type, newProperty);
-      }
-   };
-
-   deletePropertyFromNote = (
-      noteId: string,
-      propertyToDeleteId: NoteProperty["id"],
-   ) => {
-      const propertyToDelete = this.getPropertyById(noteId, propertyToDeleteId);
-      if (!propertyToDelete) return;
-
-      const note = this.queryRepository.findById(noteId);
-      if (!note) return;
-
-      note.removeProperty(propertyToDeleteId);
-      this.noteRepository.update(noteId, note);
-
-      // Comprobamos si hay una propiedad global con ese nombre y la desvinculamos
-      const existingGlobalProperty =
-         globalPropertyController.getGlobalPropertyByName(
-            propertyToDelete.name,
-         );
-      if (!existingGlobalProperty) return;
-
-      globalPropertyController.unlinkFromGlobalProperty(propertyToDelete);
-   };
-
-   updatePropertyFromNote = (
-      noteId: string,
-      propertyId: NoteProperty["id"],
-      updatedProperty: Partial<NoteProperty>,
-   ): void => {
-      const note = this.queryRepository.findById(noteId);
-      if (!note) return;
-
-      note.updateProperty(propertyId, updatedProperty);
-      this.noteRepository.update(noteId, note);
-   };
-
-   getPropertyById = (
+   /**
+    * Renombra una propiedad de nota
+    */
+   async handleNotePropertyRename(
       noteId: string,
       propertyId: string,
-   ): NoteProperty | undefined => {
-      const note = this.queryRepository.findById(noteId);
-      if (!note) return undefined;
+      newName: string,
+   ): Promise<boolean> {
+      this.state.isLoading = true;
+      this.clearMessages();
 
-      return note.properties.find(
-         (property: NoteProperty) => property.id === propertyId,
-      );
-   };
-
-   renameNotePropertyById(
-      noteId: string,
-      propertyId: NoteProperty["id"],
-      newPropertyName: NoteProperty["name"],
-   ) {
-      const propertyToUpdate = this.getPropertyById(noteId, propertyId);
-      if (!propertyToUpdate) return;
-
-      propertyToUpdate.name = newPropertyName;
-      this.updatePropertyFromNote(noteId, propertyId, propertyToUpdate);
-   }
-
-   handleNotePropertyRename(
-      noteId: string,
-      propertyId: NoteProperty["id"],
-      newPropertyName: NoteProperty["name"],
-   ) {
-      if (this.isDuplicateName(noteId, newPropertyName, propertyId)) {
-         console.warn(
-            `No se puede renombrar: la nota ${noteId} ya tiene una propiedad "${newPropertyName}".`,
+      try {
+         const result = await this.propertyUseCases.renameWithCascade(
+            noteId,
+            propertyId,
+            newName,
          );
-         return;
-      }
 
-      // Buscamos que exista una propiedad por esos Ids y la renombramos
-      const propertyToUpdate = this.getPropertyById(noteId, propertyId);
-      if (!propertyToUpdate) return;
-
-      this.renameNotePropertyById(noteId, propertyId, newPropertyName);
-
-      // Comprobamos si existe propiedad global con el nuevo nombre
-      const existingGlobalProperty =
-         globalPropertyController.getGlobalPropertyByName(newPropertyName);
-
-      if (existingGlobalProperty) {
-         // Si existe propiedad global se vincula a la propiedad
-         globalPropertyController.linkToGlobalProperty(
-            propertyToUpdate,
-            existingGlobalProperty,
-         );
-      } else {
-         // Si no existe propiedad global, la creamos con nombre y tipo
-         globalPropertyController.createGlobalProperty(
-            newPropertyName,
-            propertyToUpdate.type,
-            propertyToUpdate,
-         );
+         if (result.success) {
+            let message = `Propiedad renombrada a "${newName}"`;
+            if (result.createdNewGlobalProperty) {
+               message += " y nueva propiedad global creada";
+            } else if (result.unlinkedFromPreviousGlobal) {
+               message += " y vinculada a propiedad global existente";
+            }
+            this.state.lastSuccess = message;
+            return true;
+         } else {
+            this.state.lastError =
+               result.error || "Error desconocido al renombrar";
+            return false;
+         }
+      } catch (error) {
+         this.state.lastError =
+            error instanceof Error ? error.message : "Error inesperado";
+         return false;
+      } finally {
+         this.state.isLoading = false;
       }
    }
 
-   changeNotePropertyType(
+   /**
+    * Elimina una propiedad de nota
+    */
+   async deletePropertyFromNote(
       noteId: string,
-      propertyId: NoteProperty["id"],
-      newPropertyType: NoteProperty["type"],
-   ) {
-      const property = this.getPropertyById(noteId, propertyId);
-      if (!property) return;
+      propertyId: string,
+   ): Promise<boolean> {
+      this.state.isLoading = true;
+      this.clearMessages();
 
-      // Comprobamos si hay una propiedad global con ese nombre
-      const existingGlobalProperty =
-         globalPropertyController.getGlobalPropertyByName(property.name);
-      if (!existingGlobalProperty) return;
+      try {
+         const result = await this.propertyUseCases.deleteWithSync(
+            noteId,
+            propertyId,
+         );
 
-      // Actualizamos la propiedad
-      this.updatePropertyFromNote(noteId, propertyId, {
-         type: newPropertyType,
-      });
-
-      // Cambiamos el tipo de la propiedad global
-      globalPropertyController.updateGlobalPropertyType(
-         existingGlobalProperty.id,
-         newPropertyType,
-      );
+         if (result.success) {
+            this.state.lastSuccess = "Propiedad eliminada correctamente";
+            return true;
+         } else {
+            this.state.lastError =
+               result.error || "Error desconocido al eliminar";
+            return false;
+         }
+      } catch (error) {
+         this.state.lastError =
+            error instanceof Error ? error.message : "Error inesperado";
+         return false;
+      } finally {
+         this.state.isLoading = false;
+      }
    }
 
-   reorderNoteProperties = (
+   /**
+    * Cambia el tipo de una propiedad de nota
+    */
+   async changeNotePropertyType(
+      noteId: string,
+      propertyId: string,
+      newType: string,
+   ): Promise<boolean> {
+      this.state.isLoading = true;
+      this.clearMessages();
+
+      try {
+         const result = await this.propertyUseCases.changeNotePropertyType(
+            noteId,
+            propertyId,
+            newType,
+         );
+
+         if (result.success) {
+            this.state.lastSuccess = `Tipo cambiado a "${newType}"`;
+            return true;
+         } else {
+            this.state.lastError =
+               result.error || "Error desconocido al cambiar tipo";
+            return false;
+         }
+      } catch (error) {
+         this.state.lastError =
+            error instanceof Error ? error.message : "Error inesperado";
+         return false;
+      } finally {
+         this.state.isLoading = false;
+      }
+   }
+
+   /**
+    * Reordena las propiedades de una nota
+    */
+   async reorderNoteProperties(
       noteId: string,
       propertyId: string,
       newPosition: number,
-   ): void => {
-      // Verificamos que la propiedad exista
-      const note = this.queryRepository.findById(noteId);
-      if (!note) return;
+   ): Promise<boolean> {
+      this.state.isLoading = true;
+      this.clearMessages();
 
-      const properties = [...note.properties];
-      const currentIndex = properties.findIndex((p) => p.id === propertyId);
-
-      // Validar que la nueva posición no sea negativa
-      if (newPosition < 0) {
-         throw new Error(
-            `Invalid position: ${newPosition}. Must be greater than or equal to 0`,
+      try {
+         const result = await this.propertyUseCases.reorderNoteProperties(
+            noteId,
+            propertyId,
+            newPosition,
          );
+
+         if (result.success) {
+            // No mostrar mensaje de éxito para reordenamientos (operación silenciosa)
+            return true;
+         } else {
+            this.state.lastError =
+               result.error || "Error al reordenar propiedades";
+            return false;
+         }
+      } catch (error) {
+         this.state.lastError =
+            error instanceof Error ? error.message : "Error inesperado";
+         return false;
+      } finally {
+         this.state.isLoading = false;
       }
+   }
 
-      // Si la posición es mayor que la longitud, colocar al final
-      if (newPosition >= properties.length) {
-         newPosition = properties.length - 1;
-      }
-
-      // No hacer nada si la posición es la misma
-      if (currentIndex === newPosition) {
-         return;
-      }
-
-      // Extraer la propiedad que se va a mover
-      const [propertyToMove] = properties.splice(currentIndex, 1);
-
-      // Insertar la propiedad en la nueva posición
-      properties.splice(newPosition, 0, propertyToMove);
-
-      note.updateProperties(properties);
-      this.noteRepository.update(noteId, note);
-   };
-
-   updateNotePropertyValue = (
+   /**
+    * Actualiza el valor de una propiedad de nota
+    */
+   async updateNotePropertyValue(
       noteId: string,
       propertyId: string,
-      newValue: NoteProperty["value"],
-   ): void => {
-      this.updatePropertyFromNote(noteId, propertyId, { value: newValue });
-   };
+      newValue: any,
+   ): Promise<boolean> {
+      try {
+         const result = await this.propertyUseCases.updateNotePropertyValue(
+            noteId,
+            propertyId,
+            newValue,
+         );
 
-   getNoteProperties = (noteId: string): NoteProperty[] => {
-      const note = this.queryRepository.findById(noteId);
+         if (!result.success) {
+            this.state.lastError = result.error || "Error al actualizar valor";
+         }
+
+         return result.success;
+      } catch (error) {
+         this.state.lastError =
+            error instanceof Error ? error.message : "Error inesperado";
+         return false;
+      }
+   }
+
+   // ============================================================================
+   // QUERY METHODS - Métodos de consulta (sin estado de carga)
+   // ============================================================================
+
+   /**
+    * Obtiene las propiedades de una nota
+    */
+   getNoteProperties(noteId: string): NoteProperty[] {
+      const note = this.noteQueryRepository.findById(noteId);
       return note ? note.properties : [];
-   };
+   }
+
+   /**
+    * Obtiene una propiedad específica por ID
+    */
+   getPropertyById(
+      noteId: string,
+      propertyId: string,
+   ): NoteProperty | undefined {
+      const note = this.noteQueryRepository.findById(noteId);
+      return note?.getProperty(propertyId);
+   }
+
+   /**
+    * Verifica si ya existe una propiedad con el mismo nombre
+    */
+   isDuplicateName(
+      noteId: string,
+      name: string,
+      excludePropertyId?: string,
+   ): boolean {
+      const note = this.noteQueryRepository.findById(noteId);
+      return note ? note.hasPropertyWithName(name, excludePropertyId) : false;
+   }
+
+   /**
+    * Obtiene sugerencias de propiedades globales
+    */
+   getGlobalPropertySuggestions(searchTerm: string, noteId: string) {
+      return this.propertyUseCases.getGlobalPropertySuggestions(
+         searchTerm,
+         noteId,
+      );
+   }
+
+   // ============================================================================
+   // VALIDATION HELPERS - Métodos de ayuda para validación en UI
+   // ============================================================================
+
+   /**
+    * Valida si se puede crear una propiedad (para feedback en tiempo real)
+    */
+   canCreateProperty(
+      noteId: string,
+      name: string,
+      type: string,
+   ): {
+      valid: boolean;
+      errors: string[];
+   } {
+      const errors: string[] = [];
+
+      if (!name.trim()) {
+         errors.push("El nombre no puede estar vacío");
+      }
+
+      if (!type.trim()) {
+         errors.push("El tipo no puede estar vacío");
+      }
+
+      if (this.isDuplicateName(noteId, name)) {
+         errors.push("Ya existe una propiedad con este nombre");
+      }
+
+      return {
+         valid: errors.length === 0,
+         errors,
+      };
+   }
+
+   /**
+    * Valida si se puede renombrar una propiedad
+    */
+   canRenameProperty(
+      noteId: string,
+      propertyId: string,
+      newName: string,
+   ): {
+      valid: boolean;
+      errors: string[];
+   } {
+      const errors: string[] = [];
+
+      if (!newName.trim()) {
+         errors.push("El nombre no puede estar vacío");
+      }
+
+      if (this.isDuplicateName(noteId, newName, propertyId)) {
+         errors.push("Ya existe una propiedad con este nombre");
+      }
+
+      return {
+         valid: errors.length === 0,
+         errors,
+      };
+   }
+
+   // ============================================================================
+   // UTILITY METHODS - Métodos de utilidad
+   // ============================================================================
+
+   /**
+    * Obtiene estadísticas de propiedades de una nota
+    */
+   getNotePropertyStats(noteId: string): {
+      total: number;
+      linked: number;
+      unlinked: number;
+      byType: Record<string, number>;
+   } {
+      const properties = this.getNoteProperties(noteId);
+      const byType: Record<string, number> = {};
+      let linked = 0;
+
+      for (const property of properties) {
+         byType[property.type] = (byType[property.type] || 0) + 1;
+         if (property.isLinkedToGlobal()) {
+            linked++;
+         }
+      }
+
+      return {
+         total: properties.length,
+         linked,
+         unlinked: properties.length - linked,
+         byType,
+      };
+   }
+
+   /**
+    * Comprueba si una propiedad tiene desajuste de tipo con su propiedad global
+    */
+   hasTypeMismatch(noteId: string, propertyId: string): boolean {
+      const property = this.getPropertyById(noteId, propertyId);
+      if (!property || !property.isLinkedToGlobal()) {
+         return false;
+      }
+
+      // Delegar al caso de uso para obtener la propiedad global y comparar
+      const globalProperties =
+         this.propertyUseCases.getGlobalPropertySuggestions("", undefined);
+      const globalProperty = globalProperties.find(
+         (gp) => gp.id === property.globalPropertyId,
+      );
+
+      return globalProperty
+         ? !property.hasTypeMatch(globalProperty.type)
+         : false;
+   }
 }
 
 export const notePropertyController = $state(new NotePropertyController());

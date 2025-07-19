@@ -1,4 +1,4 @@
-import { startupManager } from "@model/startup/startupManager.svelte";
+import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 import { CollapsibleModel } from "@model/ui/collapsibleModel.svelte";
 
 class CollapsibleController {

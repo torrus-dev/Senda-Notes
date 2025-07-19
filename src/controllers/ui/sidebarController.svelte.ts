@@ -1,4 +1,4 @@
-import { startupManager } from "@model/startup/startupManager.svelte";
+import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 import { SidebarModel } from "@model/ui/sidebarModel.svelte";
 
 class SidebarController {

@@ -1,6 +1,6 @@
 import type { Tab } from "@projectTypes/ui/uiTypes";
 
-import { startupManager } from "@model/startup/startupManager.svelte";
+import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 import { createNoteReference } from "@utils/noteUtils";
 import { WorkspaceModel } from "@model/navigation/workspaceModel.svelte";

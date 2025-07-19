@@ -9,33 +9,33 @@ La aplicación es un proyecto hobbie, no es algo profesional y es individual, po
 Ya he migrado exitosamente el sistema de Notas con esta estructura (tambien te incluyo la ubicación de los controladores relacionados con propiedades)
 
 ```
-📁src
-   └── 📁application
-       └── 📁usecases
+src
+   └── application
+       └── usecases
            └── NoteUseCases.ts
-   └── 📁controllers
-       └── 📁notes
+   └── controllers
+       └── notes
            ├── noteController.svelte.ts
            ├── noteQueryController.svelte.ts
-       └── 📁property
+       └── property
            ├── globalPropertyController.svelte.ts
            └── notePropertyController.svelte.ts
        └── // demas controladores...
-   └── 📁directives
+   └── directives
        ├── floatingMenuDirective.svelte.ts
        ├── onClickOutside.ts
        └── onPressEsc.ts
-   └── 📁domain
-       └── 📁entities
+   └── domain
+       └── entities
            ├── Note.ts
-       └── 📁services
+       └── services
            ├── NotePathService.ts
            └── NoteTreeService.ts
- └── 📁infrastructure
-     └── 📁persistence
+ └── infrastructure
+     └── persistence
          ├── JsonFileAdapter.svelte.ts
          └── LocalStorageAdapter.svelte.ts
-     └── 📁repositories
+     └── repositories
          ├── FavoritesRepository.ts
          ├── NoteQueryRepository.ts
          └── NoteRepository.ts
@@ -734,7 +734,7 @@ NotePropertyController
 import type { NoteProperty } from "@projectTypes/core/propertyTypes";
 import type { Note } from "@domain/entities/Note";
 import { globalPropertyController } from "@controllers/property/globalPropertyController.svelte";
-import { startupManager } from "@model/startup/startupManager.svelte";
+import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 import { generateProperty } from "@utils/propertyUtils";
 import { normalizeText } from "@utils/searchUtils";
 
@@ -992,7 +992,7 @@ import type {
 import { generateGlobalProperty } from "@utils/propertyUtils";
 import { normalizeText } from "@utils/searchUtils";
 import { notePropertyController } from "@controllers/property/notePropertyController.svelte";
-import { startupManager } from "@model/startup/startupManager.svelte";
+import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 import { GlobalPropertiesModel } from "@model/application/globalPropertiesModel.svelte";
 import { Note } from "@domain/entities/Note";
 
@@ -1196,8 +1196,9 @@ Necesito migrar el sistema de propiedades siguiendo la misma arquitectura:
 Paso 1: Entidades Ricas
 
 Crear clase GlobalProperty con métodos (addLink(), removeLink(), updateType())
-Crear clase base para Property si es necesario
+Crear clase NoteProperty
 Mover validaciones y lógica básica a las entidades
+Adaptar entidad Note para usar las nuevas clases creadas
 
 Paso 2: Servicio de Dominio
 
@@ -1206,18 +1207,18 @@ Validaciones de tipo, nombres duplicados
 Lógica de sincronización entre propiedades
 
 Paso 3: Repositorios Query/Command
-
-GlobalPropertyRepository: create, update, delete
-GlobalPropertyQueryRepository: find, search, getSuggestions
-Herencia de PersistentLocalStorageModel
+GlobalPropertyRepository: create, update, delete, save, findAll, findById, findByName
+Herencia de PersistentLocalStorageModel (como el modelo anterior)
+NoteProperty: Sin repositorio propio, se manejan via NoteRepository existente
 
 Paso 4: Casos de Uso y Controladores
-
-PropertyUseCases: crear con vinculación, renombrar en cascada, cambiar tipo
-Adelgazar NotePropertyController y GlobalPropertyController
-Mantener estado reactivo con $state() para Svelte 5
-Actualizar startupManager con nuevos servicios
+PropertyUseCases: Orquestar operaciones complejas usando PropertyService + repositorios
+createPropertyWithLinking, renameWithCascade, deleteWithSync, validateIntegrity
+Adelgazar controladores existentes:
+NotePropertyController: delegar a PropertyUseCases, mantener estado reactivo $state()
+GlobalPropertyController: delegar a PropertyUseCases, mantener estado reactivo $state()
+Actualizar startupManager con nuevos repositorios y casos de uso
 
 ---
 
-En tu respuesta realiza el paso 1 unicamente
+Realiza unicamente el paso 1

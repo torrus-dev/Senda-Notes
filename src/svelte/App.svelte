@@ -1,6 +1,6 @@
 <script lang="ts">
 import { uiModeController } from "@controllers/ui/uiModeController.svelte";
-import { startupManager } from "@model/startup/startupManager.svelte";
+import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 import MainView from "@components/MainView.svelte";
 import { Settings } from "luxon";
 import LoadingScreen from "@components/LoadingScreen.svelte";

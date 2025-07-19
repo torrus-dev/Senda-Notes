@@ -1,5 +1,5 @@
 <script lang="ts">
-import { startupManager } from "@model/startup/startupManager.svelte";
+import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 </script>
 
 <div class="bg-base-100 fixed inset-0 z-50 flex items-center justify-center">

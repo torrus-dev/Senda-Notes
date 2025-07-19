@@ -3,7 +3,7 @@ import {
    type AppSettings,
    type SettingsKey,
 } from "@schema/settingsSchema";
-import { startupManager } from "@model/startup/startupManager.svelte";
+import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 import { SettingsModel } from "@model/application/settingsModel.svelte";
 
 class SettingsController {

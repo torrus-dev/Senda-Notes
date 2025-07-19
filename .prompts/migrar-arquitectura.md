@@ -120,7 +120,7 @@ import { notePathController } from "@controllers/notes/notePathController.svelte
 import { notificationController } from "@controllers/application/notificationController.svelte";
 import { globalConfirmationDialog } from "@controllers/menu/confirmationDialogController.svelte";
 import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
-import { startupManager } from "@model/startup/startupManager.svelte";
+import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 import { NoteModel } from "@model/notes/noteModel.svelte";
 /**
  * Controlador principal de notas
@@ -311,7 +311,7 @@ import type { Note } from "@projectTypes/core/noteTypes";
 import { getDescendantsId } from "@utils/noteUtils";
 import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
 import { normalizeText } from "@utils/searchUtils";
-import { startupManager } from "@model/startup/startupManager.svelte";
+import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 import { NoteModel } from "@model/notes/noteModel.svelte";
 // Tipos para resolución de paths
 interface PathResolution {
