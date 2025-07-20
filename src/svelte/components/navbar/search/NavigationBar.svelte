@@ -22,19 +22,40 @@ const getNotePath = () =>
 
 let searchValue: string = $state("");
 let searchElement: HTMLInputElement | undefined = $state(undefined);
-let searchResults: SearchResult[] = $state([]);
-let isSearching = $derived(searchController.isSearching);
+let debounceTimer: ReturnType<typeof setTimeout> | undefined =
+   $state(undefined);
 
-// Buscar cuando cambia el valor de búsqueda
+// Estados reactivos para mostrar en UI
+let isSearching = $derived(searchController.isSearching);
+let searchResults = $derived(searchController.results);
+let resultCount = $derived(searchController.resultCount);
+let error = $derived(searchController.error);
+
+// Effect con debounce para búsqueda
 $effect(() => {
-   if (isSearching && searchValue.trim()) {
-      searchResults = searchController.searchNotes(searchValue);
+   if (debounceTimer) clearTimeout(debounceTimer);
+
+   const trimmedValue = searchValue.trim();
+
+   if (trimmedValue) {
+      debounceTimer = setTimeout(() => {
+         searchController.searchNotes(trimmedValue).catch(console.error);
+      }, 300); // Espera 300ms después de que pare de escribir
    } else {
-      searchResults = [];
+      searchController.clearResults();
    }
 });
 
-// Comenzar o terminar de buscar segun el estado de isSearching en el controlador de busquedas
+// Effect para limpiar timer al destruir componente
+$effect(() => {
+   return () => {
+      if (debounceTimer) {
+         clearTimeout(debounceTimer);
+      }
+   };
+});
+
+// Alternar visualización de la brra en función de si se esta buscando
 $effect(() => {
    if (isSearching) {
       searchValue = getNotePath();

@@ -15,6 +15,7 @@ import { NoteTreeService } from "@domain/services/NoteTreeService";
 import { NotePathService } from "@domain/services/NotePathService";
 import { PropertyService } from "@domain/services/PropertyService";
 import { PropertyUseCases } from "@application/usecases/PropertyUseCases";
+import { SearchService } from "@domain/services/SearchService";
 
 // Tipos para los modelos (ya no incluye globalPropertiesModel)
 interface Models {
@@ -30,6 +31,7 @@ interface Services {
    noteQueryRepository: NoteQueryRepository;
    favoritesRepository: FavoritesRepository;
    noteUseCases: NoteUseCases;
+   searchService: SearchService;
    favoritesUseCases: FavoritesUseCases;
    noteTreeService: NoteTreeService;
    notePathService: NotePathService;
@@ -101,6 +103,7 @@ class StartupManager {
                this.services.noteTreeService = new NoteTreeService();
                this.services.notePathService = new NotePathService();
                this.services.propertyService = new PropertyService();
+               this.services.searchService = new SearchService();
             },
          },
          {

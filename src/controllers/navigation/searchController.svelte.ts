@@ -1,211 +1,293 @@
+import {
+   SearchService,
+   type SearchOptions,
+   type NoteSearchData,
+} from "@domain/services/SearchService";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
-import { normalizeText } from "@utils/searchUtils";
 import type { SearchResult } from "@projectTypes/ui/uiTypes";
 
-interface SearchContext {
-   term: string;
-   normalizedTerm: string;
-   isHierarchical: boolean;
-   isExactPath: boolean;
-   basePath: string;
-   searchFragment: string;
+interface SearchState {
+   isSearching: boolean;
+   results: SearchResult[];
+   lastSearchTerm: string;
+   suggestions: string[];
+   error: string | null;
 }
 
 /**
- * Controlador de búsqueda de notas
- * Se enfoca exclusivamente en la lógica de búsqueda y filtrado
+ * Controlador minimalista de búsqueda
+ * Maneja solo estado reactivo y delega toda la lógica al SearchService
  */
 class SearchController {
-   isSearching: boolean = $state(false);
+   private state = $state<SearchState>({
+      isSearching: false,
+      results: [],
+      lastSearchTerm: "",
+      suggestions: [],
+      error: null,
+   });
 
-   // === FUNCIÓN PRINCIPAL DE BÚSQUEDA ===
+   private searchService = new SearchService();
 
-   searchNotes(searchTerm: string, limit: number = -1): SearchResult[] {
-      const context = this.parseSearchTerm(searchTerm);
-      if (!context) return [];
+   // ============================================================================
+   // STATE ACCESSORS - Acceso al estado reactivo
+   // ============================================================================
 
-      const results = context.isHierarchical
-         ? this.performHierarchicalSearch(context)
-         : this.performSimpleSearch(context);
-
-      return this.limitResults(this.sortResults(results), limit);
+   get isSearching(): boolean {
+      return this.state.isSearching;
+   }
+   set isSearching(newValue: boolean) {
+      this.state.isSearching = newValue;
    }
 
-   // === PARSEO DE TÉRMINOS DE BÚSQUEDA ===
+   get results(): SearchResult[] {
+      return this.state.results;
+   }
 
-   public parseSearchTerm(searchTerm: string): SearchContext | null {
-      const term = searchTerm.trim();
-      if (!term) return null;
+   get lastSearchTerm(): string {
+      return this.state.lastSearchTerm;
+   }
 
-      const normalizedTerm = normalizeText(term);
-      const isHierarchical = term.includes("/");
-      const isExactPath = isHierarchical && normalizedTerm.endsWith("/");
+   get suggestions(): string[] {
+      return this.state.suggestions;
+   }
 
-      let basePath = "";
-      let searchFragment = normalizedTerm;
+   get error(): string | null {
+      return this.state.error;
+   }
 
-      if (isHierarchical) {
-         const lastSlashIndex = normalizedTerm.lastIndexOf("/");
-         basePath = normalizedTerm.substring(0, lastSlashIndex);
-         searchFragment = isExactPath
-            ? ""
-            : normalizedTerm.substring(lastSlashIndex + 1);
+   get hasResults(): boolean {
+      return this.state.results.length > 0;
+   }
+
+   get resultCount(): number {
+      return this.state.results.length;
+   }
+
+   // ============================================================================
+   // SEARCH OPERATIONS - Operaciones de búsqueda
+   // ============================================================================
+
+   /**
+    * Realiza búsqueda de notas
+    */
+   async searchNotes(
+      searchTerm: string,
+      options: SearchOptions = {},
+   ): Promise<void> {
+      // Limpiar estado anterior
+      this.clearError();
+
+      // Validación rápida
+      if (!this.searchService.isValidSearchTerm(searchTerm)) {
+         this.state.results = [];
+         this.state.lastSearchTerm = "";
+         return;
       }
 
-      return {
-         term,
-         normalizedTerm,
-         isHierarchical,
-         isExactPath,
-         basePath,
-         searchFragment,
-      };
-   }
+      this.state.isSearching = true;
 
-   // === TIPOS DE BÚSQUEDA ===
+      try {
+         // Obtener datos de notas
+         const notesData = this.prepareNotesData();
 
-   private performSimpleSearch(context: SearchContext): SearchResult[] {
-      const results: SearchResult[] = [];
-      const allNotes = noteQueryController.getAllNotes() || [];
-
-      for (const note of allNotes) {
-         // Buscar en título
-         const titleMatch = this.searchInText(
-            note.title,
-            context.normalizedTerm,
+         // Delegar búsqueda al servicio
+         const results = this.searchService.searchNotes(
+            searchTerm,
+            notesData,
+            options,
          );
-         if (titleMatch) {
-            results.push(this.createSearchResult(note, "title", note.title));
-            continue;
-         }
 
-         // Buscar en aliases
-         const aliasMatch = this.searchInAliases(note, context.normalizedTerm);
-         if (aliasMatch) {
-            results.push(this.createSearchResult(note, "alias", aliasMatch));
-         }
+         // Actualizar estado
+         this.state.results = results;
+         this.state.lastSearchTerm = searchTerm;
+      } catch (error) {
+         this.state.error =
+            error instanceof Error
+               ? error.message
+               : "Error inesperado en la búsqueda";
+         this.state.results = [];
+      } finally {
+         this.state.isSearching = false;
       }
-
-      return results;
    }
 
-   private performHierarchicalSearch(context: SearchContext): SearchResult[] {
-      const results: SearchResult[] = [];
-      const allNotes = noteQueryController.getAllNotes() || [];
-
-      for (const note of allNotes) {
-         const notePath = this.getNormalizedNotePath(note.id);
-
-         // Verificar si la nota está en la ruta correcta
-         if (!this.isNoteInTargetPath(notePath, context)) {
-            continue;
-         }
-
-         // Para búsqueda exacta de directorio, agregar todas las notas en esa ruta
-         if (context.isExactPath) {
-            results.push(this.createSearchResult(note, "title", note.title));
-            continue;
-         }
-
-         // Buscar en título
-         const titleMatch = this.searchInText(
-            note.title,
-            context.searchFragment,
-         );
-         if (titleMatch) {
-            results.push(this.createSearchResult(note, "title", note.title));
-            continue;
-         }
-
-         // Buscar en aliases
-         const aliasMatch = this.searchInAliases(note, context.searchFragment);
-         if (aliasMatch) {
-            results.push(this.createSearchResult(note, "alias", aliasMatch));
-         }
+   /**
+    * Búsqueda rápida sin estado de loading (para autocompletado)
+    */
+   quickSearch(searchTerm: string, limit: number = 10): SearchResult[] {
+      if (!this.searchService.isValidSearchTerm(searchTerm)) {
+         return [];
       }
 
-      return results;
+      try {
+         const notesData = this.prepareNotesData();
+         return this.searchService.searchNotes(searchTerm, notesData, {
+            limit,
+         });
+      } catch (error) {
+         console.warn("Error en búsqueda rápida:", error);
+         return [];
+      }
    }
 
-   // === MÉTODOS AUXILIARES DE BÚSQUEDA ===
-
-   private isNoteInTargetPath(
-      notePath: string,
-      context: SearchContext,
-   ): boolean {
-      if (context.isExactPath) {
-         const searchPath = context.normalizedTerm.slice(0, -1); // Quitar barra final
-         return (
-            notePath === searchPath || notePath.startsWith(searchPath + "/")
-         );
+   /**
+    * Obtiene sugerencias de búsqueda
+    */
+   async getSuggestions(
+      partialTerm: string,
+      maxSuggestions: number = 5,
+   ): Promise<void> {
+      if (!partialTerm.trim()) {
+         this.state.suggestions = [];
+         return;
       }
 
-      if (!context.basePath) return true;
+      try {
+         const notesData = this.prepareNotesData();
+         const suggestions = this.searchService.getSearchSuggestions(
+            partialTerm,
+            notesData,
+            maxSuggestions,
+         );
+         this.state.suggestions = suggestions;
+      } catch (error) {
+         console.warn("Error obteniendo sugerencias:", error);
+         this.state.suggestions = [];
+      }
+   }
 
-      return (
-         notePath.startsWith(context.basePath + "/") ||
-         notePath === context.basePath
+   // ============================================================================
+   // SEARCH UTILITIES - Utilidades de búsqueda
+   // ============================================================================
+
+   /**
+    * Resalta término de búsqueda en texto
+    */
+   highlightSearchTerm(text: string, searchTerm?: string): string {
+      const term = searchTerm || this.state.lastSearchTerm;
+      return this.searchService.highlightSearchTerm(text, term);
+   }
+
+   /**
+    * Valida si un término de búsqueda es válido
+    */
+   isValidSearchTerm(searchTerm: string): boolean {
+      return this.searchService.isValidSearchTerm(searchTerm);
+   }
+
+   /**
+    * Parsea término de búsqueda para mostrar información en UI
+    */
+   parseSearchTerm(searchTerm: string) {
+      return this.searchService.parseSearchTerm(searchTerm);
+   }
+
+   // ============================================================================
+   // STATE MANAGEMENT - Gestión de estado
+   // ============================================================================
+
+   /**
+    * Limpia los resultados de búsqueda
+    */
+   clearResults(): void {
+      this.state.results = [];
+      this.state.lastSearchTerm = "";
+      this.state.suggestions = [];
+      this.clearError();
+   }
+
+   /**
+    * Limpia el error
+    */
+   clearError(): void {
+      this.state.error = null;
+   }
+
+   /**
+    * Refresca la búsqueda actual (útil cuando cambian las notas)
+    */
+   async refreshSearch(): Promise<void> {
+      if (this.state.lastSearchTerm) {
+         await this.searchNotes(this.state.lastSearchTerm);
+      }
+   }
+
+   // ============================================================================
+   // FILTERING AND SORTING - Filtrado y ordenamiento adicional
+   // ============================================================================
+
+   /**
+    * Filtra resultados por tipo de coincidencia
+    */
+   filterResultsByType(
+      matchType: "title" | "alias" | "content",
+   ): SearchResult[] {
+      return this.state.results.filter(
+         (result) => result.matchType === matchType,
       );
    }
 
-   private searchInText(text: string, searchTerm: string): boolean {
-      return normalizeText(text).includes(searchTerm);
-   }
+   /**
+    * Agrupa resultados por ruta padre
+    */
+   groupResultsByPath(): Record<string, SearchResult[]> {
+      const grouped: Record<string, SearchResult[]> = {};
 
-   private searchInAliases(note: any, searchTerm: string): string | null {
-      const aliases = note.metadata?.aliases || [];
+      for (const result of this.state.results) {
+         const pathParts = result.path.split("/");
+         const parentPath = pathParts.slice(0, -1).join("/") || "Root";
 
-      for (const alias of aliases) {
-         if (this.searchInText(alias, searchTerm)) {
-            return alias;
+         if (!grouped[parentPath]) {
+            grouped[parentPath] = [];
          }
+         grouped[parentPath].push(result);
       }
 
-      return null;
+      return grouped;
    }
 
-   private getNormalizedNotePath(noteId: string): string {
-      return normalizeText(noteQueryController.getNotePathAsString(noteId));
-   }
+   /**
+    * Obtiene estadísticas de los resultados
+    */
+   getResultStats(): {
+      total: number;
+      byType: Record<string, number>;
+      byDepth: Record<number, number>;
+   } {
+      const byType: Record<string, number> = {};
+      const byDepth: Record<number, number> = {};
 
-   // === CREACIÓN Y ORDENAMIENTO DE RESULTADOS ===
+      for (const result of this.state.results) {
+         // Por tipo
+         byType[result.matchType] = (byType[result.matchType] || 0) + 1;
 
-   private createSearchResult(
-      note: any,
-      matchType: "title" | "alias",
-      matchedText: string,
-   ): SearchResult {
+         // Por profundidad
+         const depth = result.path.split("/").length;
+         byDepth[depth] = (byDepth[depth] || 0) + 1;
+      }
+
       return {
-         note,
-         matchType,
-         matchedText,
-         path: noteQueryController.getNotePathAsString(note.id),
+         total: this.state.results.length,
+         byType,
+         byDepth,
       };
    }
 
-   private sortResults(results: SearchResult[]): SearchResult[] {
-      return [...results].sort((a, b) => {
-         // Prioridad 1: Coincidencias de título sobre alias
-         if (a.matchType === "title" && b.matchType === "alias") return -1;
-         if (a.matchType === "alias" && b.matchType === "title") return 1;
+   // ============================================================================
+   // PRIVATE HELPERS - Métodos auxiliares privados
+   // ============================================================================
 
-         // Prioridad 2: Profundidad de ruta (menos profunda primero)
-         const aDepth = a.path.split("/").length;
-         const bDepth = b.path.split("/").length;
-         if (aDepth !== bDepth) return aDepth - bDepth;
+   /**
+    * Prepara los datos de notas para el servicio de búsqueda
+    */
+   private prepareNotesData(): NoteSearchData[] {
+      const allNotes = noteQueryController.getAllNotes() || [];
 
-         // Prioridad 3: Orden alfabético
-         return a.matchedText.localeCompare(b.matchedText);
-      });
-   }
-
-   private limitResults(
-      results: SearchResult[],
-      limit: number,
-   ): SearchResult[] {
-      if (limit === -1) return results;
-      if (limit <= 0) return [];
-      return results.slice(0, limit);
+      return allNotes.map((note) => ({
+         note,
+         path: noteQueryController.getNotePathAsString(note.id),
+      }));
    }
 }
 

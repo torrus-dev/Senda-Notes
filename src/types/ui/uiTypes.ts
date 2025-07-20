@@ -49,7 +49,7 @@ export interface FocusState {
 // SEARCH
 export interface SearchResult {
    note: Note;
-   matchType: "title" | "alias";
+   matchType: "title" | "alias" | "content";
    matchedText: string;
    path: string;
 }
