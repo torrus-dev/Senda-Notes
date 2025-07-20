@@ -1,5 +1,6 @@
 <script lang="ts">
-import type { TextProperty } from "@projectTypes/core/propertyTypes";
+import { TextProperty } from "@domain/entities/NoteProperty";
+
 let {
    property,
    onUpdate,

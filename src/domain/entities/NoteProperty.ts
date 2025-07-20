@@ -1,26 +1,38 @@
 /**
- * Entidad rica NoteProperty con lógica de negocio
+ * Tipos de propiedades disponibles
  */
-export class NoteProperty {
-   readonly id: string;
+export type PropertyType =
+   | "text"
+   | "number"
+   | "list"
+   | "check"
+   | "date"
+   | "datetime";
+
+/**
+ * Valores que pueden tener las propiedades (unión de todos los tipos posibles)
+ */
+export type PropertyValue = string | number | string[] | boolean;
+
+/**
+ * Clase base abstracta para todas las propiedades de nota
+ */
+abstract class BaseNoteProperty {
+   id: string;
    name: string;
-   type: string;
-   value: any;
+   abstract type: PropertyType;
+   abstract value: any;
    noteId: string;
    globalPropertyId?: string;
 
    constructor(data: {
       id: string;
       name: string;
-      type: string;
-      value?: any;
       noteId: string;
       globalPropertyId?: string;
    }) {
       this.id = data.id;
       this.name = data.name;
-      this.type = data.type;
-      this.value = data.value;
       this.noteId = data.noteId;
       this.globalPropertyId = data.globalPropertyId;
    }
@@ -33,24 +45,6 @@ export class NoteProperty {
       if (this.name !== trimmedName) {
          this.name = trimmedName;
       }
-   }
-
-   /**
-    * Actualiza el tipo de la propiedad
-    */
-   updateType(newType: string): void {
-      if (this.type !== newType) {
-         this.type = newType;
-         // Al cambiar el tipo, podríamos necesitar limpiar el valor si no es compatible
-         this.validateValueForType(newType);
-      }
-   }
-
-   /**
-    * Actualiza el valor de la propiedad
-    */
-   updateValue(newValue: any): void {
-      this.value = newValue;
    }
 
    /**
@@ -84,7 +78,7 @@ export class NoteProperty {
    /**
     * Actualiza la propiedad con datos de una propiedad global
     */
-   syncWithGlobal(globalName: string, globalType: string): void {
+   syncWithGlobal(globalName: string, globalType: PropertyType): void {
       this.name = globalName;
       // No forzamos el cambio de tipo, solo actualizamos el nombre
       // El tipo se mantendrá para mostrar advertencias de desajuste en la UI
@@ -93,42 +87,8 @@ export class NoteProperty {
    /**
     * Verifica si el tipo coincide con el tipo esperado
     */
-   hasTypeMatch(expectedType: string): boolean {
+   hasTypeMatch(expectedType: PropertyType): boolean {
       return this.type === expectedType;
-   }
-
-   /**
-    * Valida si el valor es compatible con el tipo
-    */
-   private validateValueForType(type: string): void {
-      // Aquí se pueden agregar validaciones específicas según el tipo
-      // Por ejemplo, si el tipo es "number" y el valor no es numérico
-      switch (type) {
-         case "number":
-            if (
-               this.value !== undefined &&
-               this.value !== "" &&
-               isNaN(Number(this.value))
-            ) {
-               this.value = undefined; // Limpiar valor incompatible
-            }
-            break;
-         case "boolean":
-            if (this.value !== undefined && typeof this.value !== "boolean") {
-               this.value = undefined;
-            }
-            break;
-         case "date":
-            if (
-               this.value !== undefined &&
-               !(this.value instanceof Date) &&
-               isNaN(Date.parse(this.value))
-            ) {
-               this.value = undefined;
-            }
-            break;
-         // Agregar más validaciones según los tipos soportados
-      }
    }
 
    /**
@@ -148,7 +108,7 @@ export class NoteProperty {
    /**
     * Verifica si tiene el mismo nombre que otra propiedad (normalizado)
     */
-   hasSameNameAs(otherProperty: NoteProperty): boolean {
+   hasSameNameAs(otherProperty: BaseNoteProperty): boolean {
       return this.getNormalizedName() === otherProperty.getNormalizedName();
    }
 
@@ -157,20 +117,6 @@ export class NoteProperty {
     */
    hasName(name: string): boolean {
       return this.getNormalizedName() === name.trim().toLowerCase();
-   }
-
-   /**
-    * Clona la propiedad (útil para operaciones inmutables)
-    */
-   clone(): NoteProperty {
-      return new NoteProperty({
-         id: this.id,
-         name: this.name,
-         type: this.type,
-         value: this.value,
-         noteId: this.noteId,
-         globalPropertyId: this.globalPropertyId,
-      });
    }
 
    /**
@@ -186,38 +132,329 @@ export class NoteProperty {
          globalPropertyId: this.globalPropertyId,
       };
    }
+}
 
-   /**
-    * Crea una nueva instancia de NoteProperty desde un objeto plano
-    */
-   static fromPlainObject(data: any): NoteProperty {
-      return new NoteProperty({
-         id: data.id,
-         name: data.name,
-         type: data.type,
-         value: data.value,
-         noteId: data.noteId,
-         globalPropertyId: data.globalPropertyId,
-      });
+/**
+ * Propiedad de texto
+ */
+export class TextProperty extends BaseNoteProperty {
+   type: "text" = "text";
+   value: string;
+
+   constructor(data: {
+      id: string;
+      name: string;
+      noteId: string;
+      value: string;
+      globalPropertyId?: string;
+   }) {
+      super(data);
+      this.value = data.value ?? "";
    }
 
-   /**
-    * Crea una nueva propiedad de nota con valores por defecto
-    */
-   static create(params: {
+   updateValue(newValue: string): void {
+      this.value = newValue;
+   }
+
+   clone(): TextProperty {
+      return new TextProperty({
+         id: this.id,
+         name: this.name,
+         noteId: this.noteId,
+         value: this.value,
+         globalPropertyId: this.globalPropertyId,
+      });
+   }
+}
+
+/**
+ * Propiedad numérica
+ */
+export class NumberProperty extends BaseNoteProperty {
+   type: "number" = "number";
+   value: number;
+
+   constructor(data: {
+      id: string;
       name: string;
-      type: string;
       noteId: string;
-      value?: any;
+      value?: number;
+      globalPropertyId?: string;
+   }) {
+      super(data);
+      this.value = data.value ?? 0;
+   }
+
+   updateValue(newValue: number): void {
+      this.value = newValue;
+   }
+
+   clone(): NumberProperty {
+      return new NumberProperty({
+         id: this.id,
+         name: this.name,
+         noteId: this.noteId,
+         value: this.value,
+         globalPropertyId: this.globalPropertyId,
+      });
+   }
+}
+
+/**
+ * Propiedad de lista
+ */
+export class ListProperty extends BaseNoteProperty {
+   type: "list" = "list";
+   value: string[];
+
+   constructor(data: {
+      id: string;
+      name: string;
+      noteId: string;
+      value?: string[];
+      globalPropertyId?: string;
+   }) {
+      super(data);
+      this.value = data.value ?? [];
+   }
+
+   updateValue(newValue: string[]): void {
+      this.value = newValue;
+   }
+
+   addItem(item: string): void {
+      if (!this.value.includes(item)) {
+         this.value.push(item);
+      }
+   }
+
+   removeItem(item: string): void {
+      const index = this.value.indexOf(item);
+      if (index !== -1) {
+         this.value.splice(index, 1);
+      }
+   }
+
+   clone(): ListProperty {
+      return new ListProperty({
+         id: this.id,
+         name: this.name,
+         noteId: this.noteId,
+         value: [...this.value],
+         globalPropertyId: this.globalPropertyId,
+      });
+   }
+}
+
+/**
+ * Propiedad de checkbox/booleana
+ */
+export class CheckProperty extends BaseNoteProperty {
+   type: "check" = "check";
+   value: boolean;
+
+   constructor(data: {
+      id: string;
+      name: string;
+      noteId: string;
+      value?: boolean;
+      globalPropertyId?: string;
+   }) {
+      super(data);
+      this.value = data.value ?? false;
+   }
+
+   updateValue(newValue: boolean): void {
+      this.value = newValue;
+   }
+
+   toggle(): void {
+      this.value = !this.value;
+   }
+
+   clone(): CheckProperty {
+      return new CheckProperty({
+         id: this.id,
+         name: this.name,
+         noteId: this.noteId,
+         value: this.value,
+         globalPropertyId: this.globalPropertyId,
+      });
+   }
+}
+
+/**
+ * Propiedad de fecha
+ */
+export class DateProperty extends BaseNoteProperty {
+   type: "date" = "date";
+   value: string;
+
+   constructor(data: {
+      id: string;
+      name: string;
+      noteId: string;
+      value?: string;
+      globalPropertyId?: string;
+   }) {
+      super(data);
+      this.value = data.value ?? "";
+   }
+
+   updateValue(newValue: string): void {
+      this.value = newValue;
+   }
+
+   clone(): DateProperty {
+      return new DateProperty({
+         id: this.id,
+         name: this.name,
+         noteId: this.noteId,
+         value: this.value,
+         globalPropertyId: this.globalPropertyId,
+      });
+   }
+}
+
+/**
+ * Propiedad de fecha y hora
+ */
+export class DatetimeProperty extends BaseNoteProperty {
+   type: "datetime" = "datetime";
+   value: string;
+
+   constructor(data: {
+      id: string;
+      name: string;
+      noteId: string;
+      value?: string;
+      globalPropertyId?: string;
+   }) {
+      super(data);
+      this.value = data.value ?? "";
+   }
+
+   updateValue(newValue: string): void {
+      this.value = newValue;
+   }
+
+   clone(): DatetimeProperty {
+      return new DatetimeProperty({
+         id: this.id,
+         name: this.name,
+         noteId: this.noteId,
+         value: this.value,
+         globalPropertyId: this.globalPropertyId,
+      });
+   }
+}
+
+/**
+ * Union type de todas las propiedades de nota
+ */
+export type NoteProperty =
+   | TextProperty
+   | NumberProperty
+   | ListProperty
+   | CheckProperty
+   | DateProperty
+   | DatetimeProperty;
+
+/**
+ * Factory para crear propiedades según el tipo
+ */
+export class NotePropertyFactory {
+   static create(params: {
+      type: PropertyType;
+      name: string;
+      noteId: string;
+      value: PropertyValue;
       globalPropertyId?: string;
    }): NoteProperty {
-      return new NoteProperty({
+      const baseData = {
          id: crypto.randomUUID(),
          name: params.name.trim(),
-         type: params.type,
-         value: params.value,
          noteId: params.noteId,
          globalPropertyId: params.globalPropertyId,
-      });
+      };
+
+      switch (params.type) {
+         case "text":
+            return new TextProperty({
+               ...baseData,
+               value: params.value,
+            });
+         case "number":
+            return new NumberProperty({
+               ...baseData,
+               value: params.value,
+            });
+         case "list":
+            return new ListProperty({
+               ...baseData,
+               value: params.value,
+            });
+         case "check":
+            return new CheckProperty({
+               ...baseData,
+               value: params.value,
+            });
+         case "date":
+            return new DateProperty({
+               ...baseData,
+               value: params.value,
+            });
+         case "datetime":
+            return new DatetimeProperty({
+               ...baseData,
+               value: params.value,
+            });
+         default:
+            throw new Error(`Unknown property type: ${params.type}`);
+      }
+   }
+
+   static fromPlainObject(data: any): NoteProperty {
+      const baseData = {
+         id: data.id,
+         name: data.name,
+         noteId: data.noteId,
+         globalPropertyId: data.globalPropertyId,
+      };
+
+      switch (data.type) {
+         case "text":
+            return new TextProperty({
+               ...baseData,
+               value: data.value,
+            });
+         case "number":
+            return new NumberProperty({
+               ...baseData,
+               value: data.value,
+            });
+         case "list":
+            return new ListProperty({
+               ...baseData,
+               value: data.value,
+            });
+         case "check":
+            return new CheckProperty({
+               ...baseData,
+               value: data.value,
+            });
+         case "date":
+            return new DateProperty({
+               ...baseData,
+               value: data.value,
+            });
+         case "datetime":
+            return new DatetimeProperty({
+               ...baseData,
+               value: data.value,
+            });
+         default:
+            throw new Error(`Unknown property type: ${data.type}`);
+      }
    }
 }

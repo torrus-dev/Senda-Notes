@@ -1,5 +1,10 @@
 import { Note } from "@domain/entities/Note";
-import { NoteProperty } from "@domain/entities/NoteProperty";
+import type {
+   NoteProperty,
+   PropertyType,
+   PropertyValue,
+} from "@domain/entities/NoteProperty";
+import { NotePropertyFactory } from "@domain/entities/NoteProperty";
 import { GlobalProperty } from "@domain/entities/GlobalProperty";
 import { normalizeText } from "@utils/searchUtils";
 
@@ -43,7 +48,7 @@ export class PropertyService {
    validatePropertyCreation(
       note: Note,
       propertyName: string,
-      propertyType: string,
+      propertyType: PropertyType,
       excludePropertyId?: string,
    ): PropertyValidationResult {
       const errors: string[] = [];
@@ -61,9 +66,17 @@ export class PropertyService {
          );
       }
 
-      // Validar tipo no vacío
-      if (!propertyType.trim()) {
-         errors.push("El tipo de la propiedad no puede estar vacío");
+      // Validar tipo válido
+      const validTypes: PropertyType[] = [
+         "text",
+         "number",
+         "list",
+         "check",
+         "date",
+         "datetime",
+      ];
+      if (!validTypes.includes(propertyType)) {
+         errors.push(`Tipo de propiedad no válido: ${propertyType}`);
       }
 
       return {
@@ -79,9 +92,9 @@ export class PropertyService {
    createNoteProperty(
       note: Note,
       propertyName: string,
-      propertyType: string,
+      propertyType: PropertyType,
       existingGlobalProperties: GlobalProperty[],
-      propertyValue?: any,
+      propertyValue?: PropertyValue,
    ): PropertyCreationResult {
       // Validar la creación
       const validation = this.validatePropertyCreation(
@@ -101,12 +114,12 @@ export class PropertyService {
          propertyName,
       );
 
-      // Crear la nueva propiedad de nota
-      const noteProperty = NoteProperty.create({
+      // Crear la nueva propiedad de nota usando el factory
+      const noteProperty = NotePropertyFactory.create({
          name: propertyName,
          type: propertyType,
          noteId: note.id,
-         value: propertyValue,
+         value: propertyValue ?? this.getDefaultValueForType(propertyType),
          globalPropertyId: existingGlobalProperty?.id,
       });
 
@@ -242,11 +255,21 @@ export class PropertyService {
     */
    changeNotePropertyType(
       noteProperty: NoteProperty,
-      newType: string,
+      newType: PropertyType,
       globalProperties: GlobalProperty[],
    ): { updatedGlobalProperty?: GlobalProperty } {
       const oldType = noteProperty.type;
-      noteProperty.updateType(newType);
+
+      // Actualizar tipo - los métodos específicos de cada clase manejan la validación
+      if (noteProperty.type === "text" && newType === "text") {
+         // Ya es del tipo correcto, no hacer nada
+      } else {
+         // Para cambios de tipo, necesitaríamos crear una nueva instancia
+         // por simplicidad, lanzamos error por ahora - esto se puede mejorar
+         throw new Error(
+            `Type changes from ${oldType} to ${newType} not yet supported`,
+         );
+      }
 
       // Si está vinculada a una propiedad global, actualizar su tipo también
       if (noteProperty.globalPropertyId) {
@@ -260,6 +283,41 @@ export class PropertyService {
       }
 
       return {};
+   }
+
+   /**
+    * Actualiza el valor de una propiedad de nota usando su método específico
+    */
+   updateNotePropertyValue(
+      noteProperty: NoteProperty,
+      newValue: PropertyValue,
+   ): void {
+      // Validar que el valor es compatible con el tipo
+      if (!this.validateValueForType(newValue, noteProperty.type)) {
+         throw new Error(
+            `Value of type ${typeof newValue} is not compatible with property type ${noteProperty.type}`,
+         );
+      }
+
+      // Type-safe update usando type guards
+      switch (noteProperty.type) {
+         case "text":
+         case "date":
+         case "datetime":
+            (noteProperty as any).updateValue(newValue as string);
+            break;
+         case "number":
+            (noteProperty as any).updateValue(newValue as number);
+            break;
+         case "list":
+            (noteProperty as any).updateValue(newValue as string[]);
+            break;
+         case "check":
+            (noteProperty as any).updateValue(newValue as boolean);
+            break;
+         default:
+            throw new Error(`Unknown property type: ${noteProperty.type}`);
+      }
    }
 
    /**
@@ -279,32 +337,6 @@ export class PropertyService {
    }
 
    /**
-    * Maneja el renombrado de una propiedad global (método de conveniencia)
-    * @deprecated Use updateGlobalProperty instead for more control
-    */
-   renameGlobalProperty(
-      globalProperty: GlobalProperty,
-      newName: string,
-      notes: Note[],
-      existingGlobalProperties: GlobalProperty[],
-   ): {
-      updatedNotes: Note[];
-      conflictingGlobalProperty?: GlobalProperty;
-   } {
-      const result = this.updateGlobalProperty(
-         globalProperty,
-         { name: newName },
-         notes,
-         existingGlobalProperties,
-      );
-
-      return {
-         updatedNotes: result.updatedNotes,
-         conflictingGlobalProperty: result.conflictingProperty,
-      };
-   }
-
-   /**
     * Verifica si hay desajustes de tipo entre propiedades vinculadas
     */
    checkTypeMismatches(
@@ -313,14 +345,14 @@ export class PropertyService {
    ): Array<{
       note: Note;
       property: NoteProperty;
-      expectedType: string;
-      actualType: string;
+      expectedType: PropertyType;
+      actualType: PropertyType;
    }> {
       const mismatches: Array<{
          note: Note;
          property: NoteProperty;
-         expectedType: string;
-         actualType: string;
+         expectedType: PropertyType;
+         actualType: PropertyType;
       }> = [];
 
       for (const link of globalProperty.linkedProperties) {
@@ -345,130 +377,6 @@ export class PropertyService {
    }
 
    // ============================================================================
-   // VALIDATION & UTILITIES - Validaciones y utilidades compartidas
-   // ============================================================================
-
-   /**
-    * Obtiene sugerencias de propiedades globales para una nota
-    */
-   getGlobalPropertySuggestions(
-      globalProperties: GlobalProperty[],
-      searchTerm: string,
-      note?: Note,
-   ): GlobalProperty[] {
-      const normalizedSearchTerm = searchTerm.trim()
-         ? normalizeText(searchTerm)
-         : "";
-
-      return globalProperties.filter((globalProperty) => {
-         // Si hay nota, excluir propiedades ya vinculadas a esta nota
-         if (note && globalProperty.isLinkedToNote(note.id)) {
-            return false;
-         }
-
-         // Si no hay término de búsqueda, incluir todas las demás
-         if (!normalizedSearchTerm) {
-            return true;
-         }
-
-         // Filtrar por nombre
-         return normalizeText(globalProperty.name).includes(
-            normalizedSearchTerm,
-         );
-      });
-   }
-
-   // ============================================================================
-   // CROSS-ENTITY OPERATIONS - Operaciones que afectan ambos tipos
-   // ============================================================================
-
-   /**
-    * Elimina una propiedad de nota y maneja la desvinculación
-    */
-   deleteNoteProperty(
-      note: Note,
-      propertyId: string,
-      globalProperties: GlobalProperty[],
-   ): {
-      removedProperty: NoteProperty;
-      updatedGlobalProperty?: GlobalProperty;
-   } {
-      const noteProperty = note.getProperty(propertyId);
-      if (!noteProperty) {
-         throw new Error(
-            `Property with id ${propertyId} not found in note ${note.id}`,
-         );
-      }
-
-      let updatedGlobalProperty: GlobalProperty | undefined;
-
-      // Si está vinculada a una propiedad global, desvincular
-      if (noteProperty.globalPropertyId) {
-         const globalProperty = globalProperties.find(
-            (gp) => gp.id === noteProperty.globalPropertyId,
-         );
-         if (globalProperty) {
-            this.unlinkNotePropertyFromGlobal(noteProperty, globalProperty);
-            updatedGlobalProperty = globalProperty;
-         }
-      }
-
-      // Remover de la nota
-      note.removeProperty(propertyId);
-
-      return {
-         removedProperty: noteProperty,
-         updatedGlobalProperty,
-      };
-   }
-
-   // ============================================================================
-   // PRIVATE HELPERS - Métodos de apoyo internos
-   // ============================================================================
-
-   /**
-    * Vincula una propiedad de nota a una propiedad global
-    */
-   private linkNotePropertyToGlobal(
-      noteProperty: NoteProperty,
-      globalProperty: GlobalProperty,
-   ): void {
-      // Actualizar la propiedad de nota
-      noteProperty.linkToGlobal(globalProperty.id);
-      noteProperty.updateName(globalProperty.name);
-
-      // Actualizar la propiedad global
-      globalProperty.addLink(noteProperty.noteId, noteProperty.id);
-   }
-
-   /**
-    * Desvincula una propiedad de nota de una propiedad global
-    */
-   private unlinkNotePropertyFromGlobal(
-      noteProperty: NoteProperty,
-      globalProperty: GlobalProperty,
-   ): void {
-      // Actualizar la propiedad global
-      globalProperty.removeLink(noteProperty.noteId, noteProperty.id);
-
-      // Actualizar la propiedad de nota
-      noteProperty.unlinkFromGlobal();
-   }
-
-   /**
-    * Busca una propiedad global por nombre (normalizado)
-    */
-   private findGlobalPropertyByName(
-      globalProperties: GlobalProperty[],
-      name: string,
-   ): GlobalProperty | undefined {
-      const normalizedName = normalizeText(name.trim());
-      return globalProperties.find(
-         (gp) => normalizeText(gp.name) === normalizedName,
-      );
-   }
-
-   // ============================================================================
    // GLOBALPROPERTY OPERATIONS - Operaciones iniciadas desde propiedades globales
    // ============================================================================
 
@@ -477,7 +385,7 @@ export class PropertyService {
     */
    createGlobalProperty(
       name: string,
-      type: string,
+      type: PropertyType,
       existingGlobalProperties: GlobalProperty[],
    ): GlobalProperty {
       // Validar que no exista ya una con el mismo nombre
@@ -493,11 +401,8 @@ export class PropertyService {
       if (!name.trim()) {
          throw new Error("Global property name cannot be empty");
       }
-      if (!type.trim()) {
-         throw new Error("Global property type cannot be empty");
-      }
 
-      return GlobalProperty.create({ name: name.trim(), type: type.trim() });
+      return GlobalProperty.create({ name: name.trim(), type });
    }
 
    /**
@@ -505,7 +410,7 @@ export class PropertyService {
     */
    updateGlobalProperty(
       globalProperty: GlobalProperty,
-      updates: { name?: string; type?: string },
+      updates: { name?: string; type?: PropertyType },
       notes: Note[],
       existingGlobalProperties: GlobalProperty[],
    ): {
@@ -635,10 +540,13 @@ export class PropertyService {
       linkedCount: number;
       noteCount: number;
       typeMismatches: number;
-      usageByType: Record<string, number>;
+      usageByType: Record<PropertyType, number>;
    } {
       const noteIds = new Set<string>();
-      const usageByType: Record<string, number> = {};
+      const usageByType: Record<PropertyType, number> = {} as Record<
+         PropertyType,
+         number
+      >;
       let typeMismatches = 0;
 
       for (const link of globalProperty.linkedProperties) {
@@ -666,6 +574,128 @@ export class PropertyService {
          typeMismatches,
          usageByType,
       };
+   }
+
+   // ============================================================================
+   // CROSS-ENTITY OPERATIONS - Operaciones que afectan ambos tipos
+   // ============================================================================
+
+   /**
+    * Elimina una propiedad de nota y maneja la desvinculación
+    */
+   deleteNoteProperty(
+      note: Note,
+      propertyId: string,
+      globalProperties: GlobalProperty[],
+   ): {
+      removedProperty: NoteProperty;
+      updatedGlobalProperty?: GlobalProperty;
+   } {
+      const noteProperty = note.getProperty(propertyId);
+      if (!noteProperty) {
+         throw new Error(
+            `Property with id ${propertyId} not found in note ${note.id}`,
+         );
+      }
+
+      let updatedGlobalProperty: GlobalProperty | undefined;
+
+      // Si está vinculada a una propiedad global, desvincular
+      if (noteProperty.globalPropertyId) {
+         const globalProperty = globalProperties.find(
+            (gp) => gp.id === noteProperty.globalPropertyId,
+         );
+         if (globalProperty) {
+            this.unlinkNotePropertyFromGlobal(noteProperty, globalProperty);
+            updatedGlobalProperty = globalProperty;
+         }
+      }
+
+      // Remover de la nota
+      note.removeProperty(propertyId);
+
+      return {
+         removedProperty: noteProperty,
+         updatedGlobalProperty,
+      };
+   }
+
+   // ============================================================================
+   // VALIDATION & UTILITIES - Validaciones y utilidades compartidas
+   // ============================================================================
+
+   /**
+    * Valida si un valor es compatible con un tipo de propiedad
+    */
+   validateValueForType(value: PropertyValue, type: PropertyType): boolean {
+      switch (type) {
+         case "text":
+         case "date":
+         case "datetime":
+            return typeof value === "string";
+         case "number":
+            return typeof value === "number";
+         case "list":
+            return (
+               Array.isArray(value) &&
+               value.every((item) => typeof item === "string")
+            );
+         case "check":
+            return typeof value === "boolean";
+         default:
+            return false;
+      }
+   }
+
+   /**
+    * Obtiene el valor por defecto para un tipo de propiedad
+    */
+   getDefaultValueForType(type: PropertyType): PropertyValue {
+      switch (type) {
+         case "text":
+         case "date":
+         case "datetime":
+            return "";
+         case "number":
+            return 0;
+         case "list":
+            return [];
+         case "check":
+            return false;
+         default:
+            const exhaustive: never = type;
+            throw new Error(`Unknown property type: ${exhaustive}`);
+      }
+   }
+
+   /**
+    * Obtiene sugerencias de propiedades globales para una nota
+    */
+   getGlobalPropertySuggestions(
+      globalProperties: GlobalProperty[],
+      searchTerm: string,
+      note?: Note,
+   ): GlobalProperty[] {
+      const normalizedSearchTerm = searchTerm.trim()
+         ? normalizeText(searchTerm)
+         : "";
+
+      return globalProperties.filter((globalProperty) => {
+         // Si hay nota, excluir propiedades ya vinculadas a esta nota
+         if (note && globalProperty.isLinkedToNote(note.id)) {
+            return false;
+         }
+
+         // Si no hay término de búsqueda, incluir todas las demás
+         if (!normalizedSearchTerm) {
+            return true;
+         }
+
+         // Filtrar por nombre
+         return normalizeText(globalProperty.name).includes(
+            normalizedSearchTerm,
+         );
+      });
    }
 
    /**
@@ -755,5 +785,51 @@ export class PropertyService {
       }
 
       return issues;
+   }
+
+   // ============================================================================
+   // PRIVATE HELPERS - Métodos de apoyo internos
+   // ============================================================================
+
+   /**
+    * Vincula una propiedad de nota a una propiedad global
+    */
+   private linkNotePropertyToGlobal(
+      noteProperty: NoteProperty,
+      globalProperty: GlobalProperty,
+   ): void {
+      // Actualizar la propiedad de nota
+      noteProperty.linkToGlobal(globalProperty.id);
+      noteProperty.updateName(globalProperty.name);
+
+      // Actualizar la propiedad global
+      globalProperty.addLink(noteProperty.noteId, noteProperty.id);
+   }
+
+   /**
+    * Desvincula una propiedad de nota de una propiedad global
+    */
+   private unlinkNotePropertyFromGlobal(
+      noteProperty: NoteProperty,
+      globalProperty: GlobalProperty,
+   ): void {
+      // Actualizar la propiedad global
+      globalProperty.removeLink(noteProperty.noteId, noteProperty.id);
+
+      // Actualizar la propiedad de nota
+      noteProperty.unlinkFromGlobal();
+   }
+
+   /**
+    * Busca una propiedad global por nombre (normalizado)
+    */
+   private findGlobalPropertyByName(
+      globalProperties: GlobalProperty[],
+      name: string,
+   ): GlobalProperty | undefined {
+      const normalizedName = normalizeText(name.trim());
+      return globalProperties.find(
+         (gp) => normalizeText(gp.name) === normalizedName,
+      );
    }
 }

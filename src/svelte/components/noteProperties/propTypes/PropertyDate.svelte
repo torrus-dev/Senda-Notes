@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { DateProperty } from "@projectTypes/core/propertyTypes";
+import type { DateProperty } from "@domain/entities/NoteProperty";
 
 let {
    property,

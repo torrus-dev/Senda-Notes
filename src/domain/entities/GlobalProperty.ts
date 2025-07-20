@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import type { PropertyType } from "./NoteProperty";
 
 export interface GlobalPropertyLink {
    noteId: string;
@@ -14,16 +15,16 @@ export interface GlobalPropertyMetadata {
  * Entidad rica GlobalProperty con lógica de negocio
  */
 export class GlobalProperty {
-   readonly id: string;
+   id: string;
    name: string;
-   type: string;
+   type: PropertyType;
    linkedProperties: GlobalPropertyLink[];
    metadata: GlobalPropertyMetadata;
 
    constructor(data: {
       id: string;
       name: string;
-      type: string;
+      type: PropertyType;
       linkedProperties?: GlobalPropertyLink[];
       metadata: GlobalPropertyMetadata;
    }) {
@@ -48,7 +49,7 @@ export class GlobalProperty {
    /**
     * Actualiza el tipo de la propiedad global
     */
-   updateType(newType: string): void {
+   updateType(newType: PropertyType): void {
       if (this.type !== newType) {
          this.type = newType;
          this.updateModified();
@@ -198,7 +199,7 @@ export class GlobalProperty {
    /**
     * Crea una nueva propiedad global con valores por defecto
     */
-   static create(params: { name: string; type: string }): GlobalProperty {
+   static create(params: { name: string; type: PropertyType }): GlobalProperty {
       const now = DateTime.now();
       return new GlobalProperty({
          id: crypto.randomUUID(),

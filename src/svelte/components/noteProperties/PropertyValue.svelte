@@ -2,7 +2,7 @@
 import { notePropertyController } from "@controllers/property/notePropertyController.svelte";
 
 import type { NoteProperty } from "@domain/entities/NoteProperty";
-import type { Note } from "@projectTypes/core/noteTypes";
+import type { Note } from "@domain/entities/Note";
 
 import PropertyText from "@components/noteProperties/propTypes/PropertyText.svelte";
 import PropertyList from "@components/noteProperties/propTypes/PropertyList.svelte";

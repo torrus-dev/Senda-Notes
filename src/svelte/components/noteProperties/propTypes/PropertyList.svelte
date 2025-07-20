@@ -33,7 +33,7 @@
 <script lang="ts">
 import { XIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
-import type { ListProperty } from "@projectTypes/core/propertyTypes";
+import type { ListProperty } from "@domain/entities/NoteProperty";
 
 let {
    property,
