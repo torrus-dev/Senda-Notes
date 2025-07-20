@@ -1,5 +1,5 @@
 <script lang="ts">
-import { NoteProperty } from "@domain/entities/NoteProperty";
+import type { NoteProperty } from "@domain/entities/NoteProperty";
 import { getPropertyIcon } from "@utils/propertyUtils";
 
 let { propertyType = "text" }: { propertyType?: NoteProperty["type"] } =

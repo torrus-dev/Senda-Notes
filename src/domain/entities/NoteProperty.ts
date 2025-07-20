@@ -145,7 +145,7 @@ export class TextProperty extends BaseNoteProperty {
       id: string;
       name: string;
       noteId: string;
-      value: string;
+      value?: string;
       globalPropertyId?: string;
    }) {
       super(data);
@@ -368,7 +368,7 @@ export class NotePropertyFactory {
       type: PropertyType;
       name: string;
       noteId: string;
-      value: PropertyValue;
+      value?: PropertyValue;
       globalPropertyId?: string;
    }): NoteProperty {
       const baseData = {
@@ -382,32 +382,32 @@ export class NotePropertyFactory {
          case "text":
             return new TextProperty({
                ...baseData,
-               value: params.value,
+               value: typeof params.value === "string" ? params.value : "",
             });
          case "number":
             return new NumberProperty({
                ...baseData,
-               value: params.value,
+               value: typeof params.value === "number" ? params.value : 0,
             });
          case "list":
             return new ListProperty({
                ...baseData,
-               value: params.value,
+               value: Array.isArray(params.value) ? params.value : [],
             });
          case "check":
             return new CheckProperty({
                ...baseData,
-               value: params.value,
+               value: typeof params.value === "boolean" ? params.value : false,
             });
          case "date":
             return new DateProperty({
                ...baseData,
-               value: params.value,
+               value: typeof params.value === "string" ? params.value : "",
             });
          case "datetime":
             return new DatetimeProperty({
                ...baseData,
-               value: params.value,
+               value: typeof params.value === "string" ? params.value : "",
             });
          default:
             throw new Error(`Unknown property type: ${params.type}`);
@@ -426,32 +426,32 @@ export class NotePropertyFactory {
          case "text":
             return new TextProperty({
                ...baseData,
-               value: data.value,
+               value: data.value ?? "",
             });
          case "number":
             return new NumberProperty({
                ...baseData,
-               value: data.value,
+               value: data.value ?? 0,
             });
          case "list":
             return new ListProperty({
                ...baseData,
-               value: data.value,
+               value: data.value ?? [],
             });
          case "check":
             return new CheckProperty({
                ...baseData,
-               value: data.value,
+               value: data.value ?? false,
             });
          case "date":
             return new DateProperty({
                ...baseData,
-               value: data.value,
+               value: data.value ?? "",
             });
          case "datetime":
             return new DatetimeProperty({
                ...baseData,
-               value: data.value,
+               value: data.value ?? "",
             });
          default:
             throw new Error(`Unknown property type: ${data.type}`);

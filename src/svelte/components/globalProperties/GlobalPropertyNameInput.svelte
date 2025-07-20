@@ -2,7 +2,7 @@
 import { globalPropertyController } from "@controllers/property/globalPropertyController.svelte";
 import { onClickOutside } from "@directives/onClickOutside";
 import { GlobalProperty } from "@domain/entities/GlobalProperty";
-import { NoteProperty } from "@domain/entities/NoteProperty";
+import type { NoteProperty } from "@domain/entities/NoteProperty";
 
 import { onMount, tick } from "svelte";
 

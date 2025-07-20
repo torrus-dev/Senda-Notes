@@ -58,7 +58,7 @@ let isAddingProperty = $derived(propertyEditorController.isAddingProperty());
                      event.preventDefault();
                   }}
                   title="Add property">
-                  <PlusIcon size="1.0625em" />Add PropertyComponent
+                  <PlusIcon size="1.0625em" />Add Property
                </Button>
             </li>
          {/if}

@@ -7,7 +7,7 @@ import { propertyEditorController } from "@controllers/ui/propertyEditorControll
 import { onClickOutside } from "@directives/onClickOutside";
 import { onPressEsc } from "@directives/onPressEsc";
 import { GlobalProperty } from "@domain/entities/GlobalProperty";
-import { NoteProperty } from "@domain/entities/NoteProperty";
+import type { NoteProperty } from "@domain/entities/NoteProperty";
 import type { Note } from "@projectTypes/core/noteTypes";
 
 import { getPropertyIcon } from "@utils/propertyUtils";

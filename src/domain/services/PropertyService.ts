@@ -251,38 +251,106 @@ export class PropertyService {
    }
 
    /**
-    * Cambia el tipo de una propiedad de nota y actualiza la propiedad global asociada
+    * Cambia el tipo de una propiedad de nota creando una nueva instancia
     */
    changeNotePropertyType(
-      noteProperty: NoteProperty,
+      note: Note,
+      propertyId: string,
       newType: PropertyType,
       globalProperties: GlobalProperty[],
-   ): { updatedGlobalProperty?: GlobalProperty } {
-      const oldType = noteProperty.type;
-
-      // Actualizar tipo - los métodos específicos de cada clase manejan la validación
-      if (noteProperty.type === "text" && newType === "text") {
-         // Ya es del tipo correcto, no hacer nada
-      } else {
-         // Para cambios de tipo, necesitaríamos crear una nueva instancia
-         // por simplicidad, lanzamos error por ahora - esto se puede mejorar
+   ): {
+      oldProperty: NoteProperty;
+      newProperty: NoteProperty;
+      updatedGlobalProperty?: GlobalProperty;
+   } {
+      const oldProperty = note.getProperty(propertyId);
+      if (!oldProperty) {
          throw new Error(
-            `Type changes from ${oldType} to ${newType} not yet supported`,
+            `Property with id ${propertyId} not found in note ${note.id}`,
          );
       }
 
+      // Crear nueva propiedad con el nuevo tipo y valor por defecto
+      const newProperty = NotePropertyFactory.create({
+         type: newType,
+         name: oldProperty.name,
+         noteId: oldProperty.noteId,
+         value: this.getDefaultValueForType(newType),
+         globalPropertyId: oldProperty.globalPropertyId,
+      });
+
+      // Reemplazar en la nota
+      note.removeProperty(propertyId);
+      note.addProperty(newProperty);
+
       // Si está vinculada a una propiedad global, actualizar su tipo también
-      if (noteProperty.globalPropertyId) {
+      let updatedGlobalProperty: GlobalProperty | undefined;
+      if (oldProperty.globalPropertyId) {
          const globalProperty = globalProperties.find(
-            (gp) => gp.id === noteProperty.globalPropertyId,
+            (gp) => gp.id === oldProperty.globalPropertyId,
          );
          if (globalProperty) {
+            // Actualizar el enlace en la propiedad global
+            globalProperty.removeLink(oldProperty.noteId, oldProperty.id);
+            globalProperty.addLink(newProperty.noteId, newProperty.id);
             globalProperty.updateType(newType);
-            return { updatedGlobalProperty: globalProperty };
+            updatedGlobalProperty = globalProperty;
          }
       }
 
-      return {};
+      return {
+         oldProperty,
+         newProperty,
+         updatedGlobalProperty,
+      };
+   }
+
+   /**
+    * Helper type-safe para actualizar valores específicos
+    */
+   private updatePropertyValueTypeSafe(
+      noteProperty: NoteProperty,
+      newValue: PropertyValue,
+   ): void {
+      // Capturar el tipo para ayudar a TypeScript con la inferencia
+      const propertyType: PropertyType = noteProperty.type;
+
+      // Type guards para cada tipo específico
+      if (propertyType === "text") {
+         const textProp = noteProperty as any as {
+            updateValue: (value: string) => void;
+         };
+         textProp.updateValue(newValue as string);
+      } else if (propertyType === "number") {
+         const numberProp = noteProperty as any as {
+            updateValue: (value: number) => void;
+         };
+         numberProp.updateValue(newValue as number);
+      } else if (propertyType === "list") {
+         const listProp = noteProperty as any as {
+            updateValue: (value: string[]) => void;
+         };
+         listProp.updateValue(newValue as string[]);
+      } else if (propertyType === "check") {
+         const checkProp = noteProperty as any as {
+            updateValue: (value: boolean) => void;
+         };
+         checkProp.updateValue(newValue as boolean);
+      } else if (propertyType === "date") {
+         const dateProp = noteProperty as any as {
+            updateValue: (value: string) => void;
+         };
+         dateProp.updateValue(newValue as string);
+      } else if (propertyType === "datetime") {
+         const datetimeProp = noteProperty as any as {
+            updateValue: (value: string) => void;
+         };
+         datetimeProp.updateValue(newValue as string);
+      } else {
+         // Usar never type para exhaustiveness checking
+         const exhaustiveCheck: never = propertyType;
+         throw new Error(`Unknown property type: ${exhaustiveCheck}`);
+      }
    }
 
    /**
@@ -299,25 +367,8 @@ export class PropertyService {
          );
       }
 
-      // Type-safe update usando type guards
-      switch (noteProperty.type) {
-         case "text":
-         case "date":
-         case "datetime":
-            (noteProperty as any).updateValue(newValue as string);
-            break;
-         case "number":
-            (noteProperty as any).updateValue(newValue as number);
-            break;
-         case "list":
-            (noteProperty as any).updateValue(newValue as string[]);
-            break;
-         case "check":
-            (noteProperty as any).updateValue(newValue as boolean);
-            break;
-         default:
-            throw new Error(`Unknown property type: ${noteProperty.type}`);
-      }
+      // Usar helper type-safe
+      this.updatePropertyValueTypeSafe(noteProperty, newValue);
    }
 
    /**
