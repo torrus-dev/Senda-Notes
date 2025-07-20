@@ -1,10 +1,7 @@
 import { DateTime } from "luxon";
 import type { NoteMetadata, NoteStats } from "@projectTypes/core/noteTypes";
 import { sanitizeTitle } from "@utils/noteUtils";
-import {
-   type NoteProperty,
-   NotePropertyFactory,
-} from "@domain/entities/NoteProperty";
+import { NoteProperty } from "@domain/entities/NoteProperty";
 
 /**
  * Entidad rica Note con lógica de negocio (actualizada para usar NoteProperty)
@@ -386,7 +383,7 @@ export class Note {
             aliases: data.metadata.aliases || [],
          },
          properties: (data.properties || []).map((p: any) =>
-            NotePropertyFactory.fromPlainObject(p),
+            NoteProperty.fromPlainObject(p),
          ),
       });
    }

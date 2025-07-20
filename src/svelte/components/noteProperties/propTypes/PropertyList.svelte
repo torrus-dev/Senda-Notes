@@ -33,13 +33,13 @@
 <script lang="ts">
 import { XIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
-import type { ListProperty } from "@domain/entities/NoteProperty";
+import type { NoteProperty } from "@domain/entities/NoteProperty";
 
 let {
    property,
    onUpdate,
 }: {
-   property: ListProperty;
+   property: NoteProperty;
    onUpdate: (newValue?: any) => void;
 } = $props();
 

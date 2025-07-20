@@ -3,7 +3,7 @@
 
 <script lang="ts">
 import { SlidersHorizontalIcon, PlusIcon, ShapesIcon } from "lucide-svelte";
-import type { NoteProperty } from "@domain/entities/NoteProperty";
+import { NoteProperty } from "@domain/entities/NoteProperty";
 import { notePropertyController } from "@controllers/property/notePropertyController.svelte";
 
 import Button from "@components/utils/Button.svelte";

@@ -1,14 +1,14 @@
 <script lang="ts">
-import type { NumberProperty } from "@domain/entities/NoteProperty";
+import type { NoteProperty } from "@domain/entities/NoteProperty";
 
 let {
    property,
    onUpdate,
 }: {
-   property: NumberProperty;
+   property: NoteProperty;
    onUpdate: (newValue: any) => void;
 } = $props();
-let newValue: NumberProperty["value"] = $state(property.value);
+let newValue: NoteProperty["value"] = $state(property.value);
 </script>
 
 <input
