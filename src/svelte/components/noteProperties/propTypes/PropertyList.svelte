@@ -40,8 +40,11 @@ let {
    onUpdate,
 }: {
    property: NoteProperty;
-   onUpdate: (newValue?: any) => void;
+   onUpdate: (newValue: string[]) => void; // ✅ Tipo específico para listas
 } = $props();
+
+// ✅ Variable derivada con type assertion para mayor claridad
+let listValue = $derived(property.value as string[]);
 
 // Estado de referencia para el input y el contenedor
 let inputElement: HTMLInputElement | undefined = $state(undefined);
@@ -51,7 +54,7 @@ let focusedItemIndex: number | null = $state(null);
 
 // Función para eliminar un elemento de la lista
 function removeListItem(index: number) {
-   const newValue = [...property.value];
+   const newValue = [...listValue]; // ✅ Usar listValue tipada
    newValue.splice(index, 1);
    onUpdate(newValue);
 
@@ -59,7 +62,8 @@ function removeListItem(index: number) {
    if (focusedItemIndex !== null) {
       if (index === focusedItemIndex) {
          // Si eliminamos el item enfocado, movemos el foco
-         if (index < property.value.length - 1) {
+         if (index < listValue.length - 1) {
+            // ✅ Usar listValue
             // Mantener el mismo índice si hay más elementos a la derecha
             focusedItemIndex = index;
          } else if (index > 0) {
@@ -86,29 +90,29 @@ function handleListInput(event: Event) {
          const keyEvent = event as KeyboardEvent;
 
          if (keyEvent.key === "Enter" && inputValue) {
-            const newValue = [...property.value, inputValue];
+            const newValue = [...listValue, inputValue]; // ✅ Usar listValue
             onUpdate(newValue);
             inputElement.value = "";
          } else if (
             keyEvent.key === "Backspace" &&
             !inputValue &&
-            property.value.length > 0
+            listValue.length > 0 // ✅ Usar listValue
          ) {
             if (focusedItemIndex === null) {
-               focusedItemIndex = property.value.length - 1;
+               focusedItemIndex = listValue.length - 1; // ✅ Usar listValue
                keyEvent.preventDefault();
             }
          } else if (
             keyEvent.key === "ArrowLeft" &&
             inputElement.selectionStart === 0 &&
-            property.value.length > 0
+            listValue.length > 0 // ✅ Usar listValue
          ) {
-            focusedItemIndex = property.value.length - 1;
+            focusedItemIndex = listValue.length - 1; // ✅ Usar listValue
             keyEvent.preventDefault();
          }
       } else if (event.type === "blur" && inputValue) {
          // Añadir elemento al perder el foco si hay texto
-         const newValue = [...property.value, inputValue];
+         const newValue = [...listValue, inputValue]; // ✅ Usar listValue
          onUpdate(newValue);
          inputElement.value = "";
       }
@@ -121,7 +125,8 @@ function handleItemKeyDown(event: KeyboardEvent, index: number) {
       removeListItem(index);
       event.preventDefault();
    } else if (event.key === "ArrowRight") {
-      if (index === property.value.length - 1) {
+      if (index === listValue.length - 1) {
+         // ✅ Usar listValue
          focusedItemIndex = null;
          setTimeout(() => inputElement?.focus(), 0);
       } else {
@@ -171,7 +176,8 @@ $effect(() => {
    onfocusout={handleContainerBlur}
    tabindex="-1"
    bind:this={containerElement}>
-   {#each property.value as item, index}
+   {#each listValue as item, index}
+      <!-- ✅ Usar listValue tipada -->
       <div
          class="item-badge rounded-selector bg-base-300 focus:ring-primary-500 text-muted-content inline-flex items-center px-2 py-0.5 text-sm focus:ring-1 focus:outline-none"
          tabindex="0"
@@ -198,7 +204,7 @@ $effect(() => {
          name={property.name}
          type="text"
          class="flexible-input border-0 bg-transparent focus:ring-0 focus:outline-none"
-         placeholder={property.value.length === 0 ? "Type to add items..." : ""}
+         placeholder={listValue.length === 0 ? "Type to add items..." : ""}
          onkeydown={handleListInput}
          onblur={handleListInput}
          bind:this={inputElement} />

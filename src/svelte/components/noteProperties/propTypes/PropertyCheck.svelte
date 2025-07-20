@@ -4,8 +4,10 @@ import type { NoteProperty } from "@domain/entities/NoteProperty";
 let {
    property,
    onUpdate,
-}: { property: NoteProperty; onUpdate: (newValue: any) => void } = $props();
-let newValue = $state(property.value);
+}: { property: NoteProperty; onUpdate: (newValue: boolean) => void } = $props();
+
+// Type assertion - sabemos que es boolean porque este componente solo se usa para check
+let newValue = $state(property.value as boolean);
 </script>
 
 <input

@@ -1,4 +1,6 @@
 <script lang="ts">
+import { notePropertyController } from "@controllers/property/notePropertyController.svelte";
+
 import type {
    NoteProperty,
    PropertyValue,
@@ -16,7 +18,11 @@ let { noteId, property }: { noteId: Note["id"]; property: NoteProperty } =
    $props();
 
 function handlePropertyUpdateValue(newValue: PropertyValue) {
-   property.updateValue(newValue);
+   notePropertyController.updateNotePropertyValue(
+      noteId,
+      property.id,
+      newValue,
+   );
 }
 </script>
 

@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 /**
  * Tipos de propiedades disponibles
  */
@@ -12,7 +14,13 @@ export type PropertyType =
 /**
  * Valores que pueden tener las propiedades
  */
-export type PropertyValue = string | number | string[] | boolean;
+export type PropertyValue =
+   | string
+   | number
+   | string[]
+   | boolean
+   | Date
+   | DateTime;
 
 /**
  * Entidad NoteProperty simplificada con discriminated union
@@ -75,7 +83,7 @@ export class NoteProperty {
    }
 
    /**
-    * Vinculación con propiedades globales
+    * Vinculación con propiedades globales il
     */
    linkToGlobal(globalPropertyId: string): void {
       this.globalPropertyId = globalPropertyId;
@@ -98,7 +106,7 @@ export class NoteProperty {
     */
    syncWithGlobal(globalName: string, globalType: PropertyType): void {
       this.name = globalName;
-      // Opcionalmente actualizar tipo (puede generar advertencia en UI si no coincide)
+      this.type = globalType;
    }
 
    hasTypeMatch(expectedType: PropertyType): boolean {

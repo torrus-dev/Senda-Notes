@@ -6,7 +6,7 @@ import { settingsController } from "@controllers/application/settingsController.
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 
 import Metadata from "@components/note/widgets/Metadata.svelte";
-import PropertyList from "@components/note/widgets/PropertyList.svelte";
+import PropertyList from "@components/note/widgets/Properties.svelte";
 import ChildNotes from "@components/note/widgets/ChildNotes.svelte";
 import Editor from "@components/note/editor/Editor.svelte";
 import NoteTitleEditor from "@components/note/widgets/NoteTitleEditor.svelte";

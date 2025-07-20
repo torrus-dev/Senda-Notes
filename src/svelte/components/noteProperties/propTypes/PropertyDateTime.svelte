@@ -1,15 +1,16 @@
 <script lang="ts">
 import type { NoteProperty } from "@domain/entities/NoteProperty";
+import { DateTime } from "luxon";
 
 let {
    property,
    onUpdate,
 }: {
    property: NoteProperty;
-   onUpdate: (newValue: any) => void;
+   onUpdate: (newValue: DateTime) => void;
 } = $props();
 
-let newValue: NoteProperty["value"] = $state(property.value);
+let newValue = $state(property.value as DateTime);
 </script>
 
 <input

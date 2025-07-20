@@ -14,6 +14,10 @@ class ModalController {
    });
 
    open(title: string, modalContent: Component | undefined = undefined) {
+      if (!title.trim()) {
+         console.warn("Modal title cannot be empty");
+         return;
+      }
       this.data.isOpen = true;
       this.data.title = title;
       this.data.content = modalContent;

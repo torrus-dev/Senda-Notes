@@ -6,10 +6,10 @@ let {
    onUpdate,
 }: {
    property: NoteProperty;
-   onUpdate: (newValue: any) => void;
+   onUpdate: (newValue: Date) => void;
 } = $props();
 
-let newValue: NoteProperty["value"] = $state(property.value);
+let newValue = $state(property.value as Date);
 </script>
 
 <input
