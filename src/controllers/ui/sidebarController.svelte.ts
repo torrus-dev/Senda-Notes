@@ -1,34 +1,34 @@
+import { SidebarRepository } from "@infrastructure/repositories/ui/SidebarRepository";
 import { startupManager } from "@infrastructure/startup/startupManager.svelte";
-import { SidebarModel } from "@model/ui/sidebarModel.svelte";
 
 class SidebarController {
-   private get sidebarModel(): SidebarModel {
-      return startupManager.getModel("sidebarModel");
+   private get sidebarRepository(): SidebarRepository {
+      return startupManager.getService("sidebarRepository");
    }
    set width(newWidth: number) {
       if (typeof newWidth === "number") {
-         this.sidebarModel.data.width = newWidth;
+         this.sidebarRepository.width = newWidth;
       }
    }
 
-   get width(): number | null {
-      return this.sidebarModel.data.width;
+   get width(): number | undefined {
+      return this.sidebarRepository.width;
    }
 
    toggle() {
-      this.sidebarModel.data.isOpen = !this.sidebarModel.data.isOpen;
+      this.sidebarRepository.isOpen = !this.sidebarRepository.isOpen;
    }
 
    close() {
-      this.sidebarModel.data.isOpen = false;
+      this.sidebarRepository.isOpen = false;
    }
 
    open() {
-      this.sidebarModel.data.isOpen = true;
+      this.sidebarRepository.isOpen = true;
    }
 
    get isOpen() {
-      return this.sidebarModel.data.isOpen;
+      return this.sidebarRepository.isOpen;
    }
 }
 

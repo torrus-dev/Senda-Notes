@@ -7,13 +7,14 @@ class UiModeController {
       "(prefers-color-scheme: dark)",
    );
 
-   uiMode: UiModeType = $derived(
+   configuredMode: UiModeType = $derived(
       startupManager.isReady ? settingsController.get("uiMode") : "system",
    );
 
    isDarkMode: boolean = $derived(
-      this.uiMode === "dark" ||
-         (this.uiMode === "system" && this.prefersDarkColorScheme.matches),
+      this.configuredMode === "dark" ||
+         (this.configuredMode === "system" &&
+            this.prefersDarkColorScheme.matches),
    );
 
    constructor() {
@@ -23,40 +24,40 @@ class UiModeController {
       $effect.root(() => {
          $effect(() => {
             // Hacer que el effect sea reactivo al valor de uiMode
-            if (startupManager.isReady && this.uiMode) {
+            if (startupManager.isReady && this.configuredMode) {
                this.applyThemeToHTMLDocument();
             }
          });
 
          // Effect para cambios en preferencia del sistema cuando el valor es "system"
          $effect(() => {
-            if (this.uiMode !== "system") return;
+            if (this.configuredMode === "system") {
+               const handleSystemThemeChange = (event: MediaQueryListEvent) => {
+                  this.applyThemeToHTMLDocument();
+               };
 
-            const handleSystemThemeChange = (event: MediaQueryListEvent) => {
-               this.applyThemeToHTMLDocument();
-            };
-
-            this.prefersDarkColorScheme.addEventListener(
-               "change",
-               handleSystemThemeChange,
-            );
-
-            return () => {
-               this.prefersDarkColorScheme.removeEventListener(
+               this.prefersDarkColorScheme.addEventListener(
                   "change",
                   handleSystemThemeChange,
                );
-            };
+
+               return () => {
+                  this.prefersDarkColorScheme.removeEventListener(
+                     "change",
+                     handleSystemThemeChange,
+                  );
+               };
+            }
          });
       });
    }
 
    applyThemeToHTMLDocument() {
       let newUiMode: Exclude<UiModeType, "system">;
-      if (this.uiMode === "system") {
+      if (this.configuredMode === "system") {
          newUiMode = this.prefersDarkColorScheme.matches ? "dark" : "light";
       } else {
-         newUiMode = this.uiMode;
+         newUiMode = this.configuredMode;
       }
       document.documentElement.dataset.uiMode = newUiMode;
    }

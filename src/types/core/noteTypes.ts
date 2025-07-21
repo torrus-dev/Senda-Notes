@@ -1,4 +1,4 @@
-import type { NoteProperty } from "@projectTypes/core/propertyTypes";
+import type { NoteProperty } from "@domain/entities/NoteProperty";
 import type { DateTime } from "luxon";
 
 export interface NoteReference {

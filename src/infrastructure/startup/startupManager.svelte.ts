@@ -1,13 +1,13 @@
 import { SettingsModel } from "@model/application/settingsModel.svelte";
 import { WorkspaceModel } from "@model/navigation/workspaceModel.svelte";
 import { CollapsibleModel } from "@model/ui/collapsibleModel.svelte";
-import { SidebarModel } from "@model/ui/sidebarModel.svelte";
 
 // Nueva arquitectura
-import { NoteRepository } from "@infrastructure/repositories/NoteRepository";
-import { NoteQueryRepository } from "@infrastructure/repositories/NoteQueryRepository";
-import { FavoritesRepository } from "@infrastructure/repositories/FavoritesRepository";
-import { GlobalPropertyRepository } from "@infrastructure/repositories/GlobalPropertyRepository";
+import { NoteRepository } from "@infrastructure/repositories/core/NoteRepository";
+import { NoteQueryRepository } from "@infrastructure/repositories/core/NoteQueryRepository";
+import { FavoritesRepository } from "@infrastructure/repositories/core/FavoritesRepository";
+import { GlobalPropertyRepository } from "@infrastructure/repositories/core/GlobalPropertyRepository";
+import { SidebarRepository } from "@infrastructure/repositories/ui/SidebarRepository";
 
 import { NoteUseCases } from "@application/usecases/NoteUseCases";
 import { FavoritesUseCases } from "@application/usecases/FavoritesUseCases";
@@ -22,7 +22,6 @@ interface Models {
    settingsModel: SettingsModel;
    workspaceModel: WorkspaceModel;
    collapsibleModel: CollapsibleModel;
-   sidebarModel: SidebarModel;
 }
 
 // Tipos para los servicios
@@ -38,6 +37,7 @@ interface Services {
    globalPropertyRepository: GlobalPropertyRepository;
    propertyService: PropertyService;
    propertyUseCases: PropertyUseCases;
+   sidebarRepository: SidebarRepository;
 }
 
 interface StartupStep {
@@ -99,11 +99,11 @@ class StartupManager {
          {
             name: "Inicializando servicios de dominio...",
             initialize: async () => {
-               // Servicios de dominio para notas
                this.services.noteTreeService = new NoteTreeService();
                this.services.notePathService = new NotePathService();
                this.services.propertyService = new PropertyService();
                this.services.searchService = new SearchService();
+               this.services.sidebarRepository = new SidebarRepository();
             },
          },
          {
@@ -159,13 +159,6 @@ class StartupManager {
             initialize: async () => {
                this.models.collapsibleModel = new CollapsibleModel();
                await this.models.collapsibleModel.initialize();
-            },
-         },
-         {
-            name: "Cargando sidebar...",
-            initialize: async () => {
-               this.models.sidebarModel = new SidebarModel();
-               await this.models.sidebarModel.initialize();
             },
          },
       ];

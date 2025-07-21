@@ -1,8 +1,9 @@
+import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 import { normalizeText } from "@utils/searchUtils";
 import type { SearchResult } from "@projectTypes/ui/uiTypes";
-import type { Note } from "@domain/entities/Note";
+import type { Note } from "@projectTypes/core/noteTypes";
 
-export interface SearchContext {
+interface SearchContext {
    term: string;
    normalizedTerm: string;
    isHierarchical: boolean;
@@ -11,53 +12,24 @@ export interface SearchContext {
    searchFragment: string;
 }
 
-export interface SearchOptions {
-   limit?: number;
-   includeContent?: boolean;
-   caseSensitive?: boolean;
-}
-
-export interface NoteSearchData {
-   note: Note;
-   path: string;
-}
-
 /**
- * Servicio de búsqueda - Lógica pura sin dependencias externas
- * Maneja todos los algoritmos de búsqueda, parsing y ordenamiento
+ * Servicio de búsqueda de notas
+ * Contiene toda la lógica pura de búsqueda sin estado reactivo
  */
 export class SearchService {
-   // ============================================================================
-   // MAIN SEARCH METHOD - Método principal de búsqueda
-   // ============================================================================
-
-   /**
-    * Realiza búsqueda en las notas proporcionadas
-    */
-   searchNotes(
-      searchTerm: string,
-      notesData: NoteSearchData[],
-      options: SearchOptions = {},
-   ): SearchResult[] {
-      const { limit = -1, includeContent = false } = options;
-
+   // === FUNCIÓN PRINCIPAL DE BÚSQUEDA ===
+   searchNotes(searchTerm: string, limit: number = -1): SearchResult[] {
       const context = this.parseSearchTerm(searchTerm);
       if (!context) return [];
 
       const results = context.isHierarchical
-         ? this.performHierarchicalSearch(context, notesData, includeContent)
-         : this.performSimpleSearch(context, notesData, includeContent);
+         ? this.performHierarchicalSearch(context)
+         : this.performSimpleSearch(context);
 
       return this.limitResults(this.sortResults(results), limit);
    }
 
-   // ============================================================================
-   // SEARCH TERM PARSING - Parseo de términos de búsqueda
-   // ============================================================================
-
-   /**
-    * Parsea el término de búsqueda y extrae contexto
-    */
+   // === PARSEO DE TÉRMINOS DE BÚSQUEDA ===
    parseSearchTerm(searchTerm: string): SearchContext | null {
       const term = searchTerm.trim();
       if (!term) return null;
@@ -87,124 +59,71 @@ export class SearchService {
       };
    }
 
-   // ============================================================================
-   // SEARCH ALGORITHMS - Algoritmos de búsqueda
-   // ============================================================================
-
-   /**
-    * Búsqueda simple en todas las notas
-    */
-   private performSimpleSearch(
-      context: SearchContext,
-      notesData: NoteSearchData[],
-      includeContent: boolean,
-   ): SearchResult[] {
+   // === TIPOS DE BÚSQUEDA ===
+   private performSimpleSearch(context: SearchContext): SearchResult[] {
       const results: SearchResult[] = [];
+      const allNotes = noteQueryController.getAllNotes() || [];
 
-      for (const { note, path } of notesData) {
+      for (const note of allNotes) {
          // Buscar en título
-         if (this.searchInText(note.title, context.normalizedTerm)) {
-            results.push(
-               this.createSearchResult(note, path, "title", note.title),
-            );
+         const titleMatch = this.searchInText(
+            note.title,
+            context.normalizedTerm,
+         );
+         if (titleMatch) {
+            results.push(this.createSearchResult(note, "title", note.title));
             continue;
          }
 
          // Buscar en aliases
          const aliasMatch = this.searchInAliases(note, context.normalizedTerm);
          if (aliasMatch) {
-            results.push(
-               this.createSearchResult(note, path, "alias", aliasMatch),
-            );
-            continue;
-         }
-
-         // Buscar en contenido si está habilitado
-         if (
-            includeContent &&
-            this.searchInText(note.content, context.normalizedTerm)
-         ) {
-            const contentPreview = this.extractContentPreview(
-               note.content,
-               context.normalizedTerm,
-            );
-            results.push(
-               this.createSearchResult(note, path, "content", contentPreview),
-            );
+            results.push(this.createSearchResult(note, "alias", aliasMatch));
          }
       }
 
       return results;
    }
 
-   /**
-    * Búsqueda jerárquica considerando rutas
-    */
-   private performHierarchicalSearch(
-      context: SearchContext,
-      notesData: NoteSearchData[],
-      includeContent: boolean,
-   ): SearchResult[] {
+   private performHierarchicalSearch(context: SearchContext): SearchResult[] {
       const results: SearchResult[] = [];
+      const allNotes = noteQueryController.getAllNotes() || [];
 
-      for (const { note, path } of notesData) {
-         const normalizedPath = normalizeText(path);
+      for (const note of allNotes) {
+         const notePath = this.getNormalizedNotePath(note.id);
 
          // Verificar si la nota está en la ruta correcta
-         if (!this.isNoteInTargetPath(normalizedPath, context)) {
+         if (!this.isNoteInTargetPath(notePath, context)) {
             continue;
          }
 
          // Para búsqueda exacta de directorio, agregar todas las notas en esa ruta
          if (context.isExactPath) {
-            results.push(
-               this.createSearchResult(note, path, "title", note.title),
-            );
+            results.push(this.createSearchResult(note, "title", note.title));
             continue;
          }
 
          // Buscar en título
-         if (this.searchInText(note.title, context.searchFragment)) {
-            results.push(
-               this.createSearchResult(note, path, "title", note.title),
-            );
+         const titleMatch = this.searchInText(
+            note.title,
+            context.searchFragment,
+         );
+         if (titleMatch) {
+            results.push(this.createSearchResult(note, "title", note.title));
             continue;
          }
 
          // Buscar en aliases
          const aliasMatch = this.searchInAliases(note, context.searchFragment);
          if (aliasMatch) {
-            results.push(
-               this.createSearchResult(note, path, "alias", aliasMatch),
-            );
-            continue;
-         }
-
-         // Buscar en contenido si está habilitado
-         if (
-            includeContent &&
-            this.searchInText(note.content, context.searchFragment)
-         ) {
-            const contentPreview = this.extractContentPreview(
-               note.content,
-               context.searchFragment,
-            );
-            results.push(
-               this.createSearchResult(note, path, "content", contentPreview),
-            );
+            results.push(this.createSearchResult(note, "alias", aliasMatch));
          }
       }
 
       return results;
    }
 
-   // ============================================================================
-   // SEARCH UTILITIES - Utilidades de búsqueda
-   // ============================================================================
-
-   /**
-    * Verifica si una nota está en la ruta objetivo
-    */
+   // === MÉTODOS AUXILIARES DE BÚSQUEDA ===
    private isNoteInTargetPath(
       notePath: string,
       context: SearchContext,
@@ -224,100 +143,54 @@ export class SearchService {
       );
    }
 
-   /**
-    * Busca texto en una cadena normalizada
-    */
    private searchInText(text: string, searchTerm: string): boolean {
       return normalizeText(text).includes(searchTerm);
    }
 
-   /**
-    * Busca en los aliases de una nota
-    */
    private searchInAliases(note: Note, searchTerm: string): string | null {
       const aliases = note.metadata?.aliases || [];
-
       for (const alias of aliases) {
          if (this.searchInText(alias, searchTerm)) {
             return alias;
          }
       }
-
       return null;
    }
 
-   /**
-    * Extrae preview del contenido alrededor del término encontrado
-    */
-   private extractContentPreview(
-      content: string,
-      searchTerm: string,
-      maxLength: number = 100,
-   ): string {
-      const normalizedContent = normalizeText(content);
-      const termIndex = normalizedContent.indexOf(searchTerm);
-
-      if (termIndex === -1) return content.substring(0, maxLength) + "...";
-
-      const start = Math.max(0, termIndex - 30);
-      const end = Math.min(content.length, termIndex + searchTerm.length + 50);
-
-      let preview = content.substring(start, end);
-
-      if (start > 0) preview = "..." + preview;
-      if (end < content.length) preview = preview + "...";
-
-      return preview;
+   private getNormalizedNotePath(noteId: string): string {
+      return normalizeText(noteQueryController.getNotePathAsString(noteId));
    }
 
-   // ============================================================================
-   // RESULT PROCESSING - Procesamiento de resultados
-   // ============================================================================
-
-   /**
-    * Crea un resultado de búsqueda
-    */
+   // === CREACIÓN Y ORDENAMIENTO DE RESULTADOS ===
    private createSearchResult(
       note: Note,
-      path: string,
-      matchType: "title" | "alias" | "content",
+      matchType: "title" | "alias",
       matchedText: string,
    ): SearchResult {
       return {
          note,
          matchType,
          matchedText,
-         path,
+         path: noteQueryController.getNotePathAsString(note.id),
       };
    }
 
-   /**
-    * Ordena los resultados por relevancia
-    */
    private sortResults(results: SearchResult[]): SearchResult[] {
       return [...results].sort((a, b) => {
-         // Prioridad 1: Tipo de coincidencia (título > alias > contenido)
-         const typeOrder = { title: 0, alias: 1, content: 2 };
-         const typeDiff = typeOrder[a.matchType] - typeOrder[b.matchType];
-         if (typeDiff !== 0) return typeDiff;
+         // Prioridad 1: Coincidencias de título sobre alias
+         if (a.matchType === "title" && b.matchType === "alias") return -1;
+         if (a.matchType === "alias" && b.matchType === "title") return 1;
 
          // Prioridad 2: Profundidad de ruta (menos profunda primero)
          const aDepth = a.path.split("/").length;
          const bDepth = b.path.split("/").length;
          if (aDepth !== bDepth) return aDepth - bDepth;
 
-         // Prioridad 3: Longitud del texto coincidente (más corto = más relevante)
-         const lengthDiff = a.matchedText.length - b.matchedText.length;
-         if (lengthDiff !== 0) return lengthDiff;
-
-         // Prioridad 4: Orden alfabético
+         // Prioridad 3: Orden alfabético
          return a.matchedText.localeCompare(b.matchedText);
       });
    }
 
-   /**
-    * Limita el número de resultados
-    */
    private limitResults(
       results: SearchResult[],
       limit: number,
@@ -325,80 +198,5 @@ export class SearchService {
       if (limit === -1) return results;
       if (limit <= 0) return [];
       return results.slice(0, limit);
-   }
-
-   // ============================================================================
-   // UTILITY METHODS - Métodos de utilidad pública
-   // ============================================================================
-
-   /**
-    * Valida si un término de búsqueda es válido
-    */
-   isValidSearchTerm(searchTerm: string): boolean {
-      return searchTerm.trim().length > 0;
-   }
-
-   /**
-    * Extrae sugerencias de búsqueda basadas en el término parcial
-    */
-   getSearchSuggestions(
-      partialTerm: string,
-      notesData: NoteSearchData[],
-      maxSuggestions: number = 5,
-   ): string[] {
-      if (!partialTerm.trim()) return [];
-
-      const normalizedPartial = normalizeText(partialTerm);
-      const suggestions = new Set<string>();
-
-      for (const { note } of notesData) {
-         // Sugerencias de títulos
-         const normalizedTitle = normalizeText(note.title);
-         if (normalizedTitle.startsWith(normalizedPartial)) {
-            suggestions.add(note.title);
-         }
-
-         // Sugerencias de aliases
-         const aliases = note.metadata?.aliases || [];
-         for (const alias of aliases) {
-            const normalizedAlias = normalizeText(alias);
-            if (normalizedAlias.startsWith(normalizedPartial)) {
-               suggestions.add(alias);
-            }
-         }
-
-         if (suggestions.size >= maxSuggestions) break;
-      }
-
-      return Array.from(suggestions).slice(0, maxSuggestions);
-   }
-
-   /**
-    * Resalta el término de búsqueda en un texto
-    */
-   highlightSearchTerm(text: string, searchTerm: string): string {
-      if (!searchTerm.trim()) return text;
-
-      const normalizedText = normalizeText(text);
-      const normalizedTerm = normalizeText(searchTerm);
-      const termIndex = normalizedText.indexOf(normalizedTerm);
-
-      if (termIndex === -1) return text;
-
-      const originalTerm = text.substring(
-         termIndex,
-         termIndex + searchTerm.length,
-      );
-      return text.replace(
-         new RegExp(this.escapeRegExp(originalTerm), "gi"),
-         `<mark>$&</mark>`,
-      );
-   }
-
-   /**
-    * Escapa caracteres especiales para regex
-    */
-   private escapeRegExp(string: string): string {
-      return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
    }
 }
