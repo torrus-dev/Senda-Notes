@@ -2,7 +2,7 @@ import { Note } from "@domain/entities/Note";
 import { NotePathService } from "@domain/services/NotePathService";
 import { NoteTreeService } from "@domain/services/NoteTreeService";
 import { NoteRepository } from "@infrastructure/repositories/core/NoteRepository";
-import { NoteQueryRepository } from "@infrastructure/repositories/NoteQueryRepository";
+import { NoteQueryRepository } from "@infrastructure/repositories/core/NoteQueryRepository";
 import { FavoritesUseCases } from "@application/usecases/FavoritesUseCases";
 import { generateUniqueTitle } from "@utils/noteUtils";
 

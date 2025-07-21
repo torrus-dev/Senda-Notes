@@ -1,4 +1,3 @@
-import { SettingsModel } from "@model/application/settingsModel.svelte";
 import { WorkspaceModel } from "@model/navigation/workspaceModel.svelte";
 import { CollapsibleModel } from "@model/ui/collapsibleModel.svelte";
 
@@ -16,10 +15,10 @@ import { NotePathService } from "@domain/services/NotePathService";
 import { PropertyService } from "@domain/services/PropertyService";
 import { PropertyUseCases } from "@application/usecases/PropertyUseCases";
 import { SearchService } from "@domain/services/SearchService";
+import { SettingsRepository } from "@infrastructure/repositories/core/SettingsRepository";
 
 // Tipos para los modelos (ya no incluye globalPropertiesModel)
 interface Models {
-   settingsModel: SettingsModel;
    workspaceModel: WorkspaceModel;
    collapsibleModel: CollapsibleModel;
 }
@@ -30,6 +29,7 @@ interface Services {
    noteQueryRepository: NoteQueryRepository;
    favoritesRepository: FavoritesRepository;
    sidebarRepository: SidebarRepository;
+   settingsRepository: SettingsRepository;
    noteUseCases: NoteUseCases;
    searchService: SearchService;
    favoritesUseCases: FavoritesUseCases;
@@ -58,8 +58,8 @@ class StartupManager {
          {
             name: "Inicializando configuración...",
             initialize: async () => {
-               this.models.settingsModel = new SettingsModel();
-               await this.models.settingsModel.initialize();
+               this.services.settingsRepository = new SettingsRepository();
+               await this.services.settingsRepository.initialize();
             },
          },
          {
