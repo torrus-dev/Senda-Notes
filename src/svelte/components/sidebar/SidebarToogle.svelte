@@ -11,15 +11,19 @@ let isSidebarLocked: boolean = $derived(
    settingsController.get("sidebarIsLocked"),
 );
 let isMobile = $derived(screenSizeController.isMobile);
+
+function toggleSidebar() {
+   sidebarController.toggle();
+}
 </script>
 
 {#if !isSidebarLocked || isMobile}
    {#if isSidebarOpen}
-      <Button onclick={sidebarController.toggle} title="Close sidebar">
+      <Button onclick={toggleSidebar} title="Close sidebar">
          <PanelLeftCloseIcon size="1.125em" />
       </Button>
    {:else}
-      <Button onclick={sidebarController.toggle} title="Open sidebar">
+      <Button onclick={toggleSidebar} title="Open sidebar">
          <PanelLeftOpenIcon size="1.125em" />
       </Button>
    {/if}

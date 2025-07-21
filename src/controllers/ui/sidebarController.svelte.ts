@@ -3,7 +3,6 @@ import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 
 class SidebarController {
    private get sidebarRepository(): SidebarRepository {
-      console.log(startupManager.getService("sidebarRepository"));
       return startupManager.getService("sidebarRepository");
    }
 

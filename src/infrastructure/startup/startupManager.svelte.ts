@@ -97,13 +97,19 @@ class StartupManager {
             },
          },
          {
+            name: "Inicializando repositorios de sidebar...",
+            initialize: async () => {
+               this.services.sidebarRepository = new SidebarRepository();
+               await this.services.sidebarRepository.initialize();
+            },
+         },
+         {
             name: "Inicializando servicios de dominio...",
             initialize: async () => {
                this.services.noteTreeService = new NoteTreeService();
                this.services.notePathService = new NotePathService();
                this.services.propertyService = new PropertyService();
                this.services.searchService = new SearchService();
-               this.services.sidebarRepository = new SidebarRepository();
             },
          },
          {
