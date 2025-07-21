@@ -29,6 +29,7 @@ interface Services {
    noteRepository: NoteRepository;
    noteQueryRepository: NoteQueryRepository;
    favoritesRepository: FavoritesRepository;
+   sidebarRepository: SidebarRepository;
    noteUseCases: NoteUseCases;
    searchService: SearchService;
    favoritesUseCases: FavoritesUseCases;
@@ -37,7 +38,6 @@ interface Services {
    globalPropertyRepository: GlobalPropertyRepository;
    propertyService: PropertyService;
    propertyUseCases: PropertyUseCases;
-   sidebarRepository: SidebarRepository;
 }
 
 interface StartupStep {

@@ -2,7 +2,7 @@ import { FavoritesRepository } from "@infrastructure/repositories/core/Favorites
 import { Note } from "@domain/entities/Note";
 import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 import { notificationController } from "@controllers/application/notificationController.svelte";
-import { NoteQueryRepository } from "@infrastructure/repositories/NoteQueryRepository";
+import { NoteQueryRepository } from "@infrastructure/repositories/core/NoteQueryRepository";
 
 /**
  * Controlador delgado para favoritos

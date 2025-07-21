@@ -3,8 +3,10 @@ import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 
 class SidebarController {
    private get sidebarRepository(): SidebarRepository {
+      console.log(startupManager.getService("sidebarRepository"));
       return startupManager.getService("sidebarRepository");
    }
+
    set width(newWidth: number) {
       if (typeof newWidth === "number") {
          this.sidebarRepository.width = newWidth;

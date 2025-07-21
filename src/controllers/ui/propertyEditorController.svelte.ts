@@ -52,19 +52,6 @@ class PropertyEditorController {
    isOpen() {
       return this.data.isOpen;
    }
-
-   getCurrentNoteId() {
-      return this.data.noteId;
-   }
-
-   getCurrentPropertyId() {
-      return this.data.propertyId;
-   }
-
-   // Getter para acceso directo al estado
-   get state() {
-      return this.data;
-   }
 }
 
 export const propertyEditorController = $state(new PropertyEditorController());
