@@ -13,7 +13,7 @@ import { notePropertyController } from "@controllers/property/NotePropertyContro
 import PropertyIcon from "@components/noteProperties/PropertyIcon.svelte";
 import Button from "@components/utils/Button.svelte";
 import PropertyNameInput from "@components/noteProperties/PropertyNameInput.svelte";
-import { propertyEditorController } from "@controllers/ui/propertyEditorController.svelte";
+import { propertyEditorController } from "@controllers/ui/PropertyEditorController.svelte";
 
 let {
    noteId,

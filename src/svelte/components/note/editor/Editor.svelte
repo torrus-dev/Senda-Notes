@@ -11,8 +11,8 @@ import Highlight from "@tiptap/extension-highlight";
 import Underline from "@tiptap/extension-underline";
 
 import { noteController } from "@controllers/notes/NoteController.svelte";
-import { focusController } from "@controllers/ui/focusController.svelte";
-import { floatingMenuController } from "@controllers/menu/floatingMenuController.svelte.js";
+import { focusController } from "@controllers/ui/FocusController.svelte";
+import { floatingMenuController } from "@controllers/menu/FloatingMenuController.svelte.js";
 import { screenSizeController } from "@controllers/application/ScreenSizeController.svelte";
 import { CleanPasteExtension } from "@lib/editorExtensions/cleanPasteExtension";
 
@@ -22,7 +22,7 @@ import Toolbar from "@components/note/editor/Toolbar.svelte";
 import type { Coordinates } from "@projectTypes/ui/contextMenuTypes";
 import type { NoteStats } from "@projectTypes/core/noteTypes";
 import { FocusTarget } from "@projectTypes/ui/uiTypes";
-import { editorController } from "@controllers/notes/editorController.svelte";
+import { editorController } from "@controllers/notes/EditorController.svelte";
 import { DateTime } from "luxon";
 import { uiModeController } from "@controllers/ui/UIModeController.svelte";
 

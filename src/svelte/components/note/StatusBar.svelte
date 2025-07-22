@@ -1,5 +1,5 @@
 <script lang="ts">
-import { editorController } from "@controllers/notes/editorController.svelte";
+import { editorController } from "@controllers/notes/EditorController.svelte";
 import { workspaceController } from "@controllers/navigation/WorkspaceController.svelte";
 
 let contentSaved = $derived(editorController.contentSaved);

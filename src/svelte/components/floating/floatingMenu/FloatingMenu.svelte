@@ -5,7 +5,7 @@ import type {
    FloatingMenuData,
 } from "@projectTypes/ui/contextMenuTypes";
 
-import { floatingMenuController } from "@controllers/menu/floatingMenuController.svelte";
+import { floatingMenuController } from "@controllers/menu/FloatingMenuController.svelte";
 import { setupKeyboardNavigation } from "@components/floating/floatingMenu/keyboardNavigation";
 
 import {

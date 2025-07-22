@@ -1,4 +1,4 @@
-import { floatingMenuController } from "@controllers/menu/floatingMenuController.svelte";
+import { floatingMenuController } from "@controllers/menu/FloatingMenuController.svelte";
 import type { Coordinates, MenuItem } from "@projectTypes/ui/contextMenuTypes";
 
 function isValidMenuItems(menuItems: MenuItem[] | undefined): boolean {

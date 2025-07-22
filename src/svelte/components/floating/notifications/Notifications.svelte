@@ -1,7 +1,7 @@
 <!-- Notifications.svelte -->
 <script lang="ts">
 import Snackbar from "@components/floating/notifications/Snackbar.svelte";
-import { notificationController } from "@controllers/application/notificationController.svelte";
+import { notificationController } from "@controllers/application/NotificationController.svelte";
 import { fly } from "svelte/transition";
 </script>
 

@@ -18,7 +18,6 @@ export class SidebarRepository extends LocalStorageAdapter<SidebarState> {
    }
 
    get width() {
-      console.log(this.data);
       return this.data.width;
    }
    set width(newValue: SidebarState["width"]) {

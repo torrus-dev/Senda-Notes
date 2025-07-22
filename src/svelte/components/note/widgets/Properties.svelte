@@ -10,7 +10,7 @@ import Button from "@components/utils/Button.svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";
 import Property from "@components/noteProperties/Property.svelte";
 import NewProperty from "@components/noteProperties/NewProperty.svelte";
-import { propertyEditorController } from "@controllers/ui/propertyEditorController.svelte";
+import { propertyEditorController } from "@controllers/ui/PropertyEditorController.svelte";
 
 let { noteId }: { noteId: string } = $props();
 

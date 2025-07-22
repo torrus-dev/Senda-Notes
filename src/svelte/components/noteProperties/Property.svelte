@@ -3,7 +3,7 @@
 
 <script lang="ts">
 import { globalPropertyController } from "@controllers/property/GlobalPropertyController.svelte";
-import { propertyEditorController } from "@controllers/ui/propertyEditorController.svelte";
+import { propertyEditorController } from "@controllers/ui/PropertyEditorController.svelte";
 import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";
 import { NoteProperty } from "@domain/entities/NoteProperty";
 

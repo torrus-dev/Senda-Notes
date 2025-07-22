@@ -1,5 +1,5 @@
 import type { RenderItem } from "@projectTypes/ui/contextMenuTypes";
-import { floatingMenuController } from "@controllers/menu/floatingMenuController.svelte";
+import { floatingMenuController } from "@controllers/menu/FloatingMenuController.svelte";
 
 // Obtiene la lista actual de elementos interactivos según el estado del menú.
 function getCurrentItems(): RenderItem[] {

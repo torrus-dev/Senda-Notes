@@ -12,7 +12,7 @@ import type { MenuItem } from "@projectTypes/ui/contextMenuTypes";
 import { noteController } from "@controllers/notes/NoteController.svelte";
 
 import { workspaceController } from "@controllers/navigation/WorkspaceController.svelte";
-import { focusController } from "@controllers/ui/focusController.svelte";
+import { focusController } from "@controllers/ui/FocusController.svelte";
 import { FocusTarget } from "@projectTypes/ui/uiTypes";
 import { favoritesController } from "@controllers/notes/FavoritesController.svelte";
 

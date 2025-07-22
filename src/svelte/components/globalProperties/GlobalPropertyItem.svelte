@@ -12,7 +12,7 @@ import {
 } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
 import { globalPropertyController } from "@controllers/property/GlobalPropertyController.svelte";
-import { globalConfirmationDialog } from "@controllers/menu/confirmationDialogController.svelte";
+import { globalConfirmationDialog } from "@controllers/menu/ConfirmationDialogController.svelte";
 import GlobalPropertyNameInput from "@components/globalProperties/GlobalPropertyNameInput.svelte";
 import { GlobalProperty } from "@domain/entities/GlobalProperty";
 

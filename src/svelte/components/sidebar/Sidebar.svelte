@@ -10,7 +10,7 @@ import Button from "@components/utils/Button.svelte";
 import ResizableHandler from "@components/sidebar/ResizableHandler.svelte";
 import Favorites from "@components/sidebar/Favorites.svelte";
 import { sidebarController } from "@controllers/ui/SidebarController.svelte";
-import { modalController } from "@controllers/menu/modalController.svelte";
+import { modalController } from "@controllers/menu/ModalController.svelte";
 
 let width = $state(sidebarController.width);
 let isMobile = $derived(screenSizeController.isMobile);

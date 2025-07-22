@@ -1,7 +1,7 @@
 import { FavoritesRepository } from "@infrastructure/repositories/core/FavoritesRepository";
 import { Note } from "@domain/entities/Note";
 import { startupManager } from "@infrastructure/startup/startupManager.svelte";
-import { notificationController } from "@controllers/application/notificationController.svelte";
+import { notificationController } from "@controllers/application/NotificationController.svelte";
 import { NoteQueryRepository } from "@infrastructure/repositories/core/NoteQueryRepository";
 
 /**
