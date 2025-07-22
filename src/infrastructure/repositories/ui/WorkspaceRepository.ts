@@ -46,6 +46,10 @@ export class WorkspaceRepository extends LocalStorageAdapter<WorkspaceData> {
       this.data.tabs = this.data.tabs.filter((tab) => tab.id !== tabId);
    }
 
+   removeMultipleTabs(tabIds: string[]) {
+      this.data.tabs = this.data.tabs.filter((tab) => !tabIds.includes(tab.id));
+   }
+
    clearTabs() {
       this.data.tabs = [];
       this.data.activeTabId = undefined;

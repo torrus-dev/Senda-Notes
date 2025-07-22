@@ -71,6 +71,18 @@ class WorkspaceController {
       }
    }
 
+   openNoteInNewTab(noteId: Note["id"]) {
+      const existingTab = this.workspaceRepository.getTabByNoteId(noteId);
+
+      if (existingTab) {
+         // Si ya está abierta, solo activarla
+         this.activateTab(existingTab.id);
+      } else {
+         // Crear nueva pestaña con la nota
+         this.createTabWithNote(noteId);
+      }
+   }
+
    createEmptyTab() {
       const newTab: Tab = {
          id: this.workspaceService.generateTabId(),
@@ -79,6 +91,8 @@ class WorkspaceController {
       this.workspaceRepository.addTab(newTab);
       this.workspaceRepository.activeTabId = newTab.id;
    }
+
+   // Metodos de cierre de pestaña
 
    closeTab(tabId: Tab["id"]) {
       const nextActiveTabId = this.workspaceService.determineNextActiveTab(
@@ -101,6 +115,41 @@ class WorkspaceController {
          this.workspaceRepository.tabs = [tab];
          this.workspaceRepository.activeTabId = tab.id;
       }
+   }
+
+   closeLeftTabs(tabId: Tab["id"]) {
+      const tabsToClose = this.workspaceService.getTabsToLeft(tabId, this.tabs);
+
+      if (tabsToClose.length === 0) return;
+
+      const tabIdsToClose = tabsToClose.map((tab) => tab.id);
+
+      // Si alguna de las pestañas a cerrar es la activa, cambiar a la pestaña de referencia
+      if (tabIdsToClose.includes(this.activeTabId ?? "")) {
+         this.workspaceRepository.activeTabId = tabId;
+      }
+
+      // Remover todas las pestañas de una vez
+      this.workspaceRepository.removeMultipleTabs(tabIdsToClose);
+   }
+
+   closeRightTabs(tabId: Tab["id"]) {
+      const tabsToClose = this.workspaceService.getTabsToRight(
+         tabId,
+         this.tabs,
+      );
+
+      if (tabsToClose.length === 0) return;
+
+      const tabIdsToClose = tabsToClose.map((tab) => tab.id);
+
+      // Si alguna de las pestañas a cerrar es la activa, cambiar a la pestaña de referencia
+      if (tabIdsToClose.includes(this.activeTabId ?? "")) {
+         this.workspaceRepository.activeTabId = tabId;
+      }
+
+      // Remover todas las pestañas de una vez
+      this.workspaceRepository.removeMultipleTabs(tabIdsToClose);
    }
 
    moveTab(fromIndex: number, toIndex: number) {
@@ -137,6 +186,11 @@ class WorkspaceController {
          this.tabs.length,
       );
       this.activateTab(this.tabs[prevIndex].id);
+   }
+
+   clearActiveTabNote() {
+      if (!this.activeTabId) return;
+      this.workspaceRepository.updateTabNote(this.activeTabId, undefined);
    }
 
    // === Métodos auxiliares privados ===

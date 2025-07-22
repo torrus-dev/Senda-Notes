@@ -94,6 +94,26 @@ export class WorkspaceService {
    }
 
    /**
+    * Determina qué pestañas están a la izquierda de la pestaña dada
+    */
+   getTabsToLeft(tabId: string, tabs: Tab[]): Tab[] {
+      const targetIndex = tabs.findIndex((tab) => tab.id === tabId);
+      if (targetIndex === -1) return [];
+
+      return tabs.slice(0, targetIndex);
+   }
+
+   /**
+    * Determina qué pestañas están a la derecha de la pestaña dada
+    */
+   getTabsToRight(tabId: string, tabs: Tab[]): Tab[] {
+      const targetIndex = tabs.findIndex((tab) => tab.id === tabId);
+      if (targetIndex === -1) return [];
+
+      return tabs.slice(targetIndex + 1);
+   }
+
+   /**
     * Valida si un movimiento de pestaña es válido
     */
    isValidTabMove(

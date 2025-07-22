@@ -29,7 +29,7 @@ let path: { id: string; title: string }[] = $derived(
          <div class="flex items-center">
             <Button
                onclick={() => {
-                  workspaceController.unsetActiveTabNoteReference();
+                  workspaceController.clearActiveTabNote();
                }}
                title="Home">
                <HomeIcon size="1.0625em" />

@@ -25,7 +25,7 @@ let { tab }: { tab: Tab } = $props();
             </Button>
          </li>
          <li>
-            <Button onclick={() => workspaceController.closeTabByTabId(tab.id)}>
+            <Button onclick={() => workspaceController.closeTab(tab.id)}>
                Close Tab
             </Button>
          </li>
