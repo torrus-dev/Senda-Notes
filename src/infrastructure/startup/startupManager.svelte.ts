@@ -18,6 +18,7 @@ import { SearchService } from "@domain/services/SearchService";
 import { PropertyUseCases } from "@application/usecases/PropertyUseCases";
 import { NoteUseCases } from "@application/usecases/NoteUseCases";
 import { FavoritesUseCases } from "@application/usecases/FavoritesUseCases";
+import { WorkspaceService } from "@domain/services/WorkspaceService";
 
 // Tipos para los modelos (ya no incluye globalPropertiesModel)
 interface Models {
@@ -34,6 +35,7 @@ interface Services {
    sidebarRepository: SidebarRepository;
    collapsibleRepository: CollapsibleRepository;
    workspaceRepository: WorkspaceRepository;
+   workspaceService: WorkspaceService;
    noteUseCases: NoteUseCases;
    searchService: SearchService;
    favoritesUseCases: FavoritesUseCases;
@@ -121,6 +123,7 @@ class StartupManager {
                this.services.notePathService = new NotePathService();
                this.services.propertyService = new PropertyService();
                this.services.searchService = new SearchService();
+               this.services.workspaceService = new WorkspaceService();
             },
          },
          {

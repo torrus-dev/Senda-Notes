@@ -36,6 +36,21 @@ class WorkspaceController {
       return this.workspaceRepository.getActiveTab();
    }
 
+   isNoteOpenInTab(noteId: Note["id"]): boolean {
+      return this.findTabIndexByNoteId(noteId) !== -1;
+   }
+
+   findTabIndexByTabId(tabId: string): number {
+      return this.workspaceRepository.tabs.findIndex(
+         (tab: Tab) => tab.id === tabId,
+      );
+   }
+   findTabIndexByNoteId(noteId: Note["id"]): number {
+      return this.workspaceRepository.tabs.findIndex(
+         (tab: Tab) => tab.noteReference?.noteId === noteId,
+      );
+   }
+
    // metodo para cuando hacemos click normal sobre una nota para abrirla, el lo gestiona todo.
    openNote(noteId: Note["id"]) {
       const activeTabId = this.workspaceRepository.activeTabId;
@@ -70,15 +85,14 @@ class WorkspaceController {
    unsetActiveTabNoteReference() {
       const { activeTabId } = this.workspaceRepository;
       if (!activeTabId) return;
-      const tabIndex =
-         this.workspaceRepository.findTabIndexByTabId(activeTabId);
+      const tabIndex = this.findTabIndexByTabId(activeTabId);
       if (tabIndex === -1) return;
 
       this.workspaceRepository.tabs[tabIndex].noteReference = undefined;
    }
    private switchTabNote(noteId: Note["id"], tabId: string) {
       const note = noteQueryController.getNoteById(noteId);
-      const tabIndex = this.workspaceRepository.findTabIndexByTabId(tabId);
+      const tabIndex = this.findTabIndexByTabId(tabId);
       if (!note || tabIndex === -1) return;
       const newReference = createNoteReference(note);
       this.workspaceRepository.tabs[tabIndex].noteReference = newReference;
@@ -113,7 +127,7 @@ class WorkspaceController {
    }
 
    closeTabByTabId(tabId: Tab["id"]) {
-      const tabIndex = this.workspaceRepository.findTabIndexByTabId(tabId);
+      const tabIndex = this.findTabIndexByTabId(tabId);
       if (tabIndex === -1) return;
 
       this.workspaceRepository.tabs.splice(tabIndex, 1);
@@ -131,15 +145,11 @@ class WorkspaceController {
       }
    }
    closeTabByNoteId(noteId: Note["id"]) {
-      const tabIndex = this.workspaceRepository.findTabIndexByNoteId(noteId);
+      const tabIndex = this.findTabIndexByNoteId(noteId);
       if (tabIndex === -1) return;
 
       const tabId = this.workspaceRepository.tabs[tabIndex].id;
       this.closeTabByTabId(tabId);
-   }
-
-   isNoteOpenInTab(noteId: Note["id"]): boolean {
-      return this.workspaceRepository.findTabIndexByNoteId(noteId) !== -1;
    }
 
    // Cerrar todas las pestañas
@@ -186,7 +196,11 @@ class WorkspaceController {
    }
 
    get activeTabIndex(): number | undefined {
-      return this.workspaceRepository.activeTabIndex;
+      const activeTabId = this.workspaceRepository.activeTabId;
+      if (activeTabId) {
+         return this.findTabIndexByTabId(activeTabId);
+      }
+      return undefined;
    }
 
    // Navegación entre pestañas

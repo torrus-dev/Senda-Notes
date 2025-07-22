@@ -40,14 +40,6 @@ export class WorkspaceRepository extends LocalStorageAdapter<WorkspaceData> {
       return this.data.tabs.length > 0;
    }
 
-   get activeTabIndex(): number | undefined {
-      const activeTabId = this.data.activeTabId;
-      if (activeTabId) {
-         return this.findTabIndexByTabId(activeTabId);
-      }
-      return undefined;
-   }
-
    getTabByTabId(tabId: Tab["id"]): Tab | undefined {
       return this.data.tabs.find((tab: Tab) => tab.id === tabId);
    }
@@ -64,16 +56,5 @@ export class WorkspaceRepository extends LocalStorageAdapter<WorkspaceData> {
       return undefined;
    }
 
-   isNoteOpenInTab(noteId: Note["id"]): boolean {
-      return this.findTabIndexByNoteId(noteId) !== -1;
-   }
-
-   findTabIndexByTabId(tabId: string): number {
-      return this.data.tabs.findIndex((tab: Tab) => tab.id === tabId);
-   }
-   findTabIndexByNoteId(noteId: Note["id"]): number {
-      return this.data.tabs.findIndex(
-         (tab: Tab) => tab.noteReference?.noteId === noteId,
-      );
-   }
+   
 }
