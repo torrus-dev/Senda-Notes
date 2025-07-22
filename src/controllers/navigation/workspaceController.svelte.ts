@@ -227,4 +227,15 @@ class WorkspaceController {
    }
 }
 
-export let workspaceController = $state(new WorkspaceController());
+let instance: WorkspaceController | null = null;
+
+export const workspaceController = new Proxy(
+   {},
+   {
+      get(_, prop) {
+         if (!instance) instance = new WorkspaceController();
+         const value = instance[prop as keyof WorkspaceController];
+         return typeof value === "function" ? value.bind(instance) : value;
+      },
+   },
+) as WorkspaceController;

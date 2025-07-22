@@ -1,5 +1,3 @@
-import { WorkspaceModel } from "@model/navigation/workspaceModel.svelte";
-
 // Nueva arquitectura
 import { NoteRepository } from "@infrastructure/repositories/core/NoteRepository";
 import { NoteQueryRepository } from "@infrastructure/repositories/core/NoteQueryRepository";
@@ -19,11 +17,6 @@ import { PropertyUseCases } from "@application/usecases/PropertyUseCases";
 import { NoteUseCases } from "@application/usecases/NoteUseCases";
 import { FavoritesUseCases } from "@application/usecases/FavoritesUseCases";
 import { WorkspaceService } from "@domain/services/WorkspaceService";
-
-// Tipos para los modelos (ya no incluye globalPropertiesModel)
-interface Models {
-   workspaceModel: WorkspaceModel;
-}
 
 // Tipos para los servicios
 interface Services {
@@ -55,7 +48,6 @@ class StartupManager {
    public currentStep = $state<string>("");
    public progress = $state(0);
    public error = $state<string | null>(null);
-   public models = {} as Models;
    public services = {} as Services;
 
    private async setupSteps() {
@@ -65,13 +57,6 @@ class StartupManager {
             initialize: async () => {
                this.services.settingsRepository = new SettingsRepository();
                await this.services.settingsRepository.initialize();
-            },
-         },
-         {
-            name: "Cargando espacio de trabajo...",
-            initialize: async () => {
-               this.models.workspaceModel = new WorkspaceModel();
-               await this.models.workspaceModel.initialize();
             },
          },
          {
@@ -216,25 +201,9 @@ class StartupManager {
       this.currentStep = "";
       this.progress = 0;
       this.error = null;
-      this.models = {} as Models;
       this.services = {} as Services;
 
       await this.launchApp();
-   }
-
-   // Método tipado para obtener modelos
-   public getModel<K extends keyof Models>(modelName: K): Models[K] {
-      if (!this.isReady) {
-         throw new Error(
-            `StartupManager no está listo. Modelo ${modelName} no disponible.`,
-         );
-      }
-
-      if (!this.models[modelName]) {
-         throw new Error(`Modelo "${modelName}" no encontrado.`);
-      }
-
-      return this.models[modelName];
    }
 
    // Método tipado para obtener servicios

@@ -158,7 +158,6 @@ function highlightMatch(text: string, query: string): string {
 <div
    class="bg-base-100 rounded-box bordered absolute top-full left-0 z-100 mt-2 max-h-[calc(95vh-3.5rem)] w-full shadow-xl">
    <div class="border-base-300 border-b py-1">
-      // pasarle los parametros
       {@render topContentSearch()}
    </div>
    <div class="w-full overflow-y-auto">

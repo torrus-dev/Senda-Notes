@@ -6,10 +6,10 @@ import FloatingMenu from "@components/floating/floatingMenu/FloatingMenu.svelte"
 import Notifications from "@components/floating/notifications/Notifications.svelte";
 import StatusBar from "@components/note/StatusBar.svelte";
 import ConfirmationDialog from "@components/dialog/ConfirmationDialog.svelte";
-import TabBar from "@components/workspace/TabBar.svelte";
+import TabBar from "@components/workspace/tabs/TabBar.svelte";
 
 import { searchController } from "@controllers/navigation/searchController.svelte";
-import TabPanel from "./workspace/TabPanel.svelte";
+import NotPanel from "./workspace/NotePanel.svelte";
 </script>
 
 <div class="text-base-content bg-base-100">
@@ -30,7 +30,7 @@ import TabPanel from "./workspace/TabPanel.svelte";
             <!-- Tabbar -->
             <TabBar />
             <!-- Contenedor principal -->
-             <!-- overlay to dimm when searching -->
+            <!-- overlay to dimm when searching -->
             <div
                class="h-full overflow-auto
    {searchController.isSearching ? 'overflow-hidden filter' : ''}">
@@ -40,7 +40,7 @@ import TabPanel from "./workspace/TabPanel.svelte";
                         class="bg-base-100/60 absolute top-0 left-0 z-90 h-full w-full">
                      </div>
                   {/if}
-                  <TabPanel />
+                  <NotPanel />
                </article>
             </div>
 

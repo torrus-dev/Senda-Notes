@@ -7,47 +7,47 @@ import {
 } from "@schema/settingsSchema";
 
 class SettingsController {
-   private get repository(): SettingsRepository {
+   private get settingsRepository(): SettingsRepository {
       return startupManager.getService("settingsRepository");
    }
 
    get isReady(): boolean {
-      return this.repository.isInitialized;
+      return this.settingsRepository.isInitialized;
    }
 
    // Método genérico para obtener cualquier valor
    get<K extends SettingsKey>(key: K): AppSettings[K] {
-      return this.repository.get(key);
+      return this.settingsRepository.get(key);
    }
 
    // Método genérico para establecer cualquier valor
    set<K extends SettingsKey>(key: K, value: AppSettings[K]): void {
-      this.repository.set(key, value);
+      this.settingsRepository.set(key, value);
    }
 
    // Método para toggle de valores boolean
    toggle<K extends SettingsKey>(key: K): void {
-      this.repository.toggle(key);
+      this.settingsRepository.toggle(key);
    }
 
    // Método para incrementar valores numéricos
    increment<K extends SettingsKey>(key: K, amount: number = 1): void {
-      this.repository.increment(key, amount);
+      this.settingsRepository.increment(key, amount);
    }
 
    // Método para decrementar valores numéricos
    decrement<K extends SettingsKey>(key: K, amount: number = 1): void {
-      this.repository.increment(key, -amount);
+      this.settingsRepository.increment(key, -amount);
    }
 
    // Método para resetear un valor específico a su default
    reset<K extends SettingsKey>(key: K): void {
-      this.repository.reset(key);
+      this.settingsRepository.reset(key);
    }
 
    // Método para resetear todos los valores
    resetAll(): void {
-      this.repository.resetAll();
+      this.settingsRepository.resetAll();
    }
 
    // Método para obtener metadatos de una configuración
