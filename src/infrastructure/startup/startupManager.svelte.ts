@@ -16,6 +16,7 @@ import { PropertyService } from "@domain/services/PropertyService";
 import { PropertyUseCases } from "@application/usecases/PropertyUseCases";
 import { SearchService } from "@domain/services/SearchService";
 import { SettingsRepository } from "@infrastructure/repositories/core/SettingsRepository";
+import { CollapsibleRepository } from "@infrastructure/repositories/core/CollapsibleRepository";
 
 // Tipos para los modelos (ya no incluye globalPropertiesModel)
 interface Models {
@@ -25,11 +26,12 @@ interface Models {
 
 // Tipos para los servicios
 interface Services {
+   settingsRepository: SettingsRepository;
    noteRepository: NoteRepository;
    noteQueryRepository: NoteQueryRepository;
    favoritesRepository: FavoritesRepository;
    sidebarRepository: SidebarRepository;
-   settingsRepository: SettingsRepository;
+   collapsibleRepository: CollapsibleRepository;
    noteUseCases: NoteUseCases;
    searchService: SearchService;
    favoritesUseCases: FavoritesUseCases;
@@ -97,10 +99,15 @@ class StartupManager {
             },
          },
          {
-            name: "Inicializando repositorios de sidebar...",
+            name: "Inicializando repositorios de la UI...",
             initialize: async () => {
+               // Sidebar
                this.services.sidebarRepository = new SidebarRepository();
                await this.services.sidebarRepository.initialize();
+               // Collapsible
+               this.services.collapsibleRepository =
+                  new CollapsibleRepository();
+               await this.services.collapsibleRepository.initialize();
             },
          },
          {
