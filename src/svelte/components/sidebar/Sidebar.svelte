@@ -1,7 +1,7 @@
 <script lang="ts">
 import { SettingsIcon, InfoIcon, Trash2Icon } from "lucide-svelte";
-import { screenSizeController } from "@controllers/application/screenSizeController.svelte";
-import { settingsController } from "@controllers/application/settingsController.svelte";
+import { screenSizeController } from "@controllers/application/ScreenSizeController.svelte";
+import { settingsController } from "@controllers/application/SettingsController.svelte";
 
 import NoteTreeRenderer from "@components/sidebar/noteTreeDnd/NoteTreeRenderer.svelte";
 import SettingsModal from "@components/modals/SettingsModal.svelte";

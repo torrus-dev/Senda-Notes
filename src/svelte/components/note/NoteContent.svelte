@@ -2,7 +2,7 @@
 import type { Note } from "@projectTypes/core/noteTypes";
 import type { Tab } from "@projectTypes/ui/uiTypes";
 
-import { settingsController } from "@controllers/application/settingsController.svelte";
+import { settingsController } from "@controllers/application/SettingsController.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 
 import Metadata from "@components/note/widgets/Metadata.svelte";

@@ -3,7 +3,7 @@ import type { Tab } from "@projectTypes/ui/uiTypes";
 import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
 import { createNoteReference } from "@utils/noteUtils";
-import { settingsController } from "@controllers/application/settingsController.svelte";
+import { settingsController } from "@controllers/application/SettingsController.svelte";
 import { Note } from "@domain/entities/Note";
 import { WorkspaceRepository } from "@infrastructure/repositories/ui/WorkspaceRepository";
 import { WorkspaceService } from "@domain/services/WorkspaceService";

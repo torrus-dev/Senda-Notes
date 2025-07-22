@@ -13,7 +13,7 @@ import Underline from "@tiptap/extension-underline";
 import { noteController } from "@controllers/notes/noteController.svelte";
 import { focusController } from "@controllers/ui/focusController.svelte";
 import { floatingMenuController } from "@controllers/menu/floatingMenuController.svelte.js";
-import { screenSizeController } from "@controllers/application/screenSizeController.svelte";
+import { screenSizeController } from "@controllers/application/ScreenSizeController.svelte";
 import { CleanPasteExtension } from "@lib/editorExtensions/cleanPasteExtension";
 
 import { getEditorContextMenuItems } from "@lib/menuItems/editorMenuItems.svelte";

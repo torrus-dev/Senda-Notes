@@ -1,4 +1,4 @@
-import { settingsController } from "@controllers/application/settingsController.svelte";
+import { settingsController } from "@controllers/application/SettingsController.svelte";
 import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 import type { UiModeType } from "@projectTypes/ui/uiTypes";
 
