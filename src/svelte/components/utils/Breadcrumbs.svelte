@@ -10,8 +10,8 @@ ul {
 </style>
 
 <script lang="ts">
-import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { workspaceController } from "@controllers/navigation/WorkspaceController.svelte";
+import { noteQueryController } from "@controllers/notes/NoteQueryController.svelte";
 
 import Button from "@components/utils/Button.svelte";
 import { HomeIcon } from "lucide-svelte";
@@ -55,7 +55,7 @@ let path: { id: string; title: string }[] = $derived(
             {/if}
          {/each}
       {:else}
-         <li class="p-1 whitespace-nowrap select-text">Inicio</li>
+         <li class="select-text whitespace-nowrap p-1">Inicio</li>
       {/if}
    </ul>
 </div>

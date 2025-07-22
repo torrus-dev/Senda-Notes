@@ -3,7 +3,7 @@ import type { Note } from "@projectTypes/core/noteTypes";
 import type { Tab } from "@projectTypes/ui/uiTypes";
 
 import { settingsController } from "@controllers/application/SettingsController.svelte";
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { noteQueryController } from "@controllers/notes/NoteQueryController.svelte";
 
 import Metadata from "@components/note/widgets/Metadata.svelte";
 import PropertyList from "@components/note/widgets/Properties.svelte";
@@ -27,7 +27,7 @@ let note: Note | undefined = $derived(
             noteTitle={note.title}
             autoEditOnClick={true}
             id="{tab.id}-noteTitle"
-            class="overflow-h mt-16 mb-3 text-4xl font-bold" />
+            class="overflow-h mb-3 mt-16 text-4xl font-bold" />
       </header>
    </section>
    <section class="mx-auto w-full max-w-2xl">

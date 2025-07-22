@@ -5,11 +5,11 @@ import Collapsible from "@components/utils/Collapsible.svelte";
 
 import { StarIcon, StarOffIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
-import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
+import { workspaceController } from "@controllers/navigation/WorkspaceController.svelte";
 import { getCommonNoteMenuItems } from "@lib/menuItems/noteMenuItems..svelte";
 import type { MenuItem } from "@projectTypes/ui/contextMenuTypes";
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
-import { favoritesController } from "@controllers/notes/favoritesController.svelte";
+import { noteQueryController } from "@controllers/notes/NoteQueryController.svelte";
+import { favoritesController } from "@controllers/notes/FavoritesController.svelte";
 
 let favorites: Note["id"][] = $derived(favoritesController.getFavoriteIds());
 </script>

@@ -1,7 +1,7 @@
-// workspaceController.svelte.ts
+// WorkspaceController.svelte.ts
 import type { Tab } from "@projectTypes/ui/uiTypes";
 import { startupManager } from "@infrastructure/startup/startupManager.svelte";
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { noteQueryController } from "@controllers/notes/NoteQueryController.svelte";
 import { createNoteReference } from "@utils/noteUtils";
 import { settingsController } from "@controllers/application/SettingsController.svelte";
 import { Note } from "@domain/entities/Note";

@@ -6,13 +6,13 @@
 
 <script lang="ts">
 import type { Note } from "@projectTypes/core/noteTypes";
-import { noteController } from "@controllers/notes/noteController.svelte";
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { noteController } from "@controllers/notes/NoteController.svelte";
+import { noteQueryController } from "@controllers/notes/NoteQueryController.svelte";
 import { ChevronRightIcon, PlusIcon } from "lucide-svelte";
 import Button from "@components/utils/Button.svelte";
 import { contextMenu } from "@directives/floatingMenuDirective.svelte";
-import { favoritesController } from "@controllers/notes/favoritesController.svelte";
-import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
+import { favoritesController } from "@controllers/notes/FavoritesController.svelte";
+import { workspaceController } from "@controllers/navigation/WorkspaceController.svelte";
 import NoteTitleEditor from "@components/note/widgets/NoteTitleEditor.svelte";
 import { getCommonNoteMenuItems } from "@lib/menuItems/noteMenuItems..svelte";
 
@@ -45,7 +45,7 @@ const handleSelectTitle = (event: KeyboardEvent | MouseEvent) => {
 </script>
 
 <div
-   class="group rounded-field bg-interactive flex min-w-fit flex-row justify-between px-2 py-1.5 pl-1 whitespace-nowrap select-none
+   class="rounded-field bg-interactive group flex min-w-fit flex-row justify-between px-2 py-1.5 pl-1 whitespace-nowrap select-none
       {isActive ? 'bg-interactive-focus' : ''} 
       {isEditingTitle ? 'outline-interactive-accent-focus outline-2' : ''}"
    role="button"

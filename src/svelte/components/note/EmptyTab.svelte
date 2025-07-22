@@ -1,8 +1,8 @@
 <script lang="ts">
 import type { Tab } from "@projectTypes/ui/uiTypes";
-import { searchController } from "@controllers/navigation/searchController.svelte";
-import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
-import { noteController } from "@controllers/notes/noteController.svelte";
+import { searchController } from "@controllers/navigation/SearchController.svelte";
+import { workspaceController } from "@controllers/navigation/WorkspaceController.svelte";
+import { noteController } from "@controllers/notes/NoteController.svelte";
 import Button from "@components/utils/Button.svelte";
 
 let { tab }: { tab: Tab } = $props();

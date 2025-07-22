@@ -15,11 +15,11 @@ src
            └── NoteUseCases.ts
    └── controllers
        └── notes
-           ├── noteController.svelte.ts
-           ├── noteQueryController.svelte.ts
+           ├── NoteController.svelte.ts
+           ├── NoteQueryController.svelte.ts
        └── property
-           ├── globalPropertyController.svelte.ts
-           └── notePropertyController.svelte.ts
+           ├── GlobalPropertyController.svelte.ts
+           └── NotePropertyController.svelte.ts
        └── // demas controladores...
    └── domain
        └── entities
@@ -44,6 +44,7 @@ He migrado la parte de Notas y Propiedades. Ahora estoy revisando controladores 
 Habia pensado en separarlo en SearchController y SearchService extrayendo la lógica compleja y aligerando el controlador.
 
 Aunque de cara a futuro me gustaria:
+
 - Poder añadir filtros a la busqueda por campos de la nota
 - Tener otras formas de mostrar una busqueda, ej mostrar los resultados en una pestaña en lugar de este elemento flotante.
   Esto no quiero implementarlo ahora, solo es para que te hagas una idea de hacia donde va a ir este sistema.
@@ -52,16 +53,16 @@ El componente no necesita repository, ni useCase
 
 La instancia de los servicios se hace en startupManager.svelte.ts y se puede acceder a los servicios con startupManager.getService("SearchService"), no te preocupes de modificar el startupManager, yo lo registrare para que este disponible de esa forma.
 
-
 ## Intentos previos
-He intentado con Claude migrar este controlador pero en varias ocasiones caiamos en varios errores recurrentes. Convirtio la busqueda con searchNotes (metodo actual) a async, esto creo que sear necesario para mas adelante si implemento otros adaptadores como SQLite. El problema era que al intentar adaptar NavigationBar.svelte modificaba y modificaba su $effect entrabamos en un bucle infinito de $effect, añadia debounce save dentro de NavigationBar para no consultar con cada tecleo y no se si era esto lo que lo causaba o simplemente el tener async.
 
+He intentado con Claude migrar este controlador pero en varias ocasiones caiamos en varios errores recurrentes. Convirtio la busqueda con searchNotes (metodo actual) a async, esto creo que sear necesario para mas adelante si implemento otros adaptadores como SQLite. El problema era que al intentar adaptar NavigationBar.svelte modificaba y modificaba su $effect entrabamos en un bucle infinito de $effect, añadia debounce save dentro de NavigationBar para no consultar con cada tecleo y no se si era esto lo que lo causaba o simplemente el tener async.
 
 ## Código:
 
 SearchController.svelte.ts
+
 ```
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { noteQueryController } from "@controllers/notes/NoteQueryController.svelte";
 import { normalizeText } from "@utils/searchUtils";
 import type { SearchResult } from "@projectTypes/ui/uiTypes";
 
@@ -277,6 +278,7 @@ export const searchController = $state(new SearchController());
 ```
 
 Tipos
+
 ```typescript
 export class Note {
    id: string;
@@ -316,11 +318,12 @@ export interface SearchResult {
 ```
 
 NavigationBar.svelte
+
 ```
 <script lang="ts">
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
-import { searchController } from "@controllers/navigation/searchController.svelte";
-import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
+import { noteQueryController } from "@controllers/notes/NoteQueryController.svelte";
+import { searchController } from "@controllers/navigation/SearchController.svelte";
+import { workspaceController } from "@controllers/navigation/WorkspaceController.svelte";
 import { onPressEsc } from "@directives/onPressEsc";
 import MoreButton from "@components/navbar/MoreButton.svelte";
 import Breadcrumbs from "@components/utils/Breadcrumbs.svelte";
@@ -460,16 +463,20 @@ function handleResultSelect(
 ```
 
 ## Propuesta de implementación
+
 SearchService (domain/services):
+
 - Lógica pura de búsqueda (sin $state)
 - Métodos síncronos para evitar bucles infinitos
 - Recibe noteQueryController como dependencia
 
 SearchController (controllers):
+
 - Solo estado reactivo (isSearching)
 - Delega búsquedas a SearchService
 - Coordinación mínima con UI
 
 NavigationBar:
+
 - Cambios mínimos en $effect
 - Sin debounce por ahora para evitar complejidad

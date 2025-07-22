@@ -115,11 +115,11 @@ import {
 } from "@utils/noteUtils";
 import { DateTime } from "luxon";
 import { focusController } from "@controllers/ui/focusController.svelte";
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { noteQueryController } from "@controllers/notes/NoteQueryController.svelte";
 import { notePathController } from "@controllers/notes/notePathController.svelte";
 import { notificationController } from "@controllers/application/notificationController.svelte";
 import { globalConfirmationDialog } from "@controllers/menu/confirmationDialogController.svelte";
-import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
+import { workspaceController } from "@controllers/navigation/WorkspaceController.svelte";
 import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 import { NoteModel } from "@model/notes/noteModel.svelte";
 /**
@@ -309,7 +309,7 @@ export const noteController = new Proxy(
 ```
 import type { Note } from "@projectTypes/core/noteTypes";
 import { getDescendantsId } from "@utils/noteUtils";
-import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
+import { workspaceController } from "@controllers/navigation/WorkspaceController.svelte";
 import { normalizeText } from "@utils/searchUtils";
 import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 import { NoteModel } from "@model/notes/noteModel.svelte";
@@ -472,8 +472,8 @@ export const noteQueryController = new Proxy(
 
 ```
 import { sanitizeTitle } from "@utils/noteUtils";
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
-import { noteController } from "@controllers/notes/noteController.svelte";
+import { noteQueryController } from "@controllers/notes/NoteQueryController.svelte";
+import { noteController } from "@controllers/notes/NoteController.svelte";
 /**
  * Controlador especializado en la lógica de paths jerárquicos
  * Maneja la resolución y creación de notas desde paths como "proyecto/backend/auth"
@@ -544,8 +544,8 @@ export const notePathController = new NotePathController();
 
 ```
 import type { Note } from "@projectTypes/core/noteTypes";
-import { noteController } from "@controllers/notes/noteController.svelte";
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { noteController } from "@controllers/notes/NoteController.svelte";
+import { noteQueryController } from "@controllers/notes/NoteQueryController.svelte";
 import { generateUniqueTitle } from "@lib/utils/noteUtils";
 /**
  * Controlador especializado en operaciones del árbol jerárquico
@@ -695,9 +695,9 @@ export const noteTreeController = new NoteTreeController();
 ```
 import type { NoteProperty } from "@projectTypes/core/propertyTypes";
 import type { Note } from "@projectTypes/core/noteTypes";
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
-import { globalPropertyController } from "@controllers/property/globalPropertyController.svelte";
-import { noteController } from "@controllers/notes/noteController.svelte";
+import { noteQueryController } from "@controllers/notes/NoteQueryController.svelte";
+import { globalPropertyController } from "@controllers/property/GlobalPropertyController.svelte";
+import { noteController } from "@controllers/notes/NoteController.svelte";
 import { generateProperty } from "@utils/propertyUtils";
 import { normalizeText } from "@utils/searchUtils";
 class NotePropertyController {

@@ -8,7 +8,7 @@ import StatusBar from "@components/note/StatusBar.svelte";
 import ConfirmationDialog from "@components/dialog/ConfirmationDialog.svelte";
 import TabBar from "@components/workspace/tabs/TabBar.svelte";
 
-import { searchController } from "@controllers/navigation/searchController.svelte";
+import { searchController } from "@controllers/navigation/SearchController.svelte";
 import NotPanel from "./workspace/NotePanel.svelte";
 </script>
 
@@ -37,7 +37,7 @@ import NotPanel from "./workspace/NotePanel.svelte";
                <article class="relative h-full py-4">
                   {#if searchController.isSearching}
                      <div
-                        class="bg-base-100/60 absolute top-0 left-0 z-90 h-full w-full">
+                        class="bg-base-100/60 z-90 absolute left-0 top-0 h-full w-full">
                      </div>
                   {/if}
                   <NotPanel />

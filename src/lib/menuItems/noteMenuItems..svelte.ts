@@ -9,12 +9,12 @@ import {
    ReplaceIcon,
 } from "lucide-svelte";
 import type { MenuItem } from "@projectTypes/ui/contextMenuTypes";
-import { noteController } from "@controllers/notes/noteController.svelte";
+import { noteController } from "@controllers/notes/NoteController.svelte";
 
-import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
+import { workspaceController } from "@controllers/navigation/WorkspaceController.svelte";
 import { focusController } from "@controllers/ui/focusController.svelte";
 import { FocusTarget } from "@projectTypes/ui/uiTypes";
-import { favoritesController } from "@controllers/notes/favoritesController.svelte";
+import { favoritesController } from "@controllers/notes/FavoritesController.svelte";
 
 export interface NoteMenuOptions {
    noteId: string;

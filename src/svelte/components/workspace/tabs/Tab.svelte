@@ -1,7 +1,7 @@
 <script lang="ts">
 import Button from "@components/utils/Button.svelte";
-import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { workspaceController } from "@controllers/navigation/WorkspaceController.svelte";
+import { noteQueryController } from "@controllers/notes/NoteQueryController.svelte";
 import type { MenuItem } from "@projectTypes/ui/contextMenuTypes";
 import type { Tab } from "@projectTypes/ui/uiTypes";
 import { XIcon } from "lucide-svelte";
@@ -64,13 +64,13 @@ let { tab }: { tab: Tab } = $props();
 let isActive = $derived(workspaceController.activeTabId === tab.id);
 </script>
 
-<li class="max-w-full min-w-16">
+<li class="min-w-16 max-w-full">
    <Button
       dropdownMenuItems={tabMenuItems}
       onclick={() => handleTabClick(tab.id)}
       class="
                   {isActive ? 'bg-base-300' : ''} 
-                  hover:bg-base-300 bg-base-200 group w-full min-w-6 px-0 py-0.75
+                  hover:bg-base-300 bg-base-200 py-0.75 group w-full min-w-6 px-0
                   "
       aria-selected={isActive}>
       <!-- Título de la pestaña -->

@@ -2,8 +2,8 @@
 </style>
 
 <script lang="ts">
-import { dndController } from "@controllers/ui/dndController.svelte";
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { dndController } from "@controllers/ui/DNDController.svelte";
+import { noteQueryController } from "@controllers/notes/NoteQueryController.svelte";
 import {
    createNoteTreeNodeDndHandlers,
    checkDraggingBranch,
@@ -44,7 +44,6 @@ const toggleExpansion = (event: Event) => {
    event.stopPropagation();
    isExpanded = !isExpanded;
 };
-
 </script>
 
 <NoteTreeLine position={position} parentId={note.parentId} />

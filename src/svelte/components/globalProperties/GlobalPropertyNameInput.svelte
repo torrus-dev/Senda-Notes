@@ -1,5 +1,5 @@
 <script lang="ts">
-import { globalPropertyController } from "@controllers/property/globalPropertyController.svelte";
+import { globalPropertyController } from "@controllers/property/GlobalPropertyController.svelte";
 import { onClickOutside } from "@directives/onClickOutside";
 import { GlobalProperty } from "@domain/entities/GlobalProperty";
 import type { NoteProperty } from "@domain/entities/NoteProperty";

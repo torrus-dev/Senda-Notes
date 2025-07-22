@@ -3,8 +3,8 @@ import Button from "@components/utils/Button.svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";
 
 import { NetworkIcon, PlusIcon } from "lucide-svelte";
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
-import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
+import { noteQueryController } from "@controllers/notes/NoteQueryController.svelte";
+import { workspaceController } from "@controllers/navigation/WorkspaceController.svelte";
 
 let { children }: { children: string[] } = $props();
 </script>

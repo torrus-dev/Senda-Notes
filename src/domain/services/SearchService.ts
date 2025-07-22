@@ -1,4 +1,4 @@
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { noteQueryController } from "@controllers/notes/NoteQueryController.svelte";
 import { normalizeText } from "@utils/searchUtils";
 import type { SearchResult } from "@projectTypes/ui/uiTypes";
 import type { Note } from "@projectTypes/core/noteTypes";

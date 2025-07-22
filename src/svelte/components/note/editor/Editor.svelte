@@ -10,7 +10,7 @@ import TaskItem from "@tiptap/extension-task-item";
 import Highlight from "@tiptap/extension-highlight";
 import Underline from "@tiptap/extension-underline";
 
-import { noteController } from "@controllers/notes/noteController.svelte";
+import { noteController } from "@controllers/notes/NoteController.svelte";
 import { focusController } from "@controllers/ui/focusController.svelte";
 import { floatingMenuController } from "@controllers/menu/floatingMenuController.svelte.js";
 import { screenSizeController } from "@controllers/application/ScreenSizeController.svelte";
@@ -24,7 +24,7 @@ import type { NoteStats } from "@projectTypes/core/noteTypes";
 import { FocusTarget } from "@projectTypes/ui/uiTypes";
 import { editorController } from "@controllers/notes/editorController.svelte";
 import { DateTime } from "luxon";
-import { uiModeController } from "@controllers/ui/uiModeController.svelte";
+import { uiModeController } from "@controllers/ui/UIModeController.svelte";
 
 // Props
 let { noteId, content = "" }: { noteId: string; content: string } = $props();

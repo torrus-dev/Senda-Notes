@@ -1,7 +1,7 @@
 import { Note } from "@domain/entities/Note";
 import { NoteQueryRepository } from "@infrastructure/repositories/core/NoteQueryRepository";
 import { startupManager } from "@infrastructure/startup/startupManager.svelte";
-import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
+import { workspaceController } from "@controllers/navigation/WorkspaceController.svelte";
 import { NoteTreeService } from "@domain/services/NoteTreeService";
 
 /**

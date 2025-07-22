@@ -1,7 +1,7 @@
 <script lang="ts">
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
-import { searchController } from "@controllers/navigation/searchController.svelte";
-import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
+import { noteQueryController } from "@controllers/notes/NoteQueryController.svelte";
+import { searchController } from "@controllers/navigation/SearchController.svelte";
+import { workspaceController } from "@controllers/navigation/WorkspaceController.svelte";
 import { onPressEsc } from "@directives/onPressEsc";
 import MoreButton from "@components/navbar/MoreButton.svelte";
 import Breadcrumbs from "@components/utils/Breadcrumbs.svelte";

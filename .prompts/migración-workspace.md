@@ -7,12 +7,13 @@ Lo he estado transformando en un controller + repository.
 Habia pensado en añadir WorkspaceService porque es simple pero hay partes que tienen cierta complejidad.
 
 Código:
-workspaceController.svelte.ts
+WorkspaceController.svelte.ts
+
 ```
 import type { Tab } from "@projectTypes/ui/uiTypes";
 
 import { startupManager } from "@infrastructure/startup/startupManager.svelte";
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { noteQueryController } from "@controllers/notes/NoteQueryController.svelte";
 import { createNoteReference } from "@utils/noteUtils";
 import { settingsController } from "@controllers/application/settingsController.svelte";
 import { Note } from "@domain/entities/Note";
@@ -253,7 +254,9 @@ export const workspaceController = new Proxy(
 ) as WorkspaceController;
 
 ```
+
 WorkspaceRepository.ts
+
 ```
 import type { Tab } from "@projectTypes/ui/uiTypes";
 import { LocalStorageAdapter } from "@infrastructure/persistence/LocalStorageAdapter.svelte";
@@ -313,7 +316,7 @@ export class WorkspaceRepository extends LocalStorageAdapter<WorkspaceData> {
       return undefined;
    }
 
-   
+
 }
 
 ```

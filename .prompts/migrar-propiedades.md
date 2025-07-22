@@ -15,11 +15,11 @@ src
            └── NoteUseCases.ts
    └── controllers
        └── notes
-           ├── noteController.svelte.ts
-           ├── noteQueryController.svelte.ts
+           ├── NoteController.svelte.ts
+           ├── NoteQueryController.svelte.ts
        └── property
-           ├── globalPropertyController.svelte.ts
-           └── notePropertyController.svelte.ts
+           ├── GlobalPropertyController.svelte.ts
+           └── NotePropertyController.svelte.ts
        └── // demas controladores...
    └── directives
        ├── floatingMenuDirective.svelte.ts
@@ -733,7 +733,7 @@ NotePropertyController
 ```
 import type { NoteProperty } from "@projectTypes/core/propertyTypes";
 import type { Note } from "@domain/entities/Note";
-import { globalPropertyController } from "@controllers/property/globalPropertyController.svelte";
+import { globalPropertyController } from "@controllers/property/GlobalPropertyController.svelte";
 import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 import { generateProperty } from "@utils/propertyUtils";
 import { normalizeText } from "@utils/searchUtils";
@@ -991,7 +991,7 @@ import type {
 } from "@projectTypes/core/propertyTypes";
 import { generateGlobalProperty } from "@utils/propertyUtils";
 import { normalizeText } from "@utils/searchUtils";
-import { notePropertyController } from "@controllers/property/notePropertyController.svelte";
+import { notePropertyController } from "@controllers/property/NotePropertyController.svelte";
 import { startupManager } from "@infrastructure/startup/startupManager.svelte";
 import { GlobalPropertiesModel } from "@model/application/globalPropertiesModel.svelte";
 import { Note } from "@domain/entities/Note";

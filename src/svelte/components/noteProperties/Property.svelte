@@ -2,7 +2,7 @@
 </style>
 
 <script lang="ts">
-import { globalPropertyController } from "@controllers/property/globalPropertyController.svelte";
+import { globalPropertyController } from "@controllers/property/GlobalPropertyController.svelte";
 import { propertyEditorController } from "@controllers/ui/propertyEditorController.svelte";
 import { createDragAndDropHandlers } from "@utils/dnd/propertyDndEvents";
 import { NoteProperty } from "@domain/entities/NoteProperty";
@@ -66,7 +66,7 @@ let isTypeMissmatched = $derived(
       <div class="relative">
          <PropertyValue noteId={noteId} property={property} />
          {#if isTypeMissmatched}
-            <div class="absolute top-0 right-0">
+            <div class="absolute right-0 top-0">
                <Button class="text-warning" size="large">
                   <TriangleAlertIcon size="1.125em" />
                </Button>

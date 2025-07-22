@@ -1,5 +1,5 @@
 <script lang="ts">
-import { sidebarController } from "@controllers/ui/sidebarController.svelte";
+import { sidebarController } from "@controllers/ui/SidebarController.svelte";
 import { onDestroy } from "svelte";
 
 // Propiedades del componente

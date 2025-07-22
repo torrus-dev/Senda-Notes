@@ -3,7 +3,7 @@ import NavigationButtons from "@components/navbar/NavigationButtons.svelte";
 import SidebarToogle from "@components/sidebar/SidebarToogle.svelte";
 import NavigationBar from "@components/navbar/search/NavigationBar.svelte";
 import WindowControls from "@components/navbar/WindowControls.svelte";
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { noteQueryController } from "@controllers/notes/NoteQueryController.svelte";
 
 let note = $derived(noteQueryController.getActiveNote());
 </script>

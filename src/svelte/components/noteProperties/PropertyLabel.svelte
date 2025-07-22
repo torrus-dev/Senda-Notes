@@ -8,7 +8,7 @@ import { SquarePenIcon, TextCursorInputIcon, Trash2Icon } from "lucide-svelte";
 
 import { getPropertyIcon, getPropertyTypesList } from "@utils/propertyUtils";
 
-import { notePropertyController } from "@controllers/property/notePropertyController.svelte";
+import { notePropertyController } from "@controllers/property/NotePropertyController.svelte";
 
 import PropertyIcon from "@components/noteProperties/PropertyIcon.svelte";
 import Button from "@components/utils/Button.svelte";

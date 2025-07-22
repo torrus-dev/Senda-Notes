@@ -1,8 +1,8 @@
 <script lang="ts">
 import Popover from "@components/floating/Popover.svelte";
 import Suggestions from "@components/floating/Suggestions.svelte";
-import { globalPropertyController } from "@controllers/property/globalPropertyController.svelte";
-import { notePropertyController } from "@controllers/property/notePropertyController.svelte";
+import { globalPropertyController } from "@controllers/property/GlobalPropertyController.svelte";
+import { notePropertyController } from "@controllers/property/NotePropertyController.svelte";
 import { propertyEditorController } from "@controllers/ui/propertyEditorController.svelte";
 import { onClickOutside } from "@directives/onClickOutside";
 import { onPressEsc } from "@directives/onPressEsc";

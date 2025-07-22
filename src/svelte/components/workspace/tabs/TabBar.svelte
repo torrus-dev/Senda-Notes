@@ -4,7 +4,7 @@
 <script lang="ts">
 import Button from "@components/utils/Button.svelte";
 import { settingsController } from "@controllers/application/SettingsController.svelte";
-import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
+import { workspaceController } from "@controllers/navigation/WorkspaceController.svelte";
 import { ChevronDownIcon, PlusIcon } from "lucide-svelte";
 import Tab from "./Tab.svelte";
 

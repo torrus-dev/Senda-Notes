@@ -4,7 +4,7 @@
 <script lang="ts">
 import { onMount, type Snippet } from "svelte";
 import { ChevronDownIcon } from "lucide-svelte";
-import { collapsibleController } from "@controllers/ui/collapsibleController.svelte";
+import { collapsibleController } from "@controllers/ui/CollapsibleController.svelte";
 
 let {
    id,

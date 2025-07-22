@@ -1,5 +1,5 @@
 <script lang="ts">
-import { noteQueryController } from "@controllers/notes/noteQueryController.svelte";
+import { noteQueryController } from "@controllers/notes/NoteQueryController.svelte";
 
 import NoteTreeLine from "@components/sidebar/noteTreeDnd/NoteTreeLine.svelte";
 import NoteTreeNode from "@components/sidebar/noteTreeDnd/NoteTreeNode.svelte";
@@ -21,7 +21,7 @@ let isDragedOver = $state();
    {isDragedOver ? 'highlight' : ''}"
    hasSeparator={true}
    chevronPosition="left">
-   <ul class="max-h-[70vh] w-full overflow-x-hidden overflow-y-auto px-2">
+   <ul class="max-h-[70vh] w-full overflow-y-auto overflow-x-hidden px-2">
       {#if rootNotes && rootNotes.length > 0}
          {#each rootNotes as note, index (note.id)}
             <NoteTreeNode note={note} position={index} />

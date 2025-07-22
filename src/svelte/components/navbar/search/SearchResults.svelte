@@ -3,8 +3,8 @@
 
 <script lang="ts">
 import type { SearchResult } from "@projectTypes/ui/uiTypes";
-import { searchController } from "@controllers/navigation/searchController.svelte";
-import { noteController } from "@controllers/notes/noteController.svelte";
+import { searchController } from "@controllers/navigation/SearchController.svelte";
+import { noteController } from "@controllers/notes/NoteController.svelte";
 import { CornerDownLeft, FileIcon } from "lucide-svelte";
 import { tick } from "svelte";
 
@@ -156,7 +156,7 @@ function highlightMatch(text: string, query: string): string {
 {/snippet}
 
 <div
-   class="bg-base-100 rounded-box bordered absolute top-full left-0 z-100 mt-2 max-h-[calc(95vh-3.5rem)] w-full shadow-xl">
+   class="bg-base-100 rounded-box bordered z-100 absolute left-0 top-full mt-2 max-h-[calc(95vh-3.5rem)] w-full shadow-xl">
    <div class="border-base-300 border-b py-1">
       {@render topContentSearch()}
    </div>
@@ -187,7 +187,7 @@ function highlightMatch(text: string, query: string): string {
                         <div class="flex-1 overflow-hidden text-left">
                            <!-- Título con destacado -->
                            <div
-                              class="mb-1 overflow-hidden font-medium text-ellipsis whitespace-nowrap">
+                              class="mb-1 overflow-hidden text-ellipsis whitespace-nowrap font-medium">
                               {@html highlightMatch(
                                  result.matchedText,
                                  searchValue,
@@ -195,7 +195,7 @@ function highlightMatch(text: string, query: string): string {
                            </div>
                            <!-- Ruta del documento -->
                            <div
-                              class="text-faint-content overflow-hidden text-sm text-ellipsis whitespace-nowrap">
+                              class="text-faint-content overflow-hidden text-ellipsis whitespace-nowrap text-sm">
                               {result.path}
                            </div>
                         </div>
@@ -209,7 +209,7 @@ function highlightMatch(text: string, query: string): string {
             {/each}
          </ul>
       {:else}
-         <div class="px-6 pt-6 pb-8 text-center">
+         <div class="px-6 pb-8 pt-6 text-center">
             {#if searchValue !== ""}
                <p class="mb-3 text-lg font-bold">
                   No se han encontrado resultados

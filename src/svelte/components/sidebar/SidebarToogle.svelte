@@ -4,7 +4,7 @@ import { screenSizeController } from "@controllers/application/ScreenSizeControl
 import Button from "@components/utils/Button.svelte";
 
 import { PanelLeftOpenIcon, PanelLeftCloseIcon } from "lucide-svelte";
-import { sidebarController } from "@controllers/ui/sidebarController.svelte";
+import { sidebarController } from "@controllers/ui/SidebarController.svelte";
 
 let isSidebarOpen: boolean = $derived(sidebarController.isOpen);
 let isSidebarLocked: boolean = $derived(

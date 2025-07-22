@@ -4,7 +4,7 @@
 <script lang="ts">
 import { SlidersHorizontalIcon, PlusIcon, ShapesIcon } from "lucide-svelte";
 import { NoteProperty } from "@domain/entities/NoteProperty";
-import { notePropertyController } from "@controllers/property/notePropertyController.svelte";
+import { notePropertyController } from "@controllers/property/NotePropertyController.svelte";
 
 import Button from "@components/utils/Button.svelte";
 import Collapsible from "@components/utils/Collapsible.svelte";

@@ -1,6 +1,6 @@
 <script lang="ts">
 import { editorController } from "@controllers/notes/editorController.svelte";
-import { workspaceController } from "@controllers/navigation/workspaceController.svelte";
+import { workspaceController } from "@controllers/navigation/WorkspaceController.svelte";
 
 let contentSaved = $derived(editorController.contentSaved);
 let characterCount = $derived(editorController.characterCount);
