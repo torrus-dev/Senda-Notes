@@ -1,5 +1,4 @@
 import { WorkspaceModel } from "@model/navigation/workspaceModel.svelte";
-import { CollapsibleModel } from "@model/ui/collapsibleModel.svelte";
 
 // Nueva arquitectura
 import { NoteRepository } from "@infrastructure/repositories/core/NoteRepository";
@@ -7,37 +6,39 @@ import { NoteQueryRepository } from "@infrastructure/repositories/core/NoteQuery
 import { FavoritesRepository } from "@infrastructure/repositories/core/FavoritesRepository";
 import { GlobalPropertyRepository } from "@infrastructure/repositories/core/GlobalPropertyRepository";
 import { SidebarRepository } from "@infrastructure/repositories/ui/SidebarRepository";
+import { SettingsRepository } from "@infrastructure/repositories/core/SettingsRepository";
+import { CollapsibleRepository } from "@infrastructure/repositories/core/CollapsibleRepository";
+import { WorkspaceRepository } from "@infrastructure/repositories/ui/WorkspaceRepository";
 
-import { NoteUseCases } from "@application/usecases/NoteUseCases";
-import { FavoritesUseCases } from "@application/usecases/FavoritesUseCases";
 import { NoteTreeService } from "@domain/services/NoteTreeService";
 import { NotePathService } from "@domain/services/NotePathService";
 import { PropertyService } from "@domain/services/PropertyService";
-import { PropertyUseCases } from "@application/usecases/PropertyUseCases";
 import { SearchService } from "@domain/services/SearchService";
-import { SettingsRepository } from "@infrastructure/repositories/core/SettingsRepository";
-import { CollapsibleRepository } from "@infrastructure/repositories/core/CollapsibleRepository";
+
+import { PropertyUseCases } from "@application/usecases/PropertyUseCases";
+import { NoteUseCases } from "@application/usecases/NoteUseCases";
+import { FavoritesUseCases } from "@application/usecases/FavoritesUseCases";
 
 // Tipos para los modelos (ya no incluye globalPropertiesModel)
 interface Models {
    workspaceModel: WorkspaceModel;
-   collapsibleModel: CollapsibleModel;
 }
 
 // Tipos para los servicios
 interface Services {
    settingsRepository: SettingsRepository;
    noteRepository: NoteRepository;
+   globalPropertyRepository: GlobalPropertyRepository;
    noteQueryRepository: NoteQueryRepository;
    favoritesRepository: FavoritesRepository;
    sidebarRepository: SidebarRepository;
    collapsibleRepository: CollapsibleRepository;
+   workspaceRepository: WorkspaceRepository;
    noteUseCases: NoteUseCases;
    searchService: SearchService;
    favoritesUseCases: FavoritesUseCases;
    noteTreeService: NoteTreeService;
    notePathService: NotePathService;
-   globalPropertyRepository: GlobalPropertyRepository;
    propertyService: PropertyService;
    propertyUseCases: PropertyUseCases;
 }
@@ -108,6 +109,9 @@ class StartupManager {
                this.services.collapsibleRepository =
                   new CollapsibleRepository();
                await this.services.collapsibleRepository.initialize();
+               // Workspace
+               this.services.workspaceRepository = new WorkspaceRepository();
+               await this.services.workspaceRepository.initialize();
             },
          },
          {
@@ -165,13 +169,6 @@ class StartupManager {
                   );
                   // No fallar el inicio por problemas de integridad
                }
-            },
-         },
-         {
-            name: "Cargando colapsables...",
-            initialize: async () => {
-               this.models.collapsibleModel = new CollapsibleModel();
-               await this.models.collapsibleModel.initialize();
             },
          },
       ];

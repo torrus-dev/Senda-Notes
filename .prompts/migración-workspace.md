@@ -1,3 +1,14 @@
+Ahora quiero migrar la parte de workspace (que se encarga de las pestañas de la aplicación)
+
+He incluido ya el repository en el startupManager
+
+Lo he estado transformando en un controller + repository y pasando algunos metodos del controlador al repository para que no quede tan sobrecargado.
+
+No se si merece la pena incluir algun componente adicional de nuestra arquitectura, como service o useCase por que es simple pero hay partes que tienen cierta complejidad.
+
+Código:
+workspaceController.svelte.ts
+```
 import type { Tab } from "@projectTypes/ui/uiTypes";
 
 import { startupManager } from "@infrastructure/startup/startupManager.svelte";
@@ -226,3 +237,89 @@ export const workspaceController = new Proxy(
       },
    },
 ) as WorkspaceController;
+```
+
+WorkspaceRepository.ts
+```
+import type { Tab } from "@projectTypes/ui/uiTypes";
+import { LocalStorageAdapter } from "@infrastructure/persistence/LocalStorageAdapter.svelte";
+import { Note } from "@domain/entities/Note";
+
+interface WorkspaceData {
+   tabs: Tab[];
+   activeTabId: string | undefined;
+}
+
+export class WorkspaceRepository extends LocalStorageAdapter<WorkspaceData> {
+   settingsAplied = false;
+   constructor() {
+      super("NoteNavigation");
+   }
+
+   protected getDefaultData(): WorkspaceData {
+      return {
+         tabs: [],
+         activeTabId: undefined,
+      };
+   }
+
+   get tabs() {
+      return this.data.tabs;
+   }
+   set tabs(newValue: Tab[]) {
+      this.data.tabs = newValue;
+   }
+   get activeNoteId(): Note["id"] | undefined {
+      return this.getActiveTab()?.noteReference?.noteId;
+   }
+   get activeTabId(): Tab["id"] | undefined {
+      return this.data.activeTabId;
+   }
+   set activeTabId(newValue: Tab["id"] | undefined) {
+      this.data.activeTabId = newValue;
+   }
+
+   get hasActiveTabs(): boolean {
+      return this.data.tabs.length > 0;
+   }
+
+   get activeTabIndex(): number | undefined {
+      const activeTabId = this.data.activeTabId;
+      if (activeTabId) {
+         return this.findTabIndexByTabId(activeTabId);
+      }
+      return undefined;
+   }
+
+   getTabByTabId(tabId: Tab["id"]): Tab | undefined {
+      return this.data.tabs.find((tab: Tab) => tab.id === tabId);
+   }
+   getTabByNoteId(noteId: Note["id"]): Tab | undefined {
+      return this.data.tabs.find(
+         (tab: Tab) => tab.noteReference?.noteId === noteId,
+      );
+   }
+   getActiveTab(): Tab | undefined {
+      const activeId = this.data.activeTabId;
+      if (activeId) {
+         return this.getTabByTabId(activeId);
+      }
+      return undefined;
+   }
+
+   isNoteOpenInTab(noteId: Note["id"]): boolean {
+      return this.findTabIndexByNoteId(noteId) !== -1;
+   }
+
+   findTabIndexByTabId(tabId: string): number {
+      return this.data.tabs.findIndex((tab: Tab) => tab.id === tabId);
+   }
+   findTabIndexByNoteId(noteId: Note["id"]): number {
+      return this.data.tabs.findIndex(
+         (tab: Tab) => tab.noteReference?.noteId === noteId,
+      );
+   }
+}
+```
+
+Quiero que mires si te parece una buena arquitectura o incluirias algo mas y luego si ves que la distribución de metodos es buena o cambiarias alguno de sitio
