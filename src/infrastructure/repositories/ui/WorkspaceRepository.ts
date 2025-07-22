@@ -1,6 +1,7 @@
+// WorkspaceRepository.ts
 import type { Tab } from "@projectTypes/ui/uiTypes";
 import { LocalStorageAdapter } from "@infrastructure/persistence/LocalStorageAdapter.svelte";
-import { Note } from "@domain/entities/Note";
+import { NoteReference } from "@projectTypes/core/noteTypes";
 
 interface WorkspaceData {
    tabs: Tab[];
@@ -8,7 +9,6 @@ interface WorkspaceData {
 }
 
 export class WorkspaceRepository extends LocalStorageAdapter<WorkspaceData> {
-   settingsAplied = false;
    constructor() {
       super("NoteNavigation");
    }
@@ -20,41 +20,61 @@ export class WorkspaceRepository extends LocalStorageAdapter<WorkspaceData> {
       };
    }
 
+   // === Getters básicos ===
    get tabs() {
       return this.data.tabs;
    }
+
    set tabs(newValue: Tab[]) {
       this.data.tabs = newValue;
    }
-   get activeNoteId(): Note["id"] | undefined {
-      return this.getActiveTab()?.noteReference?.noteId;
-   }
-   get activeTabId(): Tab["id"] | undefined {
+
+   get activeTabId() {
       return this.data.activeTabId;
    }
-   set activeTabId(newValue: Tab["id"] | undefined) {
+
+   set activeTabId(newValue: string | undefined) {
       this.data.activeTabId = newValue;
    }
 
-   get hasActiveTabs(): boolean {
-      return this.data.tabs.length > 0;
+   // === Operaciones CRUD ===
+   addTab(tab: Tab) {
+      this.data.tabs.push(tab);
    }
 
-   getTabByTabId(tabId: Tab["id"]): Tab | undefined {
-      return this.data.tabs.find((tab: Tab) => tab.id === tabId);
+   removeTab(tabId: string) {
+      this.data.tabs = this.data.tabs.filter((tab) => tab.id !== tabId);
    }
-   getTabByNoteId(noteId: Note["id"]): Tab | undefined {
-      return this.data.tabs.find(
-         (tab: Tab) => tab.noteReference?.noteId === noteId,
-      );
+
+   clearTabs() {
+      this.data.tabs = [];
+      this.data.activeTabId = undefined;
    }
-   getActiveTab(): Tab | undefined {
-      const activeId = this.data.activeTabId;
-      if (activeId) {
-         return this.getTabByTabId(activeId);
+
+   updateTabNote(tabId: string, noteReference?: NoteReference) {
+      const tab = this.getTabByTabId(tabId);
+      if (tab) {
+         tab.noteReference = noteReference;
       }
-      return undefined;
    }
 
-   
+   moveTab(fromIndex: number, toIndex: number) {
+      const [movedTab] = this.data.tabs.splice(fromIndex, 1);
+      this.data.tabs.splice(toIndex, 0, movedTab);
+   }
+
+   // === Queries ===
+   getTabByTabId(tabId: string): Tab | undefined {
+      return this.data.tabs.find((tab) => tab.id === tabId);
+   }
+
+   getTabByNoteId(noteId: string): Tab | undefined {
+      return this.data.tabs.find((tab) => tab.noteReference?.noteId === noteId);
+   }
+
+   getActiveTab(): Tab | undefined {
+      return this.activeTabId
+         ? this.getTabByTabId(this.activeTabId)
+         : undefined;
+   }
 }

@@ -107,7 +107,7 @@ class NoteController {
 
       // Cerrar tab si está abierta
       if (workspaceController.activeNoteId === noteId) {
-         workspaceController.closeTabByTabId(noteId);
+         workspaceController.closeTab(noteId);
       }
 
       this.useCases.deleteNote(noteId);

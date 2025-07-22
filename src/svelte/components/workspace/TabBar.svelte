@@ -21,18 +21,18 @@ function truncateText(text: string, maxLength: number = 20): string {
 
 // Handler para activar pestaña
 function handleTabClick(tabId: string) {
-   workspaceController.activateTabByTabId(tabId);
+   workspaceController.activateTab(tabId);
 }
 
 // Handler para crear nueva pestaña vacia
 function handleNewTab() {
-   workspaceController.newEmptyTab();
+   workspaceController.createEmptyTab();
 }
 
 // Handler para cerrar pestaña
 function handleCloseTab(event: MouseEvent, tabId: string) {
    event.stopPropagation();
-   workspaceController.closeTabByTabId(tabId);
+   workspaceController.closeTab(tabId);
 }
 
 // Solo mostrar si hay más de una pestaña
@@ -47,8 +47,7 @@ let shouldShow = $derived(
       <!-- Pestañas -->
       <ul class="flex flex-1 items-center gap-1">
          {#each workspaceController.tabs as tab, index (tab)}
-            {@const isActive =
-               workspaceController.getActiveTab()?.id === tab.id}
+            {@const isActive = workspaceController.activeTabId === tab.id}
             <!-- Vertical separator -->
             <!-- {#if index > 0}
                <div class="bg-base-300 h-5 w-0.5 self-center"></div>
