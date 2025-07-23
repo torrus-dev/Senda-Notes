@@ -1,10 +1,29 @@
+# Contexto y problema
 Estoy refacorizando y arreglando partes cruciales de mi aplicación de notas local tipo Notion (Svelte 5 + Vite + Electron), es un proyecto individual mio por hobbie. 
 
-La estructura actual usa un atributo `data` reactivo con $state dentro de los adaptadores, lo cual funciona si tenemos todo en memoria y desde los repository manipulamos directamente esa variable. Pero no nos da ninguna interfaz comun y hace que los repositorios
+La estructura de repository + adapter actual usa un atributo "data" con $state() reactivo dentro de los adaptadores que guarda automaticamente los datos mediante un $effect() cuando cambia data. 
 
-## Objetivo
+Esto funciona teniendo todo en memoria y los repository manipulan directamente esa variable "data". Pero no nos da ninguna interfaz comun con metodos y hace que los repositorios tengan que manipular la variable directamente sin ningún tipo de abstracción. 
 
-Quiero modificar los adaptadores y repositories para que no dependan de una variable "data" y en su lugar expongan metodos getById, getAll, save, update, delete.
+Esta bien para una aplicación pequeña pero no es algo escalable o extendible y esta muy poco pulido, tambien el tener tanta reactividad entrelazada causa problemas en mi aplicación.
+
+## Objetivo y refactorización
+
+La transición va a ser complicada porque este sistema tiene varios problemas que se entrelazan
+
+Esta es la tarea que quiero realizar:
+
+Eliminar el $effect de auto-guardado en LocalStorageAdapter y JsonFileAdapter. 
+Implementar guardado manual mediante método save(). 
+Para accionar el guardado (me encargo yo)
+- Repositories de UI simple (sidebar, theme, collapsibles), llamar save() directamente en los setters del repository. 
+- Para repositories de lógica de negocio (notes, properties), NO poner save() en los métodos del repository, sino que los UseCases deben llamar save() explícitamente después de las modificaciones. Esto permite operaciones batch eficientes y transacciones coordinadas entre múltiples repositories en los casos de uso complejos, mientras mantiene la simplicidad para estados de UI básicos.
+
+Habia pensado en crear una interfaz común para los adapters con metodos getById, getAll, save, update, delete y no tener ninguna variable data.
+
+
+
+Quiero modificar los adaptadores y repositories para que no dependan de una variable "data" y en su lugar expongan .
 Tener una interfaz común con estos metodos
 Tambien simplifica e implementa mejoras donde veas oportuno.
 Quiero que los repositories puedan usar cualquier adaptador sin conocer su implementación interna y que los controladores no se metan a modificar datos directamente a los repositories (abstracción) 
