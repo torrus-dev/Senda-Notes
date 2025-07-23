@@ -27,6 +27,7 @@ export class WorkspaceRepository extends LocalStorageAdapter<WorkspaceData> {
 
    set tabs(newValue: Tab[]) {
       this.data.tabs = newValue;
+      this.save();
    }
 
    get activeTabId() {
@@ -35,36 +36,43 @@ export class WorkspaceRepository extends LocalStorageAdapter<WorkspaceData> {
 
    set activeTabId(newValue: string | undefined) {
       this.data.activeTabId = newValue;
+      this.save();
    }
 
    // === Operaciones CRUD ===
    addTab(tab: Tab) {
       this.data.tabs.push(tab);
+      this.save();
    }
 
    removeTab(tabId: string) {
       this.data.tabs = this.data.tabs.filter((tab) => tab.id !== tabId);
+      this.save();
    }
 
    removeMultipleTabs(tabIds: string[]) {
       this.data.tabs = this.data.tabs.filter((tab) => !tabIds.includes(tab.id));
+      this.save();
    }
 
    clearTabs() {
       this.data.tabs = [];
       this.data.activeTabId = undefined;
+      this.save();
    }
 
    updateTabNote(tabId: string, noteReference?: NoteReference) {
       const tab = this.getTabByTabId(tabId);
       if (tab) {
          tab.noteReference = noteReference;
+         this.save();
       }
    }
 
    moveTab(fromIndex: number, toIndex: number) {
       const [movedTab] = this.data.tabs.splice(fromIndex, 1);
       this.data.tabs.splice(toIndex, 0, movedTab);
+      this.save();
    }
 
    // === Queries ===

@@ -9,7 +9,7 @@ export abstract class LocalStorageAdapter<T> {
    }
 
    private initializeData() {
-      this.loadData();
+      this.load();
       this.isInitialized = true;
    }
 
@@ -25,22 +25,28 @@ export abstract class LocalStorageAdapter<T> {
       return { ...this.getDefaultData(), ...data };
    }
 
-   save(): void {
+   /**
+    * Guarda los datos manualmente en localStorage
+    * @returns true si el guardado fue exitoso, false en caso contrario
+    */
+   public save(): boolean {
       try {
          const serializableData = this.serializeData(this.data);
          localStorage.setItem(
             this.storageKey,
             JSON.stringify(serializableData),
          );
+         return true;
       } catch (error) {
          console.warn(
             `Error saving ${this.storageKey} to localStorage:`,
             error,
          );
+         return false;
       }
    }
 
-   protected loadData(): void {
+   protected load(): void {
       try {
          const storedData = localStorage.getItem(this.storageKey);
          if (storedData) {
@@ -59,5 +65,12 @@ export abstract class LocalStorageAdapter<T> {
    // Método público para resetear a valores por defecto
    public resetToDefaults(): void {
       this.data = this.getDefaultData();
+   }
+
+   /**
+    * Recarga los datos desde localStorage
+    */
+   public reload(): void {
+      this.load();
    }
 }

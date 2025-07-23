@@ -29,6 +29,7 @@ export class NoteRepository extends LocalStorageAdapter<NoteData> {
     */
    create(note: Note): void {
       this.data.notes.push(note.toPlainObject());
+      this.save();
    }
 
    /**
@@ -39,6 +40,7 @@ export class NoteRepository extends LocalStorageAdapter<NoteData> {
       if (index !== -1) {
          this.data.notes[index] = updatedNote.toPlainObject();
       }
+      this.save();
    }
 
    /**
@@ -46,6 +48,7 @@ export class NoteRepository extends LocalStorageAdapter<NoteData> {
     */
    delete(noteId: string): void {
       this.data.notes = this.data.notes.filter((n) => n.id !== noteId);
+      this.save();
    }
 
    /**
@@ -53,6 +56,7 @@ export class NoteRepository extends LocalStorageAdapter<NoteData> {
     */
    deleteMany(noteIds: Set<string>): void {
       this.data.notes = this.data.notes.filter((n) => !noteIds.has(n.id));
+      this.save();
    }
 
    /**
@@ -63,6 +67,7 @@ export class NoteRepository extends LocalStorageAdapter<NoteData> {
          const updatedNote = updates.get(noteData.id);
          return updatedNote ? updatedNote.toPlainObject() : noteData;
       });
+      this.save();
    }
 
    /**
@@ -70,15 +75,7 @@ export class NoteRepository extends LocalStorageAdapter<NoteData> {
     */
    replaceAll(notes: Note[]): void {
       this.data.notes = notes.map((note) => note.toPlainObject());
-   }
-
-   /**
-    * Ejecuta una operación batch con múltiples cambios
-    */
-   batch(operations: () => void): void {
-      // Envuelve las operaciones para que se ejecuten juntas
-      // La implementación real de persistencia se encargará del guardado
-      operations();
+      this.save();
    }
 
    /**

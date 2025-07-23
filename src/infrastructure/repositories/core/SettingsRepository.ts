@@ -31,6 +31,7 @@ export class SettingsRepository extends JsonFileAdapter<AppSettings> {
    set<K extends SettingsKey>(key: K, value: AppSettings[K]): void {
       if (this.isValidValue(key, value)) {
          this.data[key] = value;
+         this.save();
       } else {
          throw new Error(`Invalid value for setting ${String(key)}: ${value}`);
       }
@@ -47,6 +48,7 @@ export class SettingsRepository extends JsonFileAdapter<AppSettings> {
       }
 
       (this.data[key] as any) = !this.data[key];
+      this.save();
    }
 
    /**
@@ -70,6 +72,7 @@ export class SettingsRepository extends JsonFileAdapter<AppSettings> {
       }
 
       (this.data[key] as any) = newValue;
+      this.save();
    }
 
    /**
@@ -78,6 +81,7 @@ export class SettingsRepository extends JsonFileAdapter<AppSettings> {
    reset<K extends SettingsKey>(key: K): void {
       const setting = settingsSchema[key];
       this.data[key] = setting.defaultValue as AppSettings[K];
+      this.save();
    }
 
    /**
@@ -85,6 +89,7 @@ export class SettingsRepository extends JsonFileAdapter<AppSettings> {
     */
    resetAll(): void {
       this.resetToDefaults();
+      this.save();
    }
 
    /**

@@ -35,6 +35,7 @@ export class GlobalPropertyRepository extends LocalStorageAdapter<GlobalProperty
     */
    create(globalProperty: GlobalProperty): void {
       this.data.globalProperties.push(globalProperty.toPlainObject());
+      this.save();
    }
 
    /**
@@ -50,63 +51,15 @@ export class GlobalPropertyRepository extends LocalStorageAdapter<GlobalProperty
       if (index !== -1) {
          this.data.globalProperties[index] =
             updatedGlobalProperty.toPlainObject();
+         this.save();
       }
    }
 
-   /**
-    * Elimina una propiedad global
-    */
    delete(globalPropertyId: string): void {
       this.data.globalProperties = this.data.globalProperties.filter(
          (gp) => gp.id !== globalPropertyId,
       );
-   }
-
-   /**
-    * Elimina múltiples propiedades globales
-    */
-   deleteMany(globalPropertyIds: Set<string>): void {
-      this.data.globalProperties = this.data.globalProperties.filter(
-         (gp) => !globalPropertyIds.has(gp.id),
-      );
-   }
-
-   /**
-    * Actualiza múltiples propiedades globales en una operación
-    */
-   updateMany(updates: Map<string, GlobalProperty>): void {
-      this.data.globalProperties = this.data.globalProperties.map((gpData) => {
-         const updatedGlobalProperty = updates.get(gpData.id);
-         return updatedGlobalProperty
-            ? updatedGlobalProperty.toPlainObject()
-            : gpData;
-      });
-   }
-
-   /**
-    * Reemplaza todo el conjunto de propiedades globales
-    */
-   replaceAll(globalProperties: GlobalProperty[]): void {
-      this.data.globalProperties = globalProperties.map((gp) =>
-         gp.toPlainObject(),
-      );
-   }
-
-   /**
-    * Ejecuta una operación batch con múltiples cambios
-    */
-   batch(operations: () => void): void {
-      // Envuelve las operaciones para que se ejecuten juntas
-      // La implementación real de persistencia se encargará del guardado
-      operations();
-   }
-
-   /**
-    * Guarda manualmente (útil para operaciones sincronizadas)
-    */
-   save(): void {
-      // La persistencia se maneja automáticamente por LocalStorageAdapter
-      // Este método existe para compatibilidad con casos especiales
+      this.save();
    }
 
    // ============================================================================
@@ -323,6 +276,7 @@ export class GlobalPropertyRepository extends LocalStorageAdapter<GlobalProperty
       this.data.globalProperties = this.data.globalProperties.filter(
          (gp) => gp.linkedProperties && gp.linkedProperties.length > 0,
       );
+      this.save();
       return initialCount - this.data.globalProperties.length;
    }
 }

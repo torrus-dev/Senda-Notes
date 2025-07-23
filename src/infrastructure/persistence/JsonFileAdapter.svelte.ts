@@ -1,104 +1,91 @@
 export abstract class JsonFileAdapter<T> {
    data: T = $state() as T;
    public isInitialized = $state(false);
-   private saveTimeout: number | null = null;
-   private readonly DEBOUNCE_DELAY = 500; // ms
-   private initializationPromise: Promise<void> | null = null;
 
    constructor(private filename: string) {}
 
-   public async initialize(): Promise<void> {
-      if (this.initializationPromise) {
-         return this.initializationPromise;
-      }
-
-      this.initializationPromise = this.initializeData();
-      return this.initializationPromise;
+   public initialize() {
+      this.initializeData();
    }
 
-   private async initializeData(): Promise<void> {
-      try {
-         await this.loadData();
-         this.isInitialized = true;
-      } catch (error) {
-         console.error(
-            `PersistentJsonFileModel: Error inicializando ${this.filename}:`,
-            error,
-         );
-         this.data = this.getDefaultData();
-         this.isInitialized = true; // Marcar como inicializado aunque falle
-         throw error;
-      }
+   private initializeData() {
+      this.load();
+      this.isInitialized = true;
    }
 
    // Método abstracto que deben implementar las clases hijas
    protected abstract getDefaultData(): T;
 
-   private async save() {
+   // Métodos opcionales para serialización/deserialización personalizada
+   protected serializeData(data: T): any {
+      return $state.snapshot(data);
+   }
+
+   protected deserializeData(data: any): T {
+      return { ...this.getDefaultData(), ...data };
+   }
+
+   /**
+    * Guarda los datos manualmente en archivo JSON
+    * @returns true si el guardado fue exitoso, false en caso contrario
+    */
+   public save(): boolean {
       try {
-         const serializableData = $state.snapshot(this.data);
-         const result = await window.electronAPI.fs.saveUserConfigJson(
-            this.filename,
-            serializableData,
-         );
+         const serializableData = this.serializeData(this.data);
+         const result = window.electronAPI.fs.writeJson(this.filename, serializableData);
+         
          if (!result.success) {
-            console.error(
-               `PersistentJsonFileModel: Error al guardar ${this.filename}:`,
-               result.error,
-            );
-         } else {
-            console.log(
-               `PersistentJsonFileModel: Guardado archivo ${this.filename}`,
-            );
+            console.error(`Error al guardar ${this.filename}:`, result.error);
+            return false;
          }
+         
+         console.log(`Guardado archivo ${this.filename}`);
+         return true;
       } catch (error) {
-         console.error(
-            `PersistentJsonFileModel: Error al guardar ${this.filename}:`,
-            error,
-         );
+         console.error(`Error al guardar ${this.filename}:`, error);
+         return false;
       }
    }
 
-   private async loadData() {
+   protected load(): void {
       try {
-         const result = await window.electronAPI.fs.loadUserConfigJson(
-            this.filename,
-         );
+         const result = window.electronAPI.fs.readJson(this.filename);
 
          if (result.success && result.data) {
             // Combinar datos cargados con valores por defecto para manejar nuevas propiedades
-            this.data = { ...this.getDefaultData(), ...result.data };
-            console.log(
-               `PersistentJsonFileModel: Datos cargados para ${this.filename}:`,
-               this.data,
-            );
+            this.data = this.deserializeData(result.data);
+            console.log(`Datos cargados para ${this.filename}:`, this.data);
          } else if (result.error !== "FILE_NOT_FOUND") {
-            console.error(
-               `PersistentJsonFileModel: Error al cargar ${this.filename}:`,
-               result.error,
-            );
+            console.error(`Error al cargar ${this.filename}:`, result.error);
+            this.data = this.getDefaultData();
          } else {
-            console.warn(
-               `PersistentJsonFileModel: Archivo ${this.filename} no encontrado, usando defaults`,
-            );
+            console.warn(`Archivo ${this.filename} no encontrado, usando defaults`);
+            this.data = this.getDefaultData();
          }
-         // Si el archivo no existe (FILE_NOT_FOUND), se mantienen los valores por defecto
       } catch (error) {
-         console.error(
-            `PersistentJsonFileModel: Error al cargar ${this.filename}:`,
-            error,
-         );
-         throw error;
+         console.error(`Error al cargar ${this.filename}:`, error);
+         this.data = this.getDefaultData();
       }
    }
 
-   // Método público para recargar datos
-   public async reload(): Promise<void> {
-      await this.loadData();
+   /**
+    * Recarga los datos desde el archivo
+    */
+   public reload(): void {
+      this.load();
    }
 
-   // Método público para resetear a valores por defecto
+   /**
+    * Método público para resetear a valores por defecto
+    */
    public resetToDefaults(): void {
       this.data = this.getDefaultData();
+   }
+
+   /**
+    * Verifica si el archivo existe
+    */
+   public fileExists(): boolean {
+      return window.electronAPI.fs.fileExists(this.filename);
    }
 }

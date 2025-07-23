@@ -1,4 +1,4 @@
-Estoy refacorizando y arreglando partes cruciales de mi aplicación de notas local tipo Notion (Svelte 5 + Vite + Electron), es un proyecto individual mio por hobbie. 
+Estoy refacorizando y arreglando partes cruciales de mi aplicación de notas local tipo Notion (Svelte 5 + Vite + Electron), es un proyecto individual mio por hobbie.
 
 La estructura actual usa un atributo `data` reactivo con $state dentro de los adaptadores, lo cual funciona si tenemos todo en memoria y desde los repository manipulamos directamente esa variable. Pero no nos da ninguna interfaz comun y hace que los repositorios
 
@@ -7,7 +7,7 @@ La estructura actual usa un atributo `data` reactivo con $state dentro de los ad
 Quiero modificar los adaptadores y repositories para que no dependan de una variable "data" y en su lugar expongan metodos getById, getAll, save, update, delete.
 Tener una interfaz común con estos metodos
 Tambien simplifica e implementa mejoras donde veas oportuno.
-Quiero que los repositories puedan usar cualquier adaptador sin conocer su implementación interna y que los controladores no se metan a modificar datos directamente a los repositories (abstracción) 
+Quiero que los repositories puedan usar cualquier adaptador sin conocer su implementación interna y que los controladores no se metan a modificar datos directamente a los repositories (abstracción)
 
 ### A tener en cuenta:
 
@@ -17,7 +17,7 @@ Quiero que los repositories puedan usar cualquier adaptador sin conocer su imple
 
 Contexto adicional: Uso Svelte 5 con reactividad $state() y los repositorios heredan de estos adaptadores, este sistema se puede cambiar según veas combeniente, pero hay que mantener la reactividad para que los componentes svelte reaccionen a los cambios de datos.
 
-Por problemas con la inicialización (controladores trataban de acceder a datos cuando aun no habia cargado), tuve que crear un archivo startupManager.ts y para que estuviese el metodo inicitialize en todos los repository lo puse en los adapters por defecto. 
+Por problemas con la inicialización (controladores trataban de acceder a datos cuando aun no habia cargado), tuve que crear un archivo startupManager.ts y para que estuviese el metodo inicitialize en todos los repository lo puse en los adapters por defecto.
 Creo que hay cosas que no deberian estar en los adapters y que hacen demasiadas cosas, solo deberian seguir una interfaz y dar acceso a los repositories a los datos. Creo que el que sea una clase abstracta de la que se pueda extender esta bien, pero el sistema de inicialización y carga centralizada no esta todo lo pulido que deberia.
 
 # Código:
@@ -36,18 +36,8 @@ export abstract class LocalStorageAdapter<T> {
    }
 
    private initializeData() {
-      this.loadData();
+      this.load();
       this.isInitialized = true;
-
-      // Auto-guardar al detectar cambios
-      $effect.root(() => {
-         $effect(() => {
-            if (this.isInitialized) {
-               JSON.stringify(this.data);
-               this.saveData();
-            }
-         });
-      });
    }
 
    // Método abstracto que deben implementar las clases hijas
@@ -62,26 +52,32 @@ export abstract class LocalStorageAdapter<T> {
       return { ...this.getDefaultData(), ...data };
    }
 
-   private saveData(): void {
+   /**
+    * Guarda los datos manualmente en localStorage
+    * @returns true si el guardado fue exitoso, false en caso contrario
+    */
+   public save(): boolean {
       try {
          const serializableData = this.serializeData(this.data);
          localStorage.setItem(
             this.storageKey,
             JSON.stringify(serializableData),
          );
+         return true;
       } catch (error) {
          console.warn(
             `Error saving ${this.storageKey} to localStorage:`,
             error,
          );
+         return false;
       }
    }
 
-   protected loadData(): void {
+   protected load(): void {
       try {
-         const stored = localStorage.getItem(this.storageKey);
-         if (stored) {
-            const parsedData = JSON.parse(stored);
+         const storedData = localStorage.getItem(this.storageKey);
+         if (storedData) {
+            const parsedData = JSON.parse(storedData);
             this.data = this.deserializeData(parsedData);
          }
       } catch (error) {
@@ -97,7 +93,15 @@ export abstract class LocalStorageAdapter<T> {
    public resetToDefaults(): void {
       this.data = this.getDefaultData();
    }
+
+   /**
+    * Recarga los datos desde localStorage
+    */
+   public reload(): void {
+      this.load();
+   }
 }
+
 ```
 
 JsonFileAdapter.svelte.ts
@@ -106,135 +110,92 @@ JsonFileAdapter.svelte.ts
 export abstract class JsonFileAdapter<T> {
    data: T = $state() as T;
    public isInitialized = $state(false);
-   private saveTimeout: number | null = null;
-   private readonly DEBOUNCE_DELAY = 500; // ms
-   private initializationPromise: Promise<void> | null = null;
 
    constructor(private filename: string) {}
 
-   public async initialize(): Promise<void> {
-      if (this.initializationPromise) {
-         return this.initializationPromise;
-      }
-
-      this.initializationPromise = this.initializeData();
-      return this.initializationPromise;
+   public initialize() {
+      this.initializeData();
    }
 
-   private async initializeData(): Promise<void> {
-      try {
-         await this.loadData();
-         this.isInitialized = true;
-
-         // Configurar auto-guardado al detectar cambios
-         $effect.root(() => {
-            $effect(() => {
-               if (this.isInitialized) {
-                  JSON.stringify(this.data);
-                  this.debouncedSave();
-               }
-            });
-         });
-      } catch (error) {
-         console.error(
-            `PersistentJsonFileModel: Error inicializando ${this.filename}:`,
-            error,
-         );
-         this.data = this.getDefaultData();
-         this.isInitialized = true; // Marcar como inicializado aunque falle
-         throw error;
-      }
+   private initializeData() {
+      this.load();
+      this.isInitialized = true;
    }
 
    // Método abstracto que deben implementar las clases hijas
    protected abstract getDefaultData(): T;
 
-   private debouncedSave() {
-      if (this.saveTimeout) {
-         clearTimeout(this.saveTimeout);
-      }
-
-      this.saveTimeout = window.setTimeout(() => {
-         this.saveData();
-      }, this.DEBOUNCE_DELAY);
+   // Métodos opcionales para serialización/deserialización personalizada
+   protected serializeData(data: T): any {
+      return $state.snapshot(data);
    }
 
-   private async saveData() {
+   protected deserializeData(data: any): T {
+      return { ...this.getDefaultData(), ...data };
+   }
+
+   /**
+    * Guarda los datos manualmente en archivo JSON
+    * @returns true si el guardado fue exitoso, false en caso contrario
+    */
+   public save(): boolean {
       try {
-         const serializableData = $state.snapshot(this.data);
-         const result = await window.electronAPI.fs.saveUserConfigJson(
-            this.filename,
-            serializableData,
-         );
+         const serializableData = this.serializeData(this.data);
+         const result = window.electronAPI.fs.writeJson(this.filename, serializableData);
+
          if (!result.success) {
-            console.error(
-               `PersistentJsonFileModel: Error al guardar ${this.filename}:`,
-               result.error,
-            );
-         } else {
-            console.log(
-               `PersistentJsonFileModel: Guardado archivo ${this.filename}`,
-            );
+            console.error(`Error al guardar ${this.filename}:`, result.error);
+            return false;
          }
+
+         console.log(`Guardado archivo ${this.filename}`);
+         return true;
       } catch (error) {
-         console.error(
-            `PersistentJsonFileModel: Error al guardar ${this.filename}:`,
-            error,
-         );
+         console.error(`Error al guardar ${this.filename}:`, error);
+         return false;
       }
    }
 
-   private async loadData() {
+   protected load(): void {
       try {
-         const result = await window.electronAPI.fs.loadUserConfigJson(
-            this.filename,
-         );
+         const result = window.electronAPI.fs.readJson(this.filename);
 
          if (result.success && result.data) {
             // Combinar datos cargados con valores por defecto para manejar nuevas propiedades
-            this.data = { ...this.getDefaultData(), ...result.data };
-            console.log(
-               `PersistentJsonFileModel: Datos cargados para ${this.filename}:`,
-               this.data,
-            );
+            this.data = this.deserializeData(result.data);
+            console.log(`Datos cargados para ${this.filename}:`, this.data);
          } else if (result.error !== "FILE_NOT_FOUND") {
-            console.error(
-               `PersistentJsonFileModel: Error al cargar ${this.filename}:`,
-               result.error,
-            );
+            console.error(`Error al cargar ${this.filename}:`, result.error);
+            this.data = this.getDefaultData();
          } else {
-            console.warn(
-               `PersistentJsonFileModel: Archivo ${this.filename} no encontrado, usando defaults`,
-            );
+            console.warn(`Archivo ${this.filename} no encontrado, usando defaults`);
+            this.data = this.getDefaultData();
          }
-         // Si el archivo no existe (FILE_NOT_FOUND), se mantienen los valores por defecto
       } catch (error) {
-         console.error(
-            `PersistentJsonFileModel: Error al cargar ${this.filename}:`,
-            error,
-         );
-         throw error;
+         console.error(`Error al cargar ${this.filename}:`, error);
+         this.data = this.getDefaultData();
       }
    }
 
-   // Funciones Publicas Auxiliares
-   // Método público para forzar guardado inmediato
-   public async forceSave(): Promise<void> {
-      if (this.saveTimeout) {
-         clearTimeout(this.saveTimeout);
-         this.saveTimeout = null;
-      }
-      await this.saveData();
+   /**
+    * Recarga los datos desde el archivo
+    */
+   public reload(): void {
+      this.load();
    }
 
-   // Método público para recargar datos
-   public async reload(): Promise<void> {
-      await this.loadData();
-   }
-
-   // Método público para resetear a valores por defecto
+   /**
+    * Método público para resetear a valores por defecto
+    */
    public resetToDefaults(): void {
       this.data = this.getDefaultData();
+   }
+
+   /**
+    * Verifica si el archivo existe
+    */
+   public fileExists(): boolean {
+      return window.electronAPI.fs.fileExists(this.filename);
    }
 }
 ```
@@ -622,6 +583,7 @@ export class SettingsRepository extends JsonFileAdapter<AppSettings> {
 ```
 
 StartupManager.svelte.ts
+
 ```
 // Nueva arquitectura
 import { NoteRepository } from "@infrastructure/repositories/core/NoteRepository";
@@ -853,5 +815,6 @@ export const startupManager = new StartupManager();
 # Tu respuesta
 
 Primero quiero que hagas un analisis de la situación, creo que las 3 grandes cuestiones a abordar son:
+
 1. Revisar y pulir el sistema de inicialización actual, el problema venia al usar el JSONFileAdapter pero quiero tener una forma estandarizada que funcione de inicializar todos los repositorios
 2. En los adapters dejar de usar variable data y solo exponer los metodos descritos por la interfaz comúna los repositories

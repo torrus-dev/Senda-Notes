@@ -16,6 +16,7 @@ export class CollapsibleRepository extends LocalStorageAdapter<CollapsibleStates
    // Métodos específicos para este modelo
    public toggle(key: string): void {
       this.data[key] = !this.data[key];
+      this.save();
    }
 
    public getCollapsed(key: string): boolean {
@@ -24,5 +25,6 @@ export class CollapsibleRepository extends LocalStorageAdapter<CollapsibleStates
 
    public setCollapsed(key: string, collapsed: boolean): void {
       this.data[key] = collapsed;
+      this.save();
    }
 }

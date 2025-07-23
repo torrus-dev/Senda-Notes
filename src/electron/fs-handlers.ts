@@ -1,14 +1,14 @@
 import { ipcMain, app } from "electron";
 import path from "path";
-import fs from "fs/promises";
+import fs from "fs";
 
-// Crear el directorio de configuración si no existe
-async function ensureConfigDirectory(): Promise<string> {
+// Crear el directorio de configuración si no existe (síncrono)
+function ensureConfigDirectory(): string {
    const userDataPath = app.getPath("userData");
    const configDir = path.join(userDataPath, "config");
 
    try {
-      await fs.mkdir(configDir, { recursive: true });
+      fs.mkdirSync(configDir, { recursive: true });
    } catch (error: unknown) {
       if (error instanceof Error) {
          console.error(
@@ -26,70 +26,65 @@ async function ensureConfigDirectory(): Promise<string> {
 }
 
 export function setupFileSystemHandlers() {
-   // Configurar IPC handlers para sistema de archivos
-   ipcMain.handle(
-      "fs:saveUserConfigJson",
-      async (_, filename: string, data: any) => {
-         console.log("guardando settings");
-         try {
-            const configDir = await ensureConfigDirectory();
-            const filePath = path.join(configDir, `${filename}.json`);
-            await fs.writeFile(
-               filePath,
-               JSON.stringify(data, null, 2),
-               "utf-8",
-            );
-            return { success: true };
-         } catch (error: unknown) {
-            let msg: string;
-            if (error instanceof Error) {
-               msg = error.message;
-            } else {
-               msg = String(error);
-            }
-            console.error(`Error guardando ${filename}.json:`, msg);
-            return { success: false, error: msg };
-         }
-      },
-   );
+   // Configurar IPC handlers síncronos para sistema de archivos
 
-   ipcMain.handle("fs:loadUserConfigJson", async (_, filename: string) => {
+   ipcMain.on("fs:writeJson", (event, filename: string, data: any) => {
+      console.log("Guardando JSON:", filename);
       try {
-         const configDir = await ensureConfigDirectory();
+         const configDir = ensureConfigDirectory();
          const filePath = path.join(configDir, `${filename}.json`);
-         const data = await fs.readFile(filePath, "utf-8");
-         return { success: true, data: JSON.parse(data) };
+         fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
+         event.returnValue = { success: true };
+      } catch (error: unknown) {
+         let msg: string;
+         if (error instanceof Error) {
+            msg = error.message;
+         } else {
+            msg = String(error);
+         }
+         console.error(`Error guardando ${filename}.json:`, msg);
+         event.returnValue = { success: false, error: msg };
+      }
+   });
+
+   ipcMain.on("fs:readJson", (event, filename: string) => {
+      try {
+         const configDir = ensureConfigDirectory();
+         const filePath = path.join(configDir, `${filename}.json`);
+         const data = fs.readFileSync(filePath, "utf-8");
+         event.returnValue = { success: true, data: JSON.parse(data) };
       } catch (error: unknown) {
          if (error instanceof Error) {
             if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-               return { success: false, error: "FILE_NOT_FOUND" };
+               event.returnValue = { success: false, error: "FILE_NOT_FOUND" };
+               return;
             }
             console.error(`Error cargando ${filename}.json:`, error.message);
-            return { success: false, error: error.message };
+            event.returnValue = { success: false, error: error.message };
          } else {
             console.error(
                `Error cargando ${filename}.json (tipo inesperado):`,
                String(error),
             );
-            return { success: false, error: String(error) };
+            event.returnValue = { success: false, error: String(error) };
          }
       }
    });
 
-   ipcMain.handle("fs:userConfigExists", async (_, filename: string) => {
+   ipcMain.on("fs:fileExists", (event, filename: string) => {
       try {
-         const configDir = await ensureConfigDirectory();
+         const configDir = ensureConfigDirectory();
          const filePath = path.join(configDir, `${filename}.json`);
-         await fs.access(filePath);
-         return true;
+         fs.accessSync(filePath);
+         event.returnValue = true;
       } catch {
-         return false;
+         event.returnValue = false;
       }
    });
 }
 
 export function cleanupFileSystemHandlers() {
-   ipcMain.removeAllListeners("fs:saveUserConfigJson");
-   ipcMain.removeAllListeners("fs:loadUserConfigJson");
-   ipcMain.removeAllListeners("fs:userConfigExists");
+   ipcMain.removeAllListeners("fs:writeJson");
+   ipcMain.removeAllListeners("fs:readJson");
+   ipcMain.removeAllListeners("fs:fileExists");
 }

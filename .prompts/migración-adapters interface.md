@@ -1,9 +1,10 @@
 # Contexto y problema
-Estoy refacorizando y arreglando partes cruciales de mi aplicación de notas local tipo Notion (Svelte 5 + Vite + Electron), es un proyecto individual mio por hobbie. 
 
-La estructura de repository + adapter actual usa un atributo "data" con $state() reactivo dentro de los adaptadores que guarda automaticamente los datos mediante un $effect() cuando cambia data. 
+Estoy refacorizando y arreglando partes cruciales de mi aplicación de notas local tipo Notion (Svelte 5 + Vite + Electron), es un proyecto individual mio por hobbie.
 
-Esto funciona teniendo todo en memoria y los repository manipulan directamente esa variable "data". Pero no nos da ninguna interfaz comun con metodos y hace que los repositorios tengan que manipular la variable directamente sin ningún tipo de abstracción. 
+La estructura de repository + adapter actual usa un atributo "data" con $state() reactivo dentro de los adaptadores que guarda manualmente los datos desde metodos externos.
+
+El problema de usar "data" es que tengo todo en memoria y los repository manipulan directamente esa variable "data". Pero no nos da ninguna interfaz comun con metodos y hace que los repositorios tengan que manipular la variable directamente sin ningún tipo de abstracción.
 
 Esta bien para una aplicación pequeña pero no es algo escalable o extendible y esta muy poco pulido, tambien el tener tanta reactividad entrelazada causa problemas en mi aplicación.
 
@@ -13,11 +14,40 @@ La transición va a ser complicada porque este sistema tiene varios problemas qu
 
 Quiero hacer esta migración de arquitectura progresivamente, la tarea actual es modificar los 2 adaptadores:
 
-Eliminar el $effect de auto-guardado en LocalStorageAdapter y JsonFileAdapter. 
-Implementar guardado manual mediante método save(). 
-Para accionar el guardado (me encargo yo)
-- Repositories de UI simple (sidebar, theme, collapsibles), llamar save() directamente en los setters del repository. 
-- Para repositories de lógica de negocio (notes, properties), NO poner save() en los métodos del repository, sino que los UseCases deben llamar save() explícitamente después de las modificaciones. Esto permite operaciones batch eficientes y transacciones coordinadas entre múltiples repositories en los casos de uso complejos, mientras mantiene la simplicidad para estados de UI básicos.
+Descripción detallada - Separar Repository de Adapter
+
+### 2.1 **Crear Interfaz de Persistencia**
+
+- Definir `PersistenceAdapter<T>` con métodos: `initialize()`, `getById()`, `getAll()`, `save()`, `update()`, `delete()`
+- Métodos opcionales para batch: `saveMany()`, `deleteMany()`
+- La interfaz NO debe tener referencias a `$state` ni `data`
+
+### 2.2 **Refactorizar Adapters Existentes**
+
+- `LocalStorageAdapter` y `JsonFileAdapter` implementan la interfaz
+- Eliminar el atributo `data` público
+- Adapters solo se encargan de leer/escribir, no de mantener estado
+- Mantener métodos abstractos para serialización/deserialización
+
+### 2.3 **Refactorizar Repositories**
+
+- Repositories dejan de heredar de adapters
+- Reciben adapter por constructor: `constructor(private adapter: PersistenceAdapter<T>)`
+- Mover el `data = $state()` del adapter al repository (temporalmente)
+- Repository es responsable del estado reactivo, adapter solo de persistencia
+
+### 2.4 **Actualizar StartupManager**
+
+- Crear adapters primero: `const noteAdapter = new LocalStorageAdapter('notes')`
+- Pasar adapters a repositories: `new NoteRepository(noteAdapter)`
+- Mantener el mismo flujo de inicialización
+
+### 2.5 **Validar**
+
+- La app debe funcionar exactamente igual
+- Los datos siguen en memoria (por ahora)
+- Pero ahora repository y adapter están desacoplados
+- Preparado para cambiar adapters sin tocar repositories
 
 # Arquitectura de la Aplicación
 
@@ -227,6 +257,7 @@ import { Note } from "@domain/entities/Note";
 ```
 
 # Código:
+
 LocalStorageAdapter.svelte.ts
 
 ```
@@ -241,18 +272,8 @@ export abstract class LocalStorageAdapter<T> {
    }
 
    private initializeData() {
-      this.loadData();
+      this.load();
       this.isInitialized = true;
-
-      // Auto-guardar al detectar cambios
-      $effect.root(() => {
-         $effect(() => {
-            if (this.isInitialized) {
-               JSON.stringify(this.data);
-               this.saveData();
-            }
-         });
-      });
    }
 
    // Método abstracto que deben implementar las clases hijas
@@ -267,26 +288,32 @@ export abstract class LocalStorageAdapter<T> {
       return { ...this.getDefaultData(), ...data };
    }
 
-   private saveData(): void {
+   /**
+    * Guarda los datos manualmente en localStorage
+    * @returns true si el guardado fue exitoso, false en caso contrario
+    */
+   public save(): boolean {
       try {
          const serializableData = this.serializeData(this.data);
          localStorage.setItem(
             this.storageKey,
             JSON.stringify(serializableData),
          );
+         return true;
       } catch (error) {
          console.warn(
             `Error saving ${this.storageKey} to localStorage:`,
             error,
          );
+         return false;
       }
    }
 
-   protected loadData(): void {
+   protected load(): void {
       try {
-         const stored = localStorage.getItem(this.storageKey);
-         if (stored) {
-            const parsedData = JSON.parse(stored);
+         const storedData = localStorage.getItem(this.storageKey);
+         if (storedData) {
+            const parsedData = JSON.parse(storedData);
             this.data = this.deserializeData(parsedData);
          }
       } catch (error) {
@@ -302,7 +329,15 @@ export abstract class LocalStorageAdapter<T> {
    public resetToDefaults(): void {
       this.data = this.getDefaultData();
    }
+
+   /**
+    * Recarga los datos desde localStorage
+    */
+   public reload(): void {
+      this.load();
+   }
 }
+
 ```
 
 JsonFileAdapter.svelte.ts
@@ -311,135 +346,92 @@ JsonFileAdapter.svelte.ts
 export abstract class JsonFileAdapter<T> {
    data: T = $state() as T;
    public isInitialized = $state(false);
-   private saveTimeout: number | null = null;
-   private readonly DEBOUNCE_DELAY = 500; // ms
-   private initializationPromise: Promise<void> | null = null;
 
    constructor(private filename: string) {}
 
-   public async initialize(): Promise<void> {
-      if (this.initializationPromise) {
-         return this.initializationPromise;
-      }
-
-      this.initializationPromise = this.initializeData();
-      return this.initializationPromise;
+   public initialize() {
+      this.initializeData();
    }
 
-   private async initializeData(): Promise<void> {
-      try {
-         await this.loadData();
-         this.isInitialized = true;
-
-         // Configurar auto-guardado al detectar cambios
-         $effect.root(() => {
-            $effect(() => {
-               if (this.isInitialized) {
-                  JSON.stringify(this.data);
-                  this.debouncedSave();
-               }
-            });
-         });
-      } catch (error) {
-         console.error(
-            `PersistentJsonFileModel: Error inicializando ${this.filename}:`,
-            error,
-         );
-         this.data = this.getDefaultData();
-         this.isInitialized = true; // Marcar como inicializado aunque falle
-         throw error;
-      }
+   private initializeData() {
+      this.load();
+      this.isInitialized = true;
    }
 
    // Método abstracto que deben implementar las clases hijas
    protected abstract getDefaultData(): T;
 
-   private debouncedSave() {
-      if (this.saveTimeout) {
-         clearTimeout(this.saveTimeout);
-      }
-
-      this.saveTimeout = window.setTimeout(() => {
-         this.saveData();
-      }, this.DEBOUNCE_DELAY);
+   // Métodos opcionales para serialización/deserialización personalizada
+   protected serializeData(data: T): any {
+      return $state.snapshot(data);
    }
 
-   private async saveData() {
+   protected deserializeData(data: any): T {
+      return { ...this.getDefaultData(), ...data };
+   }
+
+   /**
+    * Guarda los datos manualmente en archivo JSON
+    * @returns true si el guardado fue exitoso, false en caso contrario
+    */
+   public save(): boolean {
       try {
-         const serializableData = $state.snapshot(this.data);
-         const result = await window.electronAPI.fs.saveUserConfigJson(
-            this.filename,
-            serializableData,
-         );
+         const serializableData = this.serializeData(this.data);
+         const result = window.electronAPI.fs.writeJson(this.filename, serializableData);
+
          if (!result.success) {
-            console.error(
-               `PersistentJsonFileModel: Error al guardar ${this.filename}:`,
-               result.error,
-            );
-         } else {
-            console.log(
-               `PersistentJsonFileModel: Guardado archivo ${this.filename}`,
-            );
+            console.error(`Error al guardar ${this.filename}:`, result.error);
+            return false;
          }
+
+         console.log(`Guardado archivo ${this.filename}`);
+         return true;
       } catch (error) {
-         console.error(
-            `PersistentJsonFileModel: Error al guardar ${this.filename}:`,
-            error,
-         );
+         console.error(`Error al guardar ${this.filename}:`, error);
+         return false;
       }
    }
 
-   private async loadData() {
+   protected load(): void {
       try {
-         const result = await window.electronAPI.fs.loadUserConfigJson(
-            this.filename,
-         );
+         const result = window.electronAPI.fs.readJson(this.filename);
 
          if (result.success && result.data) {
             // Combinar datos cargados con valores por defecto para manejar nuevas propiedades
-            this.data = { ...this.getDefaultData(), ...result.data };
-            console.log(
-               `PersistentJsonFileModel: Datos cargados para ${this.filename}:`,
-               this.data,
-            );
+            this.data = this.deserializeData(result.data);
+            console.log(`Datos cargados para ${this.filename}:`, this.data);
          } else if (result.error !== "FILE_NOT_FOUND") {
-            console.error(
-               `PersistentJsonFileModel: Error al cargar ${this.filename}:`,
-               result.error,
-            );
+            console.error(`Error al cargar ${this.filename}:`, result.error);
+            this.data = this.getDefaultData();
          } else {
-            console.warn(
-               `PersistentJsonFileModel: Archivo ${this.filename} no encontrado, usando defaults`,
-            );
+            console.warn(`Archivo ${this.filename} no encontrado, usando defaults`);
+            this.data = this.getDefaultData();
          }
-         // Si el archivo no existe (FILE_NOT_FOUND), se mantienen los valores por defecto
       } catch (error) {
-         console.error(
-            `PersistentJsonFileModel: Error al cargar ${this.filename}:`,
-            error,
-         );
-         throw error;
+         console.error(`Error al cargar ${this.filename}:`, error);
+         this.data = this.getDefaultData();
       }
    }
 
-   // Funciones Publicas Auxiliares
-   // Método público para forzar guardado inmediato
-   public async forceSave(): Promise<void> {
-      if (this.saveTimeout) {
-         clearTimeout(this.saveTimeout);
-         this.saveTimeout = null;
-      }
-      await this.saveData();
+   /**
+    * Recarga los datos desde el archivo
+    */
+   public reload(): void {
+      this.load();
    }
 
-   // Método público para recargar datos
-   public async reload(): Promise<void> {
-      await this.loadData();
-   }
-
-   // Método público para resetear a valores por defecto
+   /**
+    * Método público para resetear a valores por defecto
+    */
    public resetToDefaults(): void {
       this.data = this.getDefaultData();
+   }
+
+   /**
+    * Verifica si el archivo existe
+    */
+   public fileExists(): boolean {
+      return window.electronAPI.fs.fileExists(this.filename);
    }
 }
 ```
@@ -710,6 +702,7 @@ export class NoteQueryRepository {
 ```
 
 SidebarRepository.ts
+
 ```
 import { LocalStorageAdapter } from "@infrastructure/persistence/LocalStorageAdapter.svelte";
 
@@ -747,6 +740,7 @@ export class SidebarRepository extends LocalStorageAdapter<SidebarState> {
 ```
 
 NoteUseCases.ts
+
 ```
 import { Note } from "@domain/entities/Note";
 import { NotePathService } from "@domain/services/NotePathService";
@@ -1020,6 +1014,7 @@ export class NoteUseCases {
 ```
 
 StartupManager.svelte.ts
+
 ```
 // Nueva arquitectura
 import { NoteRepository } from "@infrastructure/repositories/core/NoteRepository";

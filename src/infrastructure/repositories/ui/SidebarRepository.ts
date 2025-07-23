@@ -22,11 +22,13 @@ export class SidebarRepository extends LocalStorageAdapter<SidebarState> {
    }
    set width(newValue: SidebarState["width"]) {
       this.data.width = newValue;
+      this.save()
    }
    get isOpen() {
       return this.data.isOpen;
    }
    set isOpen(newValue: SidebarState["isOpen"]) {
       this.data.isOpen = newValue;
+      this.save()
    }
 }

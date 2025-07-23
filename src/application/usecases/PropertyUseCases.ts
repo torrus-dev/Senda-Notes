@@ -1,7 +1,7 @@
 import { PropertyService } from "@domain/services/PropertyService";
 import { GlobalPropertyRepository } from "@infrastructure/repositories/core/GlobalPropertyRepository";
 import { NoteRepository } from "@infrastructure/repositories/core/NoteRepository";
-import { NoteQueryRepository } from "@infrastructure/repositories/NoteQueryRepository";
+import { NoteQueryRepository } from "@infrastructure/repositories/core/NoteQueryRepository";
 import { Note } from "@domain/entities/Note";
 import { NoteProperty } from "@domain/entities/NoteProperty";
 import { GlobalProperty } from "@domain/entities/GlobalProperty";

@@ -44,6 +44,7 @@ export class FavoritesRepository extends LocalStorageAdapter<FavoritesData> {
    add(noteId: string): boolean {
       if (!this.isFavorite(noteId)) {
          this.data.favorites.push(noteId);
+         this.save();
          return true;
       }
       return false;
@@ -56,6 +57,7 @@ export class FavoritesRepository extends LocalStorageAdapter<FavoritesData> {
       const index = this.data.favorites.indexOf(noteId);
       if (index !== -1) {
          this.data.favorites.splice(index, 1);
+         this.save();
          return true;
       }
       return false;
@@ -64,13 +66,11 @@ export class FavoritesRepository extends LocalStorageAdapter<FavoritesData> {
    /**
     * Toggle favorito
     */
-   toggle(noteId: string): boolean {
+   toggle(noteId: string) {
       if (this.isFavorite(noteId)) {
          this.remove(noteId);
-         return false; // Ya no es favorito
       } else {
          this.add(noteId);
-         return true; // Ahora es favorito
       }
    }
 
@@ -82,6 +82,7 @@ export class FavoritesRepository extends LocalStorageAdapter<FavoritesData> {
       this.data.favorites = this.data.favorites.filter(
          (id) => !noteIds.has(id),
       );
+      this.save();
       return initialLength - this.data.favorites.length; // Retorna cuántos se eliminaron
    }
 
@@ -98,6 +99,7 @@ export class FavoritesRepository extends LocalStorageAdapter<FavoritesData> {
          orderedIds.every((id) => currentSet.has(id))
       ) {
          this.data.favorites = orderedIds;
+         this.save();
       }
    }
 
@@ -109,6 +111,7 @@ export class FavoritesRepository extends LocalStorageAdapter<FavoritesData> {
       this.data.favorites = this.data.favorites.filter((id) =>
          validNoteIds.has(id),
       );
+      this.save();
       return initialLength - this.data.favorites.length;
    }
 
@@ -124,5 +127,6 @@ export class FavoritesRepository extends LocalStorageAdapter<FavoritesData> {
     */
    clear(): void {
       this.data.favorites = [];
+      this.save();
    }
 }
