@@ -7,11 +7,11 @@ Esto funciona teniendo todo en memoria y los repository manipulan directamente e
 
 Esta bien para una aplicación pequeña pero no es algo escalable o extendible y esta muy poco pulido, tambien el tener tanta reactividad entrelazada causa problemas en mi aplicación.
 
-## Objetivo y refactorización
+# Objetivo y refactorización
 
-La transición va a ser complicada porque este sistema tiene varios problemas que se entrelazan
+La transición va a ser complicada porque este sistema tiene varios problemas que se entrelazan así que vamos a tratar de abordarlos poco a poco
 
-Esta es la tarea que quiero realizar:
+Quiero hacer esta migración de arquitectura progresivamente, la tarea actual es modificar los 2 adaptadores:
 
 Eliminar el $effect de auto-guardado en LocalStorageAdapter y JsonFileAdapter. 
 Implementar guardado manual mediante método save(). 
@@ -19,28 +19,214 @@ Para accionar el guardado (me encargo yo)
 - Repositories de UI simple (sidebar, theme, collapsibles), llamar save() directamente en los setters del repository. 
 - Para repositories de lógica de negocio (notes, properties), NO poner save() en los métodos del repository, sino que los UseCases deben llamar save() explícitamente después de las modificaciones. Esto permite operaciones batch eficientes y transacciones coordinadas entre múltiples repositories en los casos de uso complejos, mientras mantiene la simplicidad para estados de UI básicos.
 
-Habia pensado en crear una interfaz común para los adapters con metodos getById, getAll, save, update, delete y no tener ninguna variable data.
+# Arquitectura de la Aplicación
 
+## 📁 Estructura de Carpetas
 
+```
+src/
+├── application/
+│   └── usecases/           # Casos de uso / Orquestadores
+├── controllers/            # Controladores de UI (estado reactivo)
+├── domain/
+│   ├── entities/          # Entidades ricas con lógica de negocio
+│   └── services/          # Servicios de dominio
+├── infrastructure/
+│   ├── persistence/       # Adaptadores de persistencia
+│   └── repositories/      # Repositorios (acceso a datos)
+└── directives/            # Directivas de Svelte
+```
 
-Quiero modificar los adaptadores y repositories para que no dependan de una variable "data" y en su lugar expongan .
-Tener una interfaz común con estos metodos
-Tambien simplifica e implementa mejoras donde veas oportuno.
-Quiero que los repositories puedan usar cualquier adaptador sin conocer su implementación interna y que los controladores no se metan a modificar datos directamente a los repositories (abstracción) 
+---
 
-### A tener en cuenta:
+## 🎯 Responsabilidades por Capa
 
-- Me da igual romper la compatibilidad, el código antiguo eliminalo.
-- Actualmente se usa un $effect para automatizar el guardado pero podria cambiarse a oro sistema
-- Tengo el problema de que ahora hay repositories anemicos y controladores que saben mucho de los repositories y manipulan data directamente porque sus repositorys no implementan ningún metodo, pero de esto ya me encargare yo.
+### **🎮 Controllers** (`src/controllers/`)
 
-Contexto adicional: Uso Svelte 5 con reactividad $state() y los repositorios heredan de estos adaptadores, este sistema se puede cambiar según veas combeniente, pero hay que mantener la reactividad para que los componentes svelte reaccionen a los cambios de datos.
+- **Qué hacen**: Manejan estado reactivo de UI y delegan operaciones
+- **Responsabilidades**:
+   - Estado reactivo con `$state()`
+   - Feedback de UI (loading, error, success)
+   - Delegación a UseCases
+   - Validaciones simples para UI
+- **NO hacen**: Lógica de negocio, persistencia
+- **Ejemplo**: `notePropertyController.updateValue()` → `propertyUseCases.updateNotePropertyValue()`
 
-Por problemas con la inicialización (controladores trataban de acceder a datos cuando aun no habia cargado), tuve que crear un archivo startupManager.ts y para que estuviese el metodo inicitialize en todos los repository lo puse en los adapters por defecto. 
-Creo que hay cosas que no deberian estar en los adapters y que hacen demasiadas cosas, solo deberian seguir una interfaz y dar acceso a los repositories a los datos. Creo que el que sea una clase abstracta de la que se pueda extender esta bien, pero el sistema de inicialización y carga centralizada no esta todo lo pulido que deberia.
+### **⚙️ Services** (`src/domain/services/`)
+
+- **Qué hacen**: Lógica de dominio compleja que involucra múltiples entidades
+- **Responsabilidades**:
+   - Algoritmos complejos
+   - Coordinación entre entidades
+   - Validaciones de negocio avanzadas
+   - Lógica que no pertenece a una sola entidad
+- **NO hacen**: Persistencia, estado de UI
+- **Ejemplo**: `PropertyService.linkNotePropertyToGlobal()`, `SearchService.performHierarchicalSearch()`
+
+### **🏛️ Entities** (`src/domain/entities/`)
+
+- **Qué hacen**: Modelan conceptos de negocio con comportamiento
+- **Responsabilidades**:
+   - Lógica de negocio específica de la entidad
+   - Validaciones propias
+   - Transformaciones internas
+   - Métodos de conveniencia
+- **NO hacen**: Persistencia, conocer otras entidades
+- **Ejemplo**: `Note.addProperty()`, `GlobalProperty.addLink()`, `NoteProperty.updateValue()`
+
+### **🎭 UseCases** (`src/application/usecases/`)
+
+- **Qué hacen**: Orquestan operaciones completas de la aplicación
+- **Responsabilidades**:
+   - Coordinar Services + Repositories
+   - Transacciones complejas
+   - Manejo de errores de aplicación
+   - Operaciones que afectan múltiples agregados
+- **NO hacen**: Estado de UI, lógica de negocio pura
+- **Ejemplo**: `PropertyUseCases.createPropertyWithLinking()` → usa PropertyService + Repositories
+
+### **🗄️ Repositories** (`src/infrastructure/repositories/`)
+
+- **Qué hacen**: Abstracción de acceso a datos
+- **Responsabilidades**:
+   - CRUD de entidades
+   - Consultas complejas
+   - Conversión entity ↔ datos planos
+   - Operaciones batch
+- **NO hacen**: Lógica de negocio, transformaciones complejas
+- **Ejemplo**: `GlobalPropertyRepository.findByName()`, `NoteRepository.updateMany()`
+
+### **🔌 Adapters** (`src/infrastructure/persistence/`)
+
+- **Qué hacen**: Implementaciones específicas de persistencia
+- **Responsabilidades**:
+   - Conexión con fuentes de datos específicas
+   - Serialización/deserialización
+   - Manejo de errores de infraestructura
+   - Configuración de persistencia
+- **NO hacen**: Conocer entidades, lógica de aplicación
+- **Ejemplo**: `LocalStorageAdapter`, `JsonFileAdapter`, (futuro: `SQLiteAdapter`)
+
+---
+
+## 🔄 Flujo de Datos Típico
+
+```
+UI Event → Controller → UseCase → Service → Entity
+                           ↓
+                     Repository → Adapter → Storage
+```
+
+### **Ejemplo Concreto**: Crear propiedad de nota
+
+1. **UI**: `onCreateProperty()`
+2. **Controller**: `notePropertyController.handleCreateNoteProperty()`
+3. **UseCase**: `propertyUseCases.createPropertyWithLinking()`
+4. **Service**: `propertyService.createNoteProperty()`
+5. **Entity**: `note.addProperty(property)` + `globalProperty.addLink()`
+6. **Repository**: `noteRepository.update()` + `globalPropertyRepository.create()`
+7. **Adapter**: `localStorageAdapter.save()`
+
+---
+
+## 📋 Cuándo Usar Cada Capa
+
+### **✅ Migrar a Arquitectura Completa**
+
+- Lógica de negocio compleja
+- Múltiples entidades involucradas
+- Necesita persistencia coordinada
+- Operaciones transaccionales
+- **Ejemplo**: Sistema de propiedades, búsqueda avanzada
+
+### **✅ Solo Service + Controller**
+
+- Lógica compleja sin persistencia
+- Algoritmos específicos
+- Transformaciones complejas
+- **Ejemplo**: Búsqueda, validaciones complejas
+
+### **✅ Solo Controller Simple**
+
+- Estado de UI puro
+- Delegación directa simple
+- Sin lógica de negocio
+- **Ejemplo**: Modal, tema, sidebar
+
+---
+
+## 🎯 Principios de Diseño
+
+### **Separación de Responsabilidades**
+
+- Cada capa tiene una responsabilidad clara
+- No mezclar persistencia con lógica de negocio
+- No mezclar estado de UI con algoritmos
+
+### **Inversión de Dependencias**
+
+- Controllers dependen de UseCases (no al revés)
+- UseCases dependen de abstracciones (Repositories)
+- Services son independientes
+
+### **Testabilidad**
+
+- Entities: Testing de lógica pura
+- Services: Testing con mocks simples
+- UseCases: Testing de orquestación
+- Controllers: Testing de estado reactivo
+
+### **Escalabilidad**
+
+- Fácil cambiar de localStorage a SQLite
+- Fácil agregar nuevos casos de uso
+- Fácil reutilizar servicios en otros contextos
+
+---
+
+## 🚫 Anti-Patrones a Evitar
+
+- ❌ Controllers con lógica de negocio
+- ❌ Entities que se persisten solas (Active Record)
+- ❌ Services que manejan estado de UI
+- ❌ Repositories con lógica de negocio
+- ❌ UseCases que acceden directamente a UI
+- ❌ Adapters que conocen entidades
+
+---
+
+## 📚 Recursos y Convenciones
+
+### **Naming Conventions**
+
+- **Controllers**: `{Domain}Controller` (ej: `notePropertyController`)
+- **Services**: `{Domain}Service` (ej: `PropertyService`, `SearchService`)
+- **Entities**: `{Concept}` (ej: `Note`, `GlobalProperty`)
+- **UseCases**: `{Domain}UseCases` (ej: `PropertyUseCases`)
+- **Repositories**: `{Entity}Repository` (ej: `NoteRepository`)
+
+### **File Organization**
+
+- Un archivo por clase principal
+- Interfaces junto a implementaciones
+- Tipos específicos en archivos separados
+- Tests junto a la implementación
+
+### **Import Patterns**
+
+```typescript
+// ✅ Controllers importan UseCases
+import { PropertyUseCases } from "@application/usecases/PropertyUseCases";
+
+// ✅ UseCases importan Services + Repositories
+import { PropertyService } from "@domain/services/PropertyService";
+import { NoteRepository } from "@infrastructure/repositories/NoteRepository";
+
+// ✅ Services importan Entities
+import { Note } from "@domain/entities/Note";
+```
 
 # Código:
-
 LocalStorageAdapter.svelte.ts
 
 ```
@@ -523,121 +709,314 @@ export class NoteQueryRepository {
 
 ```
 
-SettingsRepository.ts
-
+SidebarRepository.ts
 ```
-import { JsonFileAdapter } from "@infrastructure/persistence/JsonFileAdapter.svelte";
-import {
-   settingsSchema,
-   getDefaultSettings,
-   type AppSettings,
-   type SettingsKey,
-} from "@schema/settingsSchema";
+import { LocalStorageAdapter } from "@infrastructure/persistence/LocalStorageAdapter.svelte";
 
-/**
- * Repositorio para la configuración de la aplicación
- */
-export class SettingsRepository extends JsonFileAdapter<AppSettings> {
+interface SidebarState {
+   isOpen: boolean;
+   width: number | undefined;
+}
+
+export class SidebarRepository extends LocalStorageAdapter<SidebarState> {
    constructor() {
-      super("app-settings");
+      super("Sidebar");
    }
 
-   protected getDefaultData(): AppSettings {
-      return getDefaultSettings();
+   protected getDefaultData(): SidebarState {
+      return {
+         isOpen: true,
+         width: undefined,
+      };
    }
 
-   /**
-    * Obtiene un valor de configuración
-    */
-   get<K extends SettingsKey>(key: K): AppSettings[K] {
-      return this.data[key];
+   get width() {
+      return this.data.width;
    }
-
-   /**
-    * Establece un valor de configuración con validación
-    */
-   set<K extends SettingsKey>(key: K, value: AppSettings[K]): void {
-      if (this.isValidValue(key, value)) {
-         this.data[key] = value;
-      } else {
-         throw new Error(`Invalid value for setting ${String(key)}: ${value}`);
-      }
+   set width(newValue: SidebarState["width"]) {
+      this.data.width = newValue;
    }
-
-   /**
-    * Alterna un valor booleano
-    */
-   toggle<K extends SettingsKey>(key: K): void {
-      const setting = settingsSchema[key];
-
-      if (setting.type !== "boolean") {
-         throw new Error(`Cannot toggle non-boolean setting: ${String(key)}`);
-      }
-
-      (this.data[key] as any) = !this.data[key];
+   get isOpen() {
+      return this.data.isOpen;
    }
-
-   /**
-    * Incrementa un valor numérico
-    */
-   increment<K extends SettingsKey>(key: K, amount: number = 1): void {
-      const setting = settingsSchema[key];
-
-      if (setting.type !== "number") {
-         throw new Error(`Cannot increment non-number setting: ${String(key)}`);
-      }
-
-      const currentValue = this.data[key] as number;
-      let newValue = currentValue + amount;
-
-      // Aplicar límites
-      if (setting.max !== undefined && newValue > setting.max) {
-         newValue = setting.max;
-      } else if (setting.min !== undefined && newValue < setting.min) {
-         newValue = setting.min;
-      }
-
-      (this.data[key] as any) = newValue;
-   }
-
-   /**
-    * Resetea un valor a su default
-    */
-   reset<K extends SettingsKey>(key: K): void {
-      const setting = settingsSchema[key];
-      this.data[key] = setting.defaultValue as AppSettings[K];
-   }
-
-   /**
-    * Resetea todos los valores
-    */
-   resetAll(): void {
-      this.resetToDefaults();
-   }
-
-   /**
-    * Valida si un valor es válido para una configuración
-    */
-   private isValidValue<K extends SettingsKey>(key: K, value: any): boolean {
-      const setting = settingsSchema[key];
-
-      switch (setting.type) {
-         case "boolean":
-            return typeof value === "boolean";
-         case "number":
-            if (typeof value !== "number") return false;
-            if (setting.min !== undefined && value < setting.min) return false;
-            if (setting.max !== undefined && value > setting.max) return false;
-            return true;
-         case "string":
-            return typeof value === "string";
-         case "select":
-            return setting.options?.includes(value) ?? false;
-         default:
-            return false;
-      }
+   set isOpen(newValue: SidebarState["isOpen"]) {
+      this.data.isOpen = newValue;
    }
 }
+
+```
+
+NoteUseCases.ts
+```
+import { Note } from "@domain/entities/Note";
+import { NotePathService } from "@domain/services/NotePathService";
+import { NoteTreeService } from "@domain/services/NoteTreeService";
+import { NoteRepository } from "@infrastructure/repositories/core/NoteRepository";
+import { NoteQueryRepository } from "@infrastructure/repositories/core/NoteQueryRepository";
+import { FavoritesUseCases } from "@application/usecases/FavoritesUseCases";
+import { generateUniqueTitle } from "@utils/noteUtils";
+
+/**
+ * Casos de uso para operaciones complejas con notas
+ */
+export class NoteUseCases {
+   private pathService: NotePathService;
+   private treeService: NoteTreeService;
+   private favoritesUseCases?: FavoritesUseCases;
+
+   constructor(
+      private noteRepository: NoteRepository,
+      private queryRepository: NoteQueryRepository,
+      favoritesUseCases?: FavoritesUseCases,
+   ) {
+      this.pathService = new NotePathService();
+      this.treeService = new NoteTreeService();
+      this.favoritesUseCases = favoritesUseCases;
+   }
+
+   /**
+    * Crea una nota con validaciones y actualización del padre
+    */
+   createNote(params: {
+      parentId?: string;
+      title?: string;
+      content?: string;
+      icon?: string;
+   }): string | null {
+      // Validar padre si existe
+      if (params.parentId && !this.queryRepository.exists(params.parentId)) {
+         console.error(`Parent note ${params.parentId} not found`);
+         return null;
+      }
+
+      // Generar título único
+      const allNotes = this.queryRepository.findAll();
+      const finalTitle = generateUniqueTitle(allNotes, params.title);
+
+      // Crear nota
+      const newNote = Note.create({
+         title: finalTitle,
+         parentId: params.parentId,
+         content: params.content,
+         icon: params.icon,
+      });
+
+      // Persistir
+      this.noteRepository.create(newNote);
+
+      // Actualizar padre si existe
+      if (params.parentId) {
+         const parent = this.queryRepository.findById(params.parentId);
+         if (parent) {
+            parent.addChild(newNote.id);
+            this.noteRepository.update(parent.id, parent);
+         }
+      }
+
+      return newNote.id;
+   }
+
+   /**
+    * Crea notas desde un path jerárquico
+    */
+   createNoteFromPath(path: string): string | null {
+      const segments = this.pathService.parseNotePath(path);
+      if (!segments.length) return null;
+
+      const allNotes = this.queryRepository.findAll();
+      const resolution = this.pathService.resolveNotePath(segments, allNotes);
+
+      // Si no hay segmentos faltantes, retornar la última nota existente
+      if (!resolution.missingSegments.length) {
+         const lastNote =
+            resolution.existingNotes[resolution.existingNotes.length - 1];
+         return lastNote?.id || null;
+      }
+
+      // Crear notas faltantes
+      let currentParentId = resolution.lastParentId;
+      let lastCreatedId: string | null = null;
+
+      for (const segment of resolution.missingSegments) {
+         const noteId = this.createNote({
+            parentId: currentParentId,
+            title: segment,
+         });
+
+         if (!noteId) {
+            console.error(`Failed to create note: ${segment}`);
+            break;
+         }
+
+         lastCreatedId = noteId;
+         currentParentId = noteId;
+      }
+
+      return lastCreatedId;
+   }
+
+   /**
+    * Elimina una nota y todos sus descendientes
+    */
+   deleteNote(noteId: string): void {
+      const note = this.queryRepository.findById(noteId);
+      if (!note) return;
+
+      const allNotes = this.queryRepository.findAll();
+
+      // Obtener todos los IDs a eliminar
+      const descendants = this.treeService.getDescendants(noteId, allNotes);
+      const idsToDelete = new Set([noteId, ...descendants.map((n) => n.id)]);
+
+      // Eliminar de padres
+      if (note.parentId) {
+         const parent = this.queryRepository.findById(note.parentId);
+         if (parent) {
+            parent.removeChild(noteId);
+            this.noteRepository.update(parent.id, parent);
+         }
+      }
+
+      // Eliminar notas
+      this.noteRepository.deleteMany(idsToDelete);
+
+      // Limpiar favoritos
+      if (this.favoritesUseCases) {
+         this.favoritesUseCases.handleNotesDeleted(idsToDelete);
+      }
+   }
+
+   /**
+    * Mueve una nota a una nueva posición
+    */
+   moveNote(
+      noteId: string,
+      newParentId: string | undefined,
+      position: number,
+   ): void {
+      const note = this.queryRepository.findById(noteId);
+      if (!note) return;
+
+      const allNotes = this.queryRepository.findAll();
+
+      // Validar movimiento
+      if (newParentId) {
+         const validation = this.treeService.canMoveNote(
+            noteId,
+            newParentId,
+            allNotes,
+         );
+         if (!validation.valid) {
+            throw new Error(validation.reason);
+         }
+      }
+
+      // Remover del padre anterior
+      if (note.parentId) {
+         const oldParent = this.queryRepository.findById(note.parentId);
+         if (oldParent) {
+            oldParent.removeChild(noteId);
+            this.noteRepository.update(oldParent.id, oldParent);
+         }
+      }
+
+      // Actualizar parentId
+      note.changeParent(newParentId);
+
+      // Generar título único si es necesario
+      const siblings = this.queryRepository.findByParent(newParentId);
+      const uniqueTitle = this.treeService.ensureUniqueSiblingTitle(
+         note.title,
+         newParentId,
+         allNotes,
+         noteId,
+      );
+
+      if (uniqueTitle !== note.title) {
+         note.updateTitle(uniqueTitle);
+      }
+
+      // Insertar en nueva posición
+      if (newParentId) {
+         const newParent = this.queryRepository.findById(newParentId);
+         if (newParent) {
+            newParent.insertChildAt(noteId, position);
+            this.noteRepository.update(newParent.id, newParent);
+         }
+      } else {
+         // Mover a raíz - reordenar el array completo
+         this.reorderRootNotes(noteId, position);
+      }
+
+      // Guardar nota actualizada
+      this.noteRepository.update(noteId, note);
+   }
+
+   /**
+    * Reordena las notas raíz
+    */
+   private reorderRootNotes(noteId: string, position: number): void {
+      const allNotes = this.queryRepository.findAll();
+      const rootNotes = this.treeService.getRootNotes(allNotes);
+      const otherNotes = allNotes.filter((n) => n.parentId);
+
+      // Filtrar la nota movida
+      const filteredRoots = rootNotes.filter((n) => n.id !== noteId);
+      const movedNote = allNotes.find((n) => n.id === noteId);
+
+      if (!movedNote) return;
+
+      // Calcular posición ajustada
+      const originalIndex = rootNotes.findIndex((n) => n.id === noteId);
+      const adjustedPosition = this.treeService.calculateAdjustedPosition(
+         originalIndex,
+         position,
+         filteredRoots.length,
+      );
+
+      // Crear nuevo orden
+      const newRootOrder = [
+         ...filteredRoots.slice(0, adjustedPosition),
+         movedNote,
+         ...filteredRoots.slice(adjustedPosition),
+      ];
+
+      // Actualizar repositorio con nuevo orden
+      this.noteRepository.replaceAll([...newRootOrder, ...otherNotes]);
+   }
+
+   /**
+    * Actualiza el contenido y estadísticas de una nota
+    */
+   updateNoteContent(noteId: string, content: string, stats?: any): void {
+      const note = this.queryRepository.findById(noteId);
+      if (!note) return;
+
+      if (stats) {
+         note.updateContentWithStats(content, stats);
+      } else {
+         note.updateContent(content);
+      }
+
+      this.noteRepository.update(noteId, note);
+   }
+
+   /**
+    * Batch operation para actualizar múltiples notas
+    */
+   batchUpdate(updates: Map<string, (note: Note) => void>): void {
+      this.noteRepository.batch(() => {
+         updates.forEach((updater, noteId) => {
+            const note = this.queryRepository.findById(noteId);
+            if (note) {
+               updater(note);
+               this.noteRepository.update(noteId, note);
+            }
+         });
+      });
+   }
+}
+
 ```
 
 StartupManager.svelte.ts
@@ -868,9 +1247,3 @@ class StartupManager {
 
 export const startupManager = new StartupManager();
 ```
-
-# Tu respuesta
-
-Primero quiero que hagas un analisis de la situación, creo que las 3 grandes cuestiones a abordar son:
-1. Revisar y pulir el sistema de inicialización actual, el problema venia al usar el JSONFileAdapter pero quiero tener una forma estandarizada que funcione de inicializar todos los repositorios
-2. En los adapters dejar de usar variable data y solo exponer los metodos descritos por la interfaz comúna los repositories

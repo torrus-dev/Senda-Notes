@@ -11,16 +11,6 @@ export abstract class LocalStorageAdapter<T> {
    private initializeData() {
       this.loadData();
       this.isInitialized = true;
-
-      // Auto-guardar al detectar cambios
-      $effect.root(() => {
-         $effect(() => {
-            if (this.isInitialized) {
-               JSON.stringify(this.data);
-               this.saveData();
-            }
-         });
-      });
    }
 
    // Método abstracto que deben implementar las clases hijas
@@ -35,7 +25,7 @@ export abstract class LocalStorageAdapter<T> {
       return { ...this.getDefaultData(), ...data };
    }
 
-   private saveData(): void {
+   save(): void {
       try {
          const serializableData = this.serializeData(this.data);
          localStorage.setItem(
@@ -52,9 +42,9 @@ export abstract class LocalStorageAdapter<T> {
 
    protected loadData(): void {
       try {
-         const stored = localStorage.getItem(this.storageKey);
-         if (stored) {
-            const parsedData = JSON.parse(stored);
+         const storedData = localStorage.getItem(this.storageKey);
+         if (storedData) {
+            const parsedData = JSON.parse(storedData);
             this.data = this.deserializeData(parsedData);
          }
       } catch (error) {

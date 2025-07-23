@@ -20,16 +20,6 @@ export abstract class JsonFileAdapter<T> {
       try {
          await this.loadData();
          this.isInitialized = true;
-
-         // Configurar auto-guardado al detectar cambios
-         $effect.root(() => {
-            $effect(() => {
-               if (this.isInitialized) {
-                  JSON.stringify(this.data);
-                  this.debouncedSave();
-               }
-            });
-         });
       } catch (error) {
          console.error(
             `PersistentJsonFileModel: Error inicializando ${this.filename}:`,
@@ -44,17 +34,7 @@ export abstract class JsonFileAdapter<T> {
    // Método abstracto que deben implementar las clases hijas
    protected abstract getDefaultData(): T;
 
-   private debouncedSave() {
-      if (this.saveTimeout) {
-         clearTimeout(this.saveTimeout);
-      }
-
-      this.saveTimeout = window.setTimeout(() => {
-         this.saveData();
-      }, this.DEBOUNCE_DELAY);
-   }
-
-   private async saveData() {
+   private async save() {
       try {
          const serializableData = $state.snapshot(this.data);
          const result = await window.electronAPI.fs.saveUserConfigJson(
@@ -110,16 +90,6 @@ export abstract class JsonFileAdapter<T> {
          );
          throw error;
       }
-   }
-
-   // Funciones Publicas Auxiliares
-   // Método público para forzar guardado inmediato
-   public async forceSave(): Promise<void> {
-      if (this.saveTimeout) {
-         clearTimeout(this.saveTimeout);
-         this.saveTimeout = null;
-      }
-      await this.saveData();
    }
 
    // Método público para recargar datos
