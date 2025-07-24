@@ -250,19 +250,4 @@ export class NoteUseCases {
 
       this.noteRepository.update(noteId, note);
    }
-
-   /**
-    * Batch operation para actualizar múltiples notas
-    */
-   batchUpdate(updates: Map<string, (note: Note) => void>): void {
-      this.noteRepository.batch(() => {
-         updates.forEach((updater, noteId) => {
-            const note = this.queryRepository.findById(noteId);
-            if (note) {
-               updater(note);
-               this.noteRepository.update(noteId, note);
-            }
-         });
-      });
-   }
 }
